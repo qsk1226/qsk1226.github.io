@@ -18,10 +18,10 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content="java,">
+    <meta name="keywords" content="netty,nio,java">
 
 
-    <meta name="description" content="我有一个梦想--">
+    <meta name="description" content="什么是NIO　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型...">
 
 
 
@@ -33,7 +33,7 @@
     <!--Title-->
 
 
-<title>大爷来玩儿啊</title>
+<title>netty权威指南学习（二） | 大爷来玩儿啊</title>
 
 
     <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
@@ -162,42 +162,16 @@
     <section class="content-wrap">
         <div class="container">
             <div class="row">
-                <main class="col-md-8 main-content ">
-                    
-    <div class="carousel">
-        <a href target="_blank">
-            <img src="/./img/head-img.jpg" alt>
-        </a>
-    </div>
-
-
-
-
-
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
 <article class="post">
-    
-    <div class="post-content">
-        <div class="post-head home-post-head">
-            <h1 class="post-title">
-                <a href="/2016/06/02/netty/netty权威指南学习（二）/">netty权威指南学习（二）</a>
-            </h1>
-            <div class="post-meta">  &bull;
-                <time class="post-date" datetime title>
-                    2016年06月02日
-                </time>
-            </div>
-        </div>
-        <p class="brief">
+    <div class="post-head">
+        <h1 id="netty权威指南学习（二）">
             
-                什么是NIO　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型I/O能力。
-NIO的工作原理是什么？　...
+	            netty权威指南学习（二）
             
-        </p>
-    </div>
-    
-        <footer class="post-footer clearfix">
-            <div class="pull-left tag-list">
-                <div class="post-meta">
+        </h1>
+        <div class="post-meta">
     
         <span class="categories-meta fa-wrap">
             <i class="fa fa-folder-open-o"></i>
@@ -217,83 +191,101 @@ NIO的工作原理是什么？　...
     
 
     
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2016/06/02</span>
+        </span>
+        
+            <span class="fa-wrap">
+                <i class="fa fa-eye"></i>
+                <span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    
 </div>
-            </div>
-
-            <div class="post-permalink">
-                <a href="/2016/06/02/netty/netty权威指南学习（二）/" class="btn btn-default">阅读全文</a>
-            </div>
-        </footer>
-    
-</article>
-
-
-<article class="post">
-    
-        <div class="post-media">
-            <a href="/2016/06/01/netty/netty权威指南学习（一）/">
-                <img class="img-ajax" src="/img/loading.gif" data-src="/.jpg" alt="netty权威指南学习（一）">
-            </a>
-        </div>
-    
-    <div class="post-content">
-        <div class="post-head home-post-head">
-            <h1 class="post-title">
-                <a href="/2016/06/01/netty/netty权威指南学习（一）/">netty权威指南学习（一）</a>
-            </h1>
-            <div class="post-meta">  &bull;
-                <time class="post-date" datetime title>
-                    2016年06月01日
-                </time>
-            </div>
-        </div>
-        <p class="brief">
             
-                
-首先感谢作者李林锋给我们提供出这本关于异步非阻塞通信领域的经典之作，本书基于Netty 5.0编写。Netty如今已经在如下几个领域得到了大规模的商业应用:
-
-互联网领域
-电信领域
-大数据领域
-银行、证券等金融领域
-游戏行业
-电力等...
             
-        </p>
     </div>
     
-        <footer class="post-footer clearfix">
-            <div class="pull-left tag-list">
-                <div class="post-meta">
-    
-        <span class="categories-meta fa-wrap">
-            <i class="fa fa-folder-open-o"></i>
-            <a class="category-link" href="/categories/netty/">netty</a>
-        </span>
-    
+    <div class="post-body post-content">
+        <h2 id="什么是NIO"><a href="#什么是NIO" class="headerlink" title="什么是NIO"></a>什么是NIO</h2><p>　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。<br>JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型I/O能力。</p>
+<h2 id="NIO的工作原理是什么？"><a href="#NIO的工作原理是什么？" class="headerlink" title="NIO的工作原理是什么？"></a>NIO的工作原理是什么？</h2><p>　　JAVA NIO 内部实现是通过事件驱动模型来实现的，在并发型服务器程序中使用NIO，实际上是通过网络事件驱动模型实现的。我们应用Select机制，不用为每一个客户端连接新启线程处理，而是将其注册到特定的Selector对象上，这就可以在单线程中利用Selector对象管理大量并发的网络连接，更好的利用了系统资源；采用非阻塞I/O的通信方式，不要求阻塞等待I/O操作完成即可返回，从而减少了管理I/O连接导致的系统开销，大幅度提高了系统性能。</p>
+<p>　　当有读或写等注册事件发生时，可以从Selector中获得相应的SelectionKey，从SelectionKey中可以找到发生的事件和该事件所发生的具体的SelectableChannel，以获得客户端发送过来的数据。由于在非阻塞网络I/O中采用了事件触发机制，处理程序可以得到系统的主动通知，从而可以实现底层网络I/O无阻塞、流畅地读写，而不像在原来的阻塞模式下处理程序需要不断循环等待。使用NIO，可以编写出性能更好、更易扩展的并发型服务器程序。</p>
+<p>　　并发型服务器程序的实现代码：应用NIO工具包，基于非阻塞网络I/O设计的并发型服务器程序与以往基于阻塞I/O的实现程序有很大不同，在使用非阻塞网络I/O的情况下，程序读取数据和写入数据的时机不是由程序员控制的，而是Selector决定的。</p>
+<p>使用非阻塞型I/O进行并发型服务器程序设计分三个部分：<br>　　1. 向Selector对象注册感兴趣的事件；<br>　　2.从Selector中获取所感兴趣的事件；<br>　　3. 根据不同的事件进行相应的处理。</p>
+<p>　　在进行并发型服务器程序设计时，通过合理地使用NIO工具包，就可以达到一个或者几个Socket线程就可以处理N多个Socket的连接，大大降低我们对服务器程序的预算压力。同时我们利用它更好地提高系统的性能，使我们的工作得到更加有效地开展.
+　　</p>
+<h2 id="NIO特性"><a href="#NIO特性" class="headerlink" title="NIO特性"></a>NIO特性</h2><p>Sun 官方标榜的特性如下：</p>
+<ul>
+<li>为所有的原始类型提供 (Buffer) 缓存支持。</li>
+<li>字符集编码解码解决方案。</li>
+<li>Channel ：一个新的原始 I/O 抽象。</li>
+<li>支持锁和内存映射文件的文件访问接口。</li>
+<li>提供多路 (non-bloking) 非阻塞式的高伸缩性网络 I/O</li>
+</ul>
+<h2 id="JAVA-NIO-提供的java-nio-包，提供了很多进行异步I-O开发的API-和类库。"><a href="#JAVA-NIO-提供的java-nio-包，提供了很多进行异步I-O开发的API-和类库。" class="headerlink" title="JAVA NIO 提供的java.nio 包，提供了很多进行异步I/O开发的API 和类库。"></a>JAVA NIO 提供的java.nio 包，提供了很多进行异步I/O开发的API 和类库。</h2><p>主要类和接口如下：</p>
+<ul>
+<li>进行异步IO操作的缓冲区ByteBuffer等</li>
+<li>进行异步IO操作的管道Pipe</li>
+<li>进行各种IO操作的channel，包括ServerSocketChannel 和SocketChannel</li>
+<li>多种字符的编码和解码能力</li>
+<li>实现非阻塞I/O操作的多路复用器Selector</li>
+<li>基于流行的perl实现的正则表达式类库</li>
+<li>文件管道FileChannel</li>
+</ul>
+<h1 id="3-1传统的BIO编程"><a href="#3-1传统的BIO编程" class="headerlink" title="3.1传统的BIO编程"></a>3.1传统的BIO编程</h1><p>　　网络编程的基本模型是client/server，也就是client进程与server进程通过3次握手之后建立连接，进而实现相互通信。<br>　　BIO服务端通信模型通常由一个Acceptor 负责接收客户端的请求，它接收到客户端请求之后，为每一个请求新建一个新的线程进行链路处理，处理完成之后，将处理结果数据，以流的方式发送给客户端，然后销毁线程。这就是典型的一请求一应答的通信模式。<br>　　该模型最大的问题就是缺乏弹性伸缩能力，当客户端并发访问量上来之后，服务端的线程和客户访问量呈1:1的关系增加，当服务端线程过多消耗java虚拟机的资源后，导致性能急剧下降，甚至将导致服务端宕机、僵死而无法提供服务。
+　　</p>
 
+    </div>
     
-        <span class="fa-wrap">
-            <i class="fa fa-tags"></i>
-            <span class="tags-meta">
-                
-                    <a class="tag-link" href="/tags/netty/">netty</a>
-                
-            </span>
-        </span>
-    
-
-    
-</div>
-            </div>
-
-            <div class="post-permalink">
-                <a href="/2016/06/01/netty/netty权威指南学习（一）/" class="btn btn-default">阅读全文</a>
-            </div>
-        </footer>
-    
+    <div class="post-footer">
+        <div>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
 </article>
 
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+        <a href="/2016/06/01/netty/netty权威指南学习（一）/" class="next-post btn btn-default" title="netty权威指南学习（一）">
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">netty权威指南学习（一）</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
+            appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
+            placeholder: '骚年，发出你的10万个为什么',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
 
 
 
@@ -301,85 +293,14 @@ NIO的工作原理是什么？　...
 
                 </main>
                 
-                    
-    <aside class="col-md-4 sidebar">
-        
-        
+                    <aside id="article-toc" role="navigation" class="col-md-4">
     <div class="widget">
-        <h3 class="title">搜索</h3>
-        <div id="search-form">
-            <div id="result-mask" class="hide"></div>
-            <div class="search-area">
-                
-                    <input id="search-key" type="search" autocomplete="off" placeholder="搜点什么呢？">
-                    <button type="button" class="search-form-submit" id="search-local">站内搜索</button>
-                
-                
-            </div>
-            <div id="result-wrap" class="hide">
-                <div id="search-result"></div>
-            </div>
-            <div class="hide">
-                <template id="search-tpl">
-                    <div class="item">
-                        <a href="/{path}" title="{title}">
-                            <div class="title">{title}</div>
-                            <div class="content">{content}</div>
-                        </a>
-                    </div>
-                </template>
-            </div>
-        </div>
-    </div>
-
+        <h3 class="title">文章目录</h3>
         
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是NIO"><span class="toc-text">什么是NIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO的工作原理是什么？"><span class="toc-text">NIO的工作原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO特性"><span class="toc-text">NIO特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA-NIO-提供的java-nio-包，提供了很多进行异步I-O开发的API-和类库。"><span class="toc-text">JAVA NIO 提供的java.nio 包，提供了很多进行异步I/O开发的API 和类库。</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#3-1传统的BIO编程"><span class="toc-text">3.1传统的BIO编程</span></a>
         
-        
-        
-    <div class="widget">
-        <h3 class="title">分类</h3>
-        <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/netty/"><i class="fa" aria-hidden="true">netty</i></a><span class="category-list-count">2</span></li></ul>
-    </div>
-
-
-        
-        
-  <div class="widget">
-    <h3 class="title">标签云</h3>
-    <div class="content tag-cloud">
-        
-            <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/netty-nio-java/" style="font-size: 10px;">netty,nio,java</a>
-        
-    </div>
-  </div>
-
-
-        
-        
-    <div class="widget">
-        <h3 class="title">归档</h3>
-        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/"><i class="fa" aria-hidden="true">2016年06月</i></a><span class="archive-list-count">2</span></li></ul>
-    </div>
-
-
-        
-        
-    <div class="widget">
-        <h3 class="title">友链</h3>
-        <div class="content friends-link">
-        
-            <a href="https://hexo.io/zh-cn/" class="fa" target="_blank">Hexo官网</a>
-        
-            <a href="https://www.ten951.com/" class="fa" target="_blank">天天</a>
-        
-        </div>
-    </div>
-
-
-        
-        
-        
-    </aside>
+    </li></div>
+</aside>
 
                 
             </div>
@@ -432,8 +353,6 @@ NIO的工作原理是什么？　...
     </div>
 </div>
 
-
-	<script src="/js/search.js?rev=@@hash"></script>
 
 
 
