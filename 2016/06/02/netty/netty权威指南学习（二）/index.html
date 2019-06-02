@@ -18,10 +18,10 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content="netty,nio,java">
+    <meta name="keywords" content="netty">
 
 
-    <meta name="description" content="什么是NIO　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型...">
+    <meta name="description" content="第二章 NIO 入门什么是NIO　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可...">
 
 
 
@@ -184,7 +184,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/netty-nio-java/">netty,nio,java</a>
+                    <a class="tag-link" href="/tags/netty/">netty</a>
                 
             </span>
         </span>
@@ -209,7 +209,7 @@
     </div>
     
     <div class="post-body post-content">
-        <h2 id="什么是NIO"><a href="#什么是NIO" class="headerlink" title="什么是NIO"></a>什么是NIO</h2><p>　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。<br>JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型I/O能力。</p>
+        <h1 id="第二章-NIO-入门"><a href="#第二章-NIO-入门" class="headerlink" title="第二章 NIO 入门"></a>第二章 NIO 入门</h1><h2 id="什么是NIO"><a href="#什么是NIO" class="headerlink" title="什么是NIO"></a>什么是NIO</h2><p>　　NIO 是 JAVA NON-BLOCK IO 的简称，在 jdk1.4 里提供的新 api 。<br>JAVA NIO是为了弥补传统I/O工作模式的不足而研发的，可以实现并发的非阻塞型I/O能力。</p>
 <h2 id="NIO的工作原理是什么？"><a href="#NIO的工作原理是什么？" class="headerlink" title="NIO的工作原理是什么？"></a>NIO的工作原理是什么？</h2><p>　　JAVA NIO 内部实现是通过事件驱动模型来实现的，在并发型服务器程序中使用NIO，实际上是通过网络事件驱动模型实现的。我们应用Select机制，不用为每一个客户端连接新启线程处理，而是将其注册到特定的Selector对象上，这就可以在单线程中利用Selector对象管理大量并发的网络连接，更好的利用了系统资源；采用非阻塞I/O的通信方式，不要求阻塞等待I/O操作完成即可返回，从而减少了管理I/O连接导致的系统开销，大幅度提高了系统性能。</p>
 <p>　　当有读或写等注册事件发生时，可以从Selector中获得相应的SelectionKey，从SelectionKey中可以找到发生的事件和该事件所发生的具体的SelectableChannel，以获得客户端发送过来的数据。由于在非阻塞网络I/O中采用了事件触发机制，处理程序可以得到系统的主动通知，从而可以实现底层网络I/O无阻塞、流畅地读写，而不像在原来的阻塞模式下处理程序需要不断循环等待。使用NIO，可以编写出性能更好、更易扩展的并发型服务器程序。</p>
 <p>　　并发型服务器程序的实现代码：应用NIO工具包，基于非阻塞网络I/O设计的并发型服务器程序与以往基于阻塞I/O的实现程序有很大不同，在使用非阻塞网络I/O的情况下，程序读取数据和写入数据的时机不是由程序员控制的，而是Selector决定的。</p>
@@ -252,7 +252,7 @@
 <div class="article-nav prev-next-wrap clearfix">
     
     
-        <a href="/2016/06/01/netty权威指南学习（一）/" class="next-post btn btn-default" title="netty权威指南学习（一）">
+        <a href="/2016/06/01/netty/netty权威指南学习（一）/" class="next-post btn btn-default" title="netty权威指南学习（一）">
             <span class="hidden-lg">下一篇</span>
             <span class="hidden-xs">netty权威指南学习（一）</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
@@ -297,9 +297,9 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是NIO"><span class="toc-text">什么是NIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO的工作原理是什么？"><span class="toc-text">NIO的工作原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO特性"><span class="toc-text">NIO特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA-NIO-提供的java-nio-包，提供了很多进行异步I-O开发的API-和类库。"><span class="toc-text">JAVA NIO 提供的java.nio 包，提供了很多进行异步I/O开发的API 和类库。</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#3-1传统的BIO编程"><span class="toc-text">3.1传统的BIO编程</span></a>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#第二章-NIO-入门"><span class="toc-text">第二章 NIO 入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是NIO"><span class="toc-text">什么是NIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO的工作原理是什么？"><span class="toc-text">NIO的工作原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO特性"><span class="toc-text">NIO特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA-NIO-提供的java-nio-包，提供了很多进行异步I-O开发的API-和类库。"><span class="toc-text">JAVA NIO 提供的java.nio 包，提供了很多进行异步I/O开发的API 和类库。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-1传统的BIO编程"><span class="toc-text">3.1传统的BIO编程</span></a></li></ol>
         
-    </li></div>
+    </div>
 </aside>
 
                 
