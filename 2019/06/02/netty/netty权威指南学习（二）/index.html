@@ -1,0 +1,385 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="大爷来玩儿啊">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.throne4j.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="netty">
+
+
+    <meta name="description" content="第二章 NIO 入门在本章中，我们会分别对JDK的BIO、NIO、NIO2.0的使用进行详细说明。本章主要内容包括：
+
+传统的同步阻塞式IO编程
+基于NIO的非阻塞编程
+基于NIO2.0的异步非...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>netty权威指南学习（二） | 大爷来玩儿啊</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+		<script type="text/javascript">
+			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</div>
+
+
+
+
+
+
+    
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header" style="background-image:url(http://snippet.shenliyang.com/img/banner.jpg)">
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title="我跟人飙车来着">
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+        	<!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+                <h2> 只要干不死，就往死里干 </h2>
+            
+    	</div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.throne4j.com">大爷来玩儿啊</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa fa-home"></i>主页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/netty/"><i class="fa fa-book"></i>netty</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/java/"><i class="fa fa-book"></i>JAVA</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/数据库/"><i class="fa fa-book"></i>数据库</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/spring/"><i class="fa fa-book"></i>spring</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/协议/"><i class="fa fa-book"></i>协议</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/设计模式/"><i class="fa fa-book"></i>设计模式</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/领域驱动/"><i class="fa fa-book"></i>领域驱动</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/redis/"><i class="fa fa-book"></i>redis</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/zookeeper/"><i class="fa fa-book"></i>zookepper</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/archives/"><i class="fa fa-archive"></i>时间机器</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/about/"><i class="fa "></i>来首诗</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="netty权威指南学习（二）">
+            
+	            netty权威指南学习（二）
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/netty/">netty</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/netty/">netty</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/02</span>
+        </span>
+        
+            <span class="fa-wrap">
+                <i class="fa fa-eye"></i>
+                <span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="第二章-NIO-入门"><a href="#第二章-NIO-入门" class="headerlink" title="第二章 NIO 入门"></a>第二章 NIO 入门</h1><p>在本章中，我们会分别对JDK的BIO、NIO、NIO2.0的使用进行详细说明。本章主要内容包括：</p>
+<ul>
+<li>传统的同步阻塞式IO编程</li>
+<li>基于NIO的非阻塞编程</li>
+<li>基于NIO2.0的异步非阻塞(AIO)编程</li>
+<li>为什么使用NIO编程</li>
+<li>为什么使用Netty</li>
+</ul>
+<h2 id="2-1传统的BIO编程"><a href="#2-1传统的BIO编程" class="headerlink" title="2.1传统的BIO编程"></a>2.1传统的BIO编程</h2><p>　　网络编程的基本模型是client/server，也就是client进程与server进程通过3次握手之后建立连接，进而实现相互通信。</p>
+<h3 id="2-1-1-BIO通信模型"><a href="#2-1-1-BIO通信模型" class="headerlink" title="2.1.1 BIO通信模型"></a>2.1.1 BIO通信模型</h3><p>　　BIO服务端通信模型（见下图）通常由一个Acceptor 负责接收客户端的请求，它接收到客户端请求之后，为每一个请求新建一个新的线程进行链路处理，处理完成之后，将处理结果数据，以流的方式发送给客户端，然后销毁线程。这就是典型的一请求一应答的通信模式。<br>　　该模型最大的问题就是缺乏弹性伸缩能力，当客户端并发访问量上来之后，服务端的线程和客户访问量呈1:1的关系增加，当服务端线程过多消耗java虚拟机的资源后，导致性能急剧下降，甚至将导致服务端宕机、僵死而无法提供服务。</p>
+<p><img src="/2019/06/02/netty/netty权威指南学习（二）/BIO%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%9E%8B.jpg" alt="BIO通信模型">　　</p>
+<h3 id="2-1-2-同步阻塞式IO创建的TimeServer源码分析"><a href="#2-1-2-同步阻塞式IO创建的TimeServer源码分析" class="headerlink" title="2.1.2 同步阻塞式IO创建的TimeServer源码分析"></a>2.1.2 同步阻塞式IO创建的TimeServer源码分析</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shengke.netty.bio;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> qinshengke</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2016-06-02 21:40</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            port = Integer.valueOf(args[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        ServerSocket server = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            server = <span class="keyword">new</span> ServerSocket(port);</span><br><span class="line">            System.out.println(<span class="string">"The server is started in port:"</span> + port);</span><br><span class="line">            <span class="comment">// 获取server接待的socket</span></span><br><span class="line">            Socket socket = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                socket = server.accept();</span><br><span class="line">                <span class="keyword">new</span> Thread(<span class="keyword">new</span> TimeServerHandler(socket)).start();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (server != <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"The time server close"</span>);</span><br><span class="line">                server.close();</span><br><span class="line">                server = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shengke.netty.bio;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> qinshengke</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2016-06-02 22:03</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeServerHandler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Socket socket;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TimeServerHandler</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.socket = socket;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        BufferedReader in = <span class="keyword">null</span>;</span><br><span class="line">        PrintWriter out = <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">// 获取socket 输入流</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(<span class="keyword">this</span>.socket.getInputStream()));</span><br><span class="line">            out = <span class="keyword">new</span> PrintWriter(<span class="keyword">this</span>.socket.getOutputStream(), <span class="keyword">true</span>);</span><br><span class="line">            String currentTime = <span class="keyword">null</span>;</span><br><span class="line">            String body = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                body = in.readLine();</span><br><span class="line">                <span class="keyword">if</span> (body == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line">                System.out.println(<span class="string">"The time server receive order :"</span> + body);</span><br><span class="line">                currentTime = <span class="string">"QUERY TIME ORDER"</span>.equalsIgnoreCase(body) ? <span class="keyword">new</span> Date(System.currentTimeMillis()).toString() : <span class="string">"BAD ORDER"</span>;</span><br><span class="line">                out.println(currentTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">if</span> (in != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    in.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e1) &#123;</span><br><span class="line">                    e1.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (out != <span class="keyword">null</span>) &#123;</span><br><span class="line">                out.close();</span><br><span class="line">                out = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.socket != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">this</span>.socket.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e1) &#123;</span><br><span class="line">                    e1.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">this</span>.socket = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shengke.netty.bio;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> qinshengke</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-06-02 22:19</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeClient</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            port = Integer.valueOf(args[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Socket socket = <span class="keyword">null</span>;</span><br><span class="line">        BufferedReader in = <span class="keyword">null</span>;</span><br><span class="line">        PrintWriter out = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            socket = <span class="keyword">new</span> Socket(<span class="string">"127.0.0.1"</span>, port);</span><br><span class="line">            in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(socket.getInputStream()));</span><br><span class="line">            out = <span class="keyword">new</span> PrintWriter(socket.getOutputStream(), <span class="keyword">true</span>);</span><br><span class="line">            out.println(<span class="string">"QUERY TIME ORDER"</span>);</span><br><span class="line">            System.out.println(<span class="string">"Send order 2 server succeed."</span>);</span><br><span class="line">            String resp = in.readLine();</span><br><span class="line">            System.out.println(<span class="string">"Now is :"</span> + resp);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (in != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    in.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e1) &#123;</span><br><span class="line">                    e1.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (out != <span class="keyword">null</span>) &#123;</span><br><span class="line">                out.close();</span><br><span class="line">                out = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (socket != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    socket.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e1) &#123;</span><br><span class="line">                    e1.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                socket = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>　　BIO主要问题在于每当有一个新的客户端请求接入时，服务端都必须创建一个新的线程处理新接入的客户端链路，一个线程只能处理一个客户端连接。试想一下，当成千上万甚至百万的客户端请求接入时，对服务器来说无异于灾难来临。
+　　</p>
+<h2 id="2-2-伪异步IO编程"><a href="#2-2-伪异步IO编程" class="headerlink" title="2.2  伪异步IO编程"></a>2.2  伪异步IO编程</h2><p>为了解决同步阻塞IO面临的一个链路需要一个线程处理的问题，后来有人对他的线程模型进行了优化–后端通过线程池来处理多个客户端的请求接入，形成客户端个数M:线程池最大线程数N的比例关系，其中M可以远远大于N。</p>
+<h3 id="2-2-1伪异步IO模型"><a href="#2-2-1伪异步IO模型" class="headerlink" title="2.2.1伪异步IO模型"></a>2.2.1伪异步IO模型</h3><p>　　采用线程池或者任务队列实现一种伪异步的IO通信框架，它的模型如下图所示:<br><img src="/2019/06/02/netty/netty权威指南学习（二）/%E4%BC%AA%E5%BC%82%E6%AD%A5%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%9E%8B.jpg" alt><br>　　当有新的客户请求接入的时候，将客户端的socket封装为一个task投递到后端的线程池中进行处理,java线程池维护一个任务队列和N个活跃的线程，因此它消耗资源是可控的，不会造成资源的耗尽。由于伪异步通信模型底层实现依然使用BIO，无法从根本上解决同步阻塞IO的问题。<br>　　下面我们结合代码，了解一下伪异步通信模型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shengke.netty.bio.fake;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.shengke.netty.bio.TimeServerHandler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> qinshengke</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2016-06-02 21:40</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            port = Integer.valueOf(args[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        ServerSocket server = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            server = <span class="keyword">new</span> ServerSocket(port);</span><br><span class="line">            System.out.println(<span class="string">"The server is started in port:"</span> + port);</span><br><span class="line">            <span class="comment">// 获取server接待的socket</span></span><br><span class="line">            Socket socket = <span class="keyword">null</span>;</span><br><span class="line">            TimeServerHandlerExecutePool executePool = <span class="keyword">new</span> TimeServerHandlerExecutePool(<span class="number">50</span>, <span class="number">10000</span>);</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                socket = server.accept();</span><br><span class="line">                executePool.execute(<span class="keyword">new</span> TimeServerHandler(socket));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (server != <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"The time server close"</span>);</span><br><span class="line">                server.close();</span><br><span class="line">                server = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.shengke.netty.bio.fake;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> qinshengke</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2016-06-02 22:03</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeServerHandlerExecutePool</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ExecutorService executorService;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TimeServerHandlerExecutePool</span><span class="params">(<span class="keyword">int</span> maxPoolSize, <span class="keyword">int</span> queueSize)</span> </span>&#123;</span><br><span class="line">        executorService = <span class="keyword">new</span> ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), maxPoolSize,</span><br><span class="line">                <span class="number">120L</span>, TimeUnit.SECONDS, <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;(queueSize));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        executorService.execute(task);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端代码没有什么变化，使用2.1.2章节中的 TimeClient。</p>
+<h3 id="2-2-3-伪异步通信模型的弊端"><a href="#2-2-3-伪异步通信模型的弊端" class="headerlink" title="2.2.3 伪异步通信模型的弊端"></a>2.2.3 伪异步通信模型的弊端</h3><p>首先我们看下InputStream的源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">InputStream</span> <span class="keyword">implements</span> <span class="title">Closeable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Reads some number of bytes from the input stream and stores them into</span></span><br><span class="line"><span class="comment">     * the buffer array &lt;code&gt;b&lt;/code&gt;. The number of bytes actually read is</span></span><br><span class="line"><span class="comment">     * returned as an integer.  This method blocks until input data is</span></span><br><span class="line"><span class="comment">     * available, end of file is detected, or an exception is thrown.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt; If the length of &lt;code&gt;b&lt;/code&gt; is zero, then no bytes are read and</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;0&lt;/code&gt; is returned; otherwise, there is an attempt to read at</span></span><br><span class="line"><span class="comment">     * least one byte. If no byte is available because the stream is at the</span></span><br><span class="line"><span class="comment">     * end of the file, the value &lt;code&gt;-1&lt;/code&gt; is returned; otherwise, at</span></span><br><span class="line"><span class="comment">     * least one byte is read and stored into &lt;code&gt;b&lt;/code&gt;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt; The first byte read is stored into element &lt;code&gt;b[0]&lt;/code&gt;, the</span></span><br><span class="line"><span class="comment">     * next one into &lt;code&gt;b[1]&lt;/code&gt;, and so on. The number of bytes read is,</span></span><br><span class="line"><span class="comment">     * at most, equal to the length of &lt;code&gt;b&lt;/code&gt;. Let &lt;i&gt;k&lt;/i&gt; be the</span></span><br><span class="line"><span class="comment">     * number of bytes actually read; these bytes will be stored in elements</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;b[0]&lt;/code&gt; through &lt;code&gt;b[&lt;/code&gt;&lt;i&gt;k&lt;/i&gt;&lt;code&gt;-1]&lt;/code&gt;,</span></span><br><span class="line"><span class="comment">     * leaving elements &lt;code&gt;b[&lt;/code&gt;&lt;i&gt;k&lt;/i&gt;&lt;code&gt;]&lt;/code&gt; through</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;b[b.length-1]&lt;/code&gt; unaffected.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt; The &lt;code&gt;read(b)&lt;/code&gt; method for class &lt;code&gt;InputStream&lt;/code&gt;</span></span><br><span class="line"><span class="comment">     * has the same effect as: &lt;pre&gt;&lt;code&gt; read(b, 0, b.length) &lt;/code&gt;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span>      b   the buffer into which the data is read.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>     the total number of bytes read into the buffer, or</span></span><br><span class="line"><span class="comment">     *             &lt;code&gt;-1&lt;/code&gt; if there is no more data because the end of</span></span><br><span class="line"><span class="comment">     *             the stream has been reached.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@exception</span>  IOException  If the first byte cannot be read for any reason</span></span><br><span class="line"><span class="comment">     * other than the end of the file, if the input stream has been closed, or</span></span><br><span class="line"><span class="comment">     * if some other I/O error occurs.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@exception</span>  NullPointerException  if &lt;code&gt;b&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span>        java.io.InputStream#read(byte[], int, int)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[])</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> read(b, <span class="number">0</span>, b.length);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>InputStream的API中有一段是这样描述<br><strong><em>This method blocks until input data is available, end of file is detected, or an exception is thrown</em></strong><br>当对socket的输入流进行读取的时候，它会一直阻塞下去，知道发生以下三件事：</p>
+<ul>
+<li>有数据可读</li>
+<li>可用数据已经读取完毕</li>
+<li>发生空指针或者IO异常</li>
+</ul>
+<p>这意味着当对方发送请求或者响应比较慢，或者网络延迟，读取输入流的一方的通信线程将会一直阻塞，在此期间，其他接入消息只能在任务队列中排队等待</p>
+<p>下面我们对输出流OutputStream进行分析</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">OutputStream</span> <span class="keyword">implements</span> <span class="title">Closeable</span>, <span class="title">Flushable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Writes &lt;code&gt;b.length&lt;/code&gt; bytes from the specified byte array</span></span><br><span class="line"><span class="comment">     * to this output stream. The general contract for &lt;code&gt;write(b)&lt;/code&gt;</span></span><br><span class="line"><span class="comment">     * is that it should have exactly the same effect as the call</span></span><br><span class="line"><span class="comment">     * &lt;code&gt;write(b, 0, b.length)&lt;/code&gt;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span>      b   the data.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@exception</span>  IOException  if an I/O error occurs.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span>        java.io.OutputStream#write(byte[], int, int)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">byte</span> b[])</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        write(b, <span class="number">0</span>, b.length);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当调用OutputStream的write方法写入输出流的时候，它将被阻塞，知道所有要发送的数据发送完毕，或发生异常。当数据的接收方数据处理能力低下时，将不能及时的从TCP缓冲区读取数据，这将会导致数据发送方的TCP windows size不断变小，直到为0，双方处于Keep-Alive状态，数据发送方将不能再向TCP缓冲区写入数据，这是如果采用同步阻塞IO，write操作将会被无限期阻塞，知道TCP windows size大于 0 或者发生异常为止。</p>
+<p>下面我们就简单分析下通信对方返回应答时间过长引起的级联故障：</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+        <a href="/2019/06/01/netty/netty权威指南学习（一）/" class="next-post btn btn-default" title="netty权威指南学习（一）">
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">netty权威指南学习（一）</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
+            appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
+            placeholder: '骚年，发出你的10万个为什么',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#第二章-NIO-入门"><span class="toc-text">第二章 NIO 入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1传统的BIO编程"><span class="toc-text">2.1传统的BIO编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-BIO通信模型"><span class="toc-text">2.1.1 BIO通信模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-同步阻塞式IO创建的TimeServer源码分析"><span class="toc-text">2.1.2 同步阻塞式IO创建的TimeServer源码分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-伪异步IO编程"><span class="toc-text">2.2  伪异步IO编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1伪异步IO模型"><span class="toc-text">2.2.1伪异步IO模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-3-伪异步通信模型的弊端"><span class="toc-text">2.2.3 伪异步通信模型的弊端</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+        访问量:
+        <strong id="busuanzi_value_site_pv">
+            <i class="fa fa-spinner fa-spin"></i>
+        </strong>
+        &nbsp; | &nbsp;
+        访客数:
+        <strong id="busuanzi_value_site_uv">
+            <i class="fa fa-spinner fa-spin"></i>
+        </strong>
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2017
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
