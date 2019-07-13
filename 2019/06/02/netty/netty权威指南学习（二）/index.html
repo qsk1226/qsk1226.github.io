@@ -118,7 +118,7 @@
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/java/"><i class="fa fa-book"></i>JAVA</a>
+                                <a href="/categories/java/"><i class="fa fa-book"></i>java</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
@@ -279,34 +279,34 @@
 <h4 id="（3）多路复用器Selector"><a href="#（3）多路复用器Selector" class="headerlink" title="（3）多路复用器Selector"></a>（3）多路复用器Selector</h4><p>我们探索下多路复用器Selector，它是Java NIO编程的基础，熟练地掌握Selector对NIO编程至关重要。多路复用器提供选择已经就绪的任务的能力。简单来说Selector会不断的轮询注册在其上的Channel，如果某个Chennel上面发生读或者写事件，这个Channel就处于就绪状态，会被Selector轮询出来，然后通过SelectionKey可以获取就绪Channel的集合，进行后续的IO操作。<br>一个多路复用器Selector可以轮询多个Channel，由于JKD使用epoll代替传统的select，所以它并没有最大句柄 1024/2048的限制。也就是一个Selector就可以负责成千上万的客户端。</p>
 <h3 id="2-3-2-NIO服务端通信序列图分析"><a href="#2-3-2-NIO服务端通信序列图分析" class="headerlink" title="2.3.2 NIO服务端通信序列图分析"></a>2.3.2 NIO服务端通信序列图分析</h3><p><img src="/2019/06/02/netty/netty权威指南学习（二）/NIO%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%80%9A%E4%BF%A1%E5%BA%8F%E5%88%97%E5%9B%BE.png" alt="NIO服务端通信序列图"></p>
 <p>下面，我们对NIO服务端的主要创建过程进行讲解和说明，作为NI的基础入门，这里忽略掉一些在生产环境部署所需的特性和功能。<br>步骤一： <strong>打开ServerSocketChannel</strong>，用于监听客户端的连接，它是所有客户端连接的父管道，伪代码如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerSocketChannel acceptor = ServerSocketChannel.open();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerSocketChannel acceptor = ServerSocketChannel.open();</span><br></pre></td></tr></table></figure>
 
 <p>步骤二： 绑定监听端口，设置连接为非阻塞模式，伪代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">acceptor.socket().bind(<span class="keyword">new</span> InetSocketAddress(InetAddress.getByName(<span class="string">"IP"</span>), port));</span><br><span class="line">acceptor.configureBlooking(<span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">acceptor.socket().bind(new InetSocketAddress(InetAddress.getByName(&quot;IP&quot;), port));</span><br><span class="line">acceptor.configureBlooking(false);</span><br></pre></td></tr></table></figure>
 
 <p>步骤三： 创建Reactor线程，创建多路复用器并启动线程，伪代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Selector selector = Selector.open();</span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> ReactorTask()).start();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Selector selector = Selector.open();</span><br><span class="line">new Thread(new ReactorTask()).start();</span><br></pre></td></tr></table></figure>
 
 <p>步骤四： 将ServerSocketChannel 注册到Reactor线程的多路复用器Selector上，监听ACCEPT事件，伪代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SelectionKey key = acceptor.register(selector, SelectionKey.OP_ACCEPT, ioHandler);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SelectionKey key = acceptor.register(selector, SelectionKey.OP_ACCEPT, ioHandler);</span><br></pre></td></tr></table></figure>
 
 <p>步骤五： 多路复用器在线程run方法的无限循环体内轮询准备就绪的Key，伪代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num = selector.select();</span><br><span class="line">Set selectedKeys = selector.selectedKeys();</span><br><span class="line">Iterator it = selectedKeys.iterator();</span><br><span class="line"><span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">    SelectionKey key = (SelectionKey) it.next();</span><br><span class="line">    <span class="comment">// do with IO event</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">int num = selector.select();</span><br><span class="line">Set selectedKeys = selector.selectedKeys();</span><br><span class="line">Iterator it = selectedKeys.iterator();</span><br><span class="line">while (it.hasNext()) &#123;</span><br><span class="line">    SelectionKey key = (SelectionKey) it.next();</span><br><span class="line">    // do with IO event</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>步骤六： 多路复用器监听到有新的客接入，处理新的接入请求，完成TCP三次握手，建立物理链路，伪代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SocketChannel channel = acceptor.accept();</span><br></pre></td></tr></table></figure>
 
 <p>步骤七： 设置客户端链路为非阻塞模式，伪代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">channel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">channel.socket().setReuseAddress(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">channel.configureBlocking(false);</span><br><span class="line">channel.socket().setReuseAddress(true);</span><br></pre></td></tr></table></figure>
 
 <p>步骤八： 将新接入的客户端连接注册到Reactor线程的多路复用器上，监听读操作，读取客户端发送的网络消息，伪代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SelectionKey key = socketChannel.register(selector, SelectionKey.OP_READ, ioOHandler);</span><br></pre></td></tr></table></figure>
 
 <p>步骤九： 异步读取客户端请求消息到缓冲区，伪代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> radNumber = channel.read(receivedBuffer);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int radNumber = channel.read(receivedBuffer);</span><br></pre></td></tr></table></figure>
 
 <p>步骤十： 对ByteBuffer进行编解码，如果有半包消息指针reset，继续读取后续的报文，将解码成功的消息封装成Task，投递到业务线程池中，进行业务逻辑的编排，伪代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Object message = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">while</span>(buffer.hasRemain()) &#123;</span><br><span class="line">    byteBuffer.mark();</span><br><span class="line">    message = decode(byteBuffer);</span><br><span class="line">    <span class="keyword">if</span> (message == <span class="keyword">null</span>) &#123;</span><br><span class="line">        byteBuffer.reset();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    messageList.add(message);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (!byteBuffer.hasRemain())</span><br><span class="line">    byteBuffer.clear()</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    byteBuffer.compact();</span><br><span class="line"><span class="keyword">if</span> (messageList !=<span class="keyword">null</span> &amp;&amp; messageList.size()&gt;<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span>(Object msg : messageList) &#123;</span><br><span class="line">        handlerTask(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Object message = null;</span><br><span class="line">while(buffer.hasRemain()) &#123;</span><br><span class="line">    byteBuffer.mark();</span><br><span class="line">    message = decode(byteBuffer);</span><br><span class="line">    if (message == null) &#123;</span><br><span class="line">        byteBuffer.reset();</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line">    messageList.add(message);</span><br><span class="line">&#125;</span><br><span class="line">if (!byteBuffer.hasRemain())</span><br><span class="line">    byteBuffer.clear()</span><br><span class="line">else</span><br><span class="line">    byteBuffer.compact();</span><br><span class="line">if (messageList !=null &amp;&amp; messageList.size()&gt;0) &#123;</span><br><span class="line">    for(Object msg : messageList) &#123;</span><br><span class="line">        handlerTask(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>步骤十一： 将POJO对象encode成Buffer，调用SocketChannel 的异步write接口，将消息异步发送给客户端，伪代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socketChannel.write(buffer);</span><br></pre></td></tr></table></figure>
@@ -328,9 +328,9 @@
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/2019/07/13/设计模式/责任链模式/" class="pre-post btn btn-default" title>
+        <a href="/2019/06/03/java/反射Type学习记录/" class="pre-post btn btn-default" title="反射Type详解">
             <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs"></span>
+            <span class="hidden-xs">反射Type详解</span>
         </a>
     
     
