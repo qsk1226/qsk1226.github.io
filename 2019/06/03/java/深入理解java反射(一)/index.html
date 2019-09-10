@@ -1,0 +1,366 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="大爷来玩儿啊">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.throne4j.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="反射（reflect）">
+
+
+    <meta name="description" content="#深入理解java反射机制反射(Reflection)是 Java 程序开发语言的特征之一，它允许运行中的 Java 程序获取自身的信息，并且可以操作类或对象的内部属性。
+首先 我们看下java...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>深入理解java反射(一) | 大爷来玩儿啊</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+		<script type="text/javascript">
+			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</div>
+
+
+
+
+
+
+    
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header" style="background-image:url(http://snippet.shenliyang.com/img/banner.jpg)">
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title="我跟人飙车来着">
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+        	<!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+                <h2> 只要干不死，就往死里干 </h2>
+            
+    	</div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.throne4j.com">大爷来玩儿啊</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa fa-home"></i>主页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/netty/"><i class="fa fa-book"></i>netty</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/java/"><i class="fa fa-book"></i>java</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/数据库/"><i class="fa fa-book"></i>数据库</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/spring/"><i class="fa fa-book"></i>spring</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/协议/"><i class="fa fa-book"></i>协议</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/设计模式/"><i class="fa fa-book"></i>设计模式</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/领域驱动/"><i class="fa fa-book"></i>领域驱动</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/redis/"><i class="fa fa-book"></i>redis</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/zookeeper/"><i class="fa fa-book"></i>zookepper</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/archives/"><i class="fa fa-archive"></i>时间机器</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/about/"><i class="fa "></i>来首诗</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="深入理解java反射(一)">
+            
+	            深入理解java反射(一)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/java/">java</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/反射（reflect）/">反射（reflect）</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/03</span>
+        </span>
+        
+            <span class="fa-wrap">
+                <i class="fa fa-eye"></i>
+                <span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <p>#深入理解java反射机制<br><code>反射(Reflection)是 Java 程序开发语言的特征之一，它允许运行中的 Java 程序获取自身的信息，并且可以操作类或对象的内部属性。</code></p>
+<p>首先 我们看下java.lang.reflect包下面几个主要类的关系图<br><img src="/2019/06/03/java/深入理解java反射(一)/java.lang.reflect%E5%8C%85%E4%B8%BB%E8%A6%81%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg" alt></p>
+<h2 id="AnnotatedElement"><a href="#AnnotatedElement" class="headerlink" title="AnnotatedElement"></a>AnnotatedElement</h2><p>该接口的实现类代表程序中可以接受注解的程序元素，这个接口提供了获取注解相关的功能，该接口主要有一下几个实现类：</p>
+<ul>
+<li>Class 类定义</li>
+<li>Constructor 构造器定义</li>
+<li>Field 属性成员定义</li>
+<li>Method 方法定义</li>
+<li>Package 包定义<br><img src="/2019/06/03/java/深入理解java反射(一)/%E6%B3%A8%E8%A7%A3%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9.jpg" alt></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AnnotatedElement</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">isAnnotationPresent</span><span class="params">(Class&lt;? extends Annotation&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; <span class="function">T <span class="title">getDeclaredAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getDeclaredAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    &lt;T extends Annotation&gt; <span class="function">T <span class="title">getAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    Annotation[] getAnnotations();</span><br><span class="line">    Annotation[] getDeclaredAnnotations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实现用户自定义注解"><a href="#实现用户自定义注解" class="headerlink" title="实现用户自定义注解"></a>实现用户自定义注解</h3><h4 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h4><h2 id="GenericDeclaration"><a href="#GenericDeclaration" class="headerlink" title="GenericDeclaration"></a>GenericDeclaration</h2><p>提供了获取泛型相关的功能，只有方法和构造方法上支持泛型，所以只有Method，Constructor实现了该接口</p>
+<h2 id="Member"><a href="#Member" class="headerlink" title="Member"></a>Member</h2><p>作为一个对象内部方法和属性的声明的抽象，包含了名称，修饰符，所在的类,其中修饰符包含了 static final public private volatile 等，通过一个整数表示，每一个类型在二进制中占一个位.</p>
+<h2 id="AccessibleObject"><a href="#AccessibleObject" class="headerlink" title="AccessibleObject"></a>AccessibleObject</h2><p>这是一个类，提供了权限管理的功能，例如是否允许在反射中在外部调用一个private方法，获取一个private属性的值，所以method，constructor,field都继承该类，下面这段代码展示了如何在反射中访问一个私有的成员变量，class对象的构造方法不允许对外。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void setAccessible0(AccessibleObject obj, boolean flag)</span><br><span class="line">    throws SecurityException</span><br><span class="line">&#123;</span><br><span class="line">    if (obj instanceof Constructor &amp;&amp; flag == true) &#123;</span><br><span class="line">        Constructor&lt;?&gt; c = (Constructor&lt;?&gt;)obj;</span><br><span class="line">        if (c.getDeclaringClass() == Class.class) &#123;</span><br><span class="line">            throw new SecurityException(&quot;Cannot make a java.lang.Class&quot; +</span><br><span class="line">                                        &quot; constructor accessible&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    obj.override = flag;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">boolean override;</span><br><span class="line"></span><br><span class="line">public boolean isAccessible() &#123;</span><br><span class="line">    return override;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以下为 Field里面通过field.get(原始对象)获取属性值得实现,先通过override做校验，如果没有重载该权限，则需要校验访问权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public Object get(Object obj)</span><br><span class="line">    throws IllegalArgumentException, IllegalAccessException</span><br><span class="line">&#123;</span><br><span class="line">    if (!override) &#123;</span><br><span class="line">        if (!Reflection.quickCheckMemberAccess(clazz, modifiers)) &#123;</span><br><span class="line">            Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">            checkAccess(caller, clazz, obj, modifiers);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return getFieldAccessor(obj).get(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/2019/08/29/java/动态代理模式/" class="pre-post btn btn-default" title>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs"></span>
+        </a>
+    
+    
+        <a href="/2019/06/03/java/反射Type学习记录/" class="next-post btn btn-default" title="反射Type详解">
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">反射Type详解</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
+            appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
+            placeholder: '骚年，发出你的10万个为什么',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotatedElement"><span class="toc-text">AnnotatedElement</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#实现用户自定义注解"><span class="toc-text">实现用户自定义注解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#元注解"><span class="toc-text">元注解</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericDeclaration"><span class="toc-text">GenericDeclaration</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Member"><span class="toc-text">Member</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AccessibleObject"><span class="toc-text">AccessibleObject</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+        访问量:
+        <strong id="busuanzi_value_site_pv">
+            <i class="fa fa-spinner fa-spin"></i>
+        </strong>
+        &nbsp; | &nbsp;
+        访客数:
+        <strong id="busuanzi_value_site_uv">
+            <i class="fa fa-spinner fa-spin"></i>
+        </strong>
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2017
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
