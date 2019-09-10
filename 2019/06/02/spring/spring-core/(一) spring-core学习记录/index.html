@@ -18,12 +18,18 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content>
+    <meta name="keywords" content="spring-core">
 
 
-    <meta name="description" content="动态代理动态代理为开发提供了一种动态
-jdk提供了一个工具类来动态生成一个代理，允许在执行某一个方法时进行额外的处理。
-12345678910111213141516Proxy.newProxy...">
+    <meta name="description" content="spring-core 学习记录org.springframework.util类作用记录
+AutoPopulatingList  
+
+对list的一个简单包装
+
+
+DigestUtils 
+
+...">
 
 
 
@@ -35,7 +41,7 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
     <!--Title-->
 
 
-<title>大爷来玩儿啊</title>
+<title>spring-core包阅读记录 | 大爷来玩儿啊</title>
 
 
     <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
@@ -168,16 +174,16 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
                     <p id="process"></p>
 <article class="post">
     <div class="post-head">
-        <h1 id>
+        <h1 id="spring-core包阅读记录">
             
-	            NO Title!
+	            spring-core包阅读记录
             
         </h1>
         <div class="post-meta">
     
         <span class="categories-meta fa-wrap">
             <i class="fa fa-folder-open-o"></i>
-            
+            <a class="category-link" href="/categories/spring/">spring</a>
         </span>
     
 
@@ -185,6 +191,8 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
         <span class="fa-wrap">
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/spring-core/">spring-core</a>
                 
             </span>
         </span>
@@ -194,7 +202,7 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
         
         <span class="fa-wrap">
             <i class="fa fa-clock-o"></i>
-            <span class="date-meta">2019/08/29</span>
+            <span class="date-meta">2019/06/02</span>
         </span>
         
             <span class="fa-wrap">
@@ -209,18 +217,180 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
     </div>
     
     <div class="post-body post-content">
-        <h1 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h1><p>动态代理为开发提供了一种动态</p>
-<p>jdk提供了一个工具类来动态生成一个代理，允许在执行某一个方法时进行额外的处理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Proxy.newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)</span><br><span class="line"></span><br><span class="line">class HWInvocationHandler implements InvocationHandler&#123;</span><br><span class="line">        //目标对象</span><br><span class="line">        private Object target;</span><br><span class="line">        public HWInvocationHandler(Object target)&#123;</span><br><span class="line">            this.target = target;</span><br><span class="line">        &#125;</span><br><span class="line">        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">            System.out.println(&quot;------插入前置通知代码-------------&quot;);</span><br><span class="line">            //执行相应的目标方法</span><br><span class="line">            Object rs = method.invoke(target,args);</span><br><span class="line">            System.out.println(&quot;------插入后置处理代码-------------&quot;);</span><br><span class="line">            return rs;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们分析下这个方法的实现，首先生成的代理对象，需要实现参数里面声明的所有接口。接口的实现应给委托给InvocationHandler进行处理，invocationHandler里面可以根据method声明判断是否需要做增强，所以所生成的代理类里面必须能够获取到InvocationHandler,在我们无法知道代理类的具体类型的时候，我们可以通过反射从构造方法里将InvocationHandler传给代理类的实例。<br>所以 总的来说生成代理对象需要两步</p>
-<ul>
-<li>获取代理类的class对象</li>
-<li>通过class对象获取构造方法，通过反射生成代理类的实例，并将InvocationHandler传人</li>
+        <h1 id="spring-core-学习记录"><a href="#spring-core-学习记录" class="headerlink" title="spring-core 学习记录"></a>spring-core 学习记录</h1><h2 id="org-springframework-util类作用记录"><a href="#org-springframework-util类作用记录" class="headerlink" title="org.springframework.util类作用记录"></a>org.springframework.util类作用记录</h2><ul>
+<li><p>AutoPopulatingList  </p>
+<blockquote>
+<p>对list的一个简单包装</p>
+</blockquote>
+</li>
+<li><p>DigestUtils </p>
+<blockquote>
+<p>计算摘要的各种方法工具</p>
+</blockquote>
+</li>
+<li><p>Base64Utils  </p>
+<blockquote>
+<p>一个用于Base64编码和解码的简单实用程序类</p>
+</blockquote>
+</li>
+<li><p>ErrorHandler(函数接口)  </p>
+<blockquote>
+<p>处理异常的策略接口</p>
+</blockquote>
+</li>
+<li><p>InstanceFilter </p>
+<blockquote>
+<p>一个简单的实例过滤器，它根据包含和排除元素的集合检查给定的实例是否匹配。</p>
+</blockquote>
+</li>
+<li><p>ClassUtils</p>
+</li>
+<li><p>ReflectionUtils</p>
+</li>
+<li><p>CollectionUtils</p>
+</li>
+<li><p>ConcurrentReferenceHashMap</p>
+</li>
+<li><p>CustomizableThreadCreator  </p>
+<blockquote>
+<p>用于创建新的{@link Thread}实例的简单可自定义助手类。提供各种bean属性:线程名称前缀、线程优先级等。</p>
+</blockquote>
+</li>
+<li><p>PropertiesPersister  </p>
+<blockquote>
+<p>用于持久化{@code java.util的策略接口。属性}，允许可插入的解析策略。 实现有 DefaultPropertiesPersister</p>
+</blockquote>
+</li>
+<li><p>FastByteArrayOutputStream</p>
+</li>
+<li><p>FileCopyUtils </p>
+<blockquote>
+<p>用于文件和流复制的简单实用程序方法</p>
+</blockquote>
+</li>
+<li><p>FileSystemUtils  </p>
+<blockquote>
+<p>处理文件系统的实用方法。</p>
+</blockquote>
+</li>
+<li><p>InstanceFilter  </p>
+<blockquote>
+<p>一个简单的实例过滤器，它根据包含和排除元素的集合检查给定的实例是否匹配。ExceptionTypeFilter</p>
+</blockquote>
+</li>
+<li><p>LinkedCaseInsensitiveMap</p>
+</li>
+<li><p>LinkedMultiValueMap</p>
+</li>
+<li><p>PatternMatchUtils  </p>
+<blockquote>
+<p>用于简单模式匹配的实用方法，特别是对于Spring的典型“xxx<em>”、“</em>xxx”和“<em>xxx</em>”模式样式。</p>
+</blockquote>
+</li>
+<li><p>PropertyPlaceholderHelper </p>
+<blockquote>
+<p>用于处理具有占位符值的字符串的实用程序类</p>
+</blockquote>
+</li>
+<li><p>SystemPropertyUtils </p>
+<blockquote>
+<p>用于解析文本中的占位符的Helper类。通常应用于文件路径。</p>
+</blockquote>
+</li>
+<li><p>MethodInvoker </p>
+<blockquote>
+<p>Helper类，它允许指定以声明方式调用的方法，无论是静态的还是非静态的。</p>
+</blockquote>
+</li>
+<li><p>NumberUtils</p>
+</li>
+<li><p>ObjectUtils </p>
+</li>
+<li><p>ResourceUtils </p>
+<blockquote>
+<p>可处理jar包内的路径资源</p>
+</blockquote>
+</li>
+<li><p>SerializationUtils</p>
+</li>
+<li><p>SocketUtils </p>
+<blockquote>
+<p>处理网络套接字的简单实用方法，例如：用于查找{@code localhost}上的可用端口。</p>
+</blockquote>
+</li>
+<li><p>StreamUtils </p>
+<blockquote>
+<p>处理流的实用程序</p>
+</blockquote>
+</li>
+<li><p>StringUtils </p>
+<blockquote>
+<p>字符串的实用方法</p>
+</blockquote>
+</li>
+<li><p>StringValueResolver(函数接口) </p>
+<blockquote>
+<p>用于解析字符串值的简单策略接口。</p>
+</blockquote>
+</li>
+<li><p>TypeUtils </p>
+<blockquote>
+<p>用于处理Java 5泛型类型参数的实用程序。</p>
+</blockquote>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">@CallerSensitive</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader,</span><br><span class="line">                                      Class&lt;?&gt;[] interfaces,</span><br><span class="line">                                      InvocationHandler h)</span><br><span class="line">    throws IllegalArgumentException</span><br><span class="line">&#123;</span><br><span class="line">    Objects.requireNonNull(h);</span><br><span class="line"></span><br><span class="line">    final Class&lt;?&gt;[] intfs = interfaces.clone();</span><br><span class="line"></span><br><span class="line">    /*</span><br><span class="line">     * Look up or generate the designated proxy class.</span><br><span class="line">     * 生成代理类</span><br><span class="line">     */</span><br><span class="line">    Class&lt;?&gt; cl = getProxyClass0(loader, intfs);</span><br><span class="line"></span><br><span class="line">    /*</span><br><span class="line">     * Invoke its constructor with the designated invocation handler.</span><br><span class="line">     */</span><br><span class="line">    try &#123;</span><br><span class="line"></span><br><span class="line">        //获取代理类的构造方法</span><br><span class="line">        final Constructor&lt;?&gt; cons = cl.getConstructor(constructorParams);</span><br><span class="line">        final InvocationHandler ih = h;</span><br><span class="line">        if (!Modifier.isPublic(cl.getModifiers())) &#123;</span><br><span class="line">            AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">                public Void run() &#123;</span><br><span class="line">                    cons.setAccessible(true);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        //获取代理类的实例,并且将invocationhandler传人</span><br><span class="line">        return cons.newInstance(new Object[]&#123;h&#125;);</span><br><span class="line">    &#125; catch (IllegalAccessException|InstantiationException e) &#123;</span><br><span class="line">       ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面我们在看下 getProxyClass0 如何获取代理类的class对象，这里idk通过WeakCache来缓存已经生成的class对象，因为生成该class通过字节码生成还是很耗时，同时为了解决之前由于动态代理生成太多class对象导致内存不足，所以这里通过弱引用WeakReference来缓存所生成的代理对象class，当发生GC的时候如果该class对象没有其他的强引用将会被直接回收。<br>生成代理类的class在ProxyGenerator的generateProxyClass方法内实现，该方法返回一个byte[]数组，最后通过一个本地方法加载到虚拟机，所以可以看出生成该对象还是非常耗时的。</p>
+<h2 id="org-springframework-util-concurrent包类说明"><a href="#org-springframework-util-concurrent包类说明" class="headerlink" title="org.springframework.util.concurrent包类说明"></a>org.springframework.util.concurrent包类说明</h2><ul>
+<li>ListenableFuture (接口)<blockquote>
+<p>扩展{@link Future}，使其能够接受完成回调。如果在添加回调时未来已完成，则立即触发回调。</p>
+</blockquote>
+</li>
+<li>CompletableToListenableFutureAdapter  <blockquote>
+<p>将{@link CompletableFuture}或{@link CompletionStage}调整为Spring {@link ListenableFuture}。</p>
+</blockquote>
+</li>
+<li>DelegatingCompletableFuture <blockquote>
+<p>扩展的{@link CompletableFuture}，允许取消委托 连同{@link CompletableFuture}本身。</p>
+</blockquote>
+</li>
+<li>FailureCallback (函数接口) <blockquote>
+<p>Failure callback for a {@link ListenableFuture}.</p>
+</blockquote>
+</li>
+<li>SuccessCallback(函数接口) <blockquote>
+<p>Success callback for a {@link ListenableFuture}.</p>
+</blockquote>
+</li>
+<li>FutureAdapter <blockquote>
+<p>一个抽象类，它将在S上参数化的{@link Future}调整为在T上参数化的{@code Future}。所有方法都委托给适配器，其中{@link #get()}和{@link #get(long, TimeUnit)}对适配器的结果调用{@link #adapt(Object)}。</p>
+</blockquote>
+</li>
+<li>ListenableFutureAdapter<blockquote>
+<p>extends FutureAdapter implements ListenableFuture</p>
+</blockquote>
+</li>
+<li>ListenableFutureCallback (接口)<blockquote>
+<p>结果(成功或失败)的回调机制，来自{@link ListenableFuture}。<br>  extends SuccessCallback， FailureCallback</p>
+</blockquote>
+</li>
+<li>ListenableFutureCallbackRegistry <blockquote>
+<p>用于维护成功和失败回调并帮助通知它们的{@link ListenableFuture}实现的Helper类。</p>
+</blockquote>
+</li>
+<li>ListenableFutureTask <blockquote>
+<p>实现{@link ListenableFuture}的{@link FutureTask}的扩展。<br>  ListenableFutureTask extends FutureTask<t> implements ListenableFuture<br>  其实现类有 SettableTask</t></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="org-springframework-core-包类解析"><a href="#org-springframework-core-包类解析" class="headerlink" title="org.springframework.core 包类解析"></a>org.springframework.core 包类解析</h2><ul>
+<li>AliasRegistry <blockquote>
+<p>用于管理别名的通用接口。作为超级接口</p>
+<ul>
+<li>SimpleAliasRegistry</li>
+<li>BeanDefinitionRegistry</li>
+</ul>
+</blockquote>
+</li>
+</ul>
 
     </div>
     
@@ -236,10 +406,15 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
 
 <div class="article-nav prev-next-wrap clearfix">
     
+        <a href="/2019/06/02/netty/netty权威指南学习（二）/" class="pre-post btn btn-default" title="netty权威指南学习（二）">
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">netty权威指南学习（二）</span>
+        </a>
     
-        <a href="/2019/06/03/java/深入理解java反射(一)/" class="next-post btn btn-default" title="深入理解java反射(一)">
+    
+        <a href="/2019/06/01/netty/netty权威指南学习（一）/" class="next-post btn btn-default" title="netty权威指南学习（一）">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">深入理解java反射(一)</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">netty权威指南学习（一）</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>
@@ -282,7 +457,7 @@ jdk提供了一个工具类来动态生成一个代理，允许在执行某一�
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#动态代理"><span class="toc-text">动态代理</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#spring-core-学习记录"><span class="toc-text">spring-core 学习记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#org-springframework-util类作用记录"><span class="toc-text">org.springframework.util类作用记录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#org-springframework-util-concurrent包类说明"><span class="toc-text">org.springframework.util.concurrent包类说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#org-springframework-core-包类解析"><span class="toc-text">org.springframework.core 包类解析</span></a></li></ol></li></ol>
         
     </div>
 </aside>
