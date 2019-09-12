@@ -212,7 +212,7 @@
         <h1 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h1><h2 id="桥接模式的定义"><a href="#桥接模式的定义" class="headerlink" title="桥接模式的定义"></a>桥接模式的定义</h2><p>桥接模式（Bridge Pattern），将抽象部分与它的实现部分分离，使它们都可以独立地变化。这种模式涉及到一个作为桥接的接口，使得实体类的功能独立于接口实现类。这两种类型的类可被结构化改变而互不影响。</p>
 <h2 id="模式结构"><a href="#模式结构" class="headerlink" title="模式结构"></a>模式结构</h2><p>桥接模式包含如下角色：</p>
 <p>Abstraction：抽象类 （Shape）<br>RefinedAbstraction：扩充抽象类(Circle)<br>Implementor：实现类接口 (DrawAPI)<br>ConcreteImplementor：具体实现类 (RedCircle、GreenCircle)</p>
-<h3 id="uml图解"><a href="#uml图解" class="headerlink" title="uml图解"></a>uml图解</h3><p><img src="/2018/07/01/设计模式/结构型模型/桥接模式/bridge_pattern_uml_diagram.jpg" alt></p>
+<h3 id="uml图解"><a href="#uml图解" class="headerlink" title="uml图解"></a>uml图解</h3><p><img src="/2018/07/01/设计模式/结构型模型/桥接模式/bridge_pattern_uml_diagram.jpg" alt="桥接模式"></p>
 <h2 id="桥接模式使用场景"><a href="#桥接模式使用场景" class="headerlink" title="桥接模式使用场景"></a>桥接模式使用场景</h2><ul>
 <li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，<br>避免在两个层次之间建立静态的继承联系，通过桥接模式可以使它们在抽象层建立一个关联关系。</li>
 <li>抽象化角色和实现化角色可以以继承的方式独立扩展而互不影响，在程序运行时可以动态将一个抽象化子类的对象和一个实现化子类的对象进行组合，即系统需要对抽象化角色和实现化角色进行动态耦合。</li>

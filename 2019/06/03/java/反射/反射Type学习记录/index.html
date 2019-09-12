@@ -21,7 +21,7 @@
     <meta name="keywords" content="反射（reflect）">
 
 
-    <meta name="description" content="java.lang.reflect.TypeType 来历来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。此时，所有的原始类型都通过...">
+    <meta name="description" content="Type 来历来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Cl...">
 
 
 
@@ -209,7 +209,7 @@
     </div>
     
     <div class="post-body post-content">
-        <h1 id="java-lang-reflect-Type"><a href="#java-lang-reflect-Type" class="headerlink" title="java.lang.reflect.Type"></a>java.lang.reflect.Type</h1><h2 id="Type-来历"><a href="#Type-来历" class="headerlink" title="Type 来历"></a>Type 来历</h2><p>来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。<br>此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Class 类的一个具体对象就代表一个指定的原始类型。</p>
+        <h2 id="Type-来历"><a href="#Type-来历" class="headerlink" title="Type 来历"></a>Type 来历</h2><p>来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。<br>此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Class 类的一个具体对象就代表一个指定的原始类型。</p>
 <p>泛型出现之后，也就扩充了数据类型。从只有原始类型扩充了参数化类型、类型变量类型、泛型数组类型，也就是 Type 的子接口。</p>
 <p>那为什么没有统一到 Class 下，而是增加一个 Type 呢？（Class 也是种类的意思，Type 是类型的意思）? </p>
 <p>是为了程序的扩展性，最终引入了 Type 接口作为 Class，ParameterizedType，GenericArrayType，TypeVariable 和 WildcardType 这几种类型的总的父接口。</p>
@@ -301,15 +301,15 @@
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/2019/06/03/java/集合/Collection集合大礼包/" class="pre-post btn btn-default" title="collection集合记录">
+        <a href="/2019/06/03/go/go语言配置说明/" class="pre-post btn btn-default" title="golang安装配置">
             <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs">collection集合记录</span>
+            <span class="hidden-xs">golang安装配置</span>
         </a>
     
     
-        <a href="/2019/06/02/netty/netty权威指南学习（二）/" class="next-post btn btn-default" title="netty权威指南学习（二）">
+        <a href="/2019/06/03/java/java中IO操作/深入理解java序列化/" class="next-post btn btn-default" title="深入理解java序列化">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">netty权威指南学习（二）</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">深入理解java序列化</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>
@@ -352,7 +352,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java-lang-reflect-Type"><span class="toc-text">java.lang.reflect.Type</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Type-来历"><span class="toc-text">Type 来历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type应用"><span class="toc-text">Type应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-类型分类"><span class="toc-text">Java 类型分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TypeVariable"><span class="toc-text">TypeVariable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParameterizedType"><span class="toc-text">ParameterizedType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericArrayType"><span class="toc-text">GenericArrayType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WildcardType"><span class="toc-text">WildcardType</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spring-core中-SerializableTypeWrapper"><span class="toc-text">spring-core中 SerializableTypeWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类Type-类型的包装类"><span class="toc-text">类Type 类型的包装类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段-Field-对象包装器"><span class="toc-text">字段 Field 对象包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法参数包装器"><span class="toc-text">方法参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回参数包装器"><span class="toc-text">返回参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#泛型代理类实现的接口"><span class="toc-text">泛型代理类实现的接口</span></a></li></ol></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Type-来历"><span class="toc-text">Type 来历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type应用"><span class="toc-text">Type应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-类型分类"><span class="toc-text">Java 类型分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TypeVariable"><span class="toc-text">TypeVariable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParameterizedType"><span class="toc-text">ParameterizedType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericArrayType"><span class="toc-text">GenericArrayType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WildcardType"><span class="toc-text">WildcardType</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spring-core中-SerializableTypeWrapper"><span class="toc-text">spring-core中 SerializableTypeWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类Type-类型的包装类"><span class="toc-text">类Type 类型的包装类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段-Field-对象包装器"><span class="toc-text">字段 Field 对象包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法参数包装器"><span class="toc-text">方法参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回参数包装器"><span class="toc-text">返回参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#泛型代理类实现的接口"><span class="toc-text">泛型代理类实现的接口</span></a></li></ol></li></ol>
         
     </div>
 </aside>
