@@ -211,14 +211,14 @@
     
     <div class="post-body post-content">
         <p>#深入理解java反射机制<br><code>反射(Reflection)是 Java 程序开发语言的特征之一，它允许运行中的 Java 程序获取自身的信息，并且可以操作类或对象的内部属性。</code></p>
-<p>首先 我们看下java.lang.reflect包下面几个主要类的关系图<br><img src="/2019/06/03/java/深入理解java反射(一)/java.lang.reflect%E5%8C%85%E4%B8%BB%E8%A6%81%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg" alt></p>
+<p>首先 我们看下java.lang.reflect包下面几个主要类的关系图<br><img src="/2019/06/03/java/反射/深入理解java反射(一)/java.lang.reflect%E5%8C%85%E4%B8%BB%E8%A6%81%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg" alt></p>
 <h2 id="AnnotatedElement"><a href="#AnnotatedElement" class="headerlink" title="AnnotatedElement"></a>AnnotatedElement</h2><p>该接口的实现类代表程序中可以接受注解的程序元素，这个接口提供了获取注解相关的功能，该接口主要有一下几个实现类：</p>
 <ul>
 <li>Class 类定义</li>
 <li>Constructor 构造器定义</li>
 <li>Field 属性成员定义</li>
 <li>Method 方法定义</li>
-<li>Package 包定义<br><img src="/2019/06/03/java/深入理解java反射(一)/%E6%B3%A8%E8%A7%A3%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9.jpg" alt></li>
+<li>Package 包定义<br><img src="/2019/06/03/java/反射/深入理解java反射(一)/%E6%B3%A8%E8%A7%A3%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9.jpg" alt></li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AnnotatedElement</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">isAnnotationPresent</span><span class="params">(Class&lt;? extends Annotation&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; <span class="function">T <span class="title">getDeclaredAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getDeclaredAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    &lt;T extends Annotation&gt; <span class="function">T <span class="title">getAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    Annotation[] getAnnotations();</span><br><span class="line">    Annotation[] getDeclaredAnnotations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -245,15 +245,10 @@
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/2019/06/03/java/反射Type学习记录/" class="pre-post btn btn-default" title="反射Type详解">
-            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs">反射Type详解</span>
-        </a>
     
-    
-        <a href="/2019/06/02/netty/netty权威指南学习（二）/" class="next-post btn btn-default" title="netty权威指南学习（二）">
+        <a href="/2019/06/03/java/集合/Collection集合大礼包/" class="next-post btn btn-default" title="collection集合记录">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">netty权威指南学习（二）</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">collection集合记录</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>
