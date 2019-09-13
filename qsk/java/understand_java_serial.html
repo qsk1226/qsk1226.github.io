@@ -118,7 +118,7 @@
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/数据库/"><i class="fa fa-book"></i>数据库</a>
+                                <a href="/categories/database/"><i class="fa fa-book"></i>数据库</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
@@ -126,15 +126,15 @@
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/协议/"><i class="fa fa-book"></i>协议</a>
+                                <a href="/categories/protocol/"><i class="fa fa-book"></i>协议</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/设计模式/"><i class="fa fa-book"></i>设计模式</a>
+                                <a href="/categories/design-pattern/"><i class="fa fa-book"></i>设计模式</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/领域驱动/"><i class="fa fa-book"></i>领域驱动</a>
+                                <a href="/categories/domain-driver/"><i class="fa fa-book"></i>领域驱动</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
@@ -223,7 +223,7 @@
 
 <p>序列化ID在Eclipse下提供了两种生成策略，一个是固定的1L，一个是随机生成一个不重复的long类型数据（实际上是使用JDK工具生成），在这里有一个建议，如果没有特殊需求，就是用默认的1L就可以，这样可以确保代码一致时反序列化成功。那么随机生成的序列化ID有什么作用呢，有些时候，通过改变序列化ID可以用来限制某些用户的使用。</p>
 <h3 id="特性使用案例"><a href="#特性使用案例" class="headerlink" title="特性使用案例"></a>特性使用案例</h3><p>　　读者应该听过Façade模式，它是为应用程序提供统一的访问接口，案例程序中的Client客户端使用了该模式，案例程序结构图如图1所示。</p>
-<p><img src="/java/java/IO/深入理解java序列化/%E5%9B%BE.png" alt="图1"></p>
+<p><img src="/qsk/java/understand_java_serial/%E5%9B%BE.png" alt="图1"></p>
 <p>　　Client端通过FaçadeObject才可以与业务逻辑对象进行交互。而客户端的FaçadeObject不能直接由Client生成，而是需要Server端生成，然后序列化后通过网络将二进制对象数据传给Client，Client负责反序列化得到Façade对象。该模式可以使得Client端程序的使用需要服务器端的许可,同时Client端和服务器端的FaçadeObject类需要保持一致。当服务器端想要进行版本更新时，只要将服务器端的FaçadeObject类的序列化ID再次生成，当Client端反序列化FaçadeObject就会失败，也就是强制Client端从服务器端获取最新程序。</p>
 <h2 id="静态变量序列化"><a href="#静态变量序列化" class="headerlink" title="静态变量序列化"></a>静态变量序列化</h2><ul>
 <li><strong>情境</strong>：查看清单 2 的代码。</li>
@@ -240,7 +240,7 @@
 </ul>
 <p>　　Transient关键字的作用是控制变量的序列化，在变量声明前加上该关键字，可以阻止该变量被序列化到文件中，在被反序列化后，transient变量的值被设为初始值，如int 型的是 0，对象型的是 null。</p>
 <h3 id="特性使用案例-1"><a href="#特性使用案例-1" class="headerlink" title="特性使用案例"></a>特性使用案例</h3><p>　　我们熟悉使用Transient关键字可以使得字段不被序列化，那么还有别的方法吗？根据父类对象序列化的规则，我们可以将不需要被序列化的字段抽取出来放到父类中，子类实现Serializable接口，父类不实现，根据父类序列化规则，父类的字段数据将不被序列化，形成类图如图 2 所示。</p>
-<p><img src="/java/java/IO/深入理解java序列化/%E6%A1%88%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%9B%BE.png" alt="案例程序图"></p>
+<p><img src="/qsk/java/understand_java_serial/%E6%A1%88%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%9B%BE.png" alt="案例程序图"></p>
 <p>　　上图中可以看出，attr1、attr2、attr3、attr5都不会被序列化，放在父类中的好处在于当有另外一个Child类时，attr1、attr2、attr3依然不会被序列化，不用重复抒写transient，代码简洁。</p>
 <h2 id="对敏感字段加密"><a href="#对敏感字段加密" class="headerlink" title="对敏感字段加密"></a>对敏感字段加密</h2><ul>
 <li><strong>情境</strong>：服务器端给客户端发送序列化对象数据，对象中有一些数据是敏感的，比如密码字符串等，希望对该密码字段在序列化时，进行加密，而客户端如果拥有解密的密钥，只有在客户端进行反序列化时，才可以对密码进行读取，这样可以一定程度保证序列化对象的数据安全。</li>
@@ -249,12 +249,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">private static final long serialVersionUID = 1L;</span><br><span class="line">private String password = &quot;pass&quot;;</span><br><span class="line">public String getPassword() &#123;</span><br><span class="line">    return password;</span><br><span class="line">&#125;</span><br><span class="line">public void setPassword(String password) &#123;</span><br><span class="line">    this.password = password;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void writeObject(ObjectOutputStream out) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        PutField putFields = out.putFields();</span><br><span class="line">        System.out.println(&quot;原密码:&quot; + password);</span><br><span class="line">        password = &quot;encryption&quot;;//模拟加密</span><br><span class="line">        putFields.put(&quot;password&quot;, password);</span><br><span class="line">        System.out.println(&quot;加密后的密码&quot; + password);</span><br><span class="line">        out.writeFields();</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void readObject(ObjectInputStream in) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        GetField readFields = in.readFields();</span><br><span class="line">        Object object = readFields.get(&quot;password&quot;, &quot;&quot;);</span><br><span class="line">        System.out.println(&quot;要解密的字符串:&quot; + object.toString());</span><br><span class="line">        password = &quot;pass&quot;;//模拟解密,需要获得本地的密钥</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        ObjectOutputStream out = new ObjectOutputStream(</span><br><span class="line">                new FileOutputStream(&quot;result.obj&quot;));</span><br><span class="line">        out.writeObject(new Test());</span><br><span class="line">        out.close();</span><br><span class="line"></span><br><span class="line">        ObjectInputStream oin = new ObjectInputStream(new FileInputStream(</span><br><span class="line">                &quot;result.obj&quot;));</span><br><span class="line">        Test t = (Test) oin.readObject();</span><br><span class="line">        System.out.println(&quot;解密后的字符串:&quot; + t.getPassword());</span><br><span class="line">        oin.close();</span><br><span class="line">    &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>在清单 3 的 writeObject 方法中，对密码进行了加密，在 readObject 中则对<br>password进行解密，只有拥有密钥的客户端，才可以正确的解析出密码，确保了数据的安全。执行清单<br>3后控制台输出如图 3 所示:</p>
-<p> <img src="/java/java/IO/深入理解java序列化/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"></p>
+<p> <img src="/qsk/java/understand_java_serial/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"></p>
 <h3 id="特性使用案例-2"><a href="#特性使用案例-2" class="headerlink" title="特性使用案例"></a>特性使用案例</h3><p>　　RMI 技术是完全基于 Java序列化技术的，服务器端接口调用所需要的参数对象来至于客户端，它们通过网络相互传输。这就涉及RMI的安全传输的问题。一些敏感的字段，如用户名密码（用户登录时需要对密码进行传输），我们希望对其进行加密，这时，就可以采用本节介绍的方法在客户端对密码进行加密，服务器端进行解密，确保数据传输的安全性。</p>
 <h3 id="序列化存储规则"><a href="#序列化存储规则" class="headerlink" title="序列化存储规则"></a>序列化存储规则</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ObjectOutputStream out = new ObjectOutputStream(</span><br><span class="line">                   new FileOutputStream(&quot;result.obj&quot;));</span><br><span class="line">   Test test = new Test();</span><br><span class="line">   //试图将对象两次写入文件</span><br><span class="line">   out.writeObject(test);</span><br><span class="line">   out.flush();</span><br><span class="line">   System.out.println(new File(&quot;result.obj&quot;).length());</span><br><span class="line">   out.writeObject(test);</span><br><span class="line">   out.close();</span><br><span class="line">   System.out.println(new File(&quot;result.obj&quot;).length());</span><br><span class="line"></span><br><span class="line">   ObjectInputStream oin = new ObjectInputStream(new FileInputStream(</span><br><span class="line">           &quot;result.obj&quot;));</span><br><span class="line">   //从文件依次读出两个文件</span><br><span class="line">   Test t1 = (Test) oin.readObject();</span><br><span class="line">   Test t2 = (Test) oin.readObject();</span><br><span class="line">   oin.close();</span><br><span class="line"></span><br><span class="line">   //判断两个引用是否指向同一个对象</span><br><span class="line">   System.out.println(t1 == t2);</span><br></pre></td></tr></table></figure>
 
 <p>　　清单 3中对同一对象两次写入文件，打印出写入一次对象后的存储大小和写入两次后的存储大小，然后从文件中反序列化出两个对象，比较这两个对象是否为同一对象。一般的思维是，两次写入对象，文件大小会变为两倍的大小，反序列化时，由于从文件读取，生成了两个对象，判断相等时应该是输入false 才对，但是最后结果输出如图 4 所示。</p>
-<p><img src="/java/java/IO/深入理解java序列化/image.png" alt="image"></p>
+<p><img src="/qsk/java/understand_java_serial/image.png" alt="image"></p>
 <p>　　我们看到，第二次写入对象时文件只增加了 5 字节，并且两个对象是相等的，这是为什么呢？</p>
 <ul>
 <li><strong>解答</strong>：Java序列化机制为了节省磁盘空间，具有特定的存储规则，当写入文件的为同一对象时，并不会再将对象的内容进行存储，而只是再次存储一份引用，上面增加的5 字节的存储空间就是新增引用和一些控制信息的空间。反序列化时，恢复引用关系，使得清单 3中的 t1 和 t2 指向唯一的对象，二者相等，输出 true。该存储规则极大的节省了存储空间。</li>
@@ -278,15 +278,15 @@
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/golang/go/go语言配置说明/" class="pre-post btn btn-default" title="golang安装配置">
+        <a href="/qsk/golang/golang_install_config.html" class="pre-post btn btn-default" title="golang安装配置">
             <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
             <span class="hidden-xs">golang安装配置</span>
         </a>
     
     
-        <a href="/java/java/反射/反射Type学习记录/" class="next-post btn btn-default" title="反射Type详解">
+        <a href="/qsk/java/understand_java_reflect.html" class="next-post btn btn-default" title="深入理解java反射(一)">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">反射Type详解</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">深入理解java反射(一)</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>

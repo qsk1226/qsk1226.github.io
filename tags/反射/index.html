@@ -18,10 +18,10 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content="golang">
+    <meta name="keywords" content>
 
 
-    <meta name="description" content="go语言在mac osx系统上安装go语言非常简单，直接在官网上下载mac os版的安装包一路next即可安装成功。另外可使用HomeBrew来实现go语言的安装，brew install go...">
+    <meta name="description" content="我有一个梦想--">
 
 
 
@@ -33,7 +33,7 @@
     <!--Title-->
 
 
-<title>golang安装配置 | 大爷来玩儿啊</title>
+<title>标签: 反射 | 大爷来玩儿啊</title>
 
 
     <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
@@ -118,7 +118,7 @@
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/数据库/"><i class="fa fa-book"></i>数据库</a>
+                                <a href="/categories/database/"><i class="fa fa-book"></i>数据库</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
@@ -126,15 +126,15 @@
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/协议/"><i class="fa fa-book"></i>协议</a>
+                                <a href="/categories/protocol/"><i class="fa fa-book"></i>协议</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/设计模式/"><i class="fa fa-book"></i>设计模式</a>
+                                <a href="/categories/design-pattern/"><i class="fa fa-book"></i>设计模式</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
-                                <a href="/categories/领域驱动/"><i class="fa fa-book"></i>领域驱动</a>
+                                <a href="/categories/domain-driver/"><i class="fa fa-book"></i>领域驱动</a>
                             </li>
                         
                             <li role="presentation" class="text-center">
@@ -162,121 +162,64 @@
     <section class="content-wrap">
         <div class="container">
             <div class="row">
-                <main class="col-md-8 main-content m-post">
-                    <p id="process"></p>
-<article class="post">
-    <div class="post-head">
-        <h1 id="golang安装配置">
-            
-	            golang安装配置
-            
-        </h1>
-        <div class="post-meta">
+                <main class="col-md-8 main-content ">
+                    <ol class="breadcrumb">
     
-        <span class="categories-meta fa-wrap">
-            <i class="fa fa-folder-open-o"></i>
-            <a class="category-link" href="/categories/golang/">golang</a>
-        </span>
+    
+        <li>
+            反射
+        </li>
+    
     
 
-    
-        <span class="fa-wrap">
-            <i class="fa fa-tags"></i>
-            <span class="tags-meta">
+</ol>
+
+
+    <article class="post">
+        
+        <div class="post-content">
+            <div class="post-head home-post-head">
+                <h1 class="post-title">
+                    <a href="/qsk/java/understand_java_reflect.html">深入理解java反射(一)</a>
+                </h1>
+                <div class="post-meta">  &bull;
+                    <time class="post-date" datetime title>
+                        2019年06月03日
+                    </time>
+                </div>
+            </div>
+            <p class="brief">
                 
-                    <a class="tag-link" href="/tags/golang/">golang</a>
+                    深入理解java反射机制反射(Reflection)是 Java程序开发语言的特征之一，它允许运行中的Java程序获取自身的信息，并且可以操作类或对象的内部属性。
+首先 我们看下java.lang.reflect包下面几个主要类的关系...
                 
-            </span>
-        </span>
-    
-
-    
-        
-        <span class="fa-wrap">
-            <i class="fa fa-clock-o"></i>
-            <span class="date-meta">2019/06/03</span>
-        </span>
-        
-            <span class="fa-wrap">
-                <i class="fa fa-eye"></i>
-                <span id="busuanzi_value_page_pv"></span>
-            </span>
-        
-    
-</div>
-            
-            
-    </div>
-    
-    <div class="post-body post-content">
-        <h1 id="go语言"><a href="#go语言" class="headerlink" title="go语言"></a>go语言</h1><p>在mac osx系统上安装go语言非常简单，直接在官网上下载mac os版的安装包一路next即可安装成功。<br>另外可使用HomeBrew来实现go语言的安装，brew install go</p>
-<h2 id="GOPATH"><a href="#GOPATH" class="headerlink" title="GOPATH"></a>GOPATH</h2><p>配置 GOPATH 设置go项目的工作目录，在go项目的工作目录中至少存在三个目录：</p>
-<ul>
-<li>src<blockquote>
-<p>用于以代码包的形式组织并保存go源文件，这里的代码包与src下的子目录一一对应。</p>
-</blockquote>
-</li>
-<li>pkg<blockquote>
-<p>编译后生成的文件（.a文件）。非main函数的文件在go install后生成。<br>  用于存放通过go install命令安装后的代码包的归档文件。前提是代码包中必须包含go库源码文件。</p>
-</blockquote>
-</li>
-<li>bin<blockquote>
-<p>存放编译后生成的可执行文件,通过go install命令完成安装后，保存由go命令源码文件生成的可执行文件。</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="GOBIN"><a href="#GOBIN" class="headerlink" title="GOBIN"></a>GOBIN</h2><p>GOBIN是 GOPATH 下的bin目录</p>
-<h2 id="GOROOT-go语言的安装路径"><a href="#GOROOT-go语言的安装路径" class="headerlink" title="GOROOT go语言的安装路径"></a>GOROOT go语言的安装路径</h2><h2 id="源码文件"><a href="#源码文件" class="headerlink" title="源码文件"></a>源码文件</h2><p>1) 命令源码文件<br>    &gt; 如果一个源码文件被声明属于main代码包，且该文件代码中包含无参数声明和结果声明的main函数，则他就是命令源码文件。命令源码文件可以直接通过go run 命令直接启动运行。<br>2) 库源码文件<br>    &gt;通常，库源码文件声明的包名 会 与它直接所属的代码包名一致，且库源码文件中不包含无参数声明和无结果声明的main函数<br>3) 测试源码文件<br>    &gt; 测试源码文件是一种特殊的库文件，可以通过执行 go test 命令运行当前代码包下的所有测试源码文件。</p>
-
-    </div>
-    
-    <div class="post-footer">
-        <div>
-            
+            </p>
         </div>
-        <div>
-            
-        </div>
-    </div>
-</article>
-
-<div class="article-nav prev-next-wrap clearfix">
-    
-    
-        <a href="/java/java/IO/深入理解java序列化/" class="next-post btn btn-default" title="深入理解java序列化">
-            <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">深入理解java序列化</span><i class="fa fa-angle-right fa-fw"></i>
-        </a>
-    
-</div>
-
-
-    <div id="comments">
+    </article>
+ 
+    <article class="post">
         
-	
-    <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-<script src="/assets/valine.min.js"></script>
-
-    <script>
-        new Valine({
-            av: AV,
-            el: '#vcomments',
-            appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
-            appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
-            placeholder: '骚年，发出你的10万个为什么',
-            notify: false,
-            verify: true,
-            avatar: 'mm',
-            meta: 'nick,mail'.split(','),
-            pageSize: '10',
-            path: window.location.pathname,
-            lang: 'zh-CN'.toLowerCase()
-        })
-    </script>
+        <div class="post-content">
+            <div class="post-head home-post-head">
+                <h1 class="post-title">
+                    <a href="/qsk/java/reflect_type_detail.html">反射Type详解</a>
+                </h1>
+                <div class="post-meta">  &bull;
+                    <time class="post-date" datetime title>
+                        2019年06月03日
+                    </time>
+                </div>
+            </div>
+            <p class="brief">
+                
+                    Type 来历来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Class 类的一个具体对象就代表一个指定的...
+                
+            </p>
+        </div>
+    </article>
+ 
 
 
-    </div>
 
 
 
@@ -284,14 +227,83 @@
 
                 </main>
                 
-                    <aside id="article-toc" role="navigation" class="col-md-4">
-    <div class="widget">
-        <h3 class="title">文章目录</h3>
+                    
+    <aside class="col-md-4 sidebar">
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#go语言"><span class="toc-text">go语言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#GOPATH"><span class="toc-text">GOPATH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOBIN"><span class="toc-text">GOBIN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOROOT-go语言的安装路径"><span class="toc-text">GOROOT go语言的安装路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码文件"><span class="toc-text">源码文件</span></a></li></ol></li></ol>
+        
+    <div class="widget">
+        <h3 class="title">搜索</h3>
+        <div id="search-form">
+            <div id="result-mask" class="hide"></div>
+            <div class="search-area">
+                
+                    <input id="search-key" type="search" autocomplete="off" placeholder="搜点什么呢？">
+                    <button type="button" class="search-form-submit" id="search-local">站内搜索</button>
+                
+                
+            </div>
+            <div id="result-wrap" class="hide">
+                <div id="search-result"></div>
+            </div>
+            <div class="hide">
+                <template id="search-tpl">
+                    <div class="item">
+                        <a href="/{path}" title="{title}">
+                            <div class="title">{title}</div>
+                            <div class="content">{content}</div>
+                        </a>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+        
+        
+        
+        
+    <div class="widget">
+        <h3 class="title">分类</h3>
+        <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/design-pattern/"><i class="fa" aria-hidden="true">design-pattern</i></a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/golang/"><i class="fa" aria-hidden="true">golang</i></a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/"><i class="fa" aria-hidden="true">java</i></a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/netty/"><i class="fa" aria-hidden="true">netty</i></a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/"><i class="fa" aria-hidden="true">spring</i></a><span class="category-list-count">1</span></li></ul>
+    </div>
+
+
+        
+        
+  <div class="widget">
+    <h3 class="title">标签云</h3>
+    <div class="content tag-cloud">
+        
+            <a href="/tags/golang/" style="font-size: 10px;">golang</a> <a href="/tags/netty/" style="font-size: 20px;">netty</a> <a href="/tags/spring-core/" style="font-size: 10px;">spring-core</a> <a href="/tags/反射/" style="font-size: 20px;">反射</a> <a href="/tags/序列化/" style="font-size: 10px;">序列化</a> <a href="/tags/结构型模式/" style="font-size: 10px;">结构型模式</a> <a href="/tags/集合/" style="font-size: 10px;">集合</a>
         
     </div>
-</aside>
+  </div>
+
+
+        
+        
+    <div class="widget">
+        <h3 class="title">归档</h3>
+        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/"><i class="fa" aria-hidden="true">2019年06月</i></a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/"><i class="fa" aria-hidden="true">2018年07月</i></a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/"><i class="fa" aria-hidden="true">2016年07月</i></a><span class="archive-list-count">1</span></li></ul>
+    </div>
+
+
+        
+        
+    <div class="widget">
+        <h3 class="title">友链</h3>
+        <div class="content friends-link">
+        
+            <a href="https://hexo.io/zh-cn/" class="fa" target="_blank">Hexo官网</a>
+        
+            <a href="https://www.ten951.com/" class="fa" target="_blank">天天</a>
+        
+        </div>
+    </div>
+
+
+        
+    </aside>
 
                 
             </div>
@@ -344,6 +356,8 @@
     </div>
 </div>
 
+
+	<script src="/js/search.js?rev=@@hash"></script>
 
 
 
