@@ -18,11 +18,10 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content="反射（reflect）">
+    <meta name="keywords" content="golang">
 
 
-    <meta name="description" content="深入理解java反射机制反射(Reflection)是 Java程序开发语言的特征之一，它允许运行中的Java程序获取自身的信息，并且可以操作类或对象的内部属性。
-首先 我们看下java.lan...">
+    <meta name="description" content="go语言在mac osx系统上安装go语言非常简单，直接在官网上下载mac os版的安装包一路next即可安装成功。另外可使用HomeBrew来实现go语言的安装，brew install go...">
 
 
 
@@ -34,7 +33,7 @@
     <!--Title-->
 
 
-<title>深入理解java反射(一) | 大爷来玩儿啊</title>
+<title>golang安装配置 | 大爷来玩儿啊</title>
 
 
     <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
@@ -167,16 +166,16 @@
                     <p id="process"></p>
 <article class="post">
     <div class="post-head">
-        <h1 id="深入理解java反射(一)">
+        <h1 id="golang安装配置">
             
-	            深入理解java反射(一)
+	            golang安装配置
             
         </h1>
         <div class="post-meta">
     
         <span class="categories-meta fa-wrap">
             <i class="fa fa-folder-open-o"></i>
-            <a class="category-link" href="/categories/java/">java</a>
+            <a class="category-link" href="/categories/golang/">golang</a>
         </span>
     
 
@@ -185,7 +184,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/反射（reflect）/">反射（reflect）</a>
+                    <a class="tag-link" href="/tags/golang/">golang</a>
                 
             </span>
         </span>
@@ -210,33 +209,24 @@
     </div>
     
     <div class="post-body post-content">
-        <h1 id="深入理解java反射机制"><a href="#深入理解java反射机制" class="headerlink" title="深入理解java反射机制"></a>深入理解java反射机制</h1><p>反射(Reflection)是 Java程序开发语言的特征之一，它允许运行中的<br>Java程序获取自身的信息，并且可以操作类或对象的内部属性。</p>
-<p>首先 我们看下java.lang.reflect包下面几个主要类的关系图</p>
-<p><img src="/java/反射/java.lang.reflect%E5%8C%85%E4%B8%BB%E8%A6%81%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg" alt></p>
-<h2 id="AnnotatedElement"><a href="#AnnotatedElement" class="headerlink" title="AnnotatedElement"></a>AnnotatedElement</h2><p>该接口的实现类代表程序中可以接受注解的程序元素，这个接口提供了获取注解相关的功能，该接口主要有一下几个实现类：</p>
+        <h1 id="go语言"><a href="#go语言" class="headerlink" title="go语言"></a>go语言</h1><p>在mac osx系统上安装go语言非常简单，直接在官网上下载mac os版的安装包一路next即可安装成功。<br>另外可使用HomeBrew来实现go语言的安装，brew install go</p>
+<h2 id="GOPATH"><a href="#GOPATH" class="headerlink" title="GOPATH"></a>GOPATH</h2><p>配置 GOPATH 设置go项目的工作目录，在go项目的工作目录中至少存在三个目录：</p>
 <ul>
-<li><p>Class 类定义</p>
+<li>src<blockquote>
+<p>用于以代码包的形式组织并保存go源文件，这里的代码包与src下的子目录一一对应。</p>
+</blockquote>
 </li>
-<li><p>Constructor 构造器定义</p>
+<li>pkg<blockquote>
+<p>编译后生成的文件（.a文件）。非main函数的文件在go install后生成。<br>  用于存放通过go install命令安装后的代码包的归档文件。前提是代码包中必须包含go库源码文件。</p>
+</blockquote>
 </li>
-<li><p>Field 属性成员定义</p>
-</li>
-<li><p>Method 方法定义</p>
-</li>
-<li><p>Package 包定义</p>
-<p><img src="/java/反射/%E6%B3%A8%E8%A7%A3%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9.jpg" alt></p>
+<li>bin<blockquote>
+<p>存放编译后生成的可执行文件,通过go install命令完成安装后，保存由go命令源码文件生成的可执行文件。</p>
+</blockquote>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AnnotatedElement</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">isAnnotationPresent</span><span class="params">(Class&lt;? extends Annotation&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; <span class="function">T <span class="title">getDeclaredAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    <span class="keyword">default</span> &lt;T extends Annotation&gt; T[] getDeclaredAnnotationsByType(Class&lt;T&gt; annotationClass);</span><br><span class="line">    &lt;T extends Annotation&gt; <span class="function">T <span class="title">getAnnotation</span><span class="params">(Class&lt;T&gt; annotationClass)</span></span>;</span><br><span class="line">    Annotation[] getAnnotations();</span><br><span class="line">    Annotation[] getDeclaredAnnotations();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="实现用户自定义注解"><a href="#实现用户自定义注解" class="headerlink" title="实现用户自定义注解"></a>实现用户自定义注解</h3><h4 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h4><h2 id="GenericDeclaration"><a href="#GenericDeclaration" class="headerlink" title="GenericDeclaration"></a>GenericDeclaration</h2><p>提供了获取泛型相关的功能，只有方法和构造方法上支持泛型，所以只有Method，Constructor实现了该接口</p>
-<h2 id="Member"><a href="#Member" class="headerlink" title="Member"></a>Member</h2><p>作为一个对象内部方法和属性的声明的抽象，包含了名称，修饰符，所在的类,其中修饰符包含了 static final public private volatile 等，通过一个整数表示，每一个类型在二进制中占一个位.</p>
-<h2 id="AccessibleObject"><a href="#AccessibleObject" class="headerlink" title="AccessibleObject"></a>AccessibleObject</h2><p>这是一个类，提供了权限管理的功能，例如是否允许在反射中在外部调用一个private方法，获取一个private属性的值，所以method，constructor,field都继承该类，下面这段代码展示了如何在反射中访问一个私有的成员变量，class对象的构造方法不允许对外。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void setAccessible0(AccessibleObject obj, boolean flag)</span><br><span class="line">    throws SecurityException</span><br><span class="line">&#123;</span><br><span class="line">    if (obj instanceof Constructor &amp;&amp; flag == true) &#123;</span><br><span class="line">        Constructor&lt;?&gt; c = (Constructor&lt;?&gt;)obj;</span><br><span class="line">        if (c.getDeclaringClass() == Class.class) &#123;</span><br><span class="line">            throw new SecurityException(&quot;Cannot make a java.lang.Class&quot; +</span><br><span class="line">                                        &quot; constructor accessible&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    obj.override = flag;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">boolean override;</span><br><span class="line"></span><br><span class="line">public boolean isAccessible() &#123;</span><br><span class="line">    return override;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>以下为 Field里面通过field.get(原始对象)获取属性值得实现,先通过override做校验，如果没有重载该权限，则需要校验访问权限</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public Object get(Object obj)</span><br><span class="line">    throws IllegalArgumentException, IllegalAccessException</span><br><span class="line">&#123;</span><br><span class="line">    if (!override) &#123;</span><br><span class="line">        if (!Reflection.quickCheckMemberAccess(clazz, modifiers)) &#123;</span><br><span class="line">            Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">            checkAccess(caller, clazz, obj, modifiers);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return getFieldAccessor(obj).get(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h2 id="GOBIN"><a href="#GOBIN" class="headerlink" title="GOBIN"></a>GOBIN</h2><p>GOBIN是 GOPATH 下的bin目录</p>
+<h2 id="GOROOT-go语言的安装路径"><a href="#GOROOT-go语言的安装路径" class="headerlink" title="GOROOT go语言的安装路径"></a>GOROOT go语言的安装路径</h2><h2 id="源码文件"><a href="#源码文件" class="headerlink" title="源码文件"></a>源码文件</h2><p>1) 命令源码文件<br>    &gt; 如果一个源码文件被声明属于main代码包，且该文件代码中包含无参数声明和结果声明的main函数，则他就是命令源码文件。命令源码文件可以直接通过go run 命令直接启动运行。<br>2) 库源码文件<br>    &gt;通常，库源码文件声明的包名 会 与它直接所属的代码包名一致，且库源码文件中不包含无参数声明和无结果声明的main函数<br>3) 测试源码文件<br>    &gt; 测试源码文件是一种特殊的库文件，可以通过执行 go test 命令运行当前代码包下的所有测试源码文件。</p>
 
     </div>
     
@@ -252,15 +242,10 @@
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/java/反射/反射Type学习记录.html" class="pre-post btn btn-default" title="反射Type详解">
-            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs">反射Type详解</span>
-        </a>
     
-    
-        <a href="/netty/netty权威指南学习（二）.html" class="next-post btn btn-default" title="netty权威指南学习（二）">
+        <a href="/java/java/反射/反射Type学习记录/" class="next-post btn btn-default" title="反射Type详解">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">netty权威指南学习（二）</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">反射Type详解</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>
@@ -303,7 +288,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#深入理解java反射机制"><span class="toc-text">深入理解java反射机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#AnnotatedElement"><span class="toc-text">AnnotatedElement</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#实现用户自定义注解"><span class="toc-text">实现用户自定义注解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#元注解"><span class="toc-text">元注解</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericDeclaration"><span class="toc-text">GenericDeclaration</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Member"><span class="toc-text">Member</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AccessibleObject"><span class="toc-text">AccessibleObject</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#go语言"><span class="toc-text">go语言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#GOPATH"><span class="toc-text">GOPATH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOBIN"><span class="toc-text">GOBIN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GOROOT-go语言的安装路径"><span class="toc-text">GOROOT go语言的安装路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码文件"><span class="toc-text">源码文件</span></a></li></ol></li></ol>
         
     </div>
 </aside>
