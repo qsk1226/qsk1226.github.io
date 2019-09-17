@@ -18,12 +18,22 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content>
+    <meta name="keywords" content="{{ page.keywords }}">
 
 
     <meta name="description" content="
-title: Queue详解comments: truedate: 2019-09-14 03:23:08categories: javatags: 集合urlname: queue
-keyw...">
+
+Collection集合
+
+List集合 继承Collection接口，集合有序、允许重复值、可插入null。
+
+Set集合 集合无序，不允许重复值，
+
+Queue队列
+
+
+
+Set 详解S...">
 
 
 
@@ -35,7 +45,7 @@ keyw...">
     <!--Title-->
 
 
-<title>大爷来玩儿啊</title>
+<title>Set详解 | 大爷来玩儿啊</title>
 
 
     <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
@@ -168,16 +178,16 @@ keyw...">
                     <p id="process"></p>
 <article class="post">
     <div class="post-head">
-        <h1 id>
+        <h1 id="Set详解">
             
-	            NO Title!
+	            Set详解
             
         </h1>
         <div class="post-meta">
     
         <span class="categories-meta fa-wrap">
             <i class="fa fa-folder-open-o"></i>
-            
+            <a class="category-link" href="/categories/java/">java</a>
         </span>
     
 
@@ -185,6 +195,8 @@ keyw...">
         <span class="fa-wrap">
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/集合/">集合</a>
                 
             </span>
         </span>
@@ -194,7 +206,7 @@ keyw...">
         
         <span class="fa-wrap">
             <i class="fa fa-clock-o"></i>
-            <span class="date-meta">2019/09/16</span>
+            <span class="date-meta">2019/09/14</span>
         </span>
         
             <span class="fa-wrap">
@@ -210,8 +222,6 @@ keyw...">
     
     <div class="post-body post-content">
         <hr>
-<p>title: Queue详解<br>comments: true<br>date: 2019-09-14 03:23:08<br>categories: java<br>tags: 集合<br>urlname: queue</p>
-<h2 id="keywords-queue-Deque"><a href="#keywords-queue-Deque" class="headerlink" title="keywords: queue;Deque"></a>keywords: queue;Deque</h2><hr>
 <ul>
 <li><p><a href="/qsk/java/collection_record.html">Collection集合</a></p>
 </li>
@@ -223,7 +233,12 @@ keyw...">
 </li>
 </ul>
 <hr>
-
+<h1 id="Set-详解"><a href="#Set-详解" class="headerlink" title="Set 详解"></a>Set 详解</h1><p>Set继承自Collection接口,其实现并没有对Collection接口进行任何扩展。</p>
+<ul>
+<li>Set集合中每个元素都是独一无二的，它不包含重复元素(e1.equals(e2)),可包含至多一个null元素。</li>
+<li>Set集合不保证元素的有序性。<h2 id="UML图解"><a href="#UML图解" class="headerlink" title="UML图解"></a>UML图解</h2><img src="/qsk/java/set/Set_uml.png" alt="Set_uml"></li>
+</ul>
+<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><h2 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h2>
     </div>
     
     <div class="post-footer">
@@ -238,15 +253,10 @@ keyw...">
 
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/qsk/uncategorized/undefined.html" class="pre-post btn btn-default" title>
-            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs"></span>
-        </a>
     
-    
-        <a href="/qsk/java/list.html" class="next-post btn btn-default" title="list详解">
+        <a href="/qsk/java/queue.html" class="next-post btn btn-default" title="Queue详解">
             <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">list详解</span><i class="fa fa-angle-right fa-fw"></i>
+            <span class="hidden-xs">Queue详解</span><i class="fa fa-angle-right fa-fw"></i>
         </a>
     
 </div>
@@ -289,7 +299,7 @@ keyw...">
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#keywords-queue-Deque"><span class="toc-text">keywords: queue;Deque</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Set-详解"><span class="toc-text">Set 详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#UML图解"><span class="toc-text">UML图解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashSet"><span class="toc-text">HashSet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TreeSet"><span class="toc-text">TreeSet</span></a></li></ol></li></ol>
         
     </div>
 </aside>

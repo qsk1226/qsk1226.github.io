@@ -231,26 +231,11 @@ Collectio...">
 </ul>
 <h1 id="Collection集合"><a href="#Collection集合" class="headerlink" title="Collection集合"></a>Collection集合</h1><p>集合表示了一组对象，而Collection是集合层次结构的根接口。一些集合可以存在重复的元素，而有些则不允许，一些是有序的，而又有一些是无序的。jdk并没有提供此接口的直接实现，并且又通过具体的子接口分别来定义不同的实现，例如List、Set接口来定义集合的实现。</p>
 <h2 id="collection快速预览"><a href="#collection快速预览" class="headerlink" title="collection快速预览"></a>collection快速预览</h2><p>我们看下Collection的UML<br><img src="/qsk/java/collection_record/Collection.png" alt="Collection"></p>
-<p>我们在看下Collection所定义的集合的基本行为</p>
-<ul>
-<li>size()  返回此集合中的元素数量。</li>
-<li>contains(Object o) 是否包含o元素</li>
-<li>toArray() 返回的数组将是“安全的”，因为这个集合不维护对它的引用。</li>
-<li><strong>add(E e)</strong> 确保此集合包含指定的元素。</li>
-<li>remove(Object o) 移除元素o</li>
-<li>clear() 清空所有元素</li>
-<li>isEmpty() 是否为空</li>
-<li>iterator() 迭代器</li>
-<li>containsAll(Collection&lt;?&gt; c)</li>
-<li>addAll(Collection&lt;? extends E&gt; c)</li>
-<li>removeAll(Collection&lt;?&gt; c)</li>
-<li>removeIf(Predicate&lt;? super E&gt; filter) 符合条件则删除</li>
-<li>retainAll(Collection&lt;?&gt; c) 仅保留此集合中包含在指定集合中的元素(可选操作)。</li>
-<li>stream()</li>
-</ul>
+<p>我们在看下Collection所定义的集合的基本行为<br><img src="/qsk/java/collection_record/Collection_xmind.png" alt="Collection_xmind"></p>
+<p>下面我們看下Collection接口中的默認實現：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Collection</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">Iterable</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">//省略其它方法</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Stream&lt;E&gt; <span class="title">stream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> StreamSupport.stream(spliterator(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Spliterator&lt;E&gt; <span class="title">spliterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Spliterators.spliterator(<span class="keyword">this</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id><a href="#" class="headerlink" title></a><a href="/qsk/java/list.html">List集合</a> 继承Collection接口，<strong><em>集合有序、允许重复值、可插入null</em></strong>。</h3><h3 id="-1"><a href="#-1" class="headerlink" title></a><a href="/qsk/java/set.html">Set集合</a> 集合无序，不允许重复值</h3><h3 id="-2"><a href="#-2" class="headerlink" title></a><a href="/qsk/java/queue.html">Queue队列</a></h3>
+
     </div>
     
     <div class="post-footer">
@@ -311,7 +296,7 @@ Collectio...">
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Collection集合"><span class="toc-text">Collection集合</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#collection快速预览"><span class="toc-text">collection快速预览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#"><span class="toc-text">List集合 继承Collection接口，集合有序、允许重复值、可插入null。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-1"><span class="toc-text">Set集合 集合无序，不允许重复值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-2"><span class="toc-text">Queue队列</span></a></li></ol></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Collection集合"><span class="toc-text">Collection集合</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#collection快速预览"><span class="toc-text">collection快速预览</span></a></li></ol></li></ol>
         
     </div>
 </aside>
