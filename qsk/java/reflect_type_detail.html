@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
+
 <head><meta name="generator" content="Hexo 3.8.0">
     <!--Setting-->
     <meta charset="UTF-8">
@@ -18,57 +19,49 @@
     <link rel="dns-prefetch" href="http://www.throne4j.com">
     <!--SEO-->
 
-    <meta name="keywords" content="反射">
+<meta name="keywords" content="反射">
 
 
-    <meta name="description" content="Type 来历来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Cl...">
-
+<meta name="description" content="Type 来历来历我们知道，Type 是 JDK5 开始引入的，其引入主要是为了泛型，没有泛型的之前， 只有所谓的原始类型。此时，所有的原始类型都通过字节码文件类 Class 类进行抽象。 Cl...">
 
 
 <meta name="robots" content="all">
 <meta name="google" content="all">
 <meta name="googlebot" content="all">
 <meta name="verify" content="all">
-
     <!--Title-->
 
+<title>
+    
+    反射Type详解 |
+    
+    大爷来玩儿啊
+</title>
 
-<title>反射Type详解 | 大爷来玩儿啊</title>
+<link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
 
 
-    <link rel="alternate" href="/atom.xml" title="大爷来玩儿啊" type="application/atom+xml">
-
-
-    <link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico">
 
     
-
-
 
 <link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
 <link rel="stylesheet" href="/css/style.css?rev=@@hash">
-
-
-
-
     
-	<div class="hide">
-		<script type="text/javascript">
-			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
-		</script>
-	</div>
-
-
+<div class="hide">
+    <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+</div>
 
 
 
 
     
 
-</head>
-
-</html>
+</head></html>
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -77,19 +70,21 @@
 <!--[if lte IE 9]>
 <div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
 <![endif]-->
-
 <body>
-    <header class="main-header" style="background-image:url(http://snippet.shenliyang.com/img/banner.jpg)">
+    <header class="main-header" style="background-image:url(
+    http://snippet.shenliyang.com/img/banner.jpg)">
     <div class="main-header-box">
         <a class="header-avatar" href="/" title="我跟人飙车来着">
             <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
         </a>
         <div class="branding">
-        	<!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
             
-                <h2> 只要干不死，就往死里干 </h2>
+            <h2>
+                只要干不死，就往死里干
+            </h2>
             
-    	</div>
+        </div>
     </div>
 </header>
     <nav class="main-navigation">
@@ -97,61 +92,74 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
-                    <span class="sr-only"></span>
+                        <span class="sr-only"></span>
                         <i class="fa fa-bars"></i>
                     </span>
-                    <a class="navbar-brand" href="http://www.throne4j.com">大爷来玩儿啊</a>
+                    <a class="navbar-brand" href="http://www.throne4j.com">
+                        大爷来玩儿啊</a>
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="menu">
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/"><i class="fa fa-home"></i>主页</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa fa-home"></i>
+                                Main</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/netty/"><i class="fa fa-book"></i>netty</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/netty/"><i class="fa fa-book"></i>
+                                Netty</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/java/"><i class="fa fa-book"></i>java</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/java/"><i class="fa fa-book"></i>
+                                Java</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/database/"><i class="fa fa-book"></i>数据库</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/database/"><i class="fa fa-book"></i>
+                                Database</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/spring/"><i class="fa fa-book"></i>spring</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/spring/"><i class="fa fa-book"></i>
+                                Spring</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/protocol/"><i class="fa fa-book"></i>协议</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/protocol/"><i class="fa fa-book"></i>
+                                Protocol</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/design-pattern/"><i class="fa fa-book"></i>设计模式</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/design-pattern/"><i class="fa fa-book"></i>
+                                DesignPattern</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/domain-driver/"><i class="fa fa-book"></i>领域驱动</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/domain-driver/"><i class="fa fa-book"></i>
+                                DomainDrive</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/redis/"><i class="fa fa-book"></i>redis</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/redis/"><i class="fa fa-book"></i>
+                                Redis</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/categories/zookeeper/"><i class="fa fa-book"></i>zookepper</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/zookeeper/"><i class="fa fa-book"></i>
+                                Zookepper</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/archives/"><i class="fa fa-archive"></i>时间机器</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa fa-archive"></i>
+                                TimeMachine</a>
+                        </li>
                         
-                            <li role="presentation" class="text-center">
-                                <a href="/about/"><i class="fa "></i>来首诗</a>
-                            </li>
+                        <li role="presentation" class="text-center">
+                            <a href="/about/"><i class="fa fa-archive"></i>
+                                Interestion</a>
+                        </li>
                         
                     </ul>
                 </div>
@@ -168,44 +176,43 @@
     <div class="post-head">
         <h1 id="反射Type详解">
             
-	            反射Type详解
+            反射Type详解
             
         </h1>
         <div class="post-meta">
     
-        <span class="categories-meta fa-wrap">
-            <i class="fa fa-folder-open-o"></i>
-            <a class="category-link" href="/categories/java/">java</a>
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/java/">java</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/反射/">反射</a>
+            
         </span>
+    </span>
     
-
     
-        <span class="fa-wrap">
-            <i class="fa fa-tags"></i>
-            <span class="tags-meta">
-                
-                    <a class="tag-link" href="/tags/反射/">反射</a>
-                
-            </span>
-        </span>
     
-
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2016/06/03</span>
+    </span>
     
-        
-        <span class="fa-wrap">
-            <i class="fa fa-clock-o"></i>
-            <span class="date-meta">2019/06/03</span>
-        </span>
-        
-            <span class="fa-wrap">
-                <i class="fa fa-eye"></i>
-                <span id="busuanzi_value_page_pv"></span>
-            </span>
-        
+    <span class="fa-wrap">
+        <i class="fa fa-eye"></i>
+        <span id="busuanzi_value_page_pv"></span>
+    </span>
+    
     
 </div>
-            
-            
+        
+        
     </div>
     
     <div class="post-body post-content">
@@ -298,65 +305,61 @@
         </div>
     </div>
 </article>
-
 <div class="article-nav prev-next-wrap clearfix">
     
-        <a href="/qsk/java/understand_java_reflect.html" class="pre-post btn btn-default" title="深入理解java反射(一)">
-            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
-            <span class="hidden-xs">深入理解java反射(一)</span>
-        </a>
+    <a href="/qsk/java/understand_java_reflect.html" class="pre-post btn btn-default" title="深入理解java反射(一)">
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            深入理解java反射(一)</span>
+    </a>
     
     
-        <a href="/qsk/java/understand_java_serial.html" class="next-post btn btn-default" title="深入理解java序列化">
-            <span class="hidden-lg">下一篇</span>
-            <span class="hidden-xs">深入理解java序列化</span><i class="fa fa-angle-right fa-fw"></i>
-        </a>
+    <a href="/qsk/java/Object.html" class="next-post btn btn-default" title="Object详解">
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            Object详解</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
     
 </div>
 
+<div id="comments">
+    
 
-    <div id="comments">
-        
-	
-    <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<div id="vcomments" class="valine"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
-
-    <script>
-        new Valine({
-            av: AV,
-            el: '#vcomments',
-            appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
-            appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
-            placeholder: '骚年，发出你的10万个为什么',
-            notify: false,
-            verify: true,
-            avatar: 'mm',
-            meta: 'nick,mail'.split(','),
-            pageSize: '10',
-            path: window.location.pathname,
-            lang: 'zh-CN'.toLowerCase()
-        })
-    </script>
-
-
-    </div>
+<script>
+new Valine({
+    av: AV,
+    el: '#vcomments',
+    appId: 'rs94TvqsO1CHWHQNk3Kx3jSg-gzGzoHsz',
+    appKey: 'OnRH4bvLKckbcSHTx8EleVkw',
+    placeholder: '骚年，发出你的10万个为什么',
+    notify: false,
+    verify: true,
+    avatar: 'mm',
+    meta: 'nick,mail'.split(','),
+    pageSize: '10',
+    path: window.location.pathname,
+    lang: 'zh-CN'.toLowerCase()
+})
+</script>
 
 
-
-
+</div>
 
                 </main>
                 
                     <aside id="article-toc" role="navigation" class="col-md-4">
     <div class="widget">
-        <h3 class="title">文章目录</h3>
+        <h3 class="title">
+            文章目录
+        </h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Type-来历"><span class="toc-text">Type 来历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type应用"><span class="toc-text">Type应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-类型分类"><span class="toc-text">Java 类型分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TypeVariable"><span class="toc-text">TypeVariable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParameterizedType"><span class="toc-text">ParameterizedType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericArrayType"><span class="toc-text">GenericArrayType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WildcardType"><span class="toc-text">WildcardType</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spring-core中-SerializableTypeWrapper"><span class="toc-text">spring-core中 SerializableTypeWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类Type-类型的包装类"><span class="toc-text">类Type 类型的包装类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段-Field-对象包装器"><span class="toc-text">字段 Field 对象包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法参数包装器"><span class="toc-text">方法参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回参数包装器"><span class="toc-text">返回参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#泛型代理类实现的接口"><span class="toc-text">泛型代理类实现的接口</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Type-来历"><span class="toc-text">Type 来历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type应用"><span class="toc-text">Type应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-类型分类"><span class="toc-text">Java 类型分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TypeVariable"><span class="toc-text">TypeVariable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParameterizedType"><span class="toc-text">ParameterizedType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericArrayType"><span class="toc-text">GenericArrayType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WildcardType"><span class="toc-text">WildcardType</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spring-core中-SerializableTypeWrapper"><span class="toc-text">spring-core中 SerializableTypeWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类Type-类型的包装类"><span class="toc-text">类Type 类型的包装类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段-Field-对象包装器"><span class="toc-text">字段 Field 对象包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法参数包装器"><span class="toc-text">方法参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回参数包装器"><span class="toc-text">返回参数包装器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#泛型代理类实现的接口"><span class="toc-text">泛型代理类实现的接口</span></a></li></ol></li></ol>
         
     </div>
 </aside>
-
                 
             </div>
         </div>
@@ -367,35 +370,30 @@
         </div>
     </div>
 </footer>
-
 <a id="back-to-top" class="icon-btn hide">
-	<i class="fa fa-chevron-up"></i>
+    <i class="fa fa-chevron-up"></i>
 </a>
-
-
-
-
     <div class="copyright">
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
                 <div class="busuanzi">
     
-        访问量:
-        <strong id="busuanzi_value_site_pv">
-            <i class="fa fa-spinner fa-spin"></i>
-        </strong>
-        &nbsp; | &nbsp;
-        访客数:
-        <strong id="busuanzi_value_site_uv">
-            <i class="fa fa-spinner fa-spin"></i>
-        </strong>
+    访问量:
+    <strong id="busuanzi_value_site_pv">
+        <i class="fa fa-spinner fa-spin"></i>
+    </strong>
+    &nbsp; | &nbsp;
+    访客数:
+    <strong id="busuanzi_value_site_uv">
+        <i class="fa fa-spinner fa-spin"></i>
+    </strong>
     
 </div>
-
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2017
+                <span>Copyright &copy;
+                    2017
                 </span> |
                 <span>
                     Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
@@ -410,13 +408,8 @@
 
 
 
-
-
-
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <script src="/js/app.js?rev=@@hash"></script>
-
 </body>
 </html>
