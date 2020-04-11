@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-11T17:27:09+08:00</updated>
+  <updated>2020-04-11T17:27:51+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -1321,8 +1321,6 @@ current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <
 <li><p>2、 remove(ThreadLocal&lt;?&gt; key)方法内部提供了针对ThreadLocal的擦除操作</p></li>
 </ul>
 
-<p>方式 1 的前提条件是当key为null的时候咱得去调用getEntry、set方法，单这并不是任何时候都会执行的操作，所以保险的做法就是手动调用ThreadLocal的remove函数，删除不再需要的ThreadLocal，防止内存泄露。</p>
-
 <p>如下代码所示：</p>
 
 <pre><code class="language-java">public class ThreadLocalContext {
@@ -1384,6 +1382,8 @@ public class ThreadOOM {
 <p>注释掉ThreadLocalContext.remove的部分gc信息：<br/>
 <img src="media/15864440934982/15865798232002.jpg" alt="" style="width:1570px;"/></p>
 
+<p><strong>方式1 的前提条件是当key为null的时候咱得去调用getEntry、set方法，单这并不是任何时候都会执行的操作，所以保险的做法就是手动调用ThreadLocal的remove函数，删除不再需要的ThreadLocal，防止内存泄露。</strong></p>
+
 <h3 id="toc_6">Hash冲突怎么解决</h3>
 
 <p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong></p>
@@ -1404,7 +1404,8 @@ private static int prevIndex(int i, int len) {
 
 <h2 id="toc_7">线程不安全问题</h2>
 
-<p>记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：<strong>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</strong></p>
+<p>记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：<strong>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</strong><br/>
+看如下代码：</p>
 
 <pre><code class="language-java">public class ThreadUnsafe {
 
@@ -1460,6 +1461,10 @@ pool-1-thread-1 线程局部变量表：1<br/>
 pool-1-thread-2 线程局部变量表：2<br/>
 pool-1-thread-1 线程局部变量表：1<br/>
 pool-1-thread-3 线程局部变量表：3</p>
+
+<hr/>
+
+<p><strong>综上所述 ThreadLocal使用完变量之后，千万要记着调用ThreadLocal的remove()完成擦除操作</strong></p>
 
 ]]></content>
   </entry>
