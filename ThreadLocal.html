@@ -1,0 +1,422 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  ThreadLocal源码分析以及使用 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+  <script src="asset/highlightjs/highlight.pack.js"></script>
+  <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+	$(function(){
+		var currentURL = 'ThreadLocal.html';
+		currentURL = currentURL.substr(0,currentURL.length-5);
+		$('#menu_item_'+currentURL).addClass('is_active');
+	});
+</script>
+<div class="row">
+
+    <div id="single-page-wrap">
+        <h1>ThreadLocal源码分析以及使用</h1>
+
+        <div class="markdown-body post-page">
+        <p>ThreadLocal该类提供线程局部变量，起到线程隔离的作用。</p>
+
+<h2 id="toc_0">ThreadLocal结构分析</h2>
+
+<ul>
+<li>首先我们看下ThreadLocal和Thread的它们之间的关系，如下图所示：</li>
+</ul>
+
+<p><img src="media/15864440934982/15865132297584.jpg" alt=""/></p>
+
+<p><strong>Thread类内部声明了一个ThreadLocal.ThreadLocalMap类型的变量 threadLocals</strong>，ThreadLocal类负责维护ThreadLocal与Thread 之间关系的 ThreadLocalMap散列映射。</p>
+
+<h2 id="toc_1">ThreadLocal的源码解析</h2>
+
+<p><img src="media/15864440934982/15865038471517.jpg" alt=""/></p>
+
+<p>我们一起来看下ThreadLocal 内部代码</p>
+
+<pre><code class="language-java">// 创建线程和ThreadLocal的关联映射
+void createMap(Thread t, T firstValue) {
+    t.threadLocals = new ThreadLocalMap(this, firstValue);
+}
+
+// 获取线程 t 的threadLocalMap
+ThreadLocalMap getMap(Thread t) {
+    return t.threadLocals;
+}
+
+// 设置当前线程的局部变量值
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+}
+
+//获取当前线程的局部变量值
+public T get() {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null) {
+        ThreadLocalMap.Entry e = map.getEntry(this);
+        if (e != null) {
+            T result = (T)e.value;
+            return result;
+        }
+    }
+    return setInitialValue();
+}
+
+// 设置初始值
+private T setInitialValue() {
+    T value = initialValue();
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+    return value;
+}
+
+// 移除此线程局部变量的当前线程值。
+public void remove() {
+    ThreadLocalMap m = getMap(Thread.currentThread());
+    if (m != null)
+        m.remove(this);
+}
+</code></pre>
+
+<h2 id="toc_2">ThreadLocalMap解析</h2>
+
+<h3 id="toc_3">ThreadLocalMap源码分析</h3>
+
+<p><img src="media/15864440934982/15865034564443.jpg" alt=""/></p>
+
+<pre><code class="language-java">
+private Entry getEntry(ThreadLocal&lt;?&gt; key) {
+    int i = key.threadLocalHashCode &amp; (table.length - 1);
+    Entry e = table[i];
+    if (e != null &amp;&amp; e.get() == key)
+        return e;
+    else
+        return getEntryAfterMiss(key, i, e);
+}
+
+private Entry getEntryAfterMiss(ThreadLocal&lt;?&gt; key, int i, Entry e) {
+    Entry[] tab = table;
+    int len = tab.length;
+
+    while (e != null) {
+        ThreadLocal&lt;?&gt; k = e.get();
+        if (k == key)
+            return e;
+        // k已经过时，被垃圾回收啦
+        if (k == null) 
+            // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
+            expungeStaleEntry(i);
+        else
+            i = nextIndex(i, len);
+        e = tab[i];
+    }
+    return null;
+}
+
+private void set(ThreadLocal&lt;?&gt; key, Object value) {
+    Entry[] tab = table;
+    int len = tab.length;
+    int i = key.threadLocalHashCode &amp; (len - 1);
+    
+    // 发生了hash碰撞问题，采用线性探测法，按照一定步长查找下一个位置，直到找到空余的位置存放value值为止,如果遇到过时的局部变量值，则将过时的value值替换为新的value值
+    for (Entry e = tab[i];  e != null;  e = tab[i = nextIndex(i, len)]) {
+        ThreadLocal&lt;?&gt; k = e.get();
+        if (k == key) {
+            e.value = value;
+            return;
+        }
+        // 遇到过时的线程局部变量
+        if (k == null) {
+            // 用指定键的项替换set操作期间遇到的过时项。
+            replaceStaleEntry(key, value, i);
+            return;
+        }
+    }
+
+    tab[i] = new Entry(key, value);
+    int sz = ++size;
+    // entry 条目个数大于表的扩容阈值的时候
+    if (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)
+        // 重新调整table的大小。首先扫描整个表，删除陈旧的条目。如果这还不足以缩小表的大小，则将表的大小加倍。
+        rehash();
+}
+
+
+private void remove(ThreadLocal&lt;?&gt; key) {
+    Entry[] tab = table;
+    int len = tab.length;
+    int i = key.threadLocalHashCode &amp; (len - 1);
+    for (Entry e = tab[i];  e != null;  e = tab[i = nextIndex(i, len)]) {
+        if (e.get() == key) {
+            e.clear(); // 清除ThreadLocal引用
+            // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
+            expungeStaleEntry(i);
+            return;
+        }
+    }
+}
+
+private void rehash() {
+    // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
+    expungeStaleEntries();
+
+    // 使用较低的阈值加倍，以避免扩容滞后
+    if (size &gt;= threshold - threshold / 4)
+        resize();
+}
+</code></pre>
+
+<h3 id="toc_4">ThreadLocal的引用关系</h3>
+
+<p>ThreadLocal的引用关系 如下图所示：</p>
+
+<p><img src="media/15864440934982/15865783936571.jpg" alt="" style="width:708px;"/></p>
+
+<h4 id="toc_5">内存泄漏问题及解决办法</h4>
+
+<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么下次gc的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链： <br/>
+current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <br/>
+永远无法回收，造成内存泄露。</p>
+
+<p>针对这种情况ThreadLocalMap提供了一些防护措施：</p>
+
+<ul>
+<li><p>1、 getEntry(ThreadLocal&lt;?&gt; key)、set(ThreadLocal&lt;?&gt; key, Object value)提供了针对key为null的entry的擦除操作expungeStaleEntry(i)</p></li>
+<li><p>2、 remove(ThreadLocal&lt;?&gt; key)方法内部提供了针对ThreadLocal的擦除操作</p></li>
+</ul>
+
+<p>方式 1 的前提条件是当key为null的时候咱得去调用getEntry、set方法，单这并不是任何时候都会执行的操作，所以保险的做法就是手动调用ThreadLocal的remove函数，删除不再需要的ThreadLocal，防止内存泄露。</p>
+
+<p>如下代码所示：</p>
+
+<pre><code class="language-java">public class ThreadLocalContext {
+
+    private static final ThreadLocal&lt;Object&gt; UNKNOWN_THREAD_LOCAL = new ThreadLocal&lt;&gt;();
+
+    public static Object get() {
+        return UNKNOWN_THREAD_LOCAL.get();
+    }
+
+    public static void set(Object value) {
+        UNKNOWN_THREAD_LOCAL.set(value);
+    }
+
+    public static void remove(){
+        UNKNOWN_THREAD_LOCAL.remove();
+    }
+}
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * ThreadLocal内存泄漏的风险演示
+ * -XX:+PrintGCDetails -Xmx50m
+ * @author goddess
+ * @since 2020/4/8 23:16
+ **/
+public class ThreadOOM {
+
+    static class UseData {
+        private byte[] element = new byte[1024 * 1024 * 10];// 10M
+    }
+
+    static class UseThreadOOM implements Runnable {
+        @Override
+        public void run() {
+            ThreadLocalContext.set(new UseData());
+            //ThreadLocalContext.remove();
+        }
+    }
+
+    public static void main(String[] args) {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        try {
+            for (int i = 0; i &lt; 3000; i++) {
+                executorService.execute(new UseThreadOOM());
+            }
+            System.out.println(&quot;pool execute over&quot;);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            executorService.shutdown();
+        }
+    }
+}
+</code></pre>
+
+<p>放开ThreadLocalContext.remove的gc信息<br/>
+<img src="media/15864440934982/15865803964880.jpg" alt="" style="width:1569px;"/></p>
+
+<p>注释掉ThreadLocalContext.remove的部分gc信息：<br/>
+<img src="media/15864440934982/15865798232002.jpg" alt="" style="width:1570px;"/></p>
+
+<h3 id="toc_6">Hash冲突怎么解决</h3>
+
+<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong>，如果有大量不同的ThreadLocal对象放入ThreadLocalMap中时发一次或多次hash冲突，就要多次执行线性探测法，则效率很低。</p>
+
+<p>ThreadLocalMap解决Hash冲突的方式就是简单的步长加1或减1，寻找下一个相邻的位置，如下代码：</p>
+
+<pre><code class="language-text">private static int nextIndex(int i, int len) {
+    return ((i + 1 &lt; len) ? i + 1 : 0);
+}
+private static int prevIndex(int i, int len) {
+    return ((i - 1 &gt;= 0) ? i - 1 : len - 1);
+}
+</code></pre>
+
+<h2 id="toc_7">注意事项：</h2>
+
+<ul>
+<li><p>警惕线程池使用ThreadLocal<br/>
+记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：</p>
+<ul>
+<li>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</li>
+<li>造成内存泄漏问题<br/>
+由于ThreadLocalMap的key是弱引用，而Value是强引用。这就导致了一个问题，ThreadLocal在没有外部对象强引用时，发生GC时弱引用Key会被回收，而Value并不会随着此GC被回收，之后通过get、set或者remove方法才会清除线程的value引用，但凡事没有绝对，如果线程任务执行完之后并没有继续执行get、set或者remove方法，如果创建ThreadLocal的线程一直持续运行，那么这个Entry对象中的value就有可能一直得不到回收，发生内存泄露
+<ul>
+<li><strong>建议：</strong> 线程使用完ThreadLocal之后执行ThreadLocal.remove()方法，以解除value的引用关系，使垃圾回收器可以回收这部分空间。</li>
+</ul></li>
+</ul></li>
+<li><p>警惕ThreadLocal存储全局变量</p></li>
+<li><p><strong>建议：</strong> 由于存在hash冲突问题，每个线程只存一个ThreadLocal变量，这样的话所有的线程存放到map中的Key都是相同的ThreadLocal，可以避免hash碰撞引起效率低下的问题。</p></li>
+</ul>
+
+        </div>
+    </div>
+</div>              
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+    
+
+
+
+  </body>
+</html>
