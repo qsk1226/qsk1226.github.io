@@ -4,13 +4,1137 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-11T14:28:04+08:00</updated>
+  <updated>2020-04-11T16:37:41+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[查看远程mysql 主机的 binlog 日志]]></title>
+    <link href="http://www.throne4j.com/15857296160676.html"/>
+    <updated>2020-04-01T16:26:56+08:00</updated>
+    <id>http://www.throne4j.com/15857296160676.html</id>
+    <content type="html"><![CDATA[
+<p>show master status;</p>
+
+<p>show binary logs;</p>
+
+<p>show binlog events in &#39;mysql-bin.000030&#39;;</p>
+
+<p>c查看<br/>
+show global variables like &quot;%binlog_format%&quot;;</p>
+
+<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[kubenetes 在 CentOS 7 上的安装]]></title>
+    <link href="http://www.throne4j.com/15856577150075.html"/>
+    <updated>2020-03-31T20:28:35+08:00</updated>
+    <id>http://www.throne4j.com/15856577150075.html</id>
+    <content type="html"><![CDATA[
+<p>swapoff -a 关闭<br/>
+getenforce 关闭<br/>
+vim /etc/sysconfig/selinux 关闭</p>
+
+<p>vim /proc/sys/net/ipv4/ip_forward   ---&gt;1  开启</p>
+
+<p>Docker <br/>
+kubeadm<br/>
+kubelet<br/>
+kubectl<br/>
+kube-flannel</p>
+
+<pre><code class="language-text">kubeadm join 172.16.65.134:6443 --token jw3hog.3eoi736vivuje486     --discovery-token-ca-cert-hash sha256:4ff0b56297567aa67ef7511927fa39c6af8654c6709b444182b839f1e0449149
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Docker.  swarm]]></title>
+    <link href="http://www.throne4j.com/15856442943422.html"/>
+    <updated>2020-03-31T16:44:54+08:00</updated>
+    <id>http://www.throne4j.com/15856442943422.html</id>
+    <content type="html"><![CDATA[
+<p>swarm: 一组 docker 引擎的集群<br/>
+node: 单个 docker 引擎的实例，可以在一个物理机上，也可以在多个物理机上<br/>
+application: 应用<br/>
+Manager Node : 部署应用的时候会有一个 manager node 节点<br/>
+Worker Nodes: <br/>
+Service: 一堆被 worker 执行的任务<br/>
+replicated services: 负载均衡节点<br/>
+global service： 在所有节点上都会执行的一个服务<br/>
+task： 一个 task 就是一台 docker 容器，是 swarm 的工作单元</p>
+
+<p>sodcker swarm init --advertise-addr   manager_ip</p>
+
+<p>/lib/systemd/system/docker.service</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[docker-compose]]></title>
+    <link href="http://www.throne4j.com/15856304975372.html"/>
+    <updated>2020-03-31T12:54:57+08:00</updated>
+    <id>http://www.throne4j.com/15856304975372.html</id>
+    <content type="html"><![CDATA[
+<pre><code class="language-text"> curl -L https://github.com/docker/compose/releases/download/1.17.1/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose
+</code></pre>
+
+<p>uname -m   ---&gt;  x86_64</p>
+
+<p><img src="media/15856304975372/15856400125972.jpg" alt="" style="width:657px;"/></p>
+
+<p>version: &#39;3&#39;：   表示使用第三代语法<br/>
+services:  表示 compose 需要启动的服务<br/>
+container_name: 容器名称<br/>
+environment:  容器环境变量<br/>
+ports:  对外开放的端口<br/>
+restart: always  如果服务启动不成功一直尝试。<br/>
+volumes:  加载本地目录到容器目标路径<br/>
+depends_on： 依赖服务，先启动 depends_on 服务<br/>
+command: mvn clean spring-boot:run :  表示以这个命令来启动项目</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Dockerfile]]></title>
+    <link href="http://www.throne4j.com/15855754851859.html"/>
+    <updated>2020-03-30T21:38:05+08:00</updated>
+    <id>http://www.throne4j.com/15855754851859.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">FROM 指定基础镜像</h2>
+
+<h2 id="toc_1">RUN</h2>
+
+<ul>
+<li><p>shell 格式：<br/>
+RUN &lt;命令行命令&gt;<br/>
+&lt;命令行命令&gt; 等同于，在终端操作的 shell 命令。</p></li>
+<li><p>exec 格式： RUN [&quot;可执行文件&quot;, &quot;参数1&quot;, &quot;参数2&quot;]<br/>
+例如： RUN [&quot;./test.php&quot;, &quot;dev&quot;, &quot;offline&quot;] 等价于 RUN ./test.php dev offline</p></li>
+</ul>
+
+<h2 id="toc_2">CMD 执行命令</h2>
+
+<p>类似于 RUN 指令，用于运行程序，但二者运行的时间点不同:</p>
+
+<ul>
+<li>CMD 在docker run 时运行。</li>
+<li>RUN 是在 docker build。<br/>
+作用：为启动的容器指定默认要运行的程序，程序运行结束，容器也就结束。CMD 指令指定的程序可被 docker run 命令行参数中指定要运行的程序所覆盖。</li>
+</ul>
+
+<p>注意：如果 Dockerfile 中如果存在多个 CMD 指令，仅最后一个生效。</p>
+
+<p>格式：</p>
+
+<pre><code class="language-text">CMD &lt;shell 命令&gt; 
+CMD [&quot;&lt;可执行文件或命令&gt;&quot;,&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...] 
+CMD [&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...]  # 该写法是为 ENTRYPOINT 指令指定的程序提供
+默认参数
+</code></pre>
+
+<p>推荐使用第二种格式，执行过程比较明确。第一种格式实际上在运行的过程中也会自动转换成第二种格式运行，并且默认可执行文件是 sh</p>
+
+<h2 id="toc_3">ADD 复制指定的文件到容器中（压缩包会自动解压）</h2>
+
+<h2 id="toc_4">COPY 复制</h2>
+
+<p>复制指令，同 ADD 从上下文目录中复制文件或者目录到容器里指定路径。<br/>
+格式：</p>
+
+<pre><code class="language-text">COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;
+COPY [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;源路径1&gt;&quot;,...  &quot;&lt;目标路径&gt;&quot;]
+</code></pre>
+
+<p>[--chown=<user>:<group>]：可选参数，用户改变复制到容器内文件的拥有者和属组。</p>
+
+<p>&lt;源路径&gt;：源文件或者源目录，这里可以是通配符表达式，其通配符规则要满足 Go 的 filepath.Match 规则。例如：</p>
+
+<pre><code class="language-text">COPY hom* /mydir/
+COPY hom?.txt /mydir/
+</code></pre>
+
+<h2 id="toc_5">WORKDIR 指定工作空间</h2>
+
+<p>指定工作目录。用 WORKDIR 指定的工作目录，会在构建镜像的每一层中都存在。（WORKDIR 指定的工作目录，必须是提前创建好的）。</p>
+
+<p>docker build 构建镜像过程中的，每一个 RUN 命令都是新建的一层。只有通过 WORKDIR 创建的目录才会一直存在。</p>
+
+<h2 id="toc_6">VOLUME 为容器创建一个本地主机或其他容器的挂载点</h2>
+
+<h2 id="toc_7">EXPOSE 容器需要暴露的端口</h2>
+
+<h2 id="toc_8">USER 指定运行容器时的用户名，后续的 RUN 也会指定该用户</h2>
+
+<h2 id="toc_9">ENTRYPOINT</h2>
+
+<p>类似于 CMD 指令，但其不会被 docker run 的命令行参数指定的指令所覆盖，而且这些命令行参数会被当作参数送给 ENTRYPOINT 指令指定的程序。</p>
+
+<p>但是, 如果运行 docker run 时使用了 --entrypoint 选项，此选项的参数可当作要运行的程序覆盖 ENTRYPOINT 指令指定的程序。</p>
+
+<p>优点：在执行 docker run 的时候可以指定 ENTRYPOINT 运行所需的参数。</p>
+
+<p>注意：如果 Dockerfile 中如果存在多个 ENTRYPOINT 指令，仅最后一个生效。</p>
+
+<p>格式：</p>
+
+<p>ENTRYPOINT [&quot;<executeable>&quot;,&quot;<param1>&quot;,&quot;<param2>&quot;,...]<br/>
+可以搭配 CMD 命令使用：一般是变参才会使用 CMD ，这里的 CMD 等于是在给 ENTRYPOINT 传参，以下示例会提到。</p>
+
+<p>示例：</p>
+
+<p>假设已通过 Dockerfile 构建了 nginx:test 镜像：</p>
+
+<p>FROM nginx</p>
+
+<p>ENTRYPOINT [&quot;nginx&quot;, &quot;-c&quot;] # 定参<br/>
+CMD [&quot;/etc/nginx/nginx.conf&quot;] # 变参 <br/>
+1、不传参运行</p>
+
+<p>$ docker run  nginx:test<br/>
+容器内会默认运行以下命令，启动主进程。</p>
+
+<p>nginx -c /etc/nginx/nginx.conf<br/>
+2、传参运行</p>
+
+<p>$ docker run  nginx:test -c /etc/nginx/new.conf<br/>
+容器内会默认运行以下命令，启动主进程(/etc/nginx/new.conf:假设容器内已有此文件)</p>
+
+<p>nginx -c /etc/nginx/new.conf</p>
+
+<h2 id="toc_10">ENV 环境变量</h2>
+
+<p>设置环境变量，定义了环境变量，那么在后续的指令中，就可以使用这个环境变量。</p>
+
+<p>格式：</p>
+
+<p>ENV <key> <value><br/>
+ENV <key1>=<value1> <key2>=<value2>...<br/>
+以下示例设置 NODE_VERSION = 7.2.0 ， 在后续的指令中可以通过 $NODE_VERSION 引用：</p>
+
+<p>ENV NODE_VERSION 7.2.0</p>
+
+<p>RUN curl -SLO &quot;<a href="https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz">https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz</a>&quot; \<br/>
+  &amp;&amp; curl -SLO &quot;<a href="https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc">https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc</a>&quot;</p>
+
+<h2 id="toc_11">MAINTAINER 维护者信息</h2>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[docker 命令]]></title>
+    <link href="http://www.throne4j.com/15855064473314.html"/>
+    <updated>2020-03-30T02:27:27+08:00</updated>
+    <id>http://www.throne4j.com/15855064473314.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">容器生命周期管理</h2>
+
+<ul>
+<li>run  创建一个新的容器并运行一个命令</li>
+</ul>
+
+<p>eg: docker run -d --name nginx -p 80:80 -v /docker/nginx:/etc/nginx/conf.d nginx:latest </p>
+
+<p>说明： 使用镜像nginx:latest以后台模式启动一个容器,将容器的80端口映射到主机的80端口,主机的目录/docker/nginx/conf.d 映射到容器的 /etc/nginx/conf.d</p>
+
+<p>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</p>
+
+<pre><code class="language-text">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；
+-d: 后台运行容器，并返回容器ID；
+-i: 以交互模式运行容器，通常与 -t 同时使用；
+-P: 随机端口映射，容器内部端口随机映射到主机的高端口
+-p: 指定端口映射，格式为：主机(宿主)端口:容器端口
+-t: 为容器重新分配一个伪输入终端，通常与 -i 同时使用；
+--name=&quot;nginx-lb&quot;: 为容器指定一个名称；
+--dns 8.8.8.8: 指定容器使用的DNS服务器，默认和宿主一致；
+--dns-search example.com: 指定容器DNS搜索域名，默认和宿主一致；
+-h &quot;mars&quot;: 指定容器的hostname；
+-e username=&quot;ritchie&quot;: 设置环境变量；
+--env-file=[]: 从指定文件读入环境变量；
+--cpuset=&quot;0-2&quot; or --cpuset=&quot;0,1,2&quot;: 绑定容器到指定CPU运行；
+-m :设置容器使用内存最大值；
+--net=&quot;bridge&quot;: 指定容器的网络连接类型，支持 bridge/host/none/container: 四种类型；
+--link=[]: 添加链接到另一个容器；
+--expose=[]: 开放一个端口或一组端口；
+--volume , -v: 绑定一个卷
+</code></pre>
+
+<p>注意： 关于容器的输出以及配置的文件一定要挂载到宿主机上<br/>
+配置文件<br/>
+日志文件<br/>
+业务数据</p>
+
+<p>数据卷容器：<br/>
+创建数据卷容器 data<br/>
+docker run -d --name data -v /home/godson/docker/nginx/conf.d:/etc/nginx/conf.d -v /home/godson/docker/mysql/conf:/etc/mysql hello-world</p>
+
+<p>创建容器挂载到 data 容器数据卷上 (volumes-from参数)<br/>
+docker run -d --name nginx -p 80:80 --volumes-from data nginx</p>
+
+<ul>
+<li>start/stop/restart</li>
+</ul>
+
+<pre><code class="language-text">start： 启动一个或多个已被停止的容器
+stop： 停止一个或多个运行中的容器
+restart: 重启一个或多个容器
+</code></pre>
+
+<ul>
+<li><p>kill 杀掉一个运行中的容器</p></li>
+<li><p>rm 删除一个或多个容器</p></li>
+</ul>
+
+<pre><code class="language-text">-f :通过SIGKILL信号强制删除一个运行中的容器
+-l :移除容器间的网络连接，而非容器本身
+-v :-v 删除与容器关联的卷
+</code></pre>
+
+<ul>
+<li><p>docker rm -fv 删除容器服务</p></li>
+<li><p>pause/unpause  暂停/恢复 容器中的所有进程</p></li>
+<li><p>create 创建一个新容器，但是不启动它<br/>
+语法同 run</p></li>
+<li><p>exec</p></li>
+</ul>
+
+<pre><code class="language-text">&gt; docker exec -it nginx /bin/bash
+-d :分离模式: 在后台运行
+-i :即使没有附加也保持STDIN 打开
+-t :分配一个伪终端
+</code></pre>
+
+<h2 id="toc_1">容器操作</h2>
+
+<ul>
+<li>ps  列出容器</li>
+</ul>
+
+<pre><code class="language-text">-a :显示所有的容器，包括未运行的。
+-f :根据条件过滤显示的内容。
+--format :指定返回值的模板文件。
+-l :显示最近创建的容器。
+-n :列出最近创建的n个容器。
+--no-trunc :不截断输出。
+-q :静默模式，只显示容器编号。
+-s :显示总的文件大小。
+</code></pre>
+
+<ul>
+<li>inspect 获取容器/镜像的元数据。<br/>
+docker inspect -f &#39;{{.NetworkSettings.IPAddress}}&#39; nginx</li>
+</ul>
+
+<pre><code class="language-text">-f :指定返回值的模板文件。
+-s :显示总的文件大小。
+--type :为指定类型返回JSON。
+</code></pre>
+
+<ul>
+<li>top</li>
+<li>attach</li>
+<li>events</li>
+<li>logs</li>
+</ul>
+
+<pre><code class="language-text">-f : 跟踪日志输出
+--since :显示某个开始时间的所有日志
+-t : 显示时间戳
+--tail :仅列出最新N条容器日志
+</code></pre>
+
+<ul>
+<li>wait</li>
+<li>export</li>
+<li>port  列出指定的容器的端口映射，或者查找将PRIVATE_PORT NAT到面向公众的端口。</li>
+</ul>
+
+<pre><code class="language-text">&gt; docker port nginx
+80/tcp -&gt; 0.0.0.0:8080
+</code></pre>
+
+<h2 id="toc_2">容器rootfs命令</h2>
+
+<ul>
+<li>commit  从容器创建一个新的镜像。<br/>
+docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]<br/>
+docker commit -a &quot;作者&quot; -m &quot;描述&quot; nginx  mynginx:v1</li>
+<li>cp<br/>
+容器和宿主机的文件传输 nginx:表示了容器目录<br/>
+docker cp nginx:/etc/nginx/conf.ddefault.conf ./</li>
+<li>diff</li>
+</ul>
+
+<h2 id="toc_3">镜像仓库</h2>
+
+<ul>
+<li>login</li>
+<li>pull</li>
+<li>push</li>
+<li>search</li>
+</ul>
+
+<h2 id="toc_4">本地镜像管理</h2>
+
+<ul>
+<li>images  列出本地镜像。</li>
+</ul>
+
+<pre><code class="language-text">-a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
+--digests :显示镜像的摘要信息；
+-f :显示满足条件的镜像；
+--format :指定返回值的模板文件；
+--no-trunc :显示完整的镜像信息；
+-q :只显示镜像ID。
+</code></pre>
+
+<ul>
+<li>rmi</li>
+<li>tag  标记本地镜像，将其归入某一仓库。</li>
+</ul>
+
+<pre><code class="language-text">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+
+将镜像ubuntu:15.10标记为 w3cschool/ubuntu:v3 镜像
+
+docker tag nginx w3cschool/ubuntu:v3
+</code></pre>
+
+<ul>
+<li>build   使用Dockerfile创建镜像。</li>
+</ul>
+
+<pre><code class="language-text">&gt; docker build -t w3cschool/ubuntu:v1 ./
+&gt; docker build -f /home/user/Dockerfile ./
+
+--build-arg=[] :设置镜像创建时的变量；
+--cpu-shares :设置 cpu 使用权重；
+--cpu-period :限制 CPU CFS周期；
+--cpu-quota :限制 CPU CFS配额；
+--cpuset-cpus :指定使用的CPU id；
+--cpuset-mems :指定使用的内存 id；
+--disable-content-trust :忽略校验，默认开启；
+-f :指定要使用的Dockerfile路径； -f /path/to/a/Dockerfile .
+--force-rm :设置镜像过程中删除中间容器；
+--isolation :使用容器隔离技术；
+--label=[] :设置镜像使用的元数据；
+-m :设置内存最大值；
+--memory-swap :设置Swap的最大值为内存+swap，&quot;-1&quot;表示不限swap；
+--no-cache :创建镜像的过程不使用缓存；
+--pull :尝试去更新镜像的新版本；
+-q :安静模式，成功后只输出镜像ID；
+--rm :设置镜像成功后删除中间容器；
+--shm-size :设置/dev/shm的大小，默认值是64M；
+--ulimit :Ulimit配置。
+--tag, -t: 镜像的名字及标签，通常 name:tag 或者 name 格式；可以在一次构建中为一个镜像设置多个标签。
+--network: 默认 default。在构建期间设置RUN指令的网络模式
+</code></pre>
+
+<p>history<br/>
+save<br/>
+import</p>
+
+<h2 id="toc_5">info|version</h2>
+
+<p>info<br/>
+version</p>
+
+<p>获取 selinux 是否关闭<br/>
+getenforce<br/>
+暂时关闭<br/>
+setenforce 1</p>
+
+<p>vi /etc/sysconfig/selinux</p>
+
+<p><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;"/></p>
+
+<p>SELINUX=disable</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[初见 Docker]]></title>
+    <link href="http://www.throne4j.com/15854879924872.html"/>
+    <updated>2020-03-29T21:19:52+08:00</updated>
+    <id>http://www.throne4j.com/15854879924872.html</id>
+    <content type="html"><![CDATA[
+<p>Docker官方网址: <a href="https://docs.docker.com/">https://docs.docker.com/</a> 英文地址<br/>
+Docker中文网址: <a href="http://www.docker.org.cn/">http://www.docker.org.cn/</a> 中文地址</p>
+
+<h2 id="toc_0">docker 架构</h2>
+
+<p>Images </p>
+
+<p>Container</p>
+
+<p>Client</p>
+
+<p>Host</p>
+
+<p>Registry</p>
+
+<p>Machine</p>
+
+<h2 id="toc_1">docker 组件</h2>
+
+<ol>
+<li><p>镜像 image<br/>
+Docker运行容器之前需要本地存在对应的镜像。镜像是用来创建Docker容器的。一个镜像可以包含一个完整的操作系统环境和用户需要的其他应用程序，在Docker Hub里面有大量现成的镜像提供下载，Docker的镜像是只读的，一个镜像可以创建多个容器。</p></li>
+<li><p>容器 Container<br/>
+Docker利用容器来进行开发，运行应用。容器是镜像创建的实列，它可以启动，开始，停止，删除，每个容器都是相互隔离的，保证安全的平台。</p></li>
+<li><p>仓库 Repository<br/>
+仓库是集中存放镜像文件的地方。每个仓库中又包含了多个镜像，每个镜像有不同的标签(TAG)</p></li>
+</ol>
+
+<h2 id="toc_2">docker 安装</h2>
+
+<p>1、删除 Linux 机器上已存在的 docker 程序</p>
+
+<pre><code class="language-text">&gt; sudo yum list installed | grep docker
+&gt; sudo yum  -y remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-selinux \
+                  docker-engine-selinux \
+                  docker-engine
+</code></pre>
+
+<p>删除 docker 老的镜像</p>
+
+<pre><code class="language-text">&gt; rm -rf /var/lib/docker
+</code></pre>
+
+<p>2、安装 docker 程序</p>
+
+<ul>
+<li>安装基本的系统工具<br/>
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2</li>
+<li><p>配置 yum 源<br/>
+yum-config-manager --add-repo <a href="http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</a></p></li>
+<li><p>查看可安装的 docker 版本<br/>
+yum list docker-ce --showduplicates | sort -r</p></li>
+<li><p>安装 docker</p></li>
+</ul>
+
+<pre><code class="language-text">sudo yum install docker-ce(最新版)
+
+sudo yum install -y containerd.io-1.2.13-3.1.el7 docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7(指定版本)
+</code></pre>
+
+<ul>
+<li><p>配置 docker 开机启动<br/>
+sudo systemctl start docker<br/>
+sudo systemctl enable docker</p></li>
+<li><p>验证安装是否成功(有client和service两部分表示docker安装启动都成功了)<br/>
+docker version</p></li>
+<li><p>更换 docker 镜像仓库为国内仓库<br/>
+修改或创建daemon.json文件：<br/>
+vim /etc/docker/daemon.json<br/>
+内容如下：<br/>
+{<br/>
+&quot;registry-mirrors&quot;:[&quot;<a href="https://registry.docker-cn.com%22">https://registry.docker-cn.com&quot;</a>]<br/>
+}</p></li>
+<li><p>加载 daemon.json 文件<br/>
+sudo systemctl daemon-reload</p></li>
+<li><p>重启 docker<br/>
+systemctl restart docker</p></li>
+<li><p>验证 docker 是否完成安装<br/>
+执行 sudo docker verxion,完成安装如下图所示<br/>
+<img src="media/15854879924872/15855354770652.jpg" alt="" style="width:484px;"/></p></li>
+</ul>
+
+<p>用非 root 账户安装完 docker 之后会,执行 docker 命令会遇到这样一个问题：</p>
+
+<pre><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+</code></pre>
+
+<p>原因： docker进程使用Unix Socket而不是TCP端口。而默认情况下，Unix socket属于root用户，需要root权限才能访问。</p>
+
+<p>解决方法：</p>
+
+<pre><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
+&gt; sudo gpasswd -a $USER docker     #将登陆用户加入到docker用户组中
+&gt; newgrp docker     #更新用户组
+&gt; docker ps    #测试docker命令是否可以使用sudo正常使用
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[细说Reactor模式]]></title>
+    <link href="http://www.throne4j.com/15586898110083.html"/>
+    <updated>2019-05-24T17:23:31+08:00</updated>
+    <id>http://www.throne4j.com/15586898110083.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">概念</h2>
+
+<p>reactor设计模式，是一种基于事件驱动的设计模式。Reactor框架是ACE各个框架中最基础的一个框架，其他框架都或多或少地用到了Reactor框架。 </p>
+
+<p>在事件驱动的应用中，将一个或多个客户的服务请求分离（demultiplex）和调度（dispatch）给应用程序。在事件驱动的应用中，同步地、有序地处理同时接收的多个服务请求。 </p>
+
+<p>reactor模式与外观模式有点像。不过，观察者模式与单个事件源关联，而反应器模式则与多个事件源关联 。当一个主体发生改变时，所有依属体都得到通知。</p>
+
+<h2 id="toc_1">优点</h2>
+
+<p>  1）响应快，不必为单个同步时间所阻塞，虽然Reactor本身依然是同步的； <br/>
+  2）编程相对简单，可以最大程度的避免复杂的多线程及同步问题，并且避免了多线程/进程的切换开销； <br/>
+  3）可扩展性，可以方便的通过增加Reactor实例个数来充分利用CPU资源； <br/>
+  4）可复用性，reactor框架本身与具体事件处理逻辑无关，具有很高的复用性；</p>
+
+<h2 id="toc_2">缺点</h2>
+
+<p> 1）相比传统的简单模型，Reactor增加了一定的复杂性，因而有一定的门槛，并且不易于调试。 <br/>
+ 2）Reactor模式需要底层的Synchronous Event Demultiplexer支持，比如Java中的Selector支持，操作系统的select系统调用支持，如果要自己实现Synchronous Event Demultiplexer可能不会有那么高效。 <br/>
+ 3） Reactor模式在IO读写数据时还是在同一个线程中实现的，即使使用多个Reactor机制的情况下，那些共享一个Reactor的Channel如果出现一个长时间的数据读写，会影响这个Reactor中其他Channel的相应时间，比如在大文件传输时，IO操作就会影响其他Client的相应时间，因而对这种操作，使用传统的Thread-Per-Connection或许是一个更好的选择，或则此时使用Proactor模式。<br/>
+ </p>
+
+<h2 id="toc_3">架构模式</h2>
+
+<h3 id="toc_4">1、架构图</h3>
+
+<p> <img src="media/15586898110083/15590230630201.jpg" alt="" style="width:556px;"/></p>
+
+<h3 id="toc_5">2、构成</h3>
+
+<p>Handles ：表示操作系统管理的资源，我们可以理解为fd。</p>
+
+<p>Synchronous Event Demultiplexer ：同步事件分离器，阻塞等待Handles中的事件发生。</p>
+
+<p>Initiation Dispatcher ：初始分派器，作用为添加Event handler（事件处理器）、删除Event handler以及分派事件给Event handler。也就是说，Synchronous Event Demultiplexer负责等待新事件发生，事件发生时通知Initiation Dispatcher，然后Initiation Dispatcher调用event handler处理事件。</p>
+
+<p>Event Handler ：事件处理器的接口<br/>
+Concrete Event Handler ：事件处理器的实际实现，而且绑定了一个Handle。因为在实际情况中，我们往往不止一种事件处理器，因此这里将事件处理器接口和实现分开，与C++、Java这些高级语言中的多态类似。</p>
+
+<h3 id="toc_6">3、模块交互</h3>
+
+<p> 1）我们注册Concrete Event Handler到Initiation Dispatcher中。 <br/>
+ 2）Initiation Dispatcher调用每个Event Handler的get_handle接口获取其绑定的Handle。 <br/>
+ 3）Initiation Dispatcher调用handle_events开始事件处理循环。在这里，Initiation Dispatcher会将步骤2获取的所有Handle都收集起来，使用Synchronous Event Demultiplexer来等待这些Handle的事件发生。 <br/>
+ 4）当某个（或某几个）Handle的事件发生时，Synchronous Event Demultiplexer通知Initiation Dispatcher。 <br/>
+ 5）Initiation Dispatcher根据发生事件的Handle找出所对应的Handler。 <br/>
+ 6）Initiation Dispatcher调用Handler的handle_event方法处理事件。</p>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.net.InetAddress;  
+import java.net.InetSocketAddress;  
+import java.nio.channels.SelectionKey;  
+import java.nio.channels.Selector;  
+import java.nio.channels.ServerSocketChannel;  
+import java.util.Iterator;  
+import java.util.Set;  
+
+/** 
+ * 反应器模式 
+ * 用于解决多用户访问并发问题 
+ *  
+ * 举个例子：餐厅服务问题 
+ *  
+ * 传统线程池做法：来一个客人(请求)去一个服务员(线程) 
+ * 反应器模式做法：当客人点菜的时候，服务员就可以去招呼其他客人了，等客人点好了菜，直接招呼一声“服务员” 
+ *  
+ * @author linxcool 
+ */  
+public class Reactor implements Runnable{  
+    public final Selector selector;  
+    public final ServerSocketChannel serverSocketChannel;  
+
+    public Reactor(int port) throws IOException{  
+        selector=Selector.open();  
+        serverSocketChannel=ServerSocketChannel.open();  
+        InetSocketAddress inetSocketAddress=new InetSocketAddress(InetAddress.getLocalHost(),port);  
+        serverSocketChannel.socket().bind(inetSocketAddress);  
+        serverSocketChannel.configureBlocking(false);  
+
+        //向selector注册该channel    
+        SelectionKey selectionKey=serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);  
+
+        //利用selectionKey的attache功能绑定Acceptor 如果有事情，触发Acceptor   
+        selectionKey.attach(new Acceptor(this));  
+    }  
+
+    @Override  
+    public void run() {  
+        try {  
+            while(!Thread.interrupted()){  
+                selector.select();  
+                Set&lt;SelectionKey&gt; selectionKeys= selector.selectedKeys();  
+                Iterator&lt;SelectionKey&gt; it=selectionKeys.iterator();  
+                //Selector如果发现channel有OP_ACCEPT或READ事件发生，下列遍历就会进行。  
+                while(it.hasNext()){  
+                    //来一个事件 第一次触发一个accepter线程    
+                    //以后触发SocketReadHandler  
+                    SelectionKey selectionKey=it.next();  
+                    dispatch(selectionKey);  
+                    selectionKeys.clear();  
+                }  
+            }  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+
+    /** 
+     * 运行Acceptor或SocketReadHandler 
+     * @param key 
+     */  
+    void dispatch(SelectionKey key) {  
+        Runnable r = (Runnable)(key.attachment());    
+        if (r != null){    
+            r.run();  
+        }    
+    }    
+
+} 
+</code></pre>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.nio.channels.SocketChannel;  
+
+public class Acceptor implements Runnable{  
+    private Reactor reactor;  
+    public Acceptor(Reactor reactor){  
+        this.reactor=reactor;  
+    }  
+    @Override  
+    public void run() {  
+        try {  
+            SocketChannel socketChannel=reactor.serverSocketChannel.accept();  
+            if(socketChannel!=null)//调用Handler来处理channel  
+                new SocketReadHandler(reactor.selector, socketChannel);  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+} 
+</code></pre>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.nio.ByteBuffer;  
+import java.nio.channels.SelectionKey;  
+import java.nio.channels.Selector;  
+import java.nio.channels.SocketChannel;  
+
+public class SocketReadHandler implements Runnable{  
+    private SocketChannel socketChannel;  
+    public SocketReadHandler(Selector selector,SocketChannel socketChannel) throws IOException{  
+        this.socketChannel=socketChannel;  
+        socketChannel.configureBlocking(false);  
+
+        SelectionKey selectionKey=socketChannel.register(selector, 0);  
+
+        //将SelectionKey绑定为本Handler 下一步有事件触发时，将调用本类的run方法。    
+        //参看dispatch(SelectionKey key)    
+        selectionKey.attach(this);  
+
+        //同时将SelectionKey标记为可读，以便读取。    
+        selectionKey.interestOps(SelectionKey.OP_READ);    
+        selector.wakeup();  
+    }  
+
+    /** 
+     * 处理读取数据 
+     */  
+    @Override  
+    public void run() {  
+        ByteBuffer inputBuffer=ByteBuffer.allocate(1024);  
+        inputBuffer.clear();  
+        try {  
+            socketChannel.read(inputBuffer);  
+            //激活线程池 处理这些request  
+            //requestHandle(new Request(socket,btt));   
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+}
+</code></pre>
+
+<h2 id="toc_7">总结</h2>
+
+<p>reactor模式是javaNIO非堵塞技术的实现原理，我们不仅要知道其原理流程，还要知道其代码实现，当然这个reactor模式不仅仅在NIO中实现，而且在redies等其他地方也出现过，说明这个模式还是比较实用的，尤其是在多线程高并发的情况下使用。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[熔断模式]]></title>
+    <link href="http://www.throne4j.com/15586676190905.html"/>
+    <updated>2019-05-24T11:13:39+08:00</updated>
+    <id>http://www.throne4j.com/15586676190905.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">一 问题的产生</h2>
+
+<p>在大型的分布式系统中，通常需要调用或操作远程的服务或者资源，这些远程的服务或者资源由于调用者不可以控的原因比如网络连接缓慢，资源被占用或者暂时不可用等原因，导致对这些远程资源的调用失败。这些错误通常在稍后的一段时间内可以恢复正常。</p>
+
+<p>但是，在某些情况下，由于一些无法预知的原因导致结果很难预料，远程的方法或者资源可能需要很长的一段时间才能修复。这种错误严重到系统的部分失去响应甚至导致整个服务的完全不可用。在这种情况下，采用不断地重试可能解决不了问题，相反，应用程序在这个时候应该立即返回并且报告错误。</p>
+
+<p>通常，如果一个服务器非常繁忙，那么系统中的部分失败可能会导致 “连锁失效”（cascading failure）。比如，某个操作可能会调用一个远程的WebService，这个service会设置一个超时的时间，如果响应时间超过了该时间就会抛出一个异常。但是这种策略会导致并发的请求调用同样的操作会阻塞，一直等到超时时间的到期。这种对请求的阻塞可能会占用宝贵的系统资源，如内存，线程，数据库连接等等，最后这些资源就会消耗殆尽，使得其他系统不相关的部分所使用的资源也耗尽从而拖累整个系统。在这种情况下，操作立即返回错误而不是等待超时的发生可能是一种更好的选择。只有当调用服务有可能成功时我们再去尝试。</p>
+
+<h2 id="toc_1">解决之道</h2>
+
+<p>熔断器模式可以防止应用程序不断地尝试执行可能会失败的操作，使得应用程序继续执行而不用等待修正错误，或者浪费CPU时间去等到长时间的超时产生。熔断器模式也可以使应用程序能够诊断错误是否已经修正，如果已经修正，应用程序会再次尝试调用操作。</p>
+
+<p>熔断器模式就像是那些容易导致错误的操作的一种代理。这种代理能够记录最近调用发生错误的次数，然后决定使用允许操作继续，或者立即返回错误。<br/>
+<img src="media/15586676190905/15586775537030.jpg" alt=""/><br/>
+熔断器可以使用状态机来实现，内部模拟以下几种状态。</p>
+
+<ul>
+<li>闭合（closed）状态： 对应用程序的请求能够直接引起方法的调用。代理类维护了最近调用失败的次数，如果某次调用失败，则使失败次数加1。如果最近失败次数超过了在给定时间内允许失败的阈值，则代理类切换到断开(Open)状态。此时代理开启了一个超时时钟，当该时钟超过了该时间，则切换到半断开（Half-Open）状态。该超时时间的设定是给了系统一次机会来修正导致调用失败的错误。</li>
+<li>断开(Open)状态：在该状态下，对应用程序的请求会立即返回错误响应。</li>
+<li>半断开（Half-Open）状态：允许对应用程序的一定数量的请求可以去调用服务。如果这些请求对服务的调用成功，那么可以认为之前导致调用失败的错误已经修正，此时熔断器切换到闭合状态(并且将错误计数器重置)；如果这一定数量的请求有调用失败的情况，则认为导致之前调用失败的问题仍然存在，熔断器切回到断开方式，然后开始重置计时器来给系统一定的时间来修正错误。半断开状态能够有效防止正在恢复中的服务被突然而来的大量请求再次拖垮。<br/>
+各个状态之间的转换如下图：
+<img src="media/15586676190905/15586778712353.jpg" alt=""/></li>
+</ul>
+
+<p>在Close状态下，错误计数器是基于时间的。在特定的时间间隔内会自动重置。这能够防止由于某次的偶然错误导致熔断器进入断开状态。触发熔断器进入断开状态的失败阈值只有在特定的时间间隔内，错误次数达到指定错误次数的阈值才会产生。在Half-Open状态中使用的连续成功次数计数器记录调用的成功次数。当连续调用成功次数达到某个指定值时，切换到闭合状态，如果某次调用失败，立即切换到断开状态，连续成功调用次数计时器在下次进入半断开状态时归零。</p>
+
+<p>实现熔断器模式使得系统更加稳定和有弹性，在系统从错误中恢复的时候提供稳定性，并且减少了错误对系统性能的影响。它通过快速的拒绝那些试图有可能调用会导致错误的服务，而不会去等待操作超时或者永远不会不返回结果来提高系统的响应事件。如果熔断器设计模式在每次状态切换的时候会发出一个事件，这种信息可以用来监控服务的运行状态，能够通知管理员在熔断器切换到断开状态时进行处理。</p>
+
+<p>可以对熔断器模式进行定制以适应一些可能会导致远程服务失败的特定场景。比如，可以在熔断器中对超时时间使用不断增长的策略。在熔断器开始进入断开状态的时候，可以设置超时时间为几秒钟，然后如果错误没有被解决，然后将该超时时间设置为几分钟，依次类推。在一些情况下，在断开状态下我们可以返回一些错误的默认值，而不是抛出异常。</p>
+
+<h2 id="toc_2">要考虑的因素</h2>
+
+<p>在实现熔断器模式的时候，以下这些因素需可能需要考虑：</p>
+
+<ul>
+<li>异常处理：调用受熔断器保护的服务的时候，我们必须要处理当服务不可用时的异常情况。这些异常处理通常需要视具体的业务情况而定。比如，如果应用程序只是暂时的功能降级，可能需要切换到其它的可替换的服务上来执行相同的任务或者获取相同的数据，或者给用户报告错误然后提示他们稍后重试。</li>
+<li>异常的类型：请求失败的原因可能有很多种。一些原因可能会比其它原因更严重。比如，请求会失败可能是由于远程的服务崩溃，这可能需要花费数分钟来恢复；也可能是由于服务器暂时负载过重导致超时。熔断器应该能够检查错误的类型，从而根据具体的错误情况来调整策略。比如，可能需要很多次超时异常才可以断定需要切换到断开状态，而只需要几次错误提示就可以判断服务不可用而快速切换到断开状态。</li>
+<li>日志：熔断器应该能够记录所有失败的请求，以及一些可能会尝试成功的请求，使得的管理员能够监控使用熔断器保护的服务的执行情况。</li>
+<li>测试服务是否可用：在断开状态下，熔断器可以采用定期的ping远程的服务或者资源，来判断是否服务是否恢复，而不是使用计时器来自动切换到半断开状态。这种ping操作可以模拟之前那些失败的请求，或者可以使用通过调用远程服务提供的检查服务是否可用的方法来判断。</li>
+<li>手动重置：在系统中对于失败操作的恢复时间是很难确定的，提供一个手动重置功能能够使得管理员可以手动的强制将熔断器切换到闭合状态。同样的，如果受熔断器保护的服务暂时不可用的话，管理员能够强制的将熔断器设置为断开状态。</li>
+<li>并发问题：相同的熔断器有可能被大量并发请求同时访问。熔断器的实现不应该阻塞并发的请求或者增加每次请求调用的负担。</li>
+<li>资源的差异性：使用单个熔断器时，一个资源如果​​有分布在多个地方就需要小心。比如，一个数据可能存储在多个磁盘分区上(shard)，某个分区可以正常访问，而另一个可能存在暂时性的问题。在这种情况下，不同的错误响应如果混为一谈，那么应用程序访问的这些存在问题的分区的失败的可能性就会高，而那些被认为是正常的分区，就有可能被阻塞。</li>
+<li>加快熔断器的熔断操作:有时候，服务返回的错误信息足够让熔断器立即执行熔断操作并且保持一段时间。比如，如果从一个分布式资源返回的响应提示负载超重，那么可以断定出不建议立即重试，而是应该等待几分钟后再重试。（HTTP协议定义了”HTTP 503 Service Unavailable”来表示请求的服务当前不可用，他可以包含其他信息比如，超时等）</li>
+<li>重复失败请求：当熔断器在断开状态的时候，熔断器可以记录每一次请求的细节，而不是仅仅返回失败信息，这样当远程服务恢复的时候，可以将这些失败的请求再重新请求一次。</li>
+</ul>
+
+<h2 id="toc_3">使用场景</h2>
+
+<p>应该使用该模式来：</p>
+
+<ul>
+<li>防止应用程序直接调用那些很可能会调用失败的远程服务或共享资源。</li>
+</ul>
+
+<p>不适合的场景</p>
+
+<ul>
+<li>对于应用程序中的直接访问本地私有资源，比如内存中的数据结构，如果使用熔断器模式只会增加系统额外开销。</li>
+<li>不适合作为应用程序中业务逻辑的异常处理替代品</li>
+</ul>
+
+<p>根据上面的状态切换图，我们很容易实现一个基本的熔断器，只需要在内部维护一个状态机，并定义好状态转移的规则，可以使用State模式来实现。首先，我们定义一个表示状态转移操作的抽象类CircuitBreakerState：</p>
+
+<pre><code class="language-text">
+public abstract class CircuitBreakerState
+{
+    //熔断器
+    protected static CircuitBreaker circuitBreaker;
+    
+    protected CircuitBreakerState(CircuitBreaker circuitBreaker) {
+        this.circuitBreaker = circuitBreaker;
+    }
+    // 调用受保护方法之前处理的操作
+    public void protectedCodeIsAboutToBeCalled() {
+        //如果是断开状态，直接返回,然后坐等超时转换到半断开状态
+        if (circuitBreaker.isOpen) {
+            throw new OpenCircuitException();
+        }
+    }
+
+    // 受熔断器保护的方法调用成功之后的操作
+    public virtual void protectedCodeHasBeenCalled() {
+        circuitBreaker.IncreaseSuccessCount();
+    }
+
+    //受熔断器保护的方法调用发生异常操作后的操作
+    public virtual void actUponException(Exception e) {
+        //增加失败次数计数器，并且保存错误信息
+        circuitBreaker.increaseFailureCount(e);
+        //重置连续成功次数
+        circuitBreaker.resetConsecutiveSuccessCount();
+    }
+}
+</code></pre>
+
+<p>抽象类中，状态机CircuitBreaker通过构造函数注入；当发生错误时，我们增加错误计数器，并且重置连续成功计数器，在增加错误计数器操作中，同时也记录了出错的异常信息。</p>
+
+<p>然后在分别实现表示熔断器三个状态的类。首先实现闭合状态CloseState：</p>
+
+<pre><code class="language-text">public class ClosedState extends CircuitBreakerState {
+    public ClosedState(CircuitBreaker circuitBreaker) {
+        super(circuitBreaker)
+        //重置失败计数器
+        circuitBreaker.resetFailureCount();
+    }
+    
+    @override
+    public void actUponException(Exception e) {
+        super.actUponException(e);
+        //如果失败次数达到阈值，则切换到断开状态
+        if (circuitBreaker.failureThresholdReached()){
+            circuitBreaker.moveToOpenState();
+        }
+    }
+}
+</code></pre>
+
+<p>在闭合状态下，如果发生错误，并且错误次数达到阈值，则状态机切换到断开状态。断开状态OpenState的实现如下：</p>
+
+<pre><code class="language-text">public class OpenState extends CircuitBreakerState {
+    private final static Timer timer;
+
+    public OpenState(CircuitBreaker circuitBreaker) {
+        timer = new Timer(circuitBreaker.Timeout.TotalMilliseconds);
+        timer.Elapsed += TimeoutHasBeenReached;
+        timer.AutoReset = false;
+        timer.Start();
+    }
+
+    // 断开超过设定的阈值，自动切换到半断开状态
+    private void timeoutHasBeenReached(object sender, ElapsedEventArgs e) {
+        circuitBreaker.moveToHalfOpenState();
+    }
+
+    public void protectedCodeIsAboutToBeCalled() {
+        super.protectedCodeIsAboutToBeCalled();
+        throw new OpenCircuitException();
+    }
+}
+</code></pre>
+
+<p>断开状态内部维护一个计数器，如果断开达到一定的时间，则自动切换到版断开状态，并且，在断开状态下，如果需要执行操作，则直接抛出异常。</p>
+
+<p>最后半断开Half-Open状态实现如下：</p>
+
+<pre><code class="language-text">public class HalfOpenState extends CircuitBreakerState {
+    public HalfOpenState(CircuitBreaker circuitBreaker)  {
+        // 重置连续成功计数
+        circuitBreaker.resetConsecutiveSuccessCount();
+    }
+
+    public override void actUponException(Exception e) {
+        super.ActUponException(e);
+        //只要有失败，立即切换到断开模式
+        circuitBreaker.moveToOpenState();
+    }
+    
+    public void protectedCodeHasBeenCalled() {
+        super.ProtectedCodeHasBeenCalled();
+        //如果连续成功次数达到阈值，切换到闭合状态
+        if (circuitBreaker.consecutiveSuccessThresholdReached()) {
+            circuitBreaker.moveToClosedState();
+        }
+    }
+}
+</code></pre>
+
+<p>切换到半断开状态时，将连续成功调用计数重置为0，当执行成功的时候，自增改字段，当达到连读调用成功次数的阈值时，切换到闭合状态。如果调用失败，立即切换到断开模式。</p>
+
+<p>有了以上三种状态切换之后，我们要实现CircuitBreaker类了:</p>
+
+<pre><code class="language-text">@data
+public class CircuitBreaker {
+    private final static object monitor = new object();
+    private CircuitBreakerState state;
+    private int failureCount;
+    public int consecutiveSuccessCount;
+    public int failureThreshold;
+    public int consecutiveSuccessThreshold;
+    public TimeSpan Timeout;
+    public Exception LastException;
+
+    public CircuitBreaker(int failedThreshold, int consecutiveSuccessThreshold, TimeSpan timeout) {
+        if (failedThreshold &lt; 1 || consecutiveSuccessThreshold &lt; 1) {
+            throw new ArgumentOutOfRangeException(&quot;threshold&quot;, &quot;Threshold should be greater than 0&quot;);
+        }
+
+        if (timeout.TotalMilliseconds &lt; 1) {
+            throw new ArgumentOutOfRangeException(&quot;timeout&quot;, &quot;Timeout should be greater than 0&quot;);
+        }
+
+        failureThreshold = failedthreshold;
+        consecutiveSuccessThreshold = consecutiveSuccessThreshold;
+        timeout = timeout;
+        moveToClosedState();
+}
+    
+    public bool IsClosed {
+        return state is ClosedState; 
+    }
+
+    public bool IsOpen {
+        return state == OpenState; 
+    }
+
+    public bool IsHalfOpen {
+       return state is HalfOpenState; }
+    }
+
+   public void moveToClosedState() {
+        state = new ClosedState(this);
+    }
+
+   public void moveToOpenState() {
+        state = new OpenState(this);
+    }
+
+    public void moveToHalfOpenState() {
+        state = new HalfOpenState(this);
+    }
+
+    public void increaseFailureCount(Exception ex) {
+        LastException = ex;
+        failureCount++;
+    }
+
+    public void resetFailureCount() {
+        failureCount = 0;
+    }
+
+    public bool failureThresholdReached() {
+        return failureCount &gt;= failureThreshold;
+    }
+
+    public void increaseSuccessCount() {
+        consecutiveSuccessCount++;
+    }
+
+    public void resetConsecutiveSuccessCount() {
+        consecutiveSuccessCount = 0;
+    }
+    
+    public bool consecutiveSuccessThresholdReached() {
+        return consecutiveSuccessCount &gt;= consecutiveSuccessThreshold;
+    }
+    
+    // 执行代理方法， action 需要执行的代理方法
+    public void attemptCall(function protectedCode) {
+       synchronized (monitor) {
+            state.protectedCodeIsAboutToBeCalled();
+        }
+    
+        try {
+            protectedCode();
+        } catch (Exception e) {
+            synchronized (monitor) {
+                state.actUponException(e);
+            }
+            throw e;
+        }
+    
+        synchronized (monitor) {
+            state.protectedCodeHasBeenCalled();
+        }
+    }
+    
+    public void Close() {
+       synchronized (monitor) {
+            moveToClosedState();
+        }
+    }
+    
+    public void Open() {
+       synchronized (monitor) {
+            moveToOpenState();
+        }
+    }
+}
+</code></pre>
+
+<p>在该类中</p>
+
+<ul>
+<li><p>首先： 定义了一些记录状态的变量，如failureCount，consecutiveSuccessCount 记录失败次数，连续成功次数，以及failureThreshold，consecutiveSuccessThreshold记录最大调用失败次数，连续调用成功次数。这些对象对外部来说是只读的。</p></li>
+<li><p>定义了一个 circuitBreakerState类型的state变量，以表示当前系统的状态。</p></li>
+<li><p>定义了一些列获取当前状态的方法isOpen, isClose, isHalfOpen,以及表示状态转移的方法moveToOpenState，moveToClosedState等，这些方法比较简单，根据名字即可看出用意。</p></li>
+<li><p>然后，可以通过构造函数将在Close状态下最大失败次数，HalfOpen状态下使用的最大连续成功次数，以及Open状态下的超时时间通过构造函数传进来：</p></li>
+<li><p>在初始状态下，熔断器切换到闭合状态。</p></li>
+<li><p>然后，可以通过attempCall调用，传入期望执行的代理方法，该方法的执行受熔断器保护。这里使用了锁来处理并发问题。</p></li>
+<li><p>最后，提供Close和Open两个方法来手动切换当前状态。</p></li>
+</ul>
+
+<h2 id="toc_4">测试</h2>
+
+<p>以上的熔断模式，我们可以对其建立单元测试。</p>
+
+<p>首先我们编写几个帮助类以模拟连续执行次数：</p>
+
+<p>private static void CallXAmountOfTimes(function codeToCall, int timesToCall) {<br/>
+    for (int i = 0; i &lt; timesToCall; i++) {<br/>
+        codeToCall();<br/>
+    }<br/>
+}<br/>
+以下类用来抛出特定异常：</p>
+
+<pre><code class="language-text">private static void AssertThatExceptionIsThrown&lt;T&gt;(Action code) where T : Exception {
+    try {
+        code();
+    } catch (T) {
+        return;
+    }
+
+    Assert.Fail(&quot;Expected exception of type {0} was not thrown&quot;, typeof(T).FullName);
+}
+</code></pre>
+
+<p>然后，使用NUnit，可以建立如下Case：</p>
+
+<pre><code class="language-text">@test
+public void ClosesIfProtectedCodeSucceedsInHalfOpenState()
+{
+    var stub = new Stub(10);
+    //定义熔断器，失败10次进入断开状态
+    //5秒后进入半断开状态
+    //在半断开状态下，连续成功15次，进入闭合状态
+    CircuitBreaker circuitBreaker = new CircuitBreaker(10, 15, TimeSpan.FromMilliseconds(5000));
+    Assert.That(circuitBreaker.IsClosed);
+    //失败10次调用
+    CallXAmountOfTimes(() =&gt; AssertThatExceptionIsThrown&lt;ApplicationException&gt;(() =&gt; circuitBreaker.AttemptCall(stub.DoStuff)), 10);
+
+    Assert.AreEqual(10, circuitBreaker.FailureCount);
+
+    Assert.That(circuitBreaker.IsOpen);
+
+    //等待从Open转到HalfOpen
+    Thread.Sleep(6000);
+    Assert.That(circuitBreaker.IsHalfOpen);
+    //成功调用15次
+    CallXAmountOfTimes(()=&gt;circuitBreaker.AttemptCall(stub.DoStuff), 15);
+
+    Assert.AreEqual(15, circuitBreaker.ConsecutiveSuccessCount);
+    Assert.AreEqual(0, circuitBreaker.FailureCount);
+    Assert.That(circuitBreaker.IsClosed);
+}
+</code></pre>
+
+<p>这个Case模拟了熔断器中状态的转换。首先初始化时，熔断器处于闭合状态，然后连续10次调用抛出异常，这时熔断器进去了断开状态，然后让线程等待6秒，此时在第5秒的时候，状态切换到了半断开状态。然后连续15次成功调用，此时状态又切换到了闭合状态。</p>
+
+<p>七 结论<br/>
+在应用系统中，我们通常会去调用远程的服务或者资源(这些服务或资源通常是来自第三方)，对这些远程服务或者资源的调用通常会导致失败，或者挂起没有响应，直到超时的产生。在一些极端情况下，大量的请求会阻塞在对这些异常的远程服务的调用上，会导致一些关键性的系统资源耗尽，从而导致级联的失败，从而拖垮整个系统。熔断器模式在内部采用状态机的形式，使得对这些可能会导致请求失败的远程服务进行了包装，当远程服务发生异常时，可以立即对进来的请求返回错误响应，并告知系统管理员，将错误控制在局部范围内，从而提高系统的稳定性和可靠性。</p>
+
+<p>本文首先介绍了熔断器模式使用的场景，能够解决的问题，以及需要考虑的因素，最后使用代码展示了如何实现一个简单的熔断器，并且给出了测试用例，希望这些对您有帮助，尤其是在当您的系统调用了外部的远程服务或者资源，同时访问量又很大的情况下对提高系统的稳定性和可靠性有所帮助。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ThreadLocal源码分析以及使用]]></title>
@@ -294,6 +1418,151 @@ private static int prevIndex(int i, int len) {
 <li><p>警惕ThreadLocal存储全局变量</p></li>
 <li><p><strong>建议：</strong> 由于存在hash冲突问题，每个线程只存一个ThreadLocal变量，这样的话所有的线程存放到map中的Key都是相同的ThreadLocal，可以避免hash碰撞引起效率低下的问题。</p></li>
 </ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[线程基础、线程之间的共享和协作]]></title>
+    <link href="http://www.throne4j.com/15853612430664.html"/>
+    <updated>2020-03-28T10:07:23+08:00</updated>
+    <id>http://www.throne4j.com/15853612430664.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">基础概念</h2>
+
+<ul>
+<li>Cpu 核心数和线程数的关系<br/>
+核心数:线程数 = 1:1<br/>
+超线程技术引入以后<br/>
+核心数:线程数 = 1:2</li>
+<li><p>cpu 时间片轮转机制<br/>
+轮转机制会公平的把 cpu 时间分配给各个进程，在线程的切换的过程中，会产生线程上下文开销，也称为 RR 调度</p></li>
+<li><p>什么是进程和线程</p>
+<ul>
+<li><p>进程：操作系统进行资源分配的最小单位，进程内部有多个线程共享这个进程的资源，进程与进程之间相互独立</p></li>
+<li><p>线程：cpu 调度的最小单位，必须依赖于进程而存在</p></li>
+</ul></li>
+<li><p>什么是并行和并发<br/>
+并行：同一时刻，可以处理事情的能力。<br/>
+并发：单位时间内，处理事情的能力。例如：1秒内，一个应用内可以处理10个提交任务，</p></li>
+<li><p>高并发编程的意义和注意事项<br/>
+操作系统会限制线程数量，以防线程耗尽系统资源，Linux：1000个；windows：2000个</p>
+<ul>
+<li>优点：
+<ul>
+<li>可以充分利用系统资源</li>
+<li>加快系统对用户的响应速度</li>
+</ul></li>
+<li>弊端： 
+<ul>
+<li>存在资源竞争关系</li>
+<li>可能会产生死锁</li>
+<li>消耗系统资源</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_1">java 语言的线程</h2>
+
+<h3 id="toc_2">构建线程的方式</h3>
+
+<p>Thread类、Runnable接口，Thread类是对线程的抽象，Runnable是对任务的抽象</p>
+
+<h3 id="toc_3">停止线程方式：</h3>
+
+<ul>
+<li>interrupt()  中断线程通知，非强制打断，中断标志位设置为true(已中断)</li>
+<li>isInterrupted()    判断线程是否要中断</li>
+<li>static interrupted()  判断当前线程是否处于中断状态，中断标志位会进行重置</li>
+</ul>
+
+<p>*** 注意：***<br/>
+stop()、destroy()、suspend()、resume()官方已作为废弃API处理</p>
+
+<h3 id="toc_4">run()和 start()区别</h3>
+
+<ul>
+<li>run() 不会新启线程，可以视为普通的业务方法，执行run()方法，当前线程是主线程</li>
+<li>start() 启动新线程</li>
+</ul>
+
+<h3 id="toc_5">join()</h3>
+
+<p>ThreadA.join() 是先等待ThreadA运行至死亡</p>
+
+<h3 id="toc_6">yield()</h3>
+
+<p>将线程从运行态转到就绪态,让线程让出cpu资源</p>
+
+<h3 id="toc_7">线程优先级</h3>
+
+<p>1~10，缺省 5<br/>
+thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
+
+<h3 id="toc_8">守护线程</h3>
+
+<p>守护线程是一种支持型线程，因为它主要被用作程序中 后台调度以及支持性工作。</p>
+
+<p>线程的状态切换<br/>
+<img src="media/15853612430664/15862720985637.jpg" alt="" style="width:937px;"/></p>
+
+<h2 id="toc_9">线程间共享和互斥</h2>
+
+<h3 id="toc_10">Synchronized 内置锁</h3>
+
+<p>关于 Synchronized 是作用在对象上，在对象头中 有锁的标志位<br/>
+对象锁<br/>
+类锁</p>
+
+<h3 id="toc_11">Lock</h3>
+
+<h3 id="toc_12">volatile</h3>
+
+<h3 id="toc_13">ThreadLocal</h3>
+
+<p><a href="ThreadLocal.html">ThreadLocal源码分析以及使用</a></p>
+
+<h2 id="toc_14">线程间协作</h2>
+
+<h3 id="toc_15">等待/通知机制</h3>
+
+<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通 知方之间的交互工作。</p>
+
+<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
+
+<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
+
+<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
+
+<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
+
+<p>等待和通知的标准范式 等待方遵循如下原则:</p>
+
+<p>1）获取对象的锁。 <br/>
+2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
+3）条件满足则执行对应的逻辑。</p>
+
+<pre><code class="language-text">synchronized(obj) {
+    while(obj.isOk()) {
+        obj.wait();
+    }
+}
+</code></pre>
+
+<p>通知方遵循如下原则: </p>
+
+<p>1）获得对象的锁。 <br/>
+2）改变条件。 <br/>
+3）通知所有等待在对象上的线程。</p>
+
+<pre><code class="language-text">synchronized(obj) {
+    obj.notifyAll();
+}
+</code></pre>
+
+<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕</p>
 
 ]]></content>
   </entry>

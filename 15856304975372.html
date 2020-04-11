@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ![icon](media/15865826719099/icon.png) - 大爷来玩儿啊~
+    docker-compose - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,17 +77,72 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ![icon](media/15865826719099/icon.png)   
+                            docker-compose   
                       </h1>
-                       
-                    
                      
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/03/31</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E5%AE%B9%E5%99%A8.html'>容器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                  
+                                    <a class="tag is-link is-light" href='tag_docker.html'>#docker</a>
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><img src="media/15865826719099/avatar.png" alt="avata"/></p>
+                    <pre><code class="language-text"> curl -L https://github.com/docker/compose/releases/download/1.17.1/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose
+</code></pre>
+
+<p>uname -m   ---&gt;  x86_64</p>
+
+<p><img src="media/15856304975372/15856400125972.jpg" alt="" style="width:657px;"/></p>
+
+<p>version: &#39;3&#39;：   表示使用第三代语法<br/>
+services:  表示 compose 需要启动的服务<br/>
+container_name: 容器名称<br/>
+environment:  容器环境变量<br/>
+ports:  对外开放的端口<br/>
+restart: always  如果服务启动不成功一直尝试。<br/>
+volumes:  加载本地目录到容器目标路径<br/>
+depends_on： 依赖服务，先启动 depends_on 服务<br/>
+command: mvn clean spring-boot:run :  表示以这个命令来启动项目</p>
 
                   </article>
-                 
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
               </div>
             </div><!-- end columns -->
       </div><!-- end container -->
@@ -95,7 +150,7 @@
 
 
 
-   <footer class="footer">
+    <footer class="footer">
         <div class="content has-text-centered">
           <p>
               Copyright &copy; 2019
@@ -120,6 +175,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

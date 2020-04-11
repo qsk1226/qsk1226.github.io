@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ![icon](media/15865826719099/icon.png) - 大爷来玩儿啊~
+    查看远程mysql 主机的 binlog 日志 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,17 +77,67 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ![icon](media/15865826719099/icon.png)   
+                            查看远程mysql 主机的 binlog 日志   
                       </h1>
-                       
-                    
                      
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/04/01</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='mysql.html'>mysql</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                  
+                                    <a class="tag is-link is-light" href='tag_mysql.html'>#mysql</a>
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><img src="media/15865826719099/avatar.png" alt="avata"/></p>
+                    <p>show master status;</p>
+
+<p>show binary logs;</p>
+
+<p>show binlog events in &#39;mysql-bin.000030&#39;;</p>
+
+<p>c查看<br/>
+show global variables like &quot;%binlog_format%&quot;;</p>
+
+<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
+</code></pre>
 
                   </article>
-                 
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
               </div>
             </div><!-- end columns -->
       </div><!-- end container -->
@@ -95,7 +145,7 @@
 
 
 
-   <footer class="footer">
+    <footer class="footer">
         <div class="content has-text-centered">
           <p>
               Copyright &copy; 2019
@@ -120,6 +170,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

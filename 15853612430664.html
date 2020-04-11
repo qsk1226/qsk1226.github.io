@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    线程基础、线程之间的共享和协作 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            线程基础、线程之间的共享和协作   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/03/28</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                  
+                                    <a class="tag is-link is-light" href='tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>#并发编程</a>
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">基础概念</h2>
+
+<ul>
+<li>Cpu 核心数和线程数的关系<br/>
+核心数:线程数 = 1:1<br/>
+超线程技术引入以后<br/>
+核心数:线程数 = 1:2</li>
+<li><p>cpu 时间片轮转机制<br/>
+轮转机制会公平的把 cpu 时间分配给各个进程，在线程的切换的过程中，会产生线程上下文开销，也称为 RR 调度</p></li>
+<li><p>什么是进程和线程</p>
+<ul>
+<li><p>进程：操作系统进行资源分配的最小单位，进程内部有多个线程共享这个进程的资源，进程与进程之间相互独立</p></li>
+<li><p>线程：cpu 调度的最小单位，必须依赖于进程而存在</p></li>
+</ul></li>
+<li><p>什么是并行和并发<br/>
+并行：同一时刻，可以处理事情的能力。<br/>
+并发：单位时间内，处理事情的能力。例如：1秒内，一个应用内可以处理10个提交任务，</p></li>
+<li><p>高并发编程的意义和注意事项<br/>
+操作系统会限制线程数量，以防线程耗尽系统资源，Linux：1000个；windows：2000个</p>
+<ul>
+<li>优点：
+<ul>
+<li>可以充分利用系统资源</li>
+<li>加快系统对用户的响应速度</li>
+</ul></li>
+<li>弊端： 
+<ul>
+<li>存在资源竞争关系</li>
+<li>可能会产生死锁</li>
+<li>消耗系统资源</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_1">java 语言的线程</h2>
+
+<h3 id="toc_2">构建线程的方式</h3>
+
+<p>Thread类、Runnable接口，Thread类是对线程的抽象，Runnable是对任务的抽象</p>
+
+<h3 id="toc_3">停止线程方式：</h3>
+
+<ul>
+<li>interrupt()  中断线程通知，非强制打断，中断标志位设置为true(已中断)</li>
+<li>isInterrupted()    判断线程是否要中断</li>
+<li>static interrupted()  判断当前线程是否处于中断状态，中断标志位会进行重置</li>
+</ul>
+
+<p>*** 注意：***<br/>
+stop()、destroy()、suspend()、resume()官方已作为废弃API处理</p>
+
+<h3 id="toc_4">run()和 start()区别</h3>
+
+<ul>
+<li>run() 不会新启线程，可以视为普通的业务方法，执行run()方法，当前线程是主线程</li>
+<li>start() 启动新线程</li>
+</ul>
+
+<h3 id="toc_5">join()</h3>
+
+<p>ThreadA.join() 是先等待ThreadA运行至死亡</p>
+
+<h3 id="toc_6">yield()</h3>
+
+<p>将线程从运行态转到就绪态,让线程让出cpu资源</p>
+
+<h3 id="toc_7">线程优先级</h3>
+
+<p>1~10，缺省 5<br/>
+thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
+
+<h3 id="toc_8">守护线程</h3>
+
+<p>守护线程是一种支持型线程，因为它主要被用作程序中 后台调度以及支持性工作。</p>
+
+<p>线程的状态切换<br/>
+<img src="media/15853612430664/15862720985637.jpg" alt="" style="width:937px;"/></p>
+
+<h2 id="toc_9">线程间共享和互斥</h2>
+
+<h3 id="toc_10">Synchronized 内置锁</h3>
+
+<p>关于 Synchronized 是作用在对象上，在对象头中 有锁的标志位<br/>
+对象锁<br/>
+类锁</p>
+
+<h3 id="toc_11">Lock</h3>
+
+<h3 id="toc_12">volatile</h3>
+
+<h3 id="toc_13">ThreadLocal</h3>
+
+<p><a href="ThreadLocal.html">ThreadLocal源码分析以及使用</a></p>
+
+<h2 id="toc_14">线程间协作</h2>
+
+<h3 id="toc_15">等待/通知机制</h3>
+
+<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通 知方之间的交互工作。</p>
+
+<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
+
+<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
+
+<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
+
+<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
+
+<p>等待和通知的标准范式 等待方遵循如下原则:</p>
+
+<p>1）获取对象的锁。 <br/>
+2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
+3）条件满足则执行对应的逻辑。</p>
+
+<pre><code class="language-text">synchronized(obj) {
+    while(obj.isOk()) {
+        obj.wait();
+    }
+}
+</code></pre>
+
+<p>通知方遵循如下原则: </p>
+
+<p>1）获得对象的锁。 <br/>
+2）改变条件。 <br/>
+3）通知所有等待在对象上的线程。</p>
+
+<pre><code class="language-text">synchronized(obj) {
+    obj.notifyAll();
+}
+</code></pre>
+
+<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

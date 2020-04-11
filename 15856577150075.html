@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ![icon](media/15865826719099/icon.png) - 大爷来玩儿啊~
+    kubenetes 在 CentOS 7 上的安装 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,17 +77,70 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ![icon](media/15865826719099/icon.png)   
+                            kubenetes 在 CentOS 7 上的安装   
                       </h1>
-                       
-                    
                      
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/03/31</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E5%AE%B9%E5%99%A8.html'>容器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                  
+                                    <a class="tag is-link is-light" href='tag_k8s.html'>#k8s</a>
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><img src="media/15865826719099/avatar.png" alt="avata"/></p>
+                    <p>swapoff -a 关闭<br/>
+getenforce 关闭<br/>
+vim /etc/sysconfig/selinux 关闭</p>
+
+<p>vim /proc/sys/net/ipv4/ip_forward   ---&gt;1  开启</p>
+
+<p>Docker <br/>
+kubeadm<br/>
+kubelet<br/>
+kubectl<br/>
+kube-flannel</p>
+
+<pre><code class="language-text">kubeadm join 172.16.65.134:6443 --token jw3hog.3eoi736vivuje486     --discovery-token-ca-cert-hash sha256:4ff0b56297567aa67ef7511927fa39c6af8654c6709b444182b839f1e0449149
+</code></pre>
 
                   </article>
-                 
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
               </div>
             </div><!-- end columns -->
       </div><!-- end container -->
@@ -95,7 +148,7 @@
 
 
 
-   <footer class="footer">
+    <footer class="footer">
         <div class="content has-text-centered">
           <p>
               Copyright &copy; 2019
@@ -120,6 +173,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

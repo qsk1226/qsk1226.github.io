@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    细说Reactor模式 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            细说Reactor模式   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2019/05/24</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html'>设计模式</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                  
+                                    <a class="tag is-link is-light" href='tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html'>#设计模式</a>
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">概念</h2>
+
+<p>reactor设计模式，是一种基于事件驱动的设计模式。Reactor框架是ACE各个框架中最基础的一个框架，其他框架都或多或少地用到了Reactor框架。 </p>
+
+<p>在事件驱动的应用中，将一个或多个客户的服务请求分离（demultiplex）和调度（dispatch）给应用程序。在事件驱动的应用中，同步地、有序地处理同时接收的多个服务请求。 </p>
+
+<p>reactor模式与外观模式有点像。不过，观察者模式与单个事件源关联，而反应器模式则与多个事件源关联 。当一个主体发生改变时，所有依属体都得到通知。</p>
+
+<h2 id="toc_1">优点</h2>
+
+<p>  1）响应快，不必为单个同步时间所阻塞，虽然Reactor本身依然是同步的； <br/>
+  2）编程相对简单，可以最大程度的避免复杂的多线程及同步问题，并且避免了多线程/进程的切换开销； <br/>
+  3）可扩展性，可以方便的通过增加Reactor实例个数来充分利用CPU资源； <br/>
+  4）可复用性，reactor框架本身与具体事件处理逻辑无关，具有很高的复用性；</p>
+
+<h2 id="toc_2">缺点</h2>
+
+<p> 1）相比传统的简单模型，Reactor增加了一定的复杂性，因而有一定的门槛，并且不易于调试。 <br/>
+ 2）Reactor模式需要底层的Synchronous Event Demultiplexer支持，比如Java中的Selector支持，操作系统的select系统调用支持，如果要自己实现Synchronous Event Demultiplexer可能不会有那么高效。 <br/>
+ 3） Reactor模式在IO读写数据时还是在同一个线程中实现的，即使使用多个Reactor机制的情况下，那些共享一个Reactor的Channel如果出现一个长时间的数据读写，会影响这个Reactor中其他Channel的相应时间，比如在大文件传输时，IO操作就会影响其他Client的相应时间，因而对这种操作，使用传统的Thread-Per-Connection或许是一个更好的选择，或则此时使用Proactor模式。<br/>
+ </p>
+
+<h2 id="toc_3">架构模式</h2>
+
+<h3 id="toc_4">1、架构图</h3>
+
+<p> <img src="media/15586898110083/15590230630201.jpg" alt="" style="width:556px;"/></p>
+
+<h3 id="toc_5">2、构成</h3>
+
+<p>Handles ：表示操作系统管理的资源，我们可以理解为fd。</p>
+
+<p>Synchronous Event Demultiplexer ：同步事件分离器，阻塞等待Handles中的事件发生。</p>
+
+<p>Initiation Dispatcher ：初始分派器，作用为添加Event handler（事件处理器）、删除Event handler以及分派事件给Event handler。也就是说，Synchronous Event Demultiplexer负责等待新事件发生，事件发生时通知Initiation Dispatcher，然后Initiation Dispatcher调用event handler处理事件。</p>
+
+<p>Event Handler ：事件处理器的接口<br/>
+Concrete Event Handler ：事件处理器的实际实现，而且绑定了一个Handle。因为在实际情况中，我们往往不止一种事件处理器，因此这里将事件处理器接口和实现分开，与C++、Java这些高级语言中的多态类似。</p>
+
+<h3 id="toc_6">3、模块交互</h3>
+
+<p> 1）我们注册Concrete Event Handler到Initiation Dispatcher中。 <br/>
+ 2）Initiation Dispatcher调用每个Event Handler的get_handle接口获取其绑定的Handle。 <br/>
+ 3）Initiation Dispatcher调用handle_events开始事件处理循环。在这里，Initiation Dispatcher会将步骤2获取的所有Handle都收集起来，使用Synchronous Event Demultiplexer来等待这些Handle的事件发生。 <br/>
+ 4）当某个（或某几个）Handle的事件发生时，Synchronous Event Demultiplexer通知Initiation Dispatcher。 <br/>
+ 5）Initiation Dispatcher根据发生事件的Handle找出所对应的Handler。 <br/>
+ 6）Initiation Dispatcher调用Handler的handle_event方法处理事件。</p>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.net.InetAddress;  
+import java.net.InetSocketAddress;  
+import java.nio.channels.SelectionKey;  
+import java.nio.channels.Selector;  
+import java.nio.channels.ServerSocketChannel;  
+import java.util.Iterator;  
+import java.util.Set;  
+
+/** 
+ * 反应器模式 
+ * 用于解决多用户访问并发问题 
+ *  
+ * 举个例子：餐厅服务问题 
+ *  
+ * 传统线程池做法：来一个客人(请求)去一个服务员(线程) 
+ * 反应器模式做法：当客人点菜的时候，服务员就可以去招呼其他客人了，等客人点好了菜，直接招呼一声“服务员” 
+ *  
+ * @author linxcool 
+ */  
+public class Reactor implements Runnable{  
+    public final Selector selector;  
+    public final ServerSocketChannel serverSocketChannel;  
+
+    public Reactor(int port) throws IOException{  
+        selector=Selector.open();  
+        serverSocketChannel=ServerSocketChannel.open();  
+        InetSocketAddress inetSocketAddress=new InetSocketAddress(InetAddress.getLocalHost(),port);  
+        serverSocketChannel.socket().bind(inetSocketAddress);  
+        serverSocketChannel.configureBlocking(false);  
+
+        //向selector注册该channel    
+        SelectionKey selectionKey=serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);  
+
+        //利用selectionKey的attache功能绑定Acceptor 如果有事情，触发Acceptor   
+        selectionKey.attach(new Acceptor(this));  
+    }  
+
+    @Override  
+    public void run() {  
+        try {  
+            while(!Thread.interrupted()){  
+                selector.select();  
+                Set&lt;SelectionKey&gt; selectionKeys= selector.selectedKeys();  
+                Iterator&lt;SelectionKey&gt; it=selectionKeys.iterator();  
+                //Selector如果发现channel有OP_ACCEPT或READ事件发生，下列遍历就会进行。  
+                while(it.hasNext()){  
+                    //来一个事件 第一次触发一个accepter线程    
+                    //以后触发SocketReadHandler  
+                    SelectionKey selectionKey=it.next();  
+                    dispatch(selectionKey);  
+                    selectionKeys.clear();  
+                }  
+            }  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+
+    /** 
+     * 运行Acceptor或SocketReadHandler 
+     * @param key 
+     */  
+    void dispatch(SelectionKey key) {  
+        Runnable r = (Runnable)(key.attachment());    
+        if (r != null){    
+            r.run();  
+        }    
+    }    
+
+} 
+</code></pre>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.nio.channels.SocketChannel;  
+
+public class Acceptor implements Runnable{  
+    private Reactor reactor;  
+    public Acceptor(Reactor reactor){  
+        this.reactor=reactor;  
+    }  
+    @Override  
+    public void run() {  
+        try {  
+            SocketChannel socketChannel=reactor.serverSocketChannel.accept();  
+            if(socketChannel!=null)//调用Handler来处理channel  
+                new SocketReadHandler(reactor.selector, socketChannel);  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+} 
+</code></pre>
+
+<pre><code class="language-text">import java.io.IOException;  
+import java.nio.ByteBuffer;  
+import java.nio.channels.SelectionKey;  
+import java.nio.channels.Selector;  
+import java.nio.channels.SocketChannel;  
+
+public class SocketReadHandler implements Runnable{  
+    private SocketChannel socketChannel;  
+    public SocketReadHandler(Selector selector,SocketChannel socketChannel) throws IOException{  
+        this.socketChannel=socketChannel;  
+        socketChannel.configureBlocking(false);  
+
+        SelectionKey selectionKey=socketChannel.register(selector, 0);  
+
+        //将SelectionKey绑定为本Handler 下一步有事件触发时，将调用本类的run方法。    
+        //参看dispatch(SelectionKey key)    
+        selectionKey.attach(this);  
+
+        //同时将SelectionKey标记为可读，以便读取。    
+        selectionKey.interestOps(SelectionKey.OP_READ);    
+        selector.wakeup();  
+    }  
+
+    /** 
+     * 处理读取数据 
+     */  
+    @Override  
+    public void run() {  
+        ByteBuffer inputBuffer=ByteBuffer.allocate(1024);  
+        inputBuffer.clear();  
+        try {  
+            socketChannel.read(inputBuffer);  
+            //激活线程池 处理这些request  
+            //requestHandle(new Request(socket,btt));   
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }  
+}
+</code></pre>
+
+<h2 id="toc_7">总结</h2>
+
+<p>reactor模式是javaNIO非堵塞技术的实现原理，我们不仅要知道其原理流程，还要知道其代码实现，当然这个reactor模式不仅仅在NIO中实现，而且在redies等其他地方也出现过，说明这个模式还是比较实用的，尤其是在多线程高并发的情况下使用。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

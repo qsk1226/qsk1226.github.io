@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ![icon](media/15865826719099/icon.png) - 大爷来玩儿啊~
+    ssh 免密登录服务器 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,14 +77,47 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ![icon](media/15865826719099/icon.png)   
+                            ssh 免密登录服务器   
                       </h1>
                        
                     
                      
                 </div>
                   <article class="markdown-body single-content">
-                    <p><img src="media/15865826719099/avatar.png" alt="avata"/></p>
+                    <p>现在有服务器 Server-A,用户名: jetty, ip: 172.16.65.133, 现在希望从本地能够免密访问 Server-A。<br/>
+这里我们需要 ssh-keygen 命令来帮我们完成这项任务。</p>
+
+<p>ssh-keygen: 为了让两个linux机器之间使用ssh不需要用户名和密码。<br/>
+采用了数字签名RSA或者DSA来完成这个操作。</p>
+
+<h2 id="toc_0">生成本地公钥和私钥</h2>
+
+<pre><code class="language-text">&gt; ssh-keygen -t rsa -C &#39;注释&#39;
+</code></pre>
+
+<p>本地机器 .ssh 目录下生成文件 :  id_rsa  id_rsa.pub</p>
+
+<h2 id="toc_1">将本地生成的id_rsa.pub(公钥)追加到 Server-A 的目录~/.ssh/authorized_keys文件中</h2>
+
+<pre><code class="language-text">&gt; ssh-copyid jetty@172.16.65.133
+</code></pre>
+
+<p>上传文件方式：</p>
+
+<ul>
+<li>cat ~/.ssh/id_rsa.pub | ssh -p 22 jetty@172.16.65.133 &#39;cat &gt;&gt; ~/.ssh/authorized_keys&#39;</li>
+<li>ssh-copyid jetty@172.16.65.133</li>
+<li>scp -P 22 ~/.ssh/id_rsa.pub jetty@172.16.65.133:~/。<br/>
+注意： Server-A 服务器上.ssh 目录的权限为700，其下文件authorized_keys和私钥的权限为600。否则会因为权限问题导致无法免密码登录。</li>
+</ul>
+
+<p>上面步骤做完之后我们就可以免密登录 Server-A 了</p>
+
+<pre><code class="language-text">&gt; ssh jetty@172.16.65.133
+Last login: Sun Mar 29 12:17:53 2020 from 172.16.65.1
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+&gt; [jetty@jetty ~]$ 
+</code></pre>
 
                   </article>
                  
@@ -120,6 +153,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

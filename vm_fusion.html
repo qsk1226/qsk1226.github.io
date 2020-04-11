@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ![icon](media/15865826719099/icon.png) - 大爷来玩儿啊~
+    mac vmware fusion 设置静态 IP 地址 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,14 +77,99 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ![icon](media/15865826719099/icon.png)   
+                            mac vmware fusion 设置静态 IP 地址   
                       </h1>
                        
                     
                      
                 </div>
                   <article class="markdown-body single-content">
-                    <p><img src="media/15865826719099/avatar.png" alt="avata"/></p>
+                    <h2 id="toc_0">配置静态IP</h2>
+
+<h3 id="toc_1">把网络配置改成nat模式</h3>
+
+<h3 id="toc_2">通过Mac终端进入VMware Fusion的vmnet8目录</h3>
+
+<pre><code class="language-text">cd /Library/Preferences/VMware Fusion/vmnet8
+</code></pre>
+
+<ul>
+<li>查看nat.conf内容</li>
+</ul>
+
+<p><img src="media/15855011797141/15855038592835.jpg" alt=""/></p>
+
+<ul>
+<li>查看cat dhcpd.conf</li>
+</ul>
+
+<p><img src="media/15855011797141/15855037846968.jpg" alt=""/></p>
+
+<p>注意range 这个是虚拟机允许选择的静态ip地址范围，自定义的静态ip地址必须要在这个范围内</p>
+
+<h3 id="toc_3">登录虚拟机 CentOS7</h3>
+
+<p>进入虚拟机的network-scripts目录</p>
+
+<pre><code class="language-text">cd /etc/sysconfig/network-scripts
+</code></pre>
+
+<p>找到ifcfg-en开头的文件,上图中我的是ifcfg-ens33<br/>
+修改前：</p>
+
+<pre><code class="language-text">&gt; cd /etc/sysconfig/network-scripts
+&gt; vim ifcfg-ens33
+
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=dhcp
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=f30c4f14-149c-4628-a256-0bd778671148
+DEVICE=ens33
+ONBOOT=yes
+MACADDR=random
+IPV6_PRIVACY=no
+</code></pre>
+
+<p>我们将它改成如下配置:</p>
+
+<pre><code class="language-text">TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=static
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=no
+IPV6_AUTOCONF=no
+IPV6_DEFROUTE=no
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=f30c4f14-149c-4628-a256-0bd778671148
+DEVICE=ens33
+ONBOOT=yes
+MACADDR=random
+IPV6_PRIVACY=no
+IPADDR=172.16.65.134
+GATEWAY=172.16.65.2
+NETMASK=255.255.255.0
+DNS1=114.114.114.114
+</code></pre>
+
+<p>保存之后，重启服务使修改生效</p>
+
+<p>service network restart<br/>
+ping一下百度看看，成功Ping到</p>
+
+<p>接下来我们就可以通过SecureCRT等工具远程连接了，有一点请记住，如果你换了一个地方上网的话，可能会发现你的虚拟机有不通了，那是因为DNS地址发生了变化，此时只需要再次编辑ifcfg-enxxx文件，然后加上你现在网络的DNS地址即可</p>
 
                   </article>
                  
@@ -120,6 +205,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
