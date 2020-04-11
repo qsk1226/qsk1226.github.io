@@ -316,10 +316,6 @@ current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <
     }
 }
 
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * ThreadLocal内存泄漏的风险演示
  * -XX:+PrintGCDetails -Xmx50m
@@ -364,7 +360,7 @@ public class ThreadOOM {
 
 <h3 id="toc_6">Hash冲突怎么解决</h3>
 
-<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong>，如果有大量不同的ThreadLocal对象放入ThreadLocalMap中时发一次或多次hash冲突，就要多次执行线性探测法，则效率很低。</p>
+<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong></p>
 
 <p>ThreadLocalMap解决Hash冲突的方式就是简单的步长加1或减1，寻找下一个相邻的位置，如下代码：</p>
 
@@ -376,22 +372,68 @@ private static int prevIndex(int i, int len) {
 }
 </code></pre>
 
-<h2 id="toc_7">注意事项：</h2>
+<p>如果有大量不同的ThreadLocal对象放入ThreadLocalMap中时发一次或多次hash冲突，就要多次执行线性探测法，则效率很低。</p>
 
-<ul>
-<li><p>警惕线程池使用ThreadLocal<br/>
-记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：</p>
-<ul>
-<li>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</li>
-<li>造成内存泄漏问题<br/>
-由于ThreadLocalMap的key是弱引用，而Value是强引用。这就导致了一个问题，ThreadLocal在没有外部对象强引用时，发生GC时弱引用Key会被回收，而Value并不会随着此GC被回收，之后通过get、set或者remove方法才会清除线程的value引用，但凡事没有绝对，如果线程任务执行完之后并没有继续执行get、set或者remove方法，如果创建ThreadLocal的线程一直持续运行，那么这个Entry对象中的value就有可能一直得不到回收，发生内存泄露
-<ul>
-<li><strong>建议：</strong> 线程使用完ThreadLocal之后执行ThreadLocal.remove()方法，以解除value的引用关系，使垃圾回收器可以回收这部分空间。</li>
-</ul></li>
-</ul></li>
-<li><p>警惕ThreadLocal存储全局变量</p></li>
-<li><p><strong>建议：</strong> 由于存在hash冲突问题，每个线程只存一个ThreadLocal变量，这样的话所有的线程存放到map中的Key都是相同的ThreadLocal，可以避免hash碰撞引起效率低下的问题。</p></li>
-</ul>
+<p><strong>建议：</strong> 由于存在hash冲突问题，每个线程只存一个ThreadLocal变量，这样的话所有的线程存放到map中的Key都是相同的ThreadLocal，可以避免hash碰撞引起效率低下的问题。</p>
+
+<h2 id="toc_7">线程不安全问题</h2>
+
+<p>记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：<strong>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</strong></p>
+
+<pre><code class="language-java">public class ThreadUnsafe {
+
+    static class UseThreadUnsafe implements Runnable {
+        private int value;
+
+        UseThreadUnsafe(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public void run() {
+            Object o = ThreadLocalContext.get();
+            if (o == null) {
+                ThreadLocalContext.set(value+1);
+            }
+            System.out.println(Thread.currentThread().getName()+&quot; 线程局部变量表：&quot; + ThreadLocalContext.get());
+            // tips：开启和注释的情况下完全不一样
+            ThreadLocalContext.remove();
+        }
+    }
+
+
+    public static void main(String[] args) {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        try {
+            for (int i = 0; i &lt; 6; i++) {
+                executorService.execute(new UseThreadUnsafe(i));
+            }
+            System.out.println(&quot;pool execute over&quot;);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            executorService.shutdown();
+        }
+    }
+
+}
+</code></pre>
+
+<p>开启的情况下：<br/>
+pool-1-thread-3 线程局部变量表：3<br/>
+pool-1-thread-2 线程局部变量表：2<br/>
+pool-1-thread-1 线程局部变量表：1<br/>
+pool-1-thread-2 线程局部变量表：5<br/>
+pool-1-thread-3 线程局部变量表：4<br/>
+pool-1-thread-1 线程局部变量表：6</p>
+
+<p>注释的情况下：<br/>
+pool-1-thread-1 线程局部变量表：1<br/>
+pool-1-thread-3 线程局部变量表：3<br/>
+pool-1-thread-1 线程局部变量表：1<br/>
+pool-1-thread-2 线程局部变量表：2<br/>
+pool-1-thread-1 线程局部变量表：1<br/>
+pool-1-thread-3 线程局部变量表：3</p>
 
                   </article>
                   <div class="comments-wrap">
