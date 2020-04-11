@@ -2,7 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
   <loc>http://www.throne4j.com/</loc>
-  <lastmod>2020-04-11T17:32:05+08:00</lastmod>
+  <lastmod>2020-04-11T18:10:23+08:00</lastmod>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/15865981620428.html</loc>
+  <lastmod>2020-04-11T17:42:42+08:00</lastmod>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/java%E5%BA%8F%E5%88%97%E5%8C%96.html</loc>
+  <lastmod>2020-04-11T14:47:08+08:00</lastmod>
 </url>
 
 <url>
@@ -86,14 +96,17 @@
   <lastmod>2020-04-11T13:34:31+08:00</lastmod>
 </url>
 
-<url>
-  <loc>http://www.throne4j.com/java%E5%BA%8F%E5%88%97%E5%8C%96.html</loc>
-  <lastmod>2020-04-11T14:50:33+08:00</lastmod>
-</url>
 
+<url>
+  <loc>http://www.throne4j.com/JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html</loc>
+</url>
 
 <url>
   <loc>http://www.throne4j.com/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html</loc>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/java.html</loc>
 </url>
 
 <url>
