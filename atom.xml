@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-11T18:03:54+08:00</updated>
+  <updated>2020-04-11T18:10:24+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -633,6 +633,35 @@ ENV <key1>=<value1> <key2>=<value2>...<br/>
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[linux 普通用户添加 sudo 免密码执行权限]]></title>
+    <link href="http://www.throne4j.com/sudo%E5%85%8D%E5%AF%86%E6%89%A7%E8%A1%8C.html"/>
+    <updated>2020-03-30T02:40:49+08:00</updated>
+    <id>http://www.throne4j.com/sudo%E5%85%8D%E5%AF%86%E6%89%A7%E8%A1%8C.html</id>
+    <content type="html"><![CDATA[
+<p>在使用普通用户登录的时候，会经常使用sudo指令执行一些操作，有时候感觉输入密码比较繁琐，特别是需要设置一些开机启动的时候操作，而这些操作往往就需要sudo指令，如果没有免密的话，在使用普通用户登录的时候就无法执行，这个时候给普通用户添加免密码sudo功能就非常的必要了  </p>
+
+<p>注意：sudo面密码只是在执行sudo指令的时候不需要输入密码，并不是普通用户拥有超级用户的权限，需要root才有的权限不加sudo 一样执行不了 ，所以这一点也保证了使用免密码的安全性 ，只是在使用sudo的时候不需要输入密码</p>
+
+<p>很简单，在命令行输入：</p>
+
+<p>sudo vim /etc/sudoers  </p>
+
+<p>在代码的最后加上：</p>
+
+<p>yourusername   ALL=(ALL)NOPASSWD:ALL      </p>
+
+<p>username是指定的普通用户名称，这样就是保证在指定用户使用sudo的时候不需要输入密码，如果想给执行命令添加免密而已，只需要把最后的ALL替换为命令的绝对路径即可，</p>
+
+<p>如下：</p>
+
+<p>username   ALL=(ALL)NOPASSWD:/bin/hello</p>
+
+<p>这样就为指定用户在执行/bin目录下的hello目录的时候 不需输入密码</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[docker 命令]]></title>
     <link href="http://www.throne4j.com/15855064473314.html"/>
     <updated>2020-03-30T02:27:27+08:00</updated>
@@ -860,6 +889,226 @@ setenforce 1</p>
 <p><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;"/></p>
 
 <p>SELINUX=disable</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[mac vmware fusion 设置静态 IP 地址]]></title>
+    <link href="http://www.throne4j.com/vm_fusion.html"/>
+    <updated>2020-03-30T00:59:39+08:00</updated>
+    <id>http://www.throne4j.com/vm_fusion.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">配置静态IP</h2>
+
+<h3 id="toc_1">把网络配置改成nat模式</h3>
+
+<h3 id="toc_2">通过Mac终端进入VMware Fusion的vmnet8目录</h3>
+
+<pre><code class="language-text">cd /Library/Preferences/VMware Fusion/vmnet8
+</code></pre>
+
+<ul>
+<li>查看nat.conf内容</li>
+</ul>
+
+<p><img src="media/15855011797141/15855038592835.jpg" alt=""/></p>
+
+<ul>
+<li>查看cat dhcpd.conf</li>
+</ul>
+
+<p><img src="media/15855011797141/15855037846968.jpg" alt=""/></p>
+
+<p>注意range 这个是虚拟机允许选择的静态ip地址范围，自定义的静态ip地址必须要在这个范围内</p>
+
+<h3 id="toc_3">登录虚拟机 CentOS7</h3>
+
+<p>进入虚拟机的network-scripts目录</p>
+
+<pre><code class="language-text">cd /etc/sysconfig/network-scripts
+</code></pre>
+
+<p>找到ifcfg-en开头的文件,上图中我的是ifcfg-ens33<br/>
+修改前：</p>
+
+<pre><code class="language-text">&gt; cd /etc/sysconfig/network-scripts
+&gt; vim ifcfg-ens33
+
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=dhcp
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=f30c4f14-149c-4628-a256-0bd778671148
+DEVICE=ens33
+ONBOOT=yes
+MACADDR=random
+IPV6_PRIVACY=no
+</code></pre>
+
+<p>我们将它改成如下配置:</p>
+
+<pre><code class="language-text">TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=static
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=no
+IPV6_AUTOCONF=no
+IPV6_DEFROUTE=no
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=f30c4f14-149c-4628-a256-0bd778671148
+DEVICE=ens33
+ONBOOT=yes
+MACADDR=random
+IPV6_PRIVACY=no
+IPADDR=172.16.65.134
+GATEWAY=172.16.65.2
+NETMASK=255.255.255.0
+DNS1=114.114.114.114
+</code></pre>
+
+<p>保存之后，重启服务使修改生效</p>
+
+<p>service network restart<br/>
+ping一下百度看看，成功Ping到</p>
+
+<p>接下来我们就可以通过SecureCRT等工具远程连接了，有一点请记住，如果你换了一个地方上网的话，可能会发现你的虚拟机有不通了，那是因为DNS地址发生了变化，此时只需要再次编辑ifcfg-enxxx文件，然后加上你现在网络的DNS地址即可</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 7 主机名的修改]]></title>
+    <link href="http://www.throne4j.com/hostnamectl.html"/>
+    <updated>2020-03-30T00:32:37+08:00</updated>
+    <id>http://www.throne4j.com/hostnamectl.html</id>
+    <content type="html"><![CDATA[
+<p>在CentOS中，有三种定义的主机名:静态的（static），瞬态的（transient），和灵活的（pretty）。“静态”主机名也称为内核主机名，是系统在启动时从/etc/hostname自动初始化的主机名。“瞬态”主机名是在系统运行时临时分配的主机名，例如，通过DHCP或mDNS服务器分配。静态主机名和瞬态主机名都遵从作为互联网域名同样的字符限制规则。而另一方面，“灵活”主机名则允许使用自由形式（包括特殊/空白字符）的主机名，以展示给终端用户（如godson）。</p>
+
+<p>在CentOS 7中，有个叫hostnamectl的命令行工具，它允许你查看或修改与主机名相关的配置。</p>
+
+<ol>
+<li>要查看主机名相关的设置：</li>
+</ol>
+
+<pre><code class="language-text">[godson@localhost ~]$ hostnamectl 
+   Static hostname: localhost.localdomain
+         Icon name: computer-vm
+           Chassis: vm
+        Machine ID: 50565701419746a08905ba05b882cd40
+           Boot ID: a599742730414a448408e1d7a9bbf9d3
+    Virtualization: vmware
+  Operating System: CentOS Linux 7 (Core)
+       CPE OS Name: cpe:/o:centos:centos:7
+            Kernel: Linux 3.10.0-957.el7.x86_64
+      Architecture: x86-64
+</code></pre>
+
+<ol>
+<li>只查看静态、瞬态或灵活主机名，分别使用“--static”，“--transient”或“--pretty”选项。</li>
+</ol>
+
+<pre><code class="language-text">[godson@localhost ~]$ hostnamectl --static
+localhost.localdomain
+[[godson@localhost ~]$ hostnamectl --transient
+localhost.localdomain
+[godson@localhost ~]$ hostnamectl --pretty
+</code></pre>
+
+<ol>
+<li>要同时修改所有三个主机名：静态、瞬态和灵活主机名：</li>
+</ol>
+
+<pre><code class="language-text">[godson@localhost ~]$ se
+[godson@localhost ~]$ hostnamectl --pretty
+godson
+[godson@localhost ~]$ hostnamectl --static
+godson
+[godson@localhost ~]$ hostnamectl --transient
+godson
+</code></pre>
+
+<p>就像上面展示的那样，在修改静态/瞬态主机名时，任何特殊字符或空白字符会被移除，而提供的参数中的任何大写字母会自动转化为小写。一旦修改了静态主机名，/etc/hostname 将被自动更新。然而，/etc/hosts 不会更新以保存所做的修改，所以你每次在修改主机名后一定要手动更新/etc/hosts，之后再重启CentOS 7。否则系统再启动时会很慢。</p>
+
+<ol>
+<li>手动更新/etc/hosts</li>
+</ol>
+
+<pre><code class="language-text">[godson@localhost ~]$ vim /etc/hosts
+127.0.0.1      godson
+#127.0.0.1  localhost localhost.localdomain localhost4 localhost4.localdomain
+::1        localhost localhost.localdomain localhost6 localhost6.localdomain
+</code></pre>
+
+<ol>
+<li>重启CentOS 7 之后</li>
+</ol>
+
+<pre><code class="language-text">[godson@godson ~]# hostname
+godson
+[godson@godson ~]# hostnamectl --transient
+godson
+[godson@godson ~]# hostnamectl --static
+godson
+[godson@godson ~]# hostnamectl --pretty
+godson
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh 免密登录服务器]]></title>
+    <link href="http://www.throne4j.com/SSH.html"/>
+    <updated>2020-03-30T00:02:55+08:00</updated>
+    <id>http://www.throne4j.com/SSH.html</id>
+    <content type="html"><![CDATA[
+<p>现在有服务器 Server-A,用户名: jetty, ip: 172.16.65.133, 现在希望从本地能够免密访问 Server-A。<br/>
+这里我们需要 ssh-keygen 命令来帮我们完成这项任务。</p>
+
+<p>ssh-keygen: 为了让两个linux机器之间使用ssh不需要用户名和密码。<br/>
+采用了数字签名RSA或者DSA来完成这个操作。</p>
+
+<h2 id="toc_0">生成本地公钥和私钥</h2>
+
+<pre><code class="language-text">&gt; ssh-keygen -t rsa -C &#39;注释&#39;
+</code></pre>
+
+<p>本地机器 .ssh 目录下生成文件 :  id_rsa  id_rsa.pub</p>
+
+<h2 id="toc_1">将本地生成的id_rsa.pub(公钥)追加到 Server-A 的目录~/.ssh/authorized_keys文件中</h2>
+
+<pre><code class="language-text">&gt; ssh-copyid jetty@172.16.65.133
+</code></pre>
+
+<p>上传文件方式：</p>
+
+<ul>
+<li>cat ~/.ssh/id_rsa.pub | ssh -p 22 jetty@172.16.65.133 &#39;cat &gt;&gt; ~/.ssh/authorized_keys&#39;</li>
+<li>ssh-copyid jetty@172.16.65.133</li>
+<li>scp -P 22 ~/.ssh/id_rsa.pub jetty@172.16.65.133:~/。<br/>
+注意： Server-A 服务器上.ssh 目录的权限为700，其下文件authorized_keys和私钥的权限为600。否则会因为权限问题导致无法免密码登录。</li>
+</ul>
+
+<p>上面步骤做完之后我们就可以免密登录 Server-A 了</p>
+
+<pre><code class="language-text">&gt; ssh jetty@172.16.65.133
+Last login: Sun Mar 29 12:17:53 2020 from 172.16.65.1
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+&gt; [jetty@jetty ~]$ 
+</code></pre>
 
 ]]></content>
   </entry>
