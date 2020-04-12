@@ -4,13 +4,246 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-11T18:10:24+08:00</updated>
+  <updated>2020-04-12T16:14:33+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[Hotspot虚拟机中java对象管理]]></title>
+    <link href="http://www.throne4j.com/15866239860150.html"/>
+    <updated>2020-04-12T00:53:06+08:00</updated>
+    <id>http://www.throne4j.com/15866239860150.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">对象的创建</h2>
+
+<h2 id="toc_1">对象的内存布局</h2>
+
+<h2 id="toc_2">对象访问定位</h2>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JVM自动内存管理]]></title>
+    <link href="http://www.throne4j.com/15866079598905.html"/>
+    <updated>2020-04-11T20:25:59+08:00</updated>
+    <id>http://www.throne4j.com/15866079598905.html</id>
+    <content type="html"><![CDATA[
+<p>我们在进行java开发的过程中，我们根本不用去为每一个对象申请以及释放内存空间，这是是由于JVM帮我们完成了对象的内存管理，如果我们不了解JVM是怎么使用内存的，一旦发生内存泄漏或者溢出方面的问题，那只能火急火燎的找大牛过来帮忙处理了。</p>
+
+<h2 id="toc_0">运行时数据区域</h2>
+
+<p>JVM在运行过程中，会把内存分为多个不同的数据区，他们各有各的用途，我们通过下图看下JVM是如何对内存结构进行划分的：<br/>
+<img src="media/15866079598905/15866792581507.jpg" alt="" style="width:1002px;"/></p>
+
+<h2 id="toc_1">程序计数器</h2>
+
+<p>字节码解释器工作室就是通过改变这个计数器的值来选取吓一跳需要执行的字节码指令，他是程序控制流的指示器(分支、循环、跳转、异常处理、线程回复等基础功能都需要程序计数器)。<br/>
+由于jvm多线程是通过线程轮流切、分配处理器执行时间(cpu时间片轮转机制)来实现，因此为了线程在切换后能恢复到正确的执行位置，每条线程需要一个独立的程序计数器，各条线程的程序计数器互不影响，独立存储，因此<strong>程序计数器是线程私有的</strong>。此块区域也是唯一一个没有OOM的内存区。</p>
+
+<h2 id="toc_2">java虚拟机栈</h2>
+
+<p>JVM栈描述的是java方法执行的线程内存模型：每个方法被执行的时候，JVM都会同步创建一个栈帧用于存储局部变量表、操作数栈、动态连接、方法出口等信息。</p>
+
+<ul>
+<li>栈帧<br/>
+一个线程中，每调用一个方法就创建一个栈帧（stack frame），方法结束栈帧销毁
+<ul>
+<li>局部变量表 <br/>
+存放了编译期可知的各种java虚拟机基本数据类型、对象引用(方法参数、局部变量等)和returnAddress类型(指向了一条字节码指令的地址)，这些数据类型在局部变量表中的存储空间以局部变量槽（Slot）来表示，局部变量表的容量以变量槽（Variable Slot）为最小单位。</li>
+<li>操作数栈</li>
+<li>动态连接</li>
+<li>方法出口</li>
+</ul></li>
+</ul>
+
+<p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。<br/>
+OutOfMemoryError：</p>
+
+<pre><code class="language-java">/**
+ * jvm栈OOM(此操作可能拖垮cpu，请谨慎执行)
+ * -Xss256k
+ **/
+public class StackOOMErrorMock {
+    public static void main(String[] args) {
+        for (int i = 0; ; i++) {
+            new Thread(()-&gt;{
+                while (true) {
+
+                }
+            }).start();
+        }
+    }
+}
+</code></pre>
+
+<p>StackOverFlowError：</p>
+
+<pre><code class="language-java">/**
+ * StackOverFlowError
+ * -Xss256k 栈大小
+ */
+public class StackOverFlowMock {
+    private static int index = 1;
+
+    public void call() {
+        index++;
+        call();
+    }
+
+    public static void main(String[] args) {
+        StackOverFlowMock mock = new StackOverFlowMock();
+        try {
+            mock.call();
+        } catch (Throwable e) {
+            System.out.println(&quot;Stack deep : &quot; + index);
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<h2 id="toc_3">本地方法栈</h2>
+
+<p>与java虚拟机栈的作用相似，不同的是此块区域是为本地方(native)法服务的。</p>
+
+<p>OutOfMemoryError：</p>
+
+<p>StackOverFlowError：</p>
+
+<h2 id="toc_4">java堆内存</h2>
+
+<p>java堆内存是所有线程共享的一块内存区域，用于存储对象的实例数据。在JVM启动的时候创建。</p>
+
+<p>从垃圾回收的角度看的话，基于“经典分代”设计的垃圾收集器看来，java堆可以分为新生代、老年代（主要存放应用程序中生命周期长的内存对象）和永久代，新生代又分为Eden区、to suvivor区、from survivor区。</p>
+
+<p>从分配内存的角度看的话，所有线程共享的java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer, TLAB）,可以提升对象分配时的效率。</p>
+
+<p>可引起OutOfMemoryError异常</p>
+
+<pre><code class="language-java">
+/**
+ * OOM 异常 -Xms5m -Xmx5m
+ */
+public class HeapOomMock {
+    public static void main(String[] args) {
+        List&lt;byte[]&gt; list = new ArrayList&lt;byte[]&gt;();
+        int i = 0;
+        boolean flag = true;
+        while (flag) {
+            try {
+                i++;
+                list.add(new byte[1024 * 1024]);//每次增加一个1M大小的数组对象
+            } catch (Throwable e) {
+                e.printStackTrace();
+                flag = false;
+                System.out.println(&quot;count=&quot; + i);//记录运行的次数
+            }
+        }
+    }
+}
+</code></pre>
+
+<h2 id="toc_5">方法区</h2>
+
+<p>方法区是所有线程共享的一块内存区域，用于存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
+
+<p>jdk7之前采用永久代来实现，占用jvm的堆内存不说，还可能会OOM: PermGen space,<br/>
+jdk8之后移除永久代而采用了本地内存来实现方法区，理论上来说，只要物理条件允许，这个区域要多大有多大。</p>
+
+<p>可引起OutOfMemoryError异常：</p>
+
+<pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+
+/**
+ * jdk8之前： -XX:PermSize=10M -XX:MaxPermSize=10M
+ * jdk8及之后： -XX:MaxMetaspaceSize=20m
+ *
+ */
+public class MetaSpaceMemory {
+    public static void main(String[] args) {
+        for (; ; ) {
+            Enhancer enhancer = new Enhancer();
+            enhancer.setSuperclass(MetaSpaceMemory.class);
+            enhancer.setUseCache(false);
+            enhancer.setCallback((MethodInterceptor) (obj, method, args1, proxy) -&gt; proxy.invokeSuper(obj, args1));
+            System.out.println(&quot;metaspace oom&quot;);
+            enhancer.create();
+        }
+    }
+
+    private Object person;
+
+    public Object getPerson() {
+        return person;
+    }
+
+    public void setPerson(Object person) {
+        this.person = person;
+    }
+
+}
+</code></pre>
+
+<h2 id="toc_6">运行时常量池</h2>
+
+<p>运行时常量池是方法区的一部分，Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到运行时常量池中。</p>
+
+<p>运行时常量池相对于Class文件常量池的另外一个重要特征是具备动态性。java语言并不要求常量一定只在编译器产生。</p>
+
+<p>例如 String类的intern()方法就是在JVM运行期间将新的常量放入到常量池中。</p>
+
+<p><strong>注意：</strong> jdk6之前字符串常量池是放在永久区中的，第一次创建字符串实例的时候讲字符串复制到常量池中，intern()返回常量池中的引用地址，而jdk6之后字符串常量池被移动到了java堆内存中,所以直接将字符串首次出现的引用地址记录到常量池就可以了，这是intern()方法返回的和堆中字符串实例是同一个引用地址。</p>
+
+<p>可引起OutOfMemoryError异常：</p>
+
+<pre><code class="language-java">/**
+ * jdk1.6之前 -XX:PermSize=6M -XX:MaxPermSize=6M
+ * jdk1.6之后 -Xmx6M
+ **/
+public class ConstantPoolOOMMock {
+
+    public static void main(String[] args) {
+        Set&lt;String&gt; stringSet = new HashSet&lt;&gt;();
+        int i = 0;
+        while (true) {
+            stringSet.add(String.valueOf(i++).intern());
+        }
+    }
+}
+</code></pre>
+
+<h2 id="toc_7">直接内存</h2>
+
+<p><strong>直接内存不是虚拟机运行时数据区的一部分</strong><br/>
+NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可以使用native函数库直接分配堆外内存，然后通过一个存储在java堆里面的 DirectByteBuffer 作为这块直接内存的引用进行操作。使用直接内存避免了java堆与Native堆来回复制数据，一些场景下，能显著提高运行性能。</p>
+
+<p>jdk中直接内存的回收就用到虚引用，由于jvm自动内存管理的范围是堆内存，而直接内存是在堆内存之外（其实是内存映射文件，自行去理解虚拟内存空间的相关概念），所以直接内存的分配和回收都是有Unsafe类去操作，java在申请一块直接内存之后，会在堆内存分配一个对象保存这个堆外内存的引用，这个对象被垃圾收集器管理，一旦这个对象被回收，相应的用户线程会收到通知并对直接内存进行清理工作。见 sun.misc.Cleaner类</p>
+
+<p>OOM异常：</p>
+
+<pre><code class="language-java">/**
+ * -XX:MaxDirectMemorySize=5M -Xmx20M
+ **/
+public class DirectMemoryOOMMock {
+    private static final int _1MB = 1024*1024*10;
+    public static void main(String[] args) throws IllegalAccessException {
+        Field declaredField = Unsafe.class.getDeclaredFields()[0];
+        declaredField.setAccessible(true);
+        Unsafe unsafe = (Unsafe)declaredField.get(null);
+        while (true)
+            unsafe.allocateMemory(_1MB);
+    }
+}
+</code></pre>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[软引用（SoftReference）和引用队列（ReferenceQueue）]]></title>
@@ -85,7 +318,6 @@ public class Employee {
 <pre><code class="language-java">import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.HashTable;
-
 
 public class EmployeeCache {
     // 一个Cache实例
@@ -407,27 +639,6 @@ System.out.println(t2.i);
 <p>本文通过几个具体的情景，介绍了Java序列化的一些高级知识，虽说高级，并不是说读者们都不了解，希望用笔者介绍的情景让读者加深印象，能够更加合理的利用Java序列化技术，在未来开发之路上遇到序列化问题时，可以及时的解决。由于本人知识水平有限，文章中倘若有错误的地方，欢迎联系我批评指正。</p>
 
 <h1 id="toc_11">转载自  <a href="https://www.cnblogs.com/wxgblogs/p/5849951.html">读书使人进步</a></h1>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[查看远程mysql 主机的 binlog 日志]]></title>
-    <link href="http://www.throne4j.com/15857296160676.html"/>
-    <updated>2020-04-01T16:26:56+08:00</updated>
-    <id>http://www.throne4j.com/15857296160676.html</id>
-    <content type="html"><![CDATA[
-<p>show master status;</p>
-
-<p>show binary logs;</p>
-
-<p>show binlog events in &#39;mysql-bin.000030&#39;;</p>
-
-<p>c查看<br/>
-show global variables like &quot;%binlog_format%&quot;;</p>
-
-<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
-</code></pre>
 
 ]]></content>
   </entry>
@@ -1491,8 +1702,7 @@ public class SocketReadHandler implements Runnable{
 
 <p>根据上面的状态切换图，我们很容易实现一个基本的熔断器，只需要在内部维护一个状态机，并定义好状态转移的规则，可以使用State模式来实现。首先，我们定义一个表示状态转移操作的抽象类CircuitBreakerState：</p>
 
-<pre><code class="language-text">
-public abstract class CircuitBreakerState
+<pre><code class="language-java">public abstract class CircuitBreakerState
 {
     //熔断器
     protected static CircuitBreaker circuitBreaker;
@@ -1527,7 +1737,7 @@ public abstract class CircuitBreakerState
 
 <p>然后在分别实现表示熔断器三个状态的类。首先实现闭合状态CloseState：</p>
 
-<pre><code class="language-text">public class ClosedState extends CircuitBreakerState {
+<pre><code class="language-java">public class ClosedState extends CircuitBreakerState {
     public ClosedState(CircuitBreaker circuitBreaker) {
         super(circuitBreaker)
         //重置失败计数器
@@ -1547,7 +1757,7 @@ public abstract class CircuitBreakerState
 
 <p>在闭合状态下，如果发生错误，并且错误次数达到阈值，则状态机切换到断开状态。断开状态OpenState的实现如下：</p>
 
-<pre><code class="language-text">public class OpenState extends CircuitBreakerState {
+<pre><code class="language-java">public class OpenState extends CircuitBreakerState {
     private final static Timer timer;
 
     public OpenState(CircuitBreaker circuitBreaker) {
@@ -1573,7 +1783,7 @@ public abstract class CircuitBreakerState
 
 <p>最后半断开Half-Open状态实现如下：</p>
 
-<pre><code class="language-text">public class HalfOpenState extends CircuitBreakerState {
+<pre><code class="language-java">public class HalfOpenState extends CircuitBreakerState {
     public HalfOpenState(CircuitBreaker circuitBreaker)  {
         // 重置连续成功计数
         circuitBreaker.resetConsecutiveSuccessCount();
@@ -1599,7 +1809,7 @@ public abstract class CircuitBreakerState
 
 <p>有了以上三种状态切换之后，我们要实现CircuitBreaker类了:</p>
 
-<pre><code class="language-text">@data
+<pre><code class="language-java">@data
 public class CircuitBreaker {
     private final static object monitor = new object();
     private CircuitBreakerState state;
@@ -1623,7 +1833,7 @@ public class CircuitBreaker {
         consecutiveSuccessThreshold = consecutiveSuccessThreshold;
         timeout = timeout;
         moveToClosedState();
-}
+    }
     
     public bool IsClosed {
         return state is ClosedState; 
@@ -1726,14 +1936,16 @@ public class CircuitBreaker {
 
 <p>首先我们编写几个帮助类以模拟连续执行次数：</p>
 
-<p>private static void CallXAmountOfTimes(function codeToCall, int timesToCall) {<br/>
-    for (int i = 0; i &lt; timesToCall; i++) {<br/>
-        codeToCall();<br/>
-    }<br/>
-}<br/>
-以下类用来抛出特定异常：</p>
+<pre><code class="language-java">private static void CallXAmountOfTimes(function codeToCall, int timesToCall) {
+    for (int i = 0; i &lt; timesToCall; i++) {
+        codeToCall();
+    }
+}
+</code></pre>
 
-<pre><code class="language-text">private static void AssertThatExceptionIsThrown&lt;T&gt;(Action code) where T : Exception {
+<p>以下类用来抛出特定异常：</p>
+
+<pre><code class="language-java">private static void AssertThatExceptionIsThrown&lt;T&gt;(Action code) where T : Exception {
     try {
         code();
     } catch (T) {
@@ -1746,7 +1958,7 @@ public class CircuitBreaker {
 
 <p>然后，使用NUnit，可以建立如下Case：</p>
 
-<pre><code class="language-text">@test
+<pre><code class="language-java">@test
 public void ClosesIfProtectedCodeSucceedsInHalfOpenState()
 {
     var stub = new Stub(10);
@@ -1780,6 +1992,27 @@ public void ClosesIfProtectedCodeSucceedsInHalfOpenState()
 在应用系统中，我们通常会去调用远程的服务或者资源(这些服务或资源通常是来自第三方)，对这些远程服务或者资源的调用通常会导致失败，或者挂起没有响应，直到超时的产生。在一些极端情况下，大量的请求会阻塞在对这些异常的远程服务的调用上，会导致一些关键性的系统资源耗尽，从而导致级联的失败，从而拖垮整个系统。熔断器模式在内部采用状态机的形式，使得对这些可能会导致请求失败的远程服务进行了包装，当远程服务发生异常时，可以立即对进来的请求返回错误响应，并告知系统管理员，将错误控制在局部范围内，从而提高系统的稳定性和可靠性。</p>
 
 <p>本文首先介绍了熔断器模式使用的场景，能够解决的问题，以及需要考虑的因素，最后使用代码展示了如何实现一个简单的熔断器，并且给出了测试用例，希望这些对您有帮助，尤其是在当您的系统调用了外部的远程服务或者资源，同时访问量又很大的情况下对提高系统的稳定性和可靠性有所帮助。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[查看远程mysql 主机的 binlog 日志]]></title>
+    <link href="http://www.throne4j.com/15857296160676.html"/>
+    <updated>2020-04-01T16:26:56+08:00</updated>
+    <id>http://www.throne4j.com/15857296160676.html</id>
+    <content type="html"><![CDATA[
+<p>show master status;</p>
+
+<p>show binary logs;</p>
+
+<p>show binlog events in &#39;mysql-bin.000030&#39;;</p>
+
+<p>c查看<br/>
+show global variables like &quot;%binlog_format%&quot;;</p>
+
+<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
+</code></pre>
 
 ]]></content>
   </entry>
@@ -2258,6 +2491,22 @@ thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
 </code></pre>
 
 <p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mysql索引]]></title>
+    <link href="http://www.throne4j.com/15866068042885.html"/>
+    <updated>2020-04-11T20:06:44+08:00</updated>
+    <id>http://www.throne4j.com/15866068042885.html</id>
+    <content type="html"><![CDATA[
+<p>索引是帮助mysql高校获取数据的数据结构<br/>
+在rdbms中，索引存储在硬盘中</p>
+
+<p>为什么mysql要默认使用B+ tree而不是B树、AVL树</p>
+
+<p>回表操作</p>
 
 ]]></content>
   </entry>
