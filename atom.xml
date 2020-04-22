@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-12T16:14:37+08:00</updated>
+  <updated>2020-04-23T01:35:56+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,377 +13,21 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[Hotspot虚拟机中java对象管理]]></title>
-    <link href="http://www.throne4j.com/15866239860150.html"/>
-    <updated>2020-04-12T00:53:06+08:00</updated>
-    <id>http://www.throne4j.com/15866239860150.html</id>
+    <title type="html"><![CDATA[CAS 无锁操作]]></title>
+    <link href="http://www.throne4j.com/15874857577712.html"/>
+    <updated>2020-04-22T00:15:57+08:00</updated>
+    <id>http://www.throne4j.com/15874857577712.html</id>
     <content type="html"><![CDATA[
-<h2 id="toc_0">对象的创建</h2>
-
-<h2 id="toc_1">对象的内存布局</h2>
-
-<h2 id="toc_2">对象访问定位</h2>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[JVM自动内存管理]]></title>
-    <link href="http://www.throne4j.com/15866079598905.html"/>
-    <updated>2020-04-11T20:25:59+08:00</updated>
-    <id>http://www.throne4j.com/15866079598905.html</id>
+    <title type="html"><![CDATA[TODO 细说JDK之 Future 模式]]></title>
+    <link href="http://www.throne4j.com/15867858130748.html"/>
+    <updated>2020-04-13T21:50:13+08:00</updated>
+    <id>http://www.throne4j.com/15867858130748.html</id>
     <content type="html"><![CDATA[
-<p>我们在进行java开发的过程中，我们根本不用去为每一个对象申请以及释放内存空间，这是是由于JVM帮我们完成了对象的内存管理，如果我们不了解JVM是怎么使用内存的，一旦发生内存泄漏或者溢出方面的问题，那只能火急火燎的找大牛过来帮忙处理了。</p>
-
-<h2 id="toc_0">运行时数据区域</h2>
-
-<p>JVM在运行过程中，会把内存分为多个不同的数据区，他们各有各的用途，我们通过下图看下JVM是如何对内存结构进行划分的：<br/>
-<img src="media/15866079598905/15866802670837.jpg" alt="" style="width:1082px;"/></p>
-
-<h2 id="toc_1">程序计数器</h2>
-
-<p>字节码解释器工作室就是通过改变这个计数器的值来选取吓一跳需要执行的字节码指令，他是程序控制流的指示器(分支、循环、跳转、异常处理、线程回复等基础功能都需要程序计数器)。<br/>
-由于jvm多线程是通过线程轮流切、分配处理器执行时间(cpu时间片轮转机制)来实现，因此为了线程在切换后能恢复到正确的执行位置，每条线程需要一个独立的程序计数器，各条线程的程序计数器互不影响，独立存储，因此<strong>程序计数器是线程私有的</strong>。此块区域也是唯一一个没有OOM的内存区。</p>
-
-<h2 id="toc_2">java虚拟机栈</h2>
-
-<p>JVM栈描述的是java方法执行的线程内存模型：每个方法被执行的时候，JVM都会同步创建一个栈帧用于存储局部变量表、操作数栈、动态连接、方法出口等信息。</p>
-
-<ul>
-<li>栈帧<br/>
-一个线程中，每调用一个方法就创建一个栈帧（stack frame），方法结束栈帧销毁
-<ul>
-<li>局部变量表 <br/>
-存放了编译期可知的各种java虚拟机基本数据类型、对象引用(方法参数、局部变量等)和returnAddress类型(指向了一条字节码指令的地址)，这些数据类型在局部变量表中的存储空间以局部变量槽（Slot）来表示，局部变量表的容量以变量槽（Variable Slot）为最小单位。</li>
-<li>操作数栈</li>
-<li>动态连接</li>
-<li>方法出口</li>
-</ul></li>
-</ul>
-
-<p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。<br/>
-OutOfMemoryError：</p>
-
-<pre><code class="language-java">/**
- * jvm栈OOM(此操作可能拖垮cpu，请谨慎执行)
- * -Xss256k
- **/
-public class StackOOMErrorMock {
-    public static void main(String[] args) {
-        for (int i = 0; ; i++) {
-            new Thread(()-&gt;{
-                while (true) {
-
-                }
-            }).start();
-        }
-    }
-}
-</code></pre>
-
-<p>StackOverFlowError：</p>
-
-<pre><code class="language-java">/**
- * StackOverFlowError
- * -Xss256k 栈大小
- */
-public class StackOverFlowMock {
-    private static int index = 1;
-
-    public void call() {
-        index++;
-        call();
-    }
-
-    public static void main(String[] args) {
-        StackOverFlowMock mock = new StackOverFlowMock();
-        try {
-            mock.call();
-        } catch (Throwable e) {
-            System.out.println(&quot;Stack deep : &quot; + index);
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<h2 id="toc_3">本地方法栈</h2>
-
-<p>与java虚拟机栈的作用相似，不同的是此块区域是为本地方(native)法服务的。</p>
-
-<p>OutOfMemoryError：</p>
-
-<p>StackOverFlowError：</p>
-
-<h2 id="toc_4">java堆内存</h2>
-
-<p>java堆内存是所有线程共享的一块内存区域，用于存储对象的实例数据。在JVM启动的时候创建。</p>
-
-<p>从垃圾回收的角度看的话，基于“经典分代”设计的垃圾收集器看来，java堆可以分为新生代、老年代（主要存放应用程序中生命周期长的内存对象）和永久代，新生代又分为Eden区、to suvivor区、from survivor区。</p>
-
-<p>从分配内存的角度看的话，所有线程共享的java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer, TLAB）,可以提升对象分配时的效率。</p>
-
-<p>可引起OutOfMemoryError异常</p>
-
-<pre><code class="language-java">
-/**
- * OOM 异常 -Xms5m -Xmx5m
- */
-public class HeapOomMock {
-    public static void main(String[] args) {
-        List&lt;byte[]&gt; list = new ArrayList&lt;byte[]&gt;();
-        int i = 0;
-        boolean flag = true;
-        while (flag) {
-            try {
-                i++;
-                list.add(new byte[1024 * 1024]);//每次增加一个1M大小的数组对象
-            } catch (Throwable e) {
-                e.printStackTrace();
-                flag = false;
-                System.out.println(&quot;count=&quot; + i);//记录运行的次数
-            }
-        }
-    }
-}
-</code></pre>
-
-<h2 id="toc_5">方法区</h2>
-
-<p>方法区是所有线程共享的一块内存区域，用于存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-
-<p>jdk7之前采用永久代来实现，占用jvm的堆内存不说，还可能会OOM: PermGen space,<br/>
-jdk8之后移除永久代而采用了本地内存来实现方法区，理论上来说，只要物理条件允许，这个区域要多大有多大。</p>
-
-<p>可引起OutOfMemoryError异常：</p>
-
-<pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-
-/**
- * jdk8之前： -XX:PermSize=10M -XX:MaxPermSize=10M
- * jdk8及之后： -XX:MaxMetaspaceSize=20m
- *
- */
-public class MetaSpaceMemory {
-    public static void main(String[] args) {
-        for (; ; ) {
-            Enhancer enhancer = new Enhancer();
-            enhancer.setSuperclass(MetaSpaceMemory.class);
-            enhancer.setUseCache(false);
-            enhancer.setCallback((MethodInterceptor) (obj, method, args1, proxy) -&gt; proxy.invokeSuper(obj, args1));
-            System.out.println(&quot;metaspace oom&quot;);
-            enhancer.create();
-        }
-    }
-
-    private Object person;
-
-    public Object getPerson() {
-        return person;
-    }
-
-    public void setPerson(Object person) {
-        this.person = person;
-    }
-
-}
-</code></pre>
-
-<h2 id="toc_6">运行时常量池</h2>
-
-<p>运行时常量池是方法区的一部分，Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到运行时常量池中。</p>
-
-<p>运行时常量池相对于Class文件常量池的另外一个重要特征是具备动态性。java语言并不要求常量一定只在编译器产生。</p>
-
-<p>例如 String类的intern()方法就是在JVM运行期间将新的常量放入到常量池中。</p>
-
-<p><strong>注意：</strong> jdk6之前字符串常量池是放在永久区中的，第一次创建字符串实例的时候讲字符串复制到常量池中，intern()返回常量池中的引用地址，而jdk6之后字符串常量池被移动到了java堆内存中,所以直接将字符串首次出现的引用地址记录到常量池就可以了，这是intern()方法返回的和堆中字符串实例是同一个引用地址。</p>
-
-<p>可引起OutOfMemoryError异常：</p>
-
-<pre><code class="language-java">/**
- * jdk1.6之前 -XX:PermSize=6M -XX:MaxPermSize=6M
- * jdk1.6之后 -Xmx6M
- **/
-public class ConstantPoolOOMMock {
-
-    public static void main(String[] args) {
-        Set&lt;String&gt; stringSet = new HashSet&lt;&gt;();
-        int i = 0;
-        while (true) {
-            stringSet.add(String.valueOf(i++).intern());
-        }
-    }
-}
-</code></pre>
-
-<h2 id="toc_7">直接内存</h2>
-
-<p><strong>直接内存不是虚拟机运行时数据区的一部分</strong><br/>
-NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可以使用native函数库直接分配堆外内存，然后通过一个存储在java堆里面的 DirectByteBuffer 作为这块直接内存的引用进行操作。使用直接内存避免了java堆与Native堆来回复制数据，一些场景下，能显著提高运行性能。</p>
-
-<p>jdk中直接内存的回收就用到虚引用，由于jvm自动内存管理的范围是堆内存，而直接内存是在堆内存之外（其实是内存映射文件，自行去理解虚拟内存空间的相关概念），所以直接内存的分配和回收都是有Unsafe类去操作，java在申请一块直接内存之后，会在堆内存分配一个对象保存这个堆外内存的引用，这个对象被垃圾收集器管理，一旦这个对象被回收，相应的用户线程会收到通知并对直接内存进行清理工作。见 sun.misc.Cleaner类</p>
-
-<p>OOM异常：</p>
-
-<pre><code class="language-java">/**
- * -XX:MaxDirectMemorySize=5M -Xmx20M
- **/
-public class DirectMemoryOOMMock {
-    private static final int _1MB = 1024*1024*10;
-    public static void main(String[] args) throws IllegalAccessException {
-        Field declaredField = Unsafe.class.getDeclaredFields()[0];
-        declaredField.setAccessible(true);
-        Unsafe unsafe = (Unsafe)declaredField.get(null);
-        while (true)
-            unsafe.allocateMemory(_1MB);
-    }
-}
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[软引用（SoftReference）和引用队列（ReferenceQueue）]]></title>
-    <link href="http://www.throne4j.com/15865981620428.html"/>
-    <updated>2020-04-11T17:42:42+08:00</updated>
-    <id>http://www.throne4j.com/15865981620428.html</id>
-    <content type="html"><![CDATA[
-<p>软引用可用来实现内存敏感的高速缓存。</p>
-
-<h2 id="toc_0">软引用（SoftReference）</h2>
-
-<p>如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。</p>
-
-<p>SoftReference的特点是它的一个实例保存对一个Java对象的软引用，该软引用的存在不妨碍垃圾收集线程对该Java对象的回收。也就是说，一旦SoftReference保存了对一个Java对象的软引用后，在垃圾线程对这个Java对象回收前，SoftReference类所提供的get()方法返回Java对象的强引用。另外，一旦垃圾线程回收该Java对象之后，get()方法将返回null。</p>
-
-<pre><code class="language-java">MyObject aRef = new MyObject();
-SoftReference aSoftRef=new SoftReference(aRef);
-</code></pre>
-
-<p>此时，对于这个MyObject对象，有两个引用路径，一个是来自SoftReference对象的软引用，一个来自变量aReference的强引用，所以这个MyObject对象是强可及对象。<br/>
-随即，我们可以结束aReference对这个MyObject实例的强引用: aRef = null;</p>
-
-<p>此后，这个MyObject对象成为了软可及对象。如果垃圾收集线程进行内存垃圾收集，并不会因为有一个SoftReference对该对象的引用而始终保留该对象。Java虚拟机的垃圾收集线程对软可及对象和其他一般Java对象进行了区别对待:软可及对象的清理是由垃圾收集线程根据其特定算法按照内存需求决定的。也就是说，垃圾收集线程会在虚拟机抛出OutOfMemoryError之前回收软可及对象，而且虚拟机会尽可能优先回收长时间闲置不用的软可及对象，对那些刚刚构建的或刚刚使用过的“新”软可反对象会被虚拟机尽可能保留。在回收这些对象之前，我们可以通过:</p>
-
-<pre><code class="language-java">MyObject anotherRef=(MyObject)aSoftRef.get();
-</code></pre>
-
-<p>重新获得对该实例的强引用。而回收之后，调用get()方法就只能得到null了。</p>
-
-<h2 id="toc_1">ReferenceQueue工作机制</h2>
-
-<p>软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。使用ReferenceQueue清除失去了软引用对象的SoftReference。</p>
-
-<p>作为一个Java对象，SoftReference对象除了具有保存软引用的特殊性之外，也具有Java对象的一般性。所以，当软可及对象被回收之后，虽然这个SoftReference对象的get()方法返回null,但这个SoftReference对象已经不再具有存在的价值，需要一个适当的清除机制，避免大量SoftReference对象带来的内存泄漏。在java.lang.ref包里还提供了ReferenceQueue。如果在创建SoftReference对象的时候，使用了一个ReferenceQueue对象作为参数提供给SoftReference的构造方法，如:</p>
-
-<pre><code class="language-text">ReferenceQueue queue = new ReferenceQueue();
-SoftReference ref=new SoftReference(aMyObject, queue);
-</code></pre>
-
-<p>那么当这个SoftReference所软引用的aMyOhject被垃圾收集器回收的同时，ref所强引用的SoftReference对象被列入ReferenceQueue。也就是说，ReferenceQueue中保存的对象是Reference对象，而且是已经失去了它所软引用的对象的Reference对象。另外从ReferenceQueue这个名字也可以看出，它是一个队列，当我们调用它的poll()方法的时候，如果这个队列中不是空队列，那么将返回队列前面的那个Reference对象。<br/>
-在任何时候，我们都可以调用ReferenceQueue的poll()方法来检查是否有它所关心的非强可及对象被回收。如果队列为空，将返回一个null,否则该方法返回队列中前面的一个Reference对象。利用这个方法，我们可以检查哪个SoftReference所软引用的对象已经被回收。于是我们可以把这些失去所软引用的对象的SoftReference对象清除掉。常用的方式为:</p>
-
-<pre><code class="language-text">SoftReference ref = null;
-while ((ref = (EmployeeRef) q.poll()) != null) {
-    // 清除ref
-}
-</code></pre>
-
-<h2 id="toc_2">使用软引用构建敏感数据的缓存</h2>
-
-<h3 id="toc_3">为什么需要使用软引用</h3>
-
-<p>首先，我们看一个雇员信息查询系统的实例。我们将使用一个Java语言实现的雇员信息查询系统查询存储在磁盘文件或者数据库中的雇员人事档案信息。作为一个用户，我们完全有可能需要回头去查看几分钟甚至几秒钟前查看过的雇员档案信息(同样，我们在浏览WEB页面的时候也经常会使用“后退”按钮)。这时我们通常会有两种程序实现方式:一种是把过去查看过的雇员信息保存在内存中，每一个存储了雇员档案信息的Java对象的生命周期贯穿整个应用程序始终;另一种是当用户开始查看其他雇员的档案信息的时候，把存储了当前所查看的雇员档案信息的Java对象结束引用，使得垃圾收集线程可以回收其所占用的内存空间，当用户再次需要浏览该雇员的档案信息的时候，重新构建该雇员的信息。很显然，第一种实现方法将造成大量的内存浪费，而第二种实现的缺陷在于即使垃圾收集线程还没有进行垃圾收集，包含雇员档案信息的对象仍然完好地保存在内存中，应用程序也要重新构建一个对象。我们知道，访问磁盘文件、访问网络资源、查询数据库等操作都是影响应用程序执行性能的重要因素，如果能重新获取那些尚未被回收的Java对象的引用，必将减少不必要的访问，大大提高程序的运行速度。</p>
-
-<h2 id="toc_4">通过软可及对象重获方法实现Java对象的高速缓存</h2>
-
-<p>利用Java平台垃圾收集机制的特性以及前述的垃圾对象重获方法，我们通过一个雇员信息查询系统的小例子来说明如何构建一种高速缓存器来避免重复构建同一个对象带来的性能损失。我们将一个雇员的档案信息定义为一个Employee类:</p>
-
-<pre><code class="language-java">@Data
-public class Employee {
-    private String id;// 雇员的标识号码
-    private String name;// 雇员姓名
-    private String department;// 该雇员所在部门
-    private String Phone;// 该雇员联系电话
-    private int salary;// 该雇员薪资
-    private String origin;// 该雇员信息的来源
-}
-</code></pre>
-
-<p>这个Employee类的构造方法中我们可以预见，如果每次需要查询一个雇员的信息。哪怕是几秒中之前刚刚查询过的，都要重新构建一个实例，这是需要消耗很多时间的。下面是一个对Employee对象进行缓存的缓存器的定义:</p>
-
-<pre><code class="language-java">import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
-import java.util.HashTable;
-
-public class EmployeeCache {
-    // 一个Cache实例
-    private static EmployeeCache cache;
-    // 用于Chche内容的存储
-    private HashTable&lt;String,EmployeeRef&gt; employeeRefs;
-    private ReferenceQueue&lt;Employee&gt; q;// 垃圾Reference的队列
-    // 继承SoftReference，使得每一个实例都具有可识别的标识。并且该标识与其在HashMap内的key相同。
-    private class EmployeeRef extends SoftReference&lt;Employee&gt; {
-        private String _key = &quot;&quot;;
-        public EmployeeRef(Employee em, ReferenceQueue&lt;Employee&gt; q) {
-            super(em, q);
-            _key = em.getID();
-        }
-    }
-    // 构建一个缓存器实例
-    private EmployeeCache() {
-        employeeRefs = new HashTable&lt;String,EmployeeRef&gt;();
-        q = new ReferenceQueue&lt;Employee&gt;();
-    }
-    // 取得缓存器实例
-    public static EmployeeCache getInstance() {
-        if (cache == null) {
-            cache = new EmployeeCache();
-        }
-        return cache;
-    }
-    // 以软引用的方式对一个Employee对象的实例进行引用并保存该引用
-    private void cacheEmployee(Employee em) {
-        cleanCache();// 清除垃圾引用
-        EmployeeRef ref = new EmployeeRef(em, q);
-        employeeRefs.put(em.getID(), ref);
-    }
-    // 依据所指定的ID号，重新获取相应Employee对象的实例
-    public Employee getEmployee(String ID) {
-        Employee em = null;
-        // 缓存中是否有该Employee实例的软引用，如果有，从软引用中取得。
-        if (employeeRefs.containsKey(ID)) {
-            EmployeeRef ref = (EmployeeRef) employeeRefs.get(ID);
-            em = (Employee) ref.get();
-        }
-        // 如果没有软引用，或者从软引用中得到的实例是null，重新构建一个实例，
-        // 并保存对这个新建实例的软引用
-        if (em == null) {
-            em = new Employee(ID);
-            System.out.println(&quot;Retrieve From EmployeeInfoCenter. ID=&quot; + ID);
-            this.cacheEmployee(em);
-        }
-        return em;
-    }
-    // 清除那些所软引用的Employee对象已经被回收的EmployeeRef对象
-    private void cleanCache() {
-        EmployeeRef ref = null;
-        while ((ref = (EmployeeRef) q.poll()) != null) {
-            employeeRefs.remove(ref._key);
-        }
-    }
-    // 清除Cache内的全部内容
-    public void clearCache() {
-        cleanCache();
-        employeeRefs.clear();
-        System.gc();
-        System.runFinalization();
-    }
-}
-</code></pre>
 
 ]]></content>
   </entry>
@@ -1997,516 +1641,661 @@ public void ClosesIfProtectedCodeSucceedsInHalfOpenState()
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[查看远程mysql 主机的 binlog 日志]]></title>
-    <link href="http://www.throne4j.com/15857296160676.html"/>
-    <updated>2020-04-01T16:26:56+08:00</updated>
-    <id>http://www.throne4j.com/15857296160676.html</id>
+    <title type="html"><![CDATA[细说java 显式锁 Lock]]></title>
+    <link href="http://www.throne4j.com/15867933931035.html"/>
+    <updated>2020-04-13T23:56:33+08:00</updated>
+    <id>http://www.throne4j.com/15867933931035.html</id>
     <content type="html"><![CDATA[
-<p>show master status;</p>
+<p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
 
-<p>show binary logs;</p>
+<p>问:java中有了synchronized，为什么又会出现java显式锁呢？<br/>
+答：Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
 
-<p>show binlog events in &#39;mysql-bin.000030&#39;;</p>
+<p>使用synchronized方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
 
-<p>c查看<br/>
-show global variables like &quot;%binlog_format%&quot;;</p>
+<p>lock的使用应使用如下的惯用写法:</p>
 
-<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
+<pre><code class="language-java">Lock l = ...;
+l.lock();
+try{
+    // 访问被此锁保护起来的相关资源
+} finally{
+    l.unlock();
+}
 </code></pre>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ThreadLocal源码分析以及使用]]></title>
-    <link href="http://www.throne4j.com/ThreadLocal.html"/>
-    <updated>2020-04-09T22:54:53+08:00</updated>
-    <id>http://www.throne4j.com/ThreadLocal.html</id>
-    <content type="html"><![CDATA[
-<p>ThreadLocal该类提供线程局部变量，起到线程隔离的作用。</p>
+<pre><code class="language-text">public interface Lock {
+    // 获得锁资源
+    void lock();
+    // 尝试获得锁，如果当前线程被调用了interrupted则中断，并抛出异常，否则就获得锁
+    void lockInterruptibly() throws InterruptedException;
+    // 判断能否获得锁，如果能获得，则获得锁，并返回true(此时已经获得了锁)
+    boolean tryLock();
+    // 保持给定的等待时间，如果期间能拿到锁，则获得锁，同样如果期间被中断，则抛异常
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    // 释放锁
+    void unlock();
+    // 返回与此Lock对象绑定Condition实例
+    Condition newCondition();
+}
+</code></pre>
 
-<h2 id="toc_0">ThreadLocal结构分析</h2>
+<hr/>
 
-<ul>
-<li>首先我们看下ThreadLocal和Thread的它们之间的关系，如下图所示：</li>
-</ul>
+<h2 id="toc_0">ReentrantLock重入锁，内部实现有公平锁和非公平锁。</h2>
 
-<p><img src="media/15864440934982/15865132297584.jpg" alt=""/></p>
+<h3 id="toc_1">可重入</h3>
 
-<p><strong>Thread类内部声明了一个ThreadLocal.ThreadLocalMap类型的变量 threadLocals</strong>，ThreadLocal类负责维护ThreadLocal与Thread 之间关系的 ThreadLocalMap散列映射。</p>
+<p>重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞， 该特性的实现需要解决以下两个问题。<br/>
+1)线程再次获取锁。锁需要去识别获取锁的线程是否为当前占据锁的线程， 如果是，则再次成功获取。<br/>
+2)锁的最终释放。线程重复 n 次获取了锁，随后在第 n 次释放该锁后，其 他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示 当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于 0 时表示锁已 经成功释放。</p>
 
-<h2 id="toc_1">ThreadLocal的源码解析</h2>
+<p>nonfairTryAcquire 方法增加了再次获取同步状态的处理逻辑:通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请 求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。<br/>
+如果该锁被获取了 n 次，那么前(n-1)次 tryRelease(int releases)方法必须返回 false，而只有同步状态完全释放了，才能返回 true。可以看到，该方法将同步状 态是否为 0 作为最终释放的条件，当同步状态为 0 时，将占有线程设置为 null， 并返回 true，表示释放成功。</p>
 
-<p><img src="media/15864440934982/15865038471517.jpg" alt=""/></p>
+<h3 id="toc_2">公平和非公平锁</h3>
 
-<p>我们一起来看下ThreadLocal 内部代码</p>
+<pre><code class="language-java">public ReentrantLock(boolean fair) {
+    sync = fair ? new FairSync() : new NonfairSync();
+}
+</code></pre>
 
-<pre><code class="language-java">// 创建线程和ThreadLocal的关联映射
-void createMap(Thread t, T firstValue) {
-    t.threadLocals = new ThreadLocalMap(this, firstValue);
+<p>ReentrantLock 的构造函数中，默认的无参构造函数将会把 Sync 对象创建为NonfairSync 对象，这是一个“非公平锁”;</p>
+
+<p>而另一个构造函数 ReentrantLock(boolean fair)传入参数为 true 时将会把 Sync 对象创建为“公平锁” FairSync。</p>
+
+<p>nonfairTryAcquire(int acquires)方法，对于非公平锁，只要 CAS 设置同步状态 成功，则表示当前线程获取了锁，而公平锁则不同。</p>
+
+<p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
+
+<pre><code class="language-java">final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    } else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0) // overflow
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        setState(nextc);
+        return true;
+    }
+    return false;
 }
 
-// 获取线程 t 的threadLocalMap
-ThreadLocalMap getMap(Thread t) {
-    return t.threadLocals;
+protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (!hasQueuedPredecessors() &amp;&amp;
+                compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    } else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0)
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        setState(nextc);
+        return true;
+    }
+    return false;
 }
 
-// 设置当前线程的局部变量值
-public void set(T value) {
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);
-    if (map != null)
-        map.set(this, value);
-    else
-        createMap(t, value);
+protected final boolean tryRelease(int releases) {
+    int c = getState() - releases;
+    if (Thread.currentThread() != getExclusiveOwnerThread())
+        throw new IllegalMonitorStateException();
+    boolean free = false;
+    if (c == 0) {
+        free = true;
+        setExclusiveOwnerThread(null);
+    }
+    setState(c);
+    return free;
 }
+</code></pre>
 
-//获取当前线程的局部变量值
-public T get() {
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);
-    if (map != null) {
-        ThreadLocalMap.Entry e = map.getEntry(this);
-        if (e != null) {
-            T result = (T)e.value;
-            return result;
+<hr/>
+
+<h3 id="toc_3">condition接口</h3>
+
+<p>Condition与Lock要结合使用，使用Condition可以用来实现wait()和notify()/notifyAll()类似的等待/通知模式。与Object对象里不同的是，Condition更加灵活，可以在一个Lock对象里创建多个Condition实例，有选择的进行线程通知，在线程调度上更加灵活。<br/>
+Condition接口的通过<br/>
+java.util.concurrent.locks.AbstractQueuedSynchronizer.ConditionObject <br/>
+<a href="15867863097702.html">细说AbstractQueuedSynchronizer(AQS)</a><br/>
+来实现。</p>
+
+<p>使用Condition注释上的l栗子：</p>
+
+<pre><code class="language-java">/**
+ * 阻塞的有界队列
+ */
+public class BoundedBuffer {
+    final Lock lock = new ReentrantLock();
+    final Condition notFull  = lock.newCondition(); 
+    final Condition notEmpty = lock.newCondition(); 
+
+    final Object[] items = new Object[100];
+    int putptr, takeptr, count;
+
+    public void put(Object x) throws InterruptedException {
+        lock.lock();
+        try {
+            // 当count等于数组的大小时，当前线程等待，直到notFull通知，再进行生产
+            while (count == items.length)
+                notFull.await();
+            items[putptr] = x;
+            if (++putptr == items.length) putptr = 0;
+            ++count;
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
         }
     }
-    return setInitialValue();
-}
 
-// 设置初始值
-private T setInitialValue() {
-    T value = initialValue();
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);
-    if (map != null)
-        map.set(this, value);
-    else
-        createMap(t, value);
-    return value;
-}
-
-// 移除此线程局部变量的当前线程值。
-public void remove() {
-    ThreadLocalMap m = getMap(Thread.currentThread());
-    if (m != null)
-        m.remove(this);
+    public Object take() throws InterruptedException {
+        lock.lock();
+        try {
+            // 当count为0，进入等待，直到notEmpty通知，进行消费。
+            while (count == 0)
+                notEmpty.await();
+            Object x = items[takeptr];
+            if (++takeptr == items.length) takeptr = 0;
+            --count;
+            notFull.signal();
+            return x;
+        } finally {
+            lock.unlock();
+        }
+    }
 }
 </code></pre>
 
-<h2 id="toc_2">ThreadLocalMap解析</h2>
+<p>可以通过多个线程来调用put和take方法，来模拟生产者和消费者。<br/>
+我们来换成常规的wait/notify的实现方式：</p>
 
-<h3 id="toc_3">ThreadLocalMap源码分析</h3>
-
-<p><img src="media/15864440934982/15865034564443.jpg" alt=""/></p>
-
-<pre><code class="language-java">
-private Entry getEntry(ThreadLocal&lt;?&gt; key) {
-    int i = key.threadLocalHashCode &amp; (table.length - 1);
-    Entry e = table[i];
-    if (e != null &amp;&amp; e.get() == key)
-        return e;
-    else
-        return getEntryAfterMiss(key, i, e);
-}
-
-private Entry getEntryAfterMiss(ThreadLocal&lt;?&gt; key, int i, Entry e) {
-    Entry[] tab = table;
-    int len = tab.length;
-
-    while (e != null) {
-        ThreadLocal&lt;?&gt; k = e.get();
-        if (k == key)
-            return e;
-        // k已经过时，被垃圾回收啦
-        if (k == null) 
-            // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
-            expungeStaleEntry(i);
-        else
-            i = nextIndex(i, len);
-        e = tab[i];
-    }
-    return null;
-}
-
-private void set(ThreadLocal&lt;?&gt; key, Object value) {
-    Entry[] tab = table;
-    int len = tab.length;
-    int i = key.threadLocalHashCode &amp; (len - 1);
+<pre><code class="language-java">public class BoundedBuffer {
+    private final Object lock;
     
-    // 发生了hash碰撞问题，采用线性探测法，按照一定步长查找下一个位置，直到找到空余的位置存放value值为止,如果遇到过时的局部变量值，则将过时的value值替换为新的value值
-    for (Entry e = tab[i];  e != null;  e = tab[i = nextIndex(i, len)]) {
-        ThreadLocal&lt;?&gt; k = e.get();
-        if (k == key) {
-            e.value = value;
-            return;
-        }
-        // 遇到过时的线程局部变量
-        if (k == null) {
-            // 用指定键的项替换set操作期间遇到的过时项。
-            replaceStaleEntry(key, value, i);
-            return;
-        }
+    public BoundedBuffer(Object lock) {
+        this.lock = lock;
     }
-
-    tab[i] = new Entry(key, value);
-    int sz = ++size;
-    // entry 条目个数大于表的扩容阈值的时候
-    if (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)
-        // 重新调整table的大小。首先扫描整个表，删除陈旧的条目。如果这还不足以缩小表的大小，则将表的大小加倍。
-        rehash();
-}
-
-
-private void remove(ThreadLocal&lt;?&gt; key) {
-    Entry[] tab = table;
-    int len = tab.length;
-    int i = key.threadLocalHashCode &amp; (len - 1);
-    for (Entry e = tab[i];  e != null;  e = tab[i = nextIndex(i, len)]) {
-        if (e.get() == key) {
-            e.clear(); // 清除ThreadLocal引用
-            // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
-            expungeStaleEntry(i);
-            return;
-        }
-    }
-}
-
-private void rehash() {
-    // 通过重新哈希位于staleSlot和下一个空槽之间的任何可能碰撞的条目，删除陈旧的条
-    expungeStaleEntries();
-
-    // 使用较低的阈值加倍，以避免扩容滞后
-    if (size &gt;= threshold - threshold / 4)
-        resize();
-}
-</code></pre>
-
-<h3 id="toc_4">ThreadLocal的引用关系</h3>
-
-<p>ThreadLocal的引用关系 如下图所示：</p>
-
-<p><img src="media/15864440934982/15865783936571.jpg" alt="" style="width:708px;"/></p>
-
-<h4 id="toc_5">内存泄漏问题及解决办法</h4>
-
-<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么下次gc的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链： <br/>
-current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <br/>
-永远无法回收，造成内存泄露。</p>
-
-<p>针对这种情况ThreadLocalMap提供了一些防护措施：</p>
-
-<ul>
-<li><p>1、 getEntry(ThreadLocal&lt;?&gt; key)、set(ThreadLocal&lt;?&gt; key, Object value)提供了针对key为null的entry的擦除操作expungeStaleEntry(i)</p></li>
-<li><p>2、 remove(ThreadLocal&lt;?&gt; key)方法内部提供了针对ThreadLocal的擦除操作</p></li>
-</ul>
-
-<p>如下代码所示：</p>
-
-<pre><code class="language-java">public class ThreadLocalContext {
-
-    private static final ThreadLocal&lt;Object&gt; UNKNOWN_THREAD_LOCAL = new ThreadLocal&lt;&gt;();
-
-    public static Object get() {
-        return UNKNOWN_THREAD_LOCAL.get();
-    }
-
-    public static void set(Object value) {
-        UNKNOWN_THREAD_LOCAL.set(value);
-    }
-
-    public static void remove(){
-        UNKNOWN_THREAD_LOCAL.remove();
-    }
-}
-
-/**
- * ThreadLocal内存泄漏的风险演示
- * -XX:+PrintGCDetails -Xmx50m
- * @author goddess
- * @since 2020/4/8 23:16
- **/
-public class ThreadOOM {
-
-    static class UseData {
-        private byte[] element = new byte[1024 * 1024 * 10];// 10M
-    }
-
-    static class UseThreadOOM implements Runnable {
-        @Override
-        public void run() {
-            ThreadLocalContext.set(new UseData());
-            //ThreadLocalContext.remove();
-        }
-    }
-
-    public static void main(String[] args) {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
+    public void put(Object x) {
         try {
-            for (int i = 0; i &lt; 3000; i++) {
-                executorService.execute(new UseThreadOOM());
+            synchronized (items) {
+                while (count == items.length) {
+                    items.wait();
+                }
+                items[putptr] = x;
+                if (++putptr == items.length) putptr = 0;
+                ++count;
+                // items.notify();
+                items.notifyAll();
             }
-            System.out.println(&quot;pool execute over&quot;);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
-            executorService.shutdown();
-        }
-    }
-}
-</code></pre>
-
-<p>放开ThreadLocalContext.remove的gc信息<br/>
-<img src="media/15864440934982/15865803964880.jpg" alt="" style="width:1569px;"/></p>
-
-<p>注释掉ThreadLocalContext.remove的部分gc信息：<br/>
-<img src="media/15864440934982/15865798232002.jpg" alt="" style="width:1570px;"/></p>
-
-<p><strong>方式1 的前提条件是当key为null的时候咱得去调用getEntry、set方法，单这并不是任何时候都会执行的操作，所以保险的做法就是手动调用ThreadLocal的remove函数，删除不再需要的ThreadLocal，防止内存泄露。</strong></p>
-
-<h3 id="toc_6">Hash冲突怎么解决</h3>
-
-<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong></p>
-
-<p>ThreadLocalMap解决Hash冲突的方式就是简单的步长加1或减1，寻找下一个相邻的位置，如下代码：</p>
-
-<pre><code class="language-text">private static int nextIndex(int i, int len) {
-    return ((i + 1 &lt; len) ? i + 1 : 0);
-}
-private static int prevIndex(int i, int len) {
-    return ((i - 1 &gt;= 0) ? i - 1 : len - 1);
-}
-</code></pre>
-
-<p>如果有大量不同的ThreadLocal对象放入ThreadLocalMap中时发一次或多次hash冲突，就要多次执行线性探测法，则效率很低。</p>
-
-<p><strong>建议：</strong> 由于存在hash冲突问题，每个线程只存一个ThreadLocal变量，这样的话所有的线程存放到map中的Key都是相同的ThreadLocal，可以避免hash碰撞引起效率低下的问题。</p>
-
-<h2 id="toc_7">线程不安全问题</h2>
-
-<p>记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：<strong>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</strong><br/>
-看如下代码：</p>
-
-<pre><code class="language-java">public class ThreadUnsafe {
-
-    static class UseThreadUnsafe implements Runnable {
-        private int value;
-
-        UseThreadUnsafe(int value) {
-            this.value = value;
-        }
-
-        @Override
-        public void run() {
-            Object o = ThreadLocalContext.get();
-            if (o == null) {
-                ThreadLocalContext.set(value+1);
-            }
-            System.out.println(Thread.currentThread().getName()+&quot; 线程局部变量表：&quot; + ThreadLocalContext.get());
-            // tips：开启和注释的情况下完全不一样
-            ThreadLocalContext.remove();
         }
     }
 
-
-    public static void main(String[] args) {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
+    public Object take() {
         try {
-            for (int i = 0; i &lt; 6; i++) {
-                executorService.execute(new UseThreadUnsafe(i));
+            synchronized (items) {
+                while (count == 0) {
+                    items.wait();
+                }
+                Object x = items[takeptr];
+                if (++takeptr == items.length) takeptr = 0;
+                --count;
+                // items.notify();
+                items.notifyAll();
+                return x;
             }
-            System.out.println(&quot;pool execute over&quot;);
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
-            executorService.shutdown();
         }
+        return null;
     }
-
 }
 </code></pre>
 
-<p>开启的情况下：<br/>
-pool-1-thread-3 线程局部变量表：3<br/>
-pool-1-thread-2 线程局部变量表：2<br/>
-pool-1-thread-1 线程局部变量表：1<br/>
-pool-1-thread-2 线程局部变量表：5<br/>
-pool-1-thread-3 线程局部变量表：4<br/>
-pool-1-thread-1 线程局部变量表：6</p>
+<p>如果将items.notifyAll()换成items.notify()，在多生产者和多消费者模式情况下，可能出现take唤醒了take的情况，导致生产者在等待消费者消费，而消费者等待生产者生产，最终导致程序无限等待，而用notifyAll()，则唤醒所有的生产者和消费者，不像Condition可以选择性的通知。下面我们来看一下它的源码：</p>
 
-<p>注释的情况下：<br/>
-pool-1-thread-1 线程局部变量表：1<br/>
-pool-1-thread-3 线程局部变量表：3<br/>
-pool-1-thread-1 线程局部变量表：1<br/>
-pool-1-thread-2 线程局部变量表：2<br/>
-pool-1-thread-1 线程局部变量表：1<br/>
-pool-1-thread-3 线程局部变量表：3</p>
+<pre><code class="language-java">public interface Condition {
+    // 让当前线程等待，直到被通知或者被中断
+    void await() throws InterruptedException;
+    // 与前者的区别是，当等待过程中被中断时，仍会继续等待，直到被唤醒，才会设置中断状态
+    void awaitUninterruptibly();
+    // 让当前线程等待，直到它被告知或中断，或指定的等待时间已经过。
+    boolean await(long time, TimeUnit unit) throws InterruptedException;
+    // 与上面的类似，让当前线程等待，不过时间单位是纳秒
+    long awaitNanos(long nanosTimeout) throws InterruptedException;
+    // 让当前线程等待到确切的指定时间，而不是时长
+    boolean awaitUntil(Date deadline) throws InterruptedException;
+    // 唤醒一个等待当前condition的线程，有多个则随机选一个
+    void signal();
+    // 唤醒所有等待当前condition的线程
+    void signalAll();
+}
+</code></pre>
 
 <hr/>
 
-<p><strong>综上所述 ThreadLocal使用完变量之后，千万要记着调用ThreadLocal的remove()完成擦除操作</strong></p>
+<h2 id="toc_4">ReadWriteLock</h2>
+
+<p>读写锁接口只定义了两个获取读锁和写锁的接口方法，需要具体实现类ReentrantReadWriteLock实现</p>
+
+<pre><code class="language-java">public interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+</code></pre>
+
+<h3 id="toc_5">ReentrantReadWriteLock</h3>
+
+<h4 id="toc_6">读写状态的设计</h4>
+
+<p>读写锁同样依赖自定义同步器来实现同步功能，而读写状态就是其同步器的 同步状态。<br/>
+回想 ReentrantLock 中自定义同步器的实现，同步状态表示锁被一个线程重 复获取的次数，而读写锁的自定义同步器需要在同步状态(一个整型变量)上维 护多个读线程和一个写线程的状态，使得该状态的设计成为读写锁实现的关键。<br/>
+如果在一个整型变量上维护多种状态，就一定需要“按位切割使用”这个变 量，读写锁将变量切分成了两个部分，高 16 位表示读，低 16 位表示写，读写锁 是如何迅速确定读和写各自的状态呢?<br/>
+答案是通过位运算。假设当前同步状态值为 S，写状态等于 S&amp;0x0000FFFF (将高 16 位全部抹去)，读状态等于 S&gt;&gt;&gt;16(无符号补 0 右移 16 位)。当写 状态增加 1 时，等于 S+1，当读状态增加 1 时，等于 S+(1&lt;<16)，也就是 S+0x00010000。 根据状态的划分能得出一个推论:S 不等于 0 时，当写状态(S&0x0000FFFF)等 于 0 时，则读状态(S>&gt;&gt;16)大于 0，即读锁已被获取。</p>
+
+<h4 id="toc_7">写锁的获取与释放</h4>
+
+<p>写锁是一个支持重进入的排它锁。如果当前线程已经获取了写锁，则增加写 状态。如果当前线程在获取写锁时，读锁已经被获取(读状态不为 0)或者该线 程不是已经获取写锁的线程，则当前线程进入等待状态。</p>
+
+<p>该方法除了重入条件(当前线程为获取了写锁的线程)之外，增加了一个读 锁是否存在的判断。如果存在读锁，则写锁不能被获取，原因在于:读写锁要确 保写锁的操作对读锁可见，如果允许读锁在已被获取的情况下对写锁的获取，那么正在运行的其他读线程就无法感知到当前写线程的操作。因此，只有等待其他 读线程都释放了读锁，写锁才能被当前线程获取，而写锁一旦被获取，则其他读 写线程的后续访问均被阻塞。</p>
+
+<p>写锁的释放与ReentrantLock的释放过程基本类似，每次释放均减少写状态， 当写状态为 0 时表示写锁已被释放，从而等待的读写线程能够继续访问读写锁， 同时前次写线程的修改对后续读写线程可见</p>
+
+<h4 id="toc_8">读锁的获取与释放</h4>
+
+<p>读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他 写线程访问(或者写状态为 0)时，读锁总会被成功地获取，而所做的也只是(线 程安全的)增加读状态。如果当前线程已经获取了读锁，则增加读状态。</p>
+
+<p>如果当前线程在获取读锁时，写锁已被其他线程获取，则进入等待状态。读 状态是所有线程获取读锁次数的总和，而每个线程各自获取读锁的次数只能选择 保存在 ThreadLocal 中，由线程自身维护。在 tryAcquireShared(int unused)方法中， 如果其他线程已经获取了写锁，则当前线程获取读锁失败，进入等待状态。如果 当前线程获取了写锁或者写锁未被获取，则当前线程(线程安全，依靠 CAS 保证) 增加读状态，成功获取读锁。读锁的每次释放(线程安全的，可能有多个读线程 同时释放读锁)均减少读状态。</p>
+
+<h4 id="toc_9">锁的升降级</h4>
+
+<p>锁降级指的是写锁降级成为读锁。如果当前线程拥有写锁，然后将其释放， 最后再获取读锁，这种分段完成的过程不能称之为锁降级。</p>
+
+<p>锁降级是指把持住(当前拥有的)写锁，再获取到读锁，随后释放(先前拥有的)写锁的过程。</p>
+
+<p>RentrantReadWriteLock 不支持锁升级(把持读锁、获取写锁，最后释放读锁 的过程)。目的是保证数据可见性，如果读锁已被多个线程获取，其中任意线程 成功获取了写锁并更新了数据，则其更新对其他获取到读锁的线程是不可见的。<br/>
+ReadLock<br/>
+WriteLock </p>
+
+<h3 id="toc_10">StampedLock</h3>
+
+<p>JDK1.8增加的一种新的锁实现</p>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[线程基础、线程之间的共享和协作]]></title>
-    <link href="http://www.throne4j.com/15853612430664.html"/>
-    <updated>2020-03-28T10:07:23+08:00</updated>
-    <id>http://www.throne4j.com/15853612430664.html</id>
+    <title type="html"><![CDATA[内存分配策略]]></title>
+    <link href="http://www.throne4j.com/15869610065512.html"/>
+    <updated>2020-04-15T22:30:06+08:00</updated>
+    <id>http://www.throne4j.com/15869610065512.html</id>
     <content type="html"><![CDATA[
-<h2 id="toc_0">基础概念</h2>
+<p>对象的内存分配，概念上说都是在堆内存上分配(有可能被编译器拆散为标量类型并间接地在栈上分配)。在经典分代设计下，新对象通常会分配在新生代中，少数情况下可能直接分配在老年代。<strong>对象的分配规则并不是固定的，主要取决于JVM使用的是哪一种垃圾收集器，以及虚拟机中与内存相关的参数设定</strong>。</p>
 
-<ul>
-<li>Cpu 核心数和线程数的关系<br/>
-核心数:线程数 = 1:1<br/>
-超线程技术引入以后<br/>
-核心数:线程数 = 1:2</li>
-<li><p>cpu 时间片轮转机制<br/>
-轮转机制会公平的把 cpu 时间分配给各个进程，在线程的切换的过程中，会产生线程上下文开销，也称为 RR 调度</p></li>
-<li><p>什么是进程和线程</p>
-<ul>
-<li><p>进程：操作系统进行资源分配的最小单位，进程内部有多个线程共享这个进程的资源，进程与进程之间相互独立</p></li>
-<li><p>线程：cpu 调度的最小单位，必须依赖于进程而存在</p></li>
-</ul></li>
-<li><p>什么是并行和并发<br/>
-并行：同一时刻，可以处理事情的能力。<br/>
-并发：单位时间内，处理事情的能力。例如：1秒内，一个应用内可以处理10个提交任务，</p></li>
-<li><p>高并发编程的意义和注意事项<br/>
-操作系统会限制线程数量，以防线程耗尽系统资源，Linux：1000个；windows：2000个</p>
-<ul>
-<li>优点：
-<ul>
-<li>可以充分利用系统资源</li>
-<li>加快系统对用户的响应速度</li>
-</ul></li>
-<li>弊端： 
-<ul>
-<li>存在资源竞争关系</li>
-<li>可能会产生死锁</li>
-<li>消耗系统资源</li>
-</ul></li>
-</ul></li>
-</ul>
+<p>下面看下serial+serialOld垃圾收集器下的内存分配规则</p>
 
-<hr/>
+<h2 id="toc_0">对象优先在Eden区分配</h2>
 
-<h2 id="toc_1">java 语言的线程</h2>
-
-<h3 id="toc_2">构建线程的方式</h3>
-
-<p>Thread类、Runnable接口，Thread类是对线程的抽象，Runnable是对任务的抽象</p>
-
-<h3 id="toc_3">停止线程方式：</h3>
-
-<ul>
-<li>interrupt()  中断线程通知，非强制打断，中断标志位设置为true(已中断)</li>
-<li>isInterrupted()    判断线程是否要中断</li>
-<li>static interrupted()  判断当前线程是否处于中断状态，中断标志位会进行重置</li>
-</ul>
-
-<p>*** 注意：***<br/>
-stop()、destroy()、suspend()、resume()官方已作为废弃API处理</p>
-
-<h3 id="toc_4">run()和 start()区别</h3>
-
-<ul>
-<li>run() 不会新启线程，可以视为普通的业务方法，执行run()方法，当前线程是主线程</li>
-<li>start() 启动新线程</li>
-</ul>
-
-<h3 id="toc_5">join()</h3>
-
-<p>ThreadA.join() 是先等待ThreadA运行至死亡</p>
-
-<h3 id="toc_6">yield()</h3>
-
-<p>将线程从运行态转到就绪态,让线程让出cpu资源</p>
-
-<h3 id="toc_7">线程优先级</h3>
-
-<p>1~10，缺省 5<br/>
-thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
-
-<h3 id="toc_8">守护线程</h3>
-
-<p>守护线程是一种支持型线程，因为它主要被用作程序中 后台调度以及支持性工作。</p>
-
-<p>线程的状态切换<br/>
-<img src="media/15853612430664/15862720985637.jpg" alt="" style="width:937px;"/></p>
-
-<h2 id="toc_9">线程间共享和互斥</h2>
-
-<h3 id="toc_10">Synchronized 内置锁</h3>
-
-<p>关于 Synchronized 是作用在对象上，在对象头中 有锁的标志位<br/>
-对象锁<br/>
-类锁</p>
-
-<h3 id="toc_11">Lock</h3>
-
-<h3 id="toc_12">volatile</h3>
-
-<h3 id="toc_13">ThreadLocal</h3>
-
-<p><a href="ThreadLocal.html">ThreadLocal源码分析以及使用</a></p>
-
-<h2 id="toc_14">线程间协作</h2>
-
-<h3 id="toc_15">等待/通知机制</h3>
-
-<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通 知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
-<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
-<p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
-3）条件满足则执行对应的逻辑。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    while(obj.isOk()) {
-        obj.wait();
-    }
-}
-</code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
-3）通知所有等待在对象上的线程。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    obj.notifyAll();
-}
-</code></pre>
-
-<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕</p>
+<p>大多数情况下，对象在Eden区分配，当Eden区空间不足时，将触发一次minor gc。<br/>
+jvm提供了-XX:+PrintGCDetails这个收集日志参数，或使用-XX:+PrintHeapAtGC对GC前后的GC日志进行对比</p>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Mysql索引]]></title>
-    <link href="http://www.throne4j.com/15866068042885.html"/>
-    <updated>2020-04-11T20:06:44+08:00</updated>
-    <id>http://www.throne4j.com/15866068042885.html</id>
+    <title type="html"><![CDATA[垃圾收集器]]></title>
+    <link href="http://www.throne4j.com/15869610752834.html"/>
+    <updated>2020-04-15T22:31:15+08:00</updated>
+    <id>http://www.throne4j.com/15869610752834.html</id>
     <content type="html"><![CDATA[
-<p>索引是帮助mysql高校获取数据的数据结构<br/>
-在rdbms中，索引存储在硬盘中</p>
+<p>关于JVM中线程私有的内存区域（程序计数器、虚拟机栈、本地方法栈）是在类结构确定下来的时候就是已知的，他们随着线程的生灭而生灭，因此不需要过多考虑这几块区域。但是java堆就带有很大的不确定性，它在程序运行期间会不断的创建对象，这块的内存的分配和回收的动态性将会是JVM垃圾收集器主要关注的部分。</p>
 
-<p>为什么mysql要默认使用B+ tree而不是B树、AVL树</p>
+<p>当需要排查排查各种内存溢出、内存泄漏问题，垃圾收集成为系统高并发瓶颈时，我们需要对jvm的自动化内存管理进行监控和优化。</p>
 
-<p>回表操作</p>
+<h2 id="toc_0">那些对象需要回收</h2>
+
+<p>在垃圾收集器对堆进行回收之前，第一件事就是需要确定下来哪些对象是&quot;死亡&quot;的，然后对这些死亡的对象内存进行回收。</p>
+
+<h3 id="toc_1">引用计数算法</h3>
+
+<p>在对象A中添加一个引用计数器，每当有一个地方引用对象A时，计数器的值+1，引用失效的时候计数器 -1，计数器为0时，这个对象就未被使用的对象。<strong><em>这种算法虽然原理简单、高效，但是却不能解决对象之间的循环引用的问题。</em></strong></p>
+
+<h3 id="toc_2">可达性分析算法</h3>
+
+<p>这个算法的基本思路就是通过一系列的被称为“GC Roots”的根对象为其实节点集，从这写节点开始，根据引用关系向下搜索，搜索过程所走过的路径被称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，或者说从GC Roots到这个对象不可达，则证明此对象不可能再被使用。</p>
+
+<p>被称为GC Roots的对象包括以下几种：</p>
+
+<ul>
+<li>在虚拟机栈(栈帧中的本地变量表)中引用的对象，比如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</li>
+<li>在方法区中类静态属性引用的对象，比如java类的引用类型静态变量</li>
+<li>在方法区中常量引用的对象，比如字符串常量池的引用</li>
+<li>在本地方法占中JNI引用的对象</li>
+<li>JVM内部的引用，比如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointException、OutOfMemoryError)等，还有系统类加载器</li>
+<li>所有被同步锁(synchronized关键字)持有的对象</li>
+<li>反应JVM内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等</li>
+</ul>
+
+<h2 id="toc_3">什么时候回收</h2>
+
+<h2 id="toc_4">怎么回收</h2>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JVM 中 java 对象]]></title>
+    <link href="http://www.throne4j.com/15866239860150.html"/>
+    <updated>2020-04-12T00:53:06+08:00</updated>
+    <id>http://www.throne4j.com/15866239860150.html</id>
+    <content type="html"><![CDATA[
+<p>在java程序运行的过程中，无时无刻都有对象被不断的创建出来。我们创建一个对象通常都是通过new关键字，但是jvm是怎么把一个对象给整出来的呢？</p>
+
+<h2 id="toc_0">对象的创建</h2>
+
+<p>Java中有5种创建对象的方式：</p>
+
+<table>
+<thead>
+<tr>
+<th>创建方式</th>
+<th>是否调用构造函数</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>new关键字</td>
+<td>调用构造函数进行初始化</td>
+</tr>
+<tr>
+<td>Class.forName().instance()、Object.class.newInstance()</td>
+<td>Class.forName加载并连接类，newInstance()调用构造函数进行初始化</td>
+</tr>
+<tr>
+<td>Constructor类的NewInstance()</td>
+<td>调用构造函数进行初始化</td>
+</tr>
+<tr>
+<td>Clone()</td>
+<td>没有调用构造函数</td>
+</tr>
+<tr>
+<td>反序列化</td>
+<td>没有调用构造函数</td>
+</tr>
+</tbody>
+</table>
+
+<p>这里我们只对new关键字进行分析<br/>
+当JVM遇到new关键字创建普通的java对象(不包括数组和Class对象等)时，<strong><em>首先</em></strong>检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过，如果没有那么必须执行相应的加载过程()。</p>
+
+<p>在类加载检查通过后，接下来虚拟机为新生对象分配内存(类加载完成后即可知其大小)，jvm将一块确定大小的内存块从java堆中划拨出来。在划拨堆内存出来的时候，会涉及到如何分配的问题，下面有两种分配方式</p>
+
+<ul>
+<li><p>指针碰撞 <br/>
+定义： 假设堆内存是规整的，所有使用过的堆内存放在一边，空闲的内存被放在另一边，中间放着一个指针作为分界点的指示器，那所分配内存就是是把这个指针向空闲空间方向移动一段与对象大小相等的的距离。<br/>
+<img src="media/15866239860150/15869624345720.jpg" alt="" style="width:869px;"/></p></li>
+<li><p>空闲列表<br/>
+如果堆内存是不规整的，已使用和未被使用的内存是交错在一起的，那就没办法简简单单地进行“指针碰撞”了，虚拟机就必须维护一个用来记录那些内存块是可用的列表，在分配对象的时候找一个内存大小适中的内存空间划分给对象，并更新列表上的记录，这种分配方式被称为空闲列表<br/>
+<img src="media/15866239860150/15869639142729.jpg" alt="" style="width:877px;"/></p></li>
+</ul>
+
+<p>选择哪种分配方式有java堆是否规整决定，堆是否规整取决于jvm采用哪种垃圾回收器(<a href="15869610752834.html">垃圾收集器</a>)来决定。</p>
+
+<p>因此采用复制算法、标记整理算法的收集器时，系统采用“指针碰撞“，而采用CMS这种基于清除算法的收集器时，采用”空闲列表“来分配。</p>
+
+<p>但是在并发情况下，即使是”指针碰撞“这种仅仅是移动指针所指向位置的操作，也并不是线程安全的，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况。</p>
+
+<p>解决上面所说的问题有两种可选方案</p>
+
+<ul>
+<li>分配内存空间的动作进行同步处理（JVM是采用CAS配上失败重试的方式保证更新操作的原子性）</li>
+<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一小块内存，称为本地线程分配缓冲(Thread Local Allocation Buffer， TLAB)，哪个线程要分分配内存就在哪个线程的TLAB中分配，TLAB使用完了，分配新的缓存区时才需要同步锁定</li>
+</ul>
+
+<p>内存分配完成之后， JVM必须将分配到的内存空间(不包括对象头)都进行初始化，这样保证了在代码中可以不赋初值就可以直接使用。</p>
+
+<p>接下来JVM还要对对象进行必要的设置，例如对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄、是否使用偏向锁等信息，这些信息存放在java的对象头中。</p>
+
+<p>接下来对象的创建猜刚刚开始----构造函数，即Class文件中的<init>()方法还没执行，所有的对象字段还是初始的默认值，执行完<init>()之后对象才会想我们程序中所希望的那样赋予相应的变量值。</p>
+
+<h2 id="toc_1">对象的内存布局</h2>
+
+<p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。</p>
+
+<h3 id="toc_2">对象头</h3>
+
+<p>对象头分两部分：Mark Word、class pointer(类型指针)</p>
+
+<ul>
+<li>Mark Word的组成以及布局情况</li>
+</ul>
+
+<p>下图是在64位虚拟机上的对象头的堆内存布局：<br/>
+<img src="media/15866239860150/15870492871153.jpg" alt=""/></p>
+
+<p>通过Jol工具可以查看对象信息,例如查看Object对象的信息如下：</p>
+
+<pre><code class="language-text">Object a = new Object();
+System.out.println(ClassLayout.parseInstance(a).toPrintable());
+
+-----------------------------------------------------------------------
+java.lang.Object object internals:
+ OFFSET  SIZE   TYPE DESCRIPTION                               VALUE
+      0     4        (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
+      4     4        (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+      8     4        (object header)                           e5 01 00 f8 (11100101 00000001 00000000 11111000) (-134217243)
+     12     4        (loss due to the next object alignment)
+Instance size: 16 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+</code></pre>
+
+<p>从输出结果可以看到Object对象的大小总共占用 4 bytes的内存</p>
+
+<ul>
+<li>类型指针<br/>
+对象指向它的类型元数据指针，java虚拟机通过这个指针来确定对象是哪个类的实例。</li>
+</ul>
+
+<h3 id="toc_3">实例数据</h3>
+
+<p>用来存储真正的有效信息，即我们在程序代码里面所定义的各种类型的字段内容。</p>
+
+<h3 id="toc_4">对齐填充</h3>
+
+<p>这部分仅仅是起到占位符的作用。由于jvm的自动内存管理系统要求任何对象的大小必须是8字节的整数倍，如果对象实例数据没有对齐的话，则通过对齐填充来进行补全，使其大小是8字节的整数倍(对象头已经被设计成正好是8字节的整数倍的结构了)</p>
+
+<h2 id="toc_5">对象访问定位</h2>
+
+<p>创建完对象之后，就到了使用对象的时候了。JVM会通过虚拟机栈上的reference（指向对象的引用）数据来操作堆上的具体对象。</p>
+
+<p>jvm主要有两种访问对象的方式：</p>
+
+<ul>
+<li><p>使用句柄访问<br/>
+java堆内存中将可能划分出一块内存作为句柄池，reference中存储的就是对象的句柄地址，句柄中包含了对象的实例数据与类型数据各自具体的地址信息。<br/>
+当对象改变之后，只需要改变句柄中的实例数据的指针地址，而句柄本身的地址这不会改变，那么reference的引用也不会改变。</p></li>
+<li><p>使用直接指针访问<br/>
+reference中存储的直接就是对象的地址，直接访问对象的话，一步到位，访问速度会更加迅速。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore]]></title>
+    <link href="http://www.throne4j.com/15867876320249.html"/>
+    <updated>2020-04-13T22:20:32+08:00</updated>
+    <id>http://www.throne4j.com/15867876320249.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">CountDownLatch 号令枪</h2>
+
+<p>CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工作后再执行操作。<br/>
+CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
+
+<pre><code class="language-java">public class MichaelShow {
+    private static final AtomicInteger COUNT = new AtomicInteger(0);
+    static class Customer extends Thread {
+        private final CountDownLatch beQuiet;
+        private final CountDownLatch beBoom;
+
+        public Customer(CountDownLatch beQuiet, CountDownLatch beBoom) {
+            this.beQuiet = beQuiet;
+            this.beBoom = beBoom;
+        }
+
+        @Override
+        public void run() {
+            try {
+                beQuiet.await();
+                System.out.println(&quot;观众大喊：Michael Jackson， 我爱你！！！晕厥~~~&quot;);
+                COUNT.getAndAdd(1);
+                beBoom.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch startShow = new CountDownLatch(1);
+        CountDownLatch beBoom = new CountDownLatch(100);
+        for (int i = 0; i &lt; 100; i++) {
+            new Customer(startShow,beBoom).start();
+        }
+
+        System.out.println(&quot;Michael号令，演唱会马上开始&quot;);
+        startShow.countDown(); // 开始演唱会
+        beBoom.await();// 等待晕厥到一定人数，将人送往医院
+        System.out.println(&quot;观众晕厥&quot;+COUNT.get()+&quot;个，都被送往医院&quot;);
+    }
+}
+</code></pre>
+
+<h2 id="toc_1">CyclicBarrier</h2>
+
+<p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做 的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞，直到最后一 个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。 </p>
+
+<p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然 后当前线程被阻塞。<br/>
+CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
+
+<pre><code class="language-java">public class HomeWorkCyclicBarrier {
+
+    private static CyclicBarrier barrier
+            = new CyclicBarrier(4, new Treacher());
+
+    //存放子线程工作结果的容器
+    private static ConcurrentHashMap&lt;String, Long&gt; resultMap
+            = new ConcurrentHashMap&lt;&gt;();
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 4; i++) {
+            Thread thread = new Thread(new Student());
+            thread.start();
+        }
+
+    }
+
+    /*汇总作业*/
+    private static class Treacher implements Runnable {
+
+        @Override
+        public void run() {
+            StringBuilder result = new StringBuilder();
+            for (Map.Entry&lt;String, Long&gt; workResult : resultMap.entrySet()) {
+                result.append( workResult.getValue()+&quot;、&quot;);
+            }
+            System.out.println(&quot;王老师批阅学生&quot; + result+&quot;的作业&quot;);
+            System.out.println(&quot;王老师看学生搞对象&quot;);
+        }
+    }
+
+    /*相互等待的子线程*/
+    private static class Student implements Runnable {
+
+        @Override
+        public void run() {
+            long id = Thread.currentThread().getId();
+            resultMap.put(&quot;作业&quot;+Thread.currentThread().getId() + &quot;&quot;, id);
+            try {
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;写作业&quot;);
+                barrier.await();
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;搞对象&quot;);
+                //barrier.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}
+</code></pre>
+
+<h3 id="toc_2">Semaphore</h3>
+
+<p>Semaphore（信号量）是用来控制同时访问特定资源的线程数量，它通过协调各个线程，以保证合理的使用公共资源。很多年以来，我都觉得从字面上很难理解Semaphore所表达的含义，只能把它比作是控制流量的红绿灯，比如XX马路要限制流量，只允许同时有一百辆车在这条路上行使，其他的都必须在路口等待，所以前一百辆车会看到绿灯，可以开进这条马路，后面的车会看到红灯，不能驶入XX马路，但是如果前一百辆中有五辆车已经离开了XX马路，那么后面就允许有5辆车驶入马路，这个例子里说的车就是线程，驶入马路就表示线程在执行，离开马路就表示线程执行完成，看见红灯就表示线程被阻塞，不能执行。</p>
+
+<h4 id="toc_3">应用场景</h4>
+
+<p>Semaphore可以用于做流量控制，特别公用资源有限的应用场景，比如数据库连接。假如有一个需求，要读取几万个文件的数据，因为都是IO密集型任务，我们可以启动几十个线程并发的读取，但是如果读到内存后，还需要存储到数据库中，而数据库的连接数只有10个，这时我们必须控制只有十个线程同时获取数据库连接保存数据，否则会报错无法获取数据库连接。这个时候，我们就可以使用Semaphore来做流控，代码如下：</p>
+
+<pre><code class="language-java">public class DBPoolSemaphore {
+    
+    private final static int POOL_SIZE = 10;
+    //两个指示器，分别表示池子还有可用连接和已用连接
+    private final Semaphore useful,useless;
+    //存放数据库连接的容器
+    private static final LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
+    //初始化池
+    static {
+        for (int i = 0; i &lt; POOL_SIZE; i++) {
+            pool.addLast(getConnection());
+        }
+    }
+    public DBPoolSemaphore() {
+        this.useful = new Semaphore(10);
+        this.useless = new Semaphore(0);
+    }
+    
+    /*归还连接*/
+    public void returnConnect(Connection connection) throws InterruptedException {
+        if(connection!=null) {
+            System.out.println(&quot;当前有&quot;+useful.getQueueLength()+&quot;个线程等待数据库连接!!&quot;
+                    +&quot;可用连接数：&quot;+useful.availablePermits());
+            useless.acquire();
+            synchronized (pool) {
+                pool.addLast(connection);
+            }
+            useful.release();
+        }
+    }
+    
+    /*从池子拿连接*/
+    public Connection takeConnect() throws InterruptedException {
+        useful.acquire();
+        Connection connection;
+        synchronized (pool) {
+            connection = pool.removeFirst();
+        }
+        useless.release();
+        return connection;
+    }
+    
+}
+</code></pre>
 
 ]]></content>
   </entry>

@@ -250,7 +250,66 @@ thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
 }
 </code></pre>
 
-<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕</p>
+<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。<br/>
+使用wait、和notify实现一个连接池的实例如下：</p>
+
+<pre><code class="language-java">public class DBPool {
+
+    /*容器，存放连接*/
+    private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
+
+    /*限制了池的大小=20*/
+    public DBPool(int initialSize) {
+        if (initialSize &gt; 0) {
+            for (int i = 0; i &lt; initialSize; i++) {
+                pool.addLast(createConnection());
+            }
+        }
+    }
+
+    /*释放连接,通知其他的等待连接的线程*/
+    public void releaseConnection(Connection connection) {
+        if (connection != null) {
+            synchronized (pool){
+                pool.addLast(connection);
+                //通知其他等待连接的线程
+                pool.notifyAll();
+            }
+        }
+    }
+
+    /*获取*/
+    // 在mills内无法获取到连接，将会返回null 1S
+    public Connection fetchConnection(long mills)
+            throws InterruptedException {
+        synchronized (pool){
+            //永不超时
+            if(mills&lt;=0){
+                while(pool.isEmpty()){
+                    pool.wait();
+                }
+                return pool.removeFirst();
+            }else{
+                /*超时时刻*/
+                long future = System.currentTimeMillis()+mills;
+                /*等待时长*/
+                long remaining = mills;
+                while(pool.isEmpty()&amp;&amp;remaining&gt;0){
+                    pool.wait(remaining);
+                    /*唤醒一次，重新计算等待时长*/
+                    remaining = future-System.currentTimeMillis();
+                }
+                Connection connection = null;
+                if(!pool.isEmpty()){
+                    connection = pool.removeFirst();
+                }
+                return connection;
+            }
+        }
+
+    }
+}
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">

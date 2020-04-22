@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/04/13</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">CountDownLatch 号令枪</h2>
+
+<p>CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工作后再执行操作。<br/>
+CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
+
+<pre><code class="language-java">public class MichaelShow {
+    private static final AtomicInteger COUNT = new AtomicInteger(0);
+    static class Customer extends Thread {
+        private final CountDownLatch beQuiet;
+        private final CountDownLatch beBoom;
+
+        public Customer(CountDownLatch beQuiet, CountDownLatch beBoom) {
+            this.beQuiet = beQuiet;
+            this.beBoom = beBoom;
+        }
+
+        @Override
+        public void run() {
+            try {
+                beQuiet.await();
+                System.out.println(&quot;观众大喊：Michael Jackson， 我爱你！！！晕厥~~~&quot;);
+                COUNT.getAndAdd(1);
+                beBoom.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch startShow = new CountDownLatch(1);
+        CountDownLatch beBoom = new CountDownLatch(100);
+        for (int i = 0; i &lt; 100; i++) {
+            new Customer(startShow,beBoom).start();
+        }
+
+        System.out.println(&quot;Michael号令，演唱会马上开始&quot;);
+        startShow.countDown(); // 开始演唱会
+        beBoom.await();// 等待晕厥到一定人数，将人送往医院
+        System.out.println(&quot;观众晕厥&quot;+COUNT.get()+&quot;个，都被送往医院&quot;);
+    }
+}
+</code></pre>
+
+<h2 id="toc_1">CyclicBarrier</h2>
+
+<p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做 的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞，直到最后一 个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。 </p>
+
+<p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然 后当前线程被阻塞。<br/>
+CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
+
+<pre><code class="language-java">public class HomeWorkCyclicBarrier {
+
+    private static CyclicBarrier barrier
+            = new CyclicBarrier(4, new Treacher());
+
+    //存放子线程工作结果的容器
+    private static ConcurrentHashMap&lt;String, Long&gt; resultMap
+            = new ConcurrentHashMap&lt;&gt;();
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 4; i++) {
+            Thread thread = new Thread(new Student());
+            thread.start();
+        }
+
+    }
+
+    /*汇总作业*/
+    private static class Treacher implements Runnable {
+
+        @Override
+        public void run() {
+            StringBuilder result = new StringBuilder();
+            for (Map.Entry&lt;String, Long&gt; workResult : resultMap.entrySet()) {
+                result.append( workResult.getValue()+&quot;、&quot;);
+            }
+            System.out.println(&quot;王老师批阅学生&quot; + result+&quot;的作业&quot;);
+            System.out.println(&quot;王老师看学生搞对象&quot;);
+        }
+    }
+
+    /*相互等待的子线程*/
+    private static class Student implements Runnable {
+
+        @Override
+        public void run() {
+            long id = Thread.currentThread().getId();
+            resultMap.put(&quot;作业&quot;+Thread.currentThread().getId() + &quot;&quot;, id);
+            try {
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;写作业&quot;);
+                barrier.await();
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;搞对象&quot;);
+                //barrier.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}
+</code></pre>
+
+<h3 id="toc_2">Semaphore</h3>
+
+<p>Semaphore（信号量）是用来控制同时访问特定资源的线程数量，它通过协调各个线程，以保证合理的使用公共资源。很多年以来，我都觉得从字面上很难理解Semaphore所表达的含义，只能把它比作是控制流量的红绿灯，比如XX马路要限制流量，只允许同时有一百辆车在这条路上行使，其他的都必须在路口等待，所以前一百辆车会看到绿灯，可以开进这条马路，后面的车会看到红灯，不能驶入XX马路，但是如果前一百辆中有五辆车已经离开了XX马路，那么后面就允许有5辆车驶入马路，这个例子里说的车就是线程，驶入马路就表示线程在执行，离开马路就表示线程执行完成，看见红灯就表示线程被阻塞，不能执行。</p>
+
+<h4 id="toc_3">应用场景</h4>
+
+<p>Semaphore可以用于做流量控制，特别公用资源有限的应用场景，比如数据库连接。假如有一个需求，要读取几万个文件的数据，因为都是IO密集型任务，我们可以启动几十个线程并发的读取，但是如果读到内存后，还需要存储到数据库中，而数据库的连接数只有10个，这时我们必须控制只有十个线程同时获取数据库连接保存数据，否则会报错无法获取数据库连接。这个时候，我们就可以使用Semaphore来做流控，代码如下：</p>
+
+<pre><code class="language-java">public class DBPoolSemaphore {
+    
+    private final static int POOL_SIZE = 10;
+    //两个指示器，分别表示池子还有可用连接和已用连接
+    private final Semaphore useful,useless;
+    //存放数据库连接的容器
+    private static final LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
+    //初始化池
+    static {
+        for (int i = 0; i &lt; POOL_SIZE; i++) {
+            pool.addLast(getConnection());
+        }
+    }
+    public DBPoolSemaphore() {
+        this.useful = new Semaphore(10);
+        this.useless = new Semaphore(0);
+    }
+    
+    /*归还连接*/
+    public void returnConnect(Connection connection) throws InterruptedException {
+        if(connection!=null) {
+            System.out.println(&quot;当前有&quot;+useful.getQueueLength()+&quot;个线程等待数据库连接!!&quot;
+                    +&quot;可用连接数：&quot;+useful.availablePermits());
+            useless.acquire();
+            synchronized (pool) {
+                pool.addLast(connection);
+            }
+            useful.release();
+        }
+    }
+    
+    /*从池子拿连接*/
+    public Connection takeConnect() throws InterruptedException {
+        useful.acquire();
+        Connection connection;
+        synchronized (pool) {
+            connection = pool.removeFirst();
+        }
+        useless.release();
+        return connection;
+    }
+    
+}
+</code></pre>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>
