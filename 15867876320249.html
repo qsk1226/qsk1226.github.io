@@ -239,7 +239,7 @@ CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，
     //初始化池
     static {
         for (int i = 0; i &lt; POOL_SIZE; i++) {
-            pool.addLast(getConnection());
+            pool.addLast(makeConnection());
         }
     }
     public DBPoolSemaphore() {

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    阻塞队列 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            阻塞队列   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/04/25</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端(front)进行删除操作，而在表的后端(rear)进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。</p>
+
+<p>在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。 因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能 最先从队列中删除，故队列又称为先进先出(FIFO—first in first out)线性表。</p>
+
+<h2 id="toc_0">什么是阻塞队列</h2>
+
+<p>1)支持阻塞的插入方法: 意思是当队列满时，队列会阻塞插入元素的线程， 直到队列不满。<br/>
+2)支持阻塞的移除方法: 意思是在队列为空时，获取元素的线程会等待队 列变为非空。</p>
+
+<p>BlockingQueue不接受null元素, 其实现被设计为主要用于生产者 - 消费者队列。消费者是从队列里取元素的线程。阻塞队列就是生产者用来存放元素、消费者用 来获取元素的容器。</p>
+
+<p>在并发编程中使用生产者和消费者模式能够解决绝大多数并发问题。该模式通过平衡生产线程和消费线程的工作能力来提高程序整体处理数据的速度。</p>
+
+<p>如下生产者消费模式：</p>
+
+<pre><code class="language-java">class Producer implements Runnable {
+    private final BlockingQueue queue;
+
+    Producer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                queue.put(produce());
+            }
+        } catch (InterruptedException ex) { 
+            //...handle ...
+        }
+    }
+
+    Object produce() { 
+        // 生产...
+    }
+}
+
+class Consumer implements Runnable {
+    private final BlockingQueue queue;
+
+    Consumer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                consume(queue.take());
+            }
+        } catch (InterruptedException ex) { ...handle ...}
+    }
+
+    void consume(Object x) { 
+        // do something...
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_1">阻塞队列的操作</h2>
+
+<p>BlockingQueue 方法有四种形式，具有不同的操作方式，不能立即满足，但可能在将来的某个时间点满足的方法:</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>抛出异常</th>
+<th>返回特殊值</th>
+<th>一直阻塞</th>
+<th>超时退出</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>插入方法</td>
+<td>add(e)</td>
+<td>offer(e)</td>
+<td>put(e)</td>
+<td>offer(e,time,unit)</td>
+</tr>
+<tr>
+<td>移除方法</td>
+<td>remove()</td>
+<td>poll()</td>
+<td>take()</td>
+<td>pull(time,unit)</td>
+</tr>
+<tr>
+<td>检索方法</td>
+<td>element()</td>
+<td>peek()</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li><p>抛出异常<br/>
+IllegalStateException - 如果由于容量限制，此时无法添加该元素<br/>
+ClassCastException - 由于类型转换异常，无法添加元素<br/>
+NullPointerException - 如果指定的元素为null<br/>
+IllegalArgumentException - 如果指定元素的某些属性阻止将其添加到此队列中</p></li>
+<li><p>返回特殊值:当往队列插入元素时，会返回元素是否插入成功，成功返回 true。如果是移除方法，则是从队列里取出一个元素，如果没有则返回 null。</p></li>
+<li><p>一直阻塞:当阻塞队列满时，如果生产者线程往队列里 put 元素，队列会 一直阻塞生产者线程，直到队列可用或者响应中断退出。当队列空时，如果消费 者线程从队列里 take 元素，队列会阻塞住消费者线程，直到队列不为空。</p></li>
+<li><p>超时退出:当阻塞队列满时，如果生产者线程往队列里插入元素，队列会 阻塞生产者线程一段时间，如果超过了指定的时间，生产者线程就会退出。</p></li>
+</ul>
+
+<hr/>
+
+<p>BlockingQueue实现是线程安全的。 所有排队方法使用内部锁或其他形式的并发控制在原子上实现其效果.</p>
+
+<h2 id="toc_2">常用阻塞队列</h2>
+
+<ul>
+<li>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列。 </li>
+<li>LinkedBlockingQueue:一个由链表结构组成的有界阻塞队列。 </li>
+<li>PriorityBlockingQueue:一个支持优先级排序的无界阻塞队列。 </li>
+<li>DelayQueue:一个使用优先级队列实现的无界阻塞队列。 </li>
+<li>SynchronousQueue:一个不存储元素的阻塞队列。 </li>
+<li>LinkedTransferQueue:一个由链表结构组成的无界阻塞队列。 </li>
+<li>LinkedBlockingDeque:一个由链表结构组成的双向阻塞队列。 <br/>
+以上的阻塞队列都实现了 BlockingQueue 接口，也都是线程安全的。</li>
+</ul>
+
+<h3 id="toc_3">Array 实现和 Linked 实现的区别</h3>
+
+<ol>
+<li>队列中锁的实现不同<br/>
+ArrayBlockingQueue 实现的队列中的锁是没有分离的，即生产和消费用的是 同一个锁;<br/>
+LinkedBlockingQueue 实现的队列中的锁是分离的，即生产用的是 putLock， 消费是 takeLock</li>
+<li>在生产或消费时操作不同<br/>
+ArrayBlockingQueue 实现的队列中在生产和消费的时候，是直接将枚举对象插入或移除的;<br/>
+LinkedBlockingQueue 实现的队列中在生产和消费的时候，需要把枚举对象转换为 Node<E>进行插入或移除，会影响性能 </li>
+<li>队列大小初始化方式不同<br/>
+ArrayBlockingQueue 实现的队列中必须指定队列的大小; LinkedBlockingQueue 实现的队列中可以不指定队列的大小，但是默认是Integer.MAX_VALUE<br/>
+### DelayQueue<br/>
+是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。</li>
+</ol>
+
+<p>可以将 DelayQueue 运用在以下应用场景:<br/>
+缓存系统的设计:可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了。还有订单到期，限时支付等等</p>
+
+<h3 id="toc_4">SynchronousQueue</h3>
+
+<p>本身不存储任何元素，每一个put操作必须等待一个take操作，将消息从生产者直接传递到消费者。</p>
+
+<h3 id="toc_5">LinkedBlockingDeque</h3>
+
+<p>LinkedBlockingDeque 是一个由链表结构组成的双向阻塞队列。所谓双向队列 指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入 口，在多线程同时入队时，也就减少了一半的竞争。多了 addFirst、addLast、offerFirst、offerLast、peekFirst 和 peekLast 等方法。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

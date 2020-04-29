@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-23T01:35:58+08:00</updated>
+  <updated>2020-04-29T18:26:05+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,21 +13,678 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[CAS 无锁操作]]></title>
-    <link href="http://www.throne4j.com/15874857577712.html"/>
-    <updated>2020-04-22T00:15:57+08:00</updated>
-    <id>http://www.throne4j.com/15874857577712.html</id>
+    <title type="html"><![CDATA[动态代理]]></title>
+    <link href="http://www.throne4j.com/15880844669175.html"/>
+    <updated>2020-04-28T22:34:26+08:00</updated>
+    <id>http://www.throne4j.com/15880844669175.html</id>
     <content type="html"><![CDATA[
+<p>使用反射和字节码的技术，在运行期创建指定接口或类的子类以及其实力对象的技术。通过这个技术可以无侵入的为代码进行增强<br/>
+<img src="media/15880844669175/15880845279671.jpg" alt=""/></p>
+
+<h2 id="toc_0">动态代理技术实现主要方式</h2>
+
+<h3 id="toc_1">JDK原生动态代理</h3>
+
+<p>只能基于有接口代理对象进行代理</p>
+
+<ul>
+<li>Proxy: Proxy是所有动态代理的父类，它提供了一个静态方法来创建动态代理的class对象和实例</li>
+<li><p>InvocationHandler： 每个动态代理实例都有一个关联的InvocationHandler。在代理实例上调用方法时，方法调用被转发到InvocationHandler的invoke方法。</p>
+<pre><code class="language-java">public class DynamicProxyTest {
+interface IHello{<br/>
+    void sayHello();<br/>
+}<br/>
+static class Hello implements IHello {<br/>
+    @Override<br/>
+    public void sayHello() {<br/>
+        System.out.println(&quot;Hello world&quot;);<br/>
+    }<br/>
+}<br/>
+static class DynamicProxy implements InvocationHandler {<br/>
+    Object originalObj;<br/>
+    Object bind(Object originalObj) {<br/>
+        this.originalObj = originalObj;<br/>
+        return Proxy.newProxyInstance(originalObj.getClass().getClassLoader(), originalObj.getClass().getInterfaces(), this);<br/>
+    }<br/>
+    @Override<br/>
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {<br/>
+        System.out.println(&quot;welcom &quot;);<br/>
+        return method.invoke(originalObj, args);<br/>
+    }<br/>
+}<br/>
+public static void main(String[] args) {<br/>
+    IHello iHello = (IHello) new DynamicProxy().bind(new Hello());<br/>
+    iHello.sayHello();<br/>
+}<br/>
+}
+</code></pre></li>
+</ul>
+
+<h3 id="toc_2">CGLIB动态代理</h3>
+
+<p>CGLIB（Code Generation Library） 是一个基于ASM的字节码生成库,它云讯我们在运行时对字节码进行修改或动态生成.CGLIB通过继承方式实现代理.</p>
+
+<ul>
+<li>Enhancer: 来指定要代理的目标对象、实际处理代理逻辑的对象，最终通过调用create()方法得到代理对象，对这个对象所有非final方法的调用都会转发给MethodInterceptor;</li>
+<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。</li>
+</ul>
+
+<pre><code class="language-java">public class HelloInterceptor implements MethodInterceptor {
+
+    @Override
+    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+
+        Object o1 = methodProxy.invokeSuper(o, objects);
+        System.out.println(&quot;代理执行完成&quot;);
+        return o1;
+    }
+    static class HelloService {
+
+        public void sayHello() {
+            System.out.println(&quot;hello, Lily&quot;);
+        }
+    }
+
+    public static void main(String[] args) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(HelloService.class);
+        enhancer.setUseCache(false);
+        enhancer.setCallback(new HelloInterceptor());
+        HelloService helloService= (HelloService) enhancer.create();
+        helloService.sayHello();
+    }
+}
+</code></pre>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[TODO 细说JDK之 Future 模式]]></title>
-    <link href="http://www.throne4j.com/15867858130748.html"/>
-    <updated>2020-04-13T21:50:13+08:00</updated>
-    <id>http://www.throne4j.com/15867858130748.html</id>
+    <title type="html"><![CDATA[多线程设计模式]]></title>
+    <link href="http://www.throne4j.com/15880496547017.html"/>
+    <updated>2020-04-28T12:54:14+08:00</updated>
+    <id>http://www.throne4j.com/15880496547017.html</id>
     <content type="html"><![CDATA[
+<h2 id="toc_0">Single Threaded Execution 单一线程执行</h2>
+
+<h2 id="toc_1">Immutable 不可变模式</h2>
+
+<h2 id="toc_2">Guarded Suspension</h2>
+
+<h2 id="toc_3">Balking</h2>
+
+<h2 id="toc_4">Producer-Consumer</h2>
+
+<h2 id="toc_5">Read-Write Lock</h2>
+
+<h2 id="toc_6">Thread-Per-Message</h2>
+
+<h2 id="toc_7">Worker Thread</h2>
+
+<h2 id="toc_8">Future</h2>
+
+<h2 id="toc_9">Two-Phase Termination</h2>
+
+<h2 id="toc_10">Thread-Specific Storage</h2>
+
+<h2 id="toc_11">Active Object</h2>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[线程池]]></title>
+    <link href="http://www.throne4j.com/15878284668401.html"/>
+    <updated>2020-04-25T23:27:46+08:00</updated>
+    <id>http://www.throne4j.com/15878284668401.html</id>
+    <content type="html"><![CDATA[
+<p>为什么要用线程池?<br/>
+Java 中的线程池是运用场景最多的并发框架，几乎所有需要异步或并发执行 任务的程序都可以使用线程池。在开发过程中，合理地使用线程池能够带来 3 个好处。</p>
+
+<ul>
+<li>第一:降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
+<li>第二:提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立 即执行。</li>
+<li>第三:提高线程的可管理性。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</li>
+</ul>
+
+<p>下面是线程池的简单实现</p>
+
+<pre><code class="language-java">public class MyThreadPool {
+    // 任务队列
+    private static BlockingQueue&lt;Runnable&gt; taskBlockingQueue;
+
+    private Worker[] workers;
+
+    public MyThreadPool(int taskCount, int workerCount) {
+        if (taskCount &lt;=0 || workerCount &lt;=0)
+            throw new IllegalArgumentException();
+        taskBlockingQueue = new ArrayBlockingQueue&lt;&gt;(taskCount);
+        initWorker(workerCount);
+    }
+    
+    /*初始化线程池*/
+    private void initWorker(int workerCount) {
+        this.workers = new Worker[workerCount];
+        for (int i = 0; i &lt; workerCount; i++) {
+            Worker worker = new Worker();
+            workers[i] = worker;
+            workers[i].start();
+        }
+    }
+
+    public void execute(Runnable task) {
+        try {
+            taskBlockingQueue.put(task);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void destroy() {
+        for (Worker worker : workers) {
+            worker.shutdown();
+        }
+        workers = null;
+    }
+
+    // 工作线程
+    private final class Worker extends Thread {
+        @Override
+        public void run() {
+            Runnable task = null;
+            while (!isInterrupted()) {
+                try {
+                    task = taskBlockingQueue.take();
+                } catch (InterruptedException e) {
+                    // something
+                }
+                if (task != null) {
+                    task.run();
+                }
+            }
+        }
+
+        public void shutdown() {
+            interrupt();
+        }
+    }
+
+}
+</code></pre>
+
+<h2 id="toc_0">jdk的线程池</h2>
+
+<pre><code class="language-text">Executor
+|----ThreadPerTaskExecutor in CompletableFuture
+|----ExecutorService 
+|--------AbstractExecutorService
+|------------ThreadPoolExecutor
+|----------------ScheduledThreadPoolExecutor
+|------------ForkJoinPool (java.util.concurrent)
+|------------DelegatedExecutorService in Executors 
+|----------------FinalizableDelegatedExecutorService in Executors 
+|----------------DelegatedScheduledExecutorService in Executors 
+|--------ScheduledExecutorService
+|------------ScheduledThreadPoolExecutor
+|------------DelegatedScheduledExecutorService in Executors 
+</code></pre>
+
+<p>Executor 是一个接口，它是 Executor 框架的基础，它将任务的提交与任务的<br/>
+执行分离开来。</p>
+
+<p>ExecutorService 接口继承了 Executor，在其上做了一些 shutdown()、submit() 的扩展，可以说是真正的线程池接口;</p>
+
+<p>AbstractExecutorService 抽象类实现了 ExecutorService 接口中的大部分方法;</p>
+
+<p>ThreadPoolExecutor 是线程池的核心实现类，用来执行被提交的任务。</p>
+
+<p>ScheduledExecutorService 接口继承了 ExecutorService 接口，提供了带&quot;周期 执行&quot;功能 ExecutorService;</p>
+
+<p>ScheduledThreadPoolExecutor 是一个实现类，可以在给定的延迟后运行命令， 或者定期执行命令。ScheduledThreadPoolExecutor 比 Timer 更灵活，功能更强大</p>
+
+<hr/>
+
+<h3 id="toc_1">ThreadPoolExecutor类的构造函数</h3>
+
+<pre><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue&lt;Runnable&gt; workQueue,
+                              ThreadFactory threadFactory,
+                              RejectedExecutionHandler handler)
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li><p>corePoolSize<br/>
+线程池中的核心线程数，当提交一个任务时，线程池创建一个新线程执行任务，直到当前线程数等于 corePoolSize;<br/>
+如果当前线程数为 corePoolSize，继续提交的任务被保存到阻塞队列中，等待被执行;<br/>
+如果执行了线程池的 prestartAllCoreThreads()方法，线程池会提前创建并启动所有核心线程。</p></li>
+<li><p>maximumPoolSize<br/>
+线程池中允许的最大线程数。如果当前阻塞队列满了，且继续提交任务，则 创建新的线程执行任务，前提是当前线程数小于 maximumPoolSize</p></li>
+<li><p>keepAliveTime<br/>
+线程空闲时的存活时间，即当线程没有任务执行时，继续存活的时间。默认情况下，该参数只在线程数大于 corePoolSize 时才有用</p></li>
+<li><p>TimeUnit<br/>
+keepAliveTime 的时间单位 workQueue</p></li>
+<li><p>workQueue<br/>
+workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超过它的corePoolSize 的时候，线程会进入阻塞队列进行阻塞等待。通过 workQueue，线程池实现了阻塞功能。<br/>
+用于保存等待执行的任务的阻塞队列，一般来说，我们应该尽量使用有界队列，因为使用无界队列作为工作队列会对线程池带来如下影响：</p>
+<ul>
+<li>当线程池中的线程数达到 corePoolSize 后，新任务将在无界队列中等待， 因此线程池中的线程数不会超过 corePoolSize。</li>
+<li>使用无界队列时 maximumPoolSize 将是一个无效参数。</li>
+<li>使用无界队列时 keepAliveTime 将是一个无效参数。</li>
+<li>更重要的，使用无界 queue 可能会耗尽系统资源，有界队列则有助于防 止资源耗尽，同时即使使用有界队列，也要尽量控制队列的大小在一个合适的范围。<br/>
+所以我们一般会使用，ArrayBlockingQueue、LinkedBlockingQueue、 SynchronousQueue、PriorityBlockingQueue。</li>
+</ul></li>
+<li><p>ThreadFactory<br/>
+新线程使用ThreadFactory创建。如果没有另外指定，则使用Executors.defaultThreadFactory()。通过提供不同的ThreadFactory，您可以更改线程的名称，线程组，优先级，守护进程状态等。</p></li>
+<li><p>RejectedExecutionHandler<br/>
+提供了四个预定义的处理程序策略：</p>
+<ul>
+<li>在默认ThreadPoolExecutor.AbortPolicy ，处理程序会引发运行RejectedExecutionException后排斥反应。</li>
+<li>在ThreadPoolExecutor.CallerRunsPolicy中，调用execute本身的线程运行任务。 这提供了一个简单的反馈控制机制，将降低新任务提交的速度。</li>
+<li>ThreadPoolExecutor.DiscardPolicy中 ，直接丢弃任务。</li>
+<li>ThreadPoolExecutor.DiscardOldestPolicy中   丢弃阻塞队列中靠最前的任务，并执行当前任务。<br/>
+可以定义和使用其他类型的RejectedExecutionHandler类。 这样做需要特别注意，特别是当策略被设计为仅在特定容量或排队策略下工作时。</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<h3 id="toc_2">扩展ThreadPoolExecutor</h3>
+
+<p>该类提供了在每个任务执行之前和之后调用的protected可悲子类覆写的beforeExecute(Thread, Runnable)和afterExecute(Runnable, Throwable)方法。 这些可以用来操纵执行环境; 例如，重新初始化ThreadLocals，收集统计信息或添加日志条目。 另外，方法terminated()可以被覆盖，以执行执行程序完全终止后需要执行的任何特殊处理。</p>
+
+<pre><code class="language-java">public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
+    private boolean isPaused;
+    private ReentrantLock pauseLock = new ReentrantLock();
+
+    private Condition unpaused = pauseLock.newCondition();
+
+    public PausableThreadPoolExecutor(int corePoolSize,
+                                      int maximumPoolSize,
+                                      long keepAliveTime,
+                                      TimeUnit unit,
+                                      BlockingQueue&lt;Runnable&gt; workQueue,
+                                      ThreadFactory threadFactory,
+                                      RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+    }
+
+    @Override
+    protected void beforeExecute(Thread t, Runnable r) {
+        super.beforeExecute(t, r);
+        pauseLock.lock();
+        try {
+            while (isPaused) unpaused.await();
+        } catch (InterruptedException ie) {
+            t.interrupt();
+        } finally {
+            pauseLock.unlock();
+        }
+    }
+
+    @Override
+    protected void afterExecute(Runnable r, Throwable t) {
+        super.afterExecute(r, t);
+        if (t != null) System.out.println(t);
+    }
+
+}
+
+    public void pause() {
+        pauseLock.lock();
+        try {
+            isPaused = true;
+        } finally {
+            pauseLock.unlock();
+        }
+    }
+
+    public void resume() {
+        pauseLock.lock();
+        try {
+            isPaused = false;
+            unpaused.signalAll();
+        } finally {
+            pauseLock.unlock();
+        }
+    }
+
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_3">线程池的工作机制</h2>
+
+<ol>
+<li>如果当前运行的线程少于 corePoolSize，则创建新线程来执行任务(注意， 执行这一步骤需要获取全局锁)。</li>
+<li>如果运行的线程等于或多于 corePoolSize，则将任务加入 BlockingQueue。 </li>
+<li>如果无法将任务加入 BlockingQueue(队列已满)，则创建新的线程来处理任务。</li>
+<li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
+</ol>
+
+<p><img src="media/15878284668401/15881542018690.jpg" alt=""/></p>
+
+<h3 id="toc_4">提交任务</h3>
+
+<p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程 池执行成功。</p>
+
+<p>submit()方法用于提交需要返回值的任务。线程池会返回一个 future 类型的对象，通过这个 future 对象可以判断任务是否执行成功，并且可以通过 future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get (long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。</p>
+
+<h3 id="toc_5">关闭线程池</h3>
+
+<p>可以通过调用线程池的 shutdown 或 shutdownNow 方法来关闭线程池。它们 的原理是遍历线程池中的工作线程，然后逐个调用线程的 interrupt 方法来中断 线程，所以无法响应中断的任务可能永远无法终止。</p>
+
+<p>但是它们存在一定的区别， shutdownNow 首先将线程池的状态设置成 STOP，然后尝试停止所有的正在执行 或暂停任务的线程，并返回等待执行任务的列表，而 shutdown 只是将线程池的 状态设置成 SHUTDOWN 状态，然后中断所有没有正在执行任务的线程</p>
+
+<h2 id="toc_6">如何合理使用线程池</h2>
+
+<p>要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。</p>
+
+<ul>
+<li>任务的性质:CPU 密集型任务、IO 密集型任务和混合型任务。 •任务的优先级:高、中和低。</li>
+<li>任务的执行时间:长、中和短。 </li>
+<li>任务的依赖性:是否依赖其他系统资源，如数据库连接。 性质不同的任务可以用不同规模的线程池分开处理。</li>
+</ul>
+
+<p>CPU 密集型任务应配置尽可能小的线程，如配置 Ncpu+1 个线程的线程池。 </p>
+
+<p>由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如 2*Ncpu。</p>
+
+<p>混合型的任务，如果可以拆分，将其拆分成一个 CPU 密集型任务和一个 IO 密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行 分解。</p>
+
+<p>可以通过 Runtime.getRuntime().availableProcessors()方法获得当前设备的 CPU 个数。</p>
+
+<p>对于 IO 型的任务的最佳线程数，有个公式可以计算 ：<br/>
+Nthreads = NCPU * UCPU * (1 + W/C)</p>
+
+<p>其中:<br/>
+NCPU 是处理器的核的数目<br/>
+UCPU 是期望的 CPU 利用率(该值应该介于 0 和 1 之间)<br/>
+W/C 是等待时间与计算时间的比率</p>
+
+<p>等待时间与计算时间我们在 Linux 下使用相关的 vmstat 命令或者 top 命令查看。</p>
+
+<p>优先级不同的任务可以使用优先级队列 PriorityBlockingQueue 来处理。它可以让优先级高的任务先执行。</p>
+
+<p>依赖数据库连接池的任务，因为线程提交 SQL 后需要等待数据库返回结果， 等待的时间越长，则 CPU 空闲时间就越长，那么线程数应该设置得越大，这样才能更好地利用 CPU。</p>
+
+<p>建议使用有界队列。有界队列能增加系统的稳定性和预警能力，可以根据需 要设大一点儿。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[阻塞队列]]></title>
+    <link href="http://www.throne4j.com/15878230274351.html"/>
+    <updated>2020-04-25T21:57:07+08:00</updated>
+    <id>http://www.throne4j.com/15878230274351.html</id>
+    <content type="html"><![CDATA[
+<p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端(front)进行删除操作，而在表的后端(rear)进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。</p>
+
+<p>在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。 因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能 最先从队列中删除，故队列又称为先进先出(FIFO—first in first out)线性表。</p>
+
+<h2 id="toc_0">什么是阻塞队列</h2>
+
+<p>1)支持阻塞的插入方法: 意思是当队列满时，队列会阻塞插入元素的线程， 直到队列不满。<br/>
+2)支持阻塞的移除方法: 意思是在队列为空时，获取元素的线程会等待队 列变为非空。</p>
+
+<p>BlockingQueue不接受null元素, 其实现被设计为主要用于生产者 - 消费者队列。消费者是从队列里取元素的线程。阻塞队列就是生产者用来存放元素、消费者用 来获取元素的容器。</p>
+
+<p>在并发编程中使用生产者和消费者模式能够解决绝大多数并发问题。该模式通过平衡生产线程和消费线程的工作能力来提高程序整体处理数据的速度。</p>
+
+<p>如下生产者消费模式：</p>
+
+<pre><code class="language-java">class Producer implements Runnable {
+    private final BlockingQueue queue;
+
+    Producer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                queue.put(produce());
+            }
+        } catch (InterruptedException ex) { 
+            //...handle ...
+        }
+    }
+
+    Object produce() { 
+        // 生产...
+    }
+}
+
+class Consumer implements Runnable {
+    private final BlockingQueue queue;
+
+    Consumer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                consume(queue.take());
+            }
+        } catch (InterruptedException ex) { ...handle ...}
+    }
+
+    void consume(Object x) { 
+        // do something...
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_1">阻塞队列的操作</h2>
+
+<p>BlockingQueue 方法有四种形式，具有不同的操作方式，不能立即满足，但可能在将来的某个时间点满足的方法:</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>抛出异常</th>
+<th>返回特殊值</th>
+<th>一直阻塞</th>
+<th>超时退出</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>插入方法</td>
+<td>add(e)</td>
+<td>offer(e)</td>
+<td>put(e)</td>
+<td>offer(e,time,unit)</td>
+</tr>
+<tr>
+<td>移除方法</td>
+<td>remove()</td>
+<td>poll()</td>
+<td>take()</td>
+<td>pull(time,unit)</td>
+</tr>
+<tr>
+<td>检索方法</td>
+<td>element()</td>
+<td>peek()</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li><p>抛出异常<br/>
+IllegalStateException - 如果由于容量限制，此时无法添加该元素<br/>
+ClassCastException - 由于类型转换异常，无法添加元素<br/>
+NullPointerException - 如果指定的元素为null<br/>
+IllegalArgumentException - 如果指定元素的某些属性阻止将其添加到此队列中</p></li>
+<li><p>返回特殊值:当往队列插入元素时，会返回元素是否插入成功，成功返回 true。如果是移除方法，则是从队列里取出一个元素，如果没有则返回 null。</p></li>
+<li><p>一直阻塞:当阻塞队列满时，如果生产者线程往队列里 put 元素，队列会 一直阻塞生产者线程，直到队列可用或者响应中断退出。当队列空时，如果消费 者线程从队列里 take 元素，队列会阻塞住消费者线程，直到队列不为空。</p></li>
+<li><p>超时退出:当阻塞队列满时，如果生产者线程往队列里插入元素，队列会 阻塞生产者线程一段时间，如果超过了指定的时间，生产者线程就会退出。</p></li>
+</ul>
+
+<hr/>
+
+<p>BlockingQueue实现是线程安全的。 所有排队方法使用内部锁或其他形式的并发控制在原子上实现其效果.</p>
+
+<h2 id="toc_2">常用阻塞队列</h2>
+
+<ul>
+<li>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列。 </li>
+<li>LinkedBlockingQueue:一个由链表结构组成的有界阻塞队列。 </li>
+<li>PriorityBlockingQueue:一个支持优先级排序的无界阻塞队列。 </li>
+<li>DelayQueue:一个使用优先级队列实现的无界阻塞队列。 </li>
+<li>SynchronousQueue:一个不存储元素的阻塞队列。 </li>
+<li>LinkedTransferQueue:一个由链表结构组成的无界阻塞队列。 </li>
+<li>LinkedBlockingDeque:一个由链表结构组成的双向阻塞队列。 <br/>
+以上的阻塞队列都实现了 BlockingQueue 接口，也都是线程安全的。</li>
+</ul>
+
+<h3 id="toc_3">Array 实现和 Linked 实现的区别</h3>
+
+<ol>
+<li>队列中锁的实现不同<br/>
+ArrayBlockingQueue 实现的队列中的锁是没有分离的，即生产和消费用的是 同一个锁;<br/>
+LinkedBlockingQueue 实现的队列中的锁是分离的，即生产用的是 putLock， 消费是 takeLock</li>
+<li>在生产或消费时操作不同<br/>
+ArrayBlockingQueue 实现的队列中在生产和消费的时候，是直接将枚举对象插入或移除的;<br/>
+LinkedBlockingQueue 实现的队列中在生产和消费的时候，需要把枚举对象转换为 Node<E>进行插入或移除，会影响性能 </li>
+<li>队列大小初始化方式不同<br/>
+ArrayBlockingQueue 实现的队列中必须指定队列的大小; LinkedBlockingQueue 实现的队列中可以不指定队列的大小，但是默认是Integer.MAX_VALUE<br/>
+### DelayQueue<br/>
+是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。</li>
+</ol>
+
+<p>可以将 DelayQueue 运用在以下应用场景:<br/>
+缓存系统的设计:可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了。还有订单到期，限时支付等等</p>
+
+<h3 id="toc_4">SynchronousQueue</h3>
+
+<p>本身不存储任何元素，每一个put操作必须等待一个take操作，将消息从生产者直接传递到消费者。</p>
+
+<h3 id="toc_5">LinkedBlockingDeque</h3>
+
+<p>LinkedBlockingDeque 是一个由链表结构组成的双向阻塞队列。所谓双向队列 指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入 口，在多线程同时入队时，也就减少了一半的竞争。多了 addFirst、addLast、offerFirst、offerLast、peekFirst 和 peekLast 等方法。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ConcurrentHashMap分析]]></title>
+    <link href="http://www.throne4j.com/15876263485744.html"/>
+    <updated>2020-04-23T15:19:08+08:00</updated>
+    <id>http://www.throne4j.com/15876263485744.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">哈希</h2>
+
+<p>哈希又称为散列（英语：Hashing），是计算机科学中一种对数据的处理方法，把任意长度的输入(又叫做预映射， pre-image)，通过散列算法，变换成固定长度的输出，该输出就是散列值。这种转换是一种压缩映射，也就是， 散列值的空间通常远小于输入的空间，不同的输入可能会散列成相同的输出，所以不可能从散列值来确定唯一的输入值。</p>
+
+<h2 id="toc_1">使用场景：</h2>
+
+<p>它也常用作一种信息安全的实现方法，由一串数据经过散列算法（Hashing algorithms）计算出来的数据指纹（data fingerprint），经常用来识别文件与数据是否有被窜改，以保证文件与数据确实是由原创者所提供。</p>
+
+<p>散列算法也被用来加密存在数据库中的密码（password）字符串，由于散列算法所计算出来的散列值（Hash Value）具有不可逆（无法逆向演算回原本的数值）的性质，因此可有效的保护密码。</p>
+
+<h2 id="toc_2">散列函数</h2>
+
+<ul>
+<li>直接定址法：取关键字或关键字的某个线性函数值为散列地址。</li>
+<li>数字分析法：假设关键字是以r为基的数，并且哈希表中可能出现的关键字都是事先知道的，则可取关键字的若干数位组成哈希地址。</li>
+<li>平方取中法：取关键字平方后的中间几位为哈希地址。通常在选定哈希函数时不一定能知道关键字的全部情况，取其中的哪几位也不一定合适，而一个数平方后的中间几位数和数的每一位都相关，由此使随机分布的关键字得到的哈希地址也是随机的。取的位数由表长决定。</li>
+<li>折叠法：将关键字分割成位数相同的几部分（最后一部分的位数可以不同），然后取这几部分的叠加和（舍去进位）作为哈希地址。</li>
+<li>随机数法</li>
+<li>除留余数法：取关键字被某个不大于散列表表长m的数p除后所得的余数为散列地址。不仅可以对关键字直接取模，也可在折叠法、平方取中法等运算之后取模。对p的选择很重要，一般取素数或m，若p选择不好，容易产生冲突。<br/>
+## 哈希冲突</li>
+</ul>
+
+<p>对不同的关键字可能得到同一散列地址，这种现象称为冲突。</p>
+
+<h2 id="toc_3">哈希冲突解决方案</h2>
+
+<p>开放定址法、</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[原子操作CAS 无锁操作]]></title>
+    <link href="http://www.throne4j.com/15874857577712.html"/>
+    <updated>2020-04-22T00:15:57+08:00</updated>
+    <id>http://www.throne4j.com/15874857577712.html</id>
+    <content type="html"><![CDATA[
+<p><img src="media/15874857577712/15879543805684.jpg" alt=""/></p>
+
+<h2 id="toc_0">什么是原子操作?如何实现原子操作?</h2>
+
+<p>假定有两个操作 A 和 B，如果从执行 A 的线程来看，当另一个线程执行 B 时， 要么将 B 全部执行完，要么B完全不执行，那么 A 和 B 对彼此来说是原子的。</p>
+
+<p>实现原子操作可以使用锁，锁机制，满足基本的需求是没有问题的了，但是 有的时候我们的需求并非这么简单，我们需要更有效，更加灵活的机制， synchronized 关键字是基于阻塞的锁机制，也就是说当一个线程拥有锁的时候， 访问同一资源的其它线程需要等待，直到该线程释放锁，</p>
+
+<p>这里会有些问题: 首先，如果被阻塞的线程优先级很高很重要怎么办?其次， 如果获得锁的线程一直不释放锁怎么办?(这种情况是非常糟糕的)。还有一种 情况，如果有大量的线程来竞争资源，那 CPU 将会花费大量的时间和资源来处 理这些竞争，同时，还有可能出现一些例如死锁之类的情况，最后，其实锁机制是一种比较粗糙，粒度比较大的机制，相对于像计数器这样的需求有点儿过于笨重。</p>
+
+<p>实现原子操作还可以使用当前的处理器基本都支持 CAS()的指令，只不过每个厂家所实现的算法并不一样，每一个 CAS 操作过程都包含三个运算符:一个内 存地址 V，一个期望的值 A 和一个新值 B，操作的时候如果这个地址上存放的值 等于这个期望的值 A，则将地址上的值赋为新值 B，否则不做任何操作。</p>
+
+<p>CAS 的基本思路就是，如果这个地址上的值和期望的值相等，则给其赋予新值，否则不做任何事儿，但是要返回原值是多少。循环 CAS 就是在一个循环里不断的做 cas 操作，直到成功为止。</p>
+
+<p>CAS 是怎么实现线程的安全呢?语言层面不做处理，我们将其交给硬件— CPU 和内存，利用 CPU 的多处理能力，实现硬件层面的阻塞，再加上 volatile 变 量的特性即可实现基于原子操作的线程安全。</p>
+
+<hr/>
+
+<h2 id="toc_1">CAS 实现原子操作的三大问题</h2>
+
+<ul>
+<li>ABA问题</li>
+</ul>
+
+<p>因为 CAS 需要在操作值的时候，检查值有没有发生变化，如果没有发生变化 则更新，但是如果一个值原来是 A，变成了 B，又变成了 A，那么使用 CAS 进行 检查时会发现它的值没有发生变化，但是实际上却变化了。<br/>
+ABA 问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量 更新的时候把版本号加 1，那么 A→B→A 就会变成 1A→2B→3A。举个通俗点的 例子，你倒了一杯水放桌子上，干了点别的事，然后同事把你水喝了又给你重新 倒了一杯水，你回来看水还在，拿起来就喝，如果你不管水中间被人喝过，只关 心水还在，这就是 ABA 问题。<br/>
+如果你是一个讲卫生讲文明的小伙子，不但关心水在不在，还要在你离开的 时候水被人动过没有，因为你是程序员，所以就想起了放了张纸在旁边，写上初 始值 0，别人喝水前麻烦先做个累加才能喝水。</p>
+
+<ul>
+<li>循环时间长开销大。</li>
+</ul>
+
+<p>自旋 CAS 如果长时间不成功，会给 CPU 带来非常大的执行开销。</p>
+
+<ul>
+<li>只能保证一个共享变量的原子操作。</li>
+</ul>
+
+<p>当对一个共享变量执行操作时，我们可以使用循环 CAS 的方式来保证原子操 作，但是对多个共享变量操作时，循环 CAS 就无法保证操作的原子性，这个时候 就可以用锁。<br/>
+还有一个取巧的办法，就是把多个共享变量合并成一个共享变量来操作。比 如，有两个共享变量 i=2，j=a，合并一下 ij=2a，然后用 CAS 来操作 ij。从 Java 1.5 开始，JDK 提供了 AtomicReference 类来保证引用对象之间的原子性，就可以把 多个变量放在一个对象里来进行 CAS 操作。</p>
+
+<h2 id="toc_2">JDK中 java.util.concurrent.atomic 报下包装有原子操作类。</h2>
+
+<ul>
+<li><p>AtomicInteger</p>
+<ul>
+<li>int addAndGet(int delta):以原子方式将输入的数值与实例中的值(AtomicInteger 里的 value)相加，并返回结果。</li>
+<li>boolean compareAndSet(int expect，int update):如果输入的数值等于预 期值，则以原子方式将该值设置为输入的值。</li>
+<li>int getAndIncrement():以原子方式将当前值加 1，注意，这里返回的是自 增前的值。</li>
+<li>int getAndSet(int newValue):以原子方式设置为 newValue 的值，并返回 旧值。</li>
+</ul></li>
+<li><p>原子更新基本类型的 AtomicInteger，只能更新一个变量，如果要原子更新多个变量，就需要使用这个原子更新引用类型提供的类。Atomic 包提供了以下 3 个类。</p>
+<ul>
+<li>AtomicReference 原子更新引用类型。</li>
+<li>AtomicStampedReference <br/>
+利用版本戳的形式记录了每次改变以后的版本号，这样的话就不会存在 ABA 问题了。AtomicStampedReference 是使用 pair 的 int stamp 作为计数器使用。</li>
+<li>AtomicMarkableReference<br/>
+AtomicMarkableReference 跟 AtomicStampedReference 差不多， AtomicMarkableReference 的 pair 使用的是 boolean mark。</li>
+</ul></li>
+</ul>
 
 ]]></content>
   </entry>
@@ -1930,372 +2587,6 @@ WriteLock </p>
 <h3 id="toc_10">StampedLock</h3>
 
 <p>JDK1.8增加的一种新的锁实现</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[内存分配策略]]></title>
-    <link href="http://www.throne4j.com/15869610065512.html"/>
-    <updated>2020-04-15T22:30:06+08:00</updated>
-    <id>http://www.throne4j.com/15869610065512.html</id>
-    <content type="html"><![CDATA[
-<p>对象的内存分配，概念上说都是在堆内存上分配(有可能被编译器拆散为标量类型并间接地在栈上分配)。在经典分代设计下，新对象通常会分配在新生代中，少数情况下可能直接分配在老年代。<strong>对象的分配规则并不是固定的，主要取决于JVM使用的是哪一种垃圾收集器，以及虚拟机中与内存相关的参数设定</strong>。</p>
-
-<p>下面看下serial+serialOld垃圾收集器下的内存分配规则</p>
-
-<h2 id="toc_0">对象优先在Eden区分配</h2>
-
-<p>大多数情况下，对象在Eden区分配，当Eden区空间不足时，将触发一次minor gc。<br/>
-jvm提供了-XX:+PrintGCDetails这个收集日志参数，或使用-XX:+PrintHeapAtGC对GC前后的GC日志进行对比</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[垃圾收集器]]></title>
-    <link href="http://www.throne4j.com/15869610752834.html"/>
-    <updated>2020-04-15T22:31:15+08:00</updated>
-    <id>http://www.throne4j.com/15869610752834.html</id>
-    <content type="html"><![CDATA[
-<p>关于JVM中线程私有的内存区域（程序计数器、虚拟机栈、本地方法栈）是在类结构确定下来的时候就是已知的，他们随着线程的生灭而生灭，因此不需要过多考虑这几块区域。但是java堆就带有很大的不确定性，它在程序运行期间会不断的创建对象，这块的内存的分配和回收的动态性将会是JVM垃圾收集器主要关注的部分。</p>
-
-<p>当需要排查排查各种内存溢出、内存泄漏问题，垃圾收集成为系统高并发瓶颈时，我们需要对jvm的自动化内存管理进行监控和优化。</p>
-
-<h2 id="toc_0">那些对象需要回收</h2>
-
-<p>在垃圾收集器对堆进行回收之前，第一件事就是需要确定下来哪些对象是&quot;死亡&quot;的，然后对这些死亡的对象内存进行回收。</p>
-
-<h3 id="toc_1">引用计数算法</h3>
-
-<p>在对象A中添加一个引用计数器，每当有一个地方引用对象A时，计数器的值+1，引用失效的时候计数器 -1，计数器为0时，这个对象就未被使用的对象。<strong><em>这种算法虽然原理简单、高效，但是却不能解决对象之间的循环引用的问题。</em></strong></p>
-
-<h3 id="toc_2">可达性分析算法</h3>
-
-<p>这个算法的基本思路就是通过一系列的被称为“GC Roots”的根对象为其实节点集，从这写节点开始，根据引用关系向下搜索，搜索过程所走过的路径被称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，或者说从GC Roots到这个对象不可达，则证明此对象不可能再被使用。</p>
-
-<p>被称为GC Roots的对象包括以下几种：</p>
-
-<ul>
-<li>在虚拟机栈(栈帧中的本地变量表)中引用的对象，比如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</li>
-<li>在方法区中类静态属性引用的对象，比如java类的引用类型静态变量</li>
-<li>在方法区中常量引用的对象，比如字符串常量池的引用</li>
-<li>在本地方法占中JNI引用的对象</li>
-<li>JVM内部的引用，比如基本数据类型对应的Class对象，一些常驻的异常对象(NullPointException、OutOfMemoryError)等，还有系统类加载器</li>
-<li>所有被同步锁(synchronized关键字)持有的对象</li>
-<li>反应JVM内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等</li>
-</ul>
-
-<h2 id="toc_3">什么时候回收</h2>
-
-<h2 id="toc_4">怎么回收</h2>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[JVM 中 java 对象]]></title>
-    <link href="http://www.throne4j.com/15866239860150.html"/>
-    <updated>2020-04-12T00:53:06+08:00</updated>
-    <id>http://www.throne4j.com/15866239860150.html</id>
-    <content type="html"><![CDATA[
-<p>在java程序运行的过程中，无时无刻都有对象被不断的创建出来。我们创建一个对象通常都是通过new关键字，但是jvm是怎么把一个对象给整出来的呢？</p>
-
-<h2 id="toc_0">对象的创建</h2>
-
-<p>Java中有5种创建对象的方式：</p>
-
-<table>
-<thead>
-<tr>
-<th>创建方式</th>
-<th>是否调用构造函数</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>new关键字</td>
-<td>调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Class.forName().instance()、Object.class.newInstance()</td>
-<td>Class.forName加载并连接类，newInstance()调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Constructor类的NewInstance()</td>
-<td>调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Clone()</td>
-<td>没有调用构造函数</td>
-</tr>
-<tr>
-<td>反序列化</td>
-<td>没有调用构造函数</td>
-</tr>
-</tbody>
-</table>
-
-<p>这里我们只对new关键字进行分析<br/>
-当JVM遇到new关键字创建普通的java对象(不包括数组和Class对象等)时，<strong><em>首先</em></strong>检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过，如果没有那么必须执行相应的加载过程()。</p>
-
-<p>在类加载检查通过后，接下来虚拟机为新生对象分配内存(类加载完成后即可知其大小)，jvm将一块确定大小的内存块从java堆中划拨出来。在划拨堆内存出来的时候，会涉及到如何分配的问题，下面有两种分配方式</p>
-
-<ul>
-<li><p>指针碰撞 <br/>
-定义： 假设堆内存是规整的，所有使用过的堆内存放在一边，空闲的内存被放在另一边，中间放着一个指针作为分界点的指示器，那所分配内存就是是把这个指针向空闲空间方向移动一段与对象大小相等的的距离。<br/>
-<img src="media/15866239860150/15869624345720.jpg" alt="" style="width:869px;"/></p></li>
-<li><p>空闲列表<br/>
-如果堆内存是不规整的，已使用和未被使用的内存是交错在一起的，那就没办法简简单单地进行“指针碰撞”了，虚拟机就必须维护一个用来记录那些内存块是可用的列表，在分配对象的时候找一个内存大小适中的内存空间划分给对象，并更新列表上的记录，这种分配方式被称为空闲列表<br/>
-<img src="media/15866239860150/15869639142729.jpg" alt="" style="width:877px;"/></p></li>
-</ul>
-
-<p>选择哪种分配方式有java堆是否规整决定，堆是否规整取决于jvm采用哪种垃圾回收器(<a href="15869610752834.html">垃圾收集器</a>)来决定。</p>
-
-<p>因此采用复制算法、标记整理算法的收集器时，系统采用“指针碰撞“，而采用CMS这种基于清除算法的收集器时，采用”空闲列表“来分配。</p>
-
-<p>但是在并发情况下，即使是”指针碰撞“这种仅仅是移动指针所指向位置的操作，也并不是线程安全的，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况。</p>
-
-<p>解决上面所说的问题有两种可选方案</p>
-
-<ul>
-<li>分配内存空间的动作进行同步处理（JVM是采用CAS配上失败重试的方式保证更新操作的原子性）</li>
-<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一小块内存，称为本地线程分配缓冲(Thread Local Allocation Buffer， TLAB)，哪个线程要分分配内存就在哪个线程的TLAB中分配，TLAB使用完了，分配新的缓存区时才需要同步锁定</li>
-</ul>
-
-<p>内存分配完成之后， JVM必须将分配到的内存空间(不包括对象头)都进行初始化，这样保证了在代码中可以不赋初值就可以直接使用。</p>
-
-<p>接下来JVM还要对对象进行必要的设置，例如对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄、是否使用偏向锁等信息，这些信息存放在java的对象头中。</p>
-
-<p>接下来对象的创建猜刚刚开始----构造函数，即Class文件中的<init>()方法还没执行，所有的对象字段还是初始的默认值，执行完<init>()之后对象才会想我们程序中所希望的那样赋予相应的变量值。</p>
-
-<h2 id="toc_1">对象的内存布局</h2>
-
-<p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。</p>
-
-<h3 id="toc_2">对象头</h3>
-
-<p>对象头分两部分：Mark Word、class pointer(类型指针)</p>
-
-<ul>
-<li>Mark Word的组成以及布局情况</li>
-</ul>
-
-<p>下图是在64位虚拟机上的对象头的堆内存布局：<br/>
-<img src="media/15866239860150/15870492871153.jpg" alt=""/></p>
-
-<p>通过Jol工具可以查看对象信息,例如查看Object对象的信息如下：</p>
-
-<pre><code class="language-text">Object a = new Object();
-System.out.println(ClassLayout.parseInstance(a).toPrintable());
-
------------------------------------------------------------------------
-java.lang.Object object internals:
- OFFSET  SIZE   TYPE DESCRIPTION                               VALUE
-      0     4        (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
-      4     4        (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
-      8     4        (object header)                           e5 01 00 f8 (11100101 00000001 00000000 11111000) (-134217243)
-     12     4        (loss due to the next object alignment)
-Instance size: 16 bytes
-Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
-</code></pre>
-
-<p>从输出结果可以看到Object对象的大小总共占用 4 bytes的内存</p>
-
-<ul>
-<li>类型指针<br/>
-对象指向它的类型元数据指针，java虚拟机通过这个指针来确定对象是哪个类的实例。</li>
-</ul>
-
-<h3 id="toc_3">实例数据</h3>
-
-<p>用来存储真正的有效信息，即我们在程序代码里面所定义的各种类型的字段内容。</p>
-
-<h3 id="toc_4">对齐填充</h3>
-
-<p>这部分仅仅是起到占位符的作用。由于jvm的自动内存管理系统要求任何对象的大小必须是8字节的整数倍，如果对象实例数据没有对齐的话，则通过对齐填充来进行补全，使其大小是8字节的整数倍(对象头已经被设计成正好是8字节的整数倍的结构了)</p>
-
-<h2 id="toc_5">对象访问定位</h2>
-
-<p>创建完对象之后，就到了使用对象的时候了。JVM会通过虚拟机栈上的reference（指向对象的引用）数据来操作堆上的具体对象。</p>
-
-<p>jvm主要有两种访问对象的方式：</p>
-
-<ul>
-<li><p>使用句柄访问<br/>
-java堆内存中将可能划分出一块内存作为句柄池，reference中存储的就是对象的句柄地址，句柄中包含了对象的实例数据与类型数据各自具体的地址信息。<br/>
-当对象改变之后，只需要改变句柄中的实例数据的指针地址，而句柄本身的地址这不会改变，那么reference的引用也不会改变。</p></li>
-<li><p>使用直接指针访问<br/>
-reference中存储的直接就是对象的地址，直接访问对象的话，一步到位，访问速度会更加迅速。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore]]></title>
-    <link href="http://www.throne4j.com/15867876320249.html"/>
-    <updated>2020-04-13T22:20:32+08:00</updated>
-    <id>http://www.throne4j.com/15867876320249.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">CountDownLatch 号令枪</h2>
-
-<p>CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工作后再执行操作。<br/>
-CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
-
-<pre><code class="language-java">public class MichaelShow {
-    private static final AtomicInteger COUNT = new AtomicInteger(0);
-    static class Customer extends Thread {
-        private final CountDownLatch beQuiet;
-        private final CountDownLatch beBoom;
-
-        public Customer(CountDownLatch beQuiet, CountDownLatch beBoom) {
-            this.beQuiet = beQuiet;
-            this.beBoom = beBoom;
-        }
-
-        @Override
-        public void run() {
-            try {
-                beQuiet.await();
-                System.out.println(&quot;观众大喊：Michael Jackson， 我爱你！！！晕厥~~~&quot;);
-                COUNT.getAndAdd(1);
-                beBoom.countDown();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        CountDownLatch startShow = new CountDownLatch(1);
-        CountDownLatch beBoom = new CountDownLatch(100);
-        for (int i = 0; i &lt; 100; i++) {
-            new Customer(startShow,beBoom).start();
-        }
-
-        System.out.println(&quot;Michael号令，演唱会马上开始&quot;);
-        startShow.countDown(); // 开始演唱会
-        beBoom.await();// 等待晕厥到一定人数，将人送往医院
-        System.out.println(&quot;观众晕厥&quot;+COUNT.get()+&quot;个，都被送往医院&quot;);
-    }
-}
-</code></pre>
-
-<h2 id="toc_1">CyclicBarrier</h2>
-
-<p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做 的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞，直到最后一 个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。 </p>
-
-<p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然 后当前线程被阻塞。<br/>
-CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
-
-<pre><code class="language-java">public class HomeWorkCyclicBarrier {
-
-    private static CyclicBarrier barrier
-            = new CyclicBarrier(4, new Treacher());
-
-    //存放子线程工作结果的容器
-    private static ConcurrentHashMap&lt;String, Long&gt; resultMap
-            = new ConcurrentHashMap&lt;&gt;();
-
-    public static void main(String[] args) {
-        for (int i = 0; i &lt; 4; i++) {
-            Thread thread = new Thread(new Student());
-            thread.start();
-        }
-
-    }
-
-    /*汇总作业*/
-    private static class Treacher implements Runnable {
-
-        @Override
-        public void run() {
-            StringBuilder result = new StringBuilder();
-            for (Map.Entry&lt;String, Long&gt; workResult : resultMap.entrySet()) {
-                result.append( workResult.getValue()+&quot;、&quot;);
-            }
-            System.out.println(&quot;王老师批阅学生&quot; + result+&quot;的作业&quot;);
-            System.out.println(&quot;王老师看学生搞对象&quot;);
-        }
-    }
-
-    /*相互等待的子线程*/
-    private static class Student implements Runnable {
-
-        @Override
-        public void run() {
-            long id = Thread.currentThread().getId();
-            resultMap.put(&quot;作业&quot;+Thread.currentThread().getId() + &quot;&quot;, id);
-            try {
-                Thread.sleep(1000 + id);
-                System.out.println(&quot;学生&quot; + id + &quot;写作业&quot;);
-                barrier.await();
-                Thread.sleep(1000 + id);
-                System.out.println(&quot;学生&quot; + id + &quot;搞对象&quot;);
-                //barrier.await();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-}
-</code></pre>
-
-<h3 id="toc_2">Semaphore</h3>
-
-<p>Semaphore（信号量）是用来控制同时访问特定资源的线程数量，它通过协调各个线程，以保证合理的使用公共资源。很多年以来，我都觉得从字面上很难理解Semaphore所表达的含义，只能把它比作是控制流量的红绿灯，比如XX马路要限制流量，只允许同时有一百辆车在这条路上行使，其他的都必须在路口等待，所以前一百辆车会看到绿灯，可以开进这条马路，后面的车会看到红灯，不能驶入XX马路，但是如果前一百辆中有五辆车已经离开了XX马路，那么后面就允许有5辆车驶入马路，这个例子里说的车就是线程，驶入马路就表示线程在执行，离开马路就表示线程执行完成，看见红灯就表示线程被阻塞，不能执行。</p>
-
-<h4 id="toc_3">应用场景</h4>
-
-<p>Semaphore可以用于做流量控制，特别公用资源有限的应用场景，比如数据库连接。假如有一个需求，要读取几万个文件的数据，因为都是IO密集型任务，我们可以启动几十个线程并发的读取，但是如果读到内存后，还需要存储到数据库中，而数据库的连接数只有10个，这时我们必须控制只有十个线程同时获取数据库连接保存数据，否则会报错无法获取数据库连接。这个时候，我们就可以使用Semaphore来做流控，代码如下：</p>
-
-<pre><code class="language-java">public class DBPoolSemaphore {
-    
-    private final static int POOL_SIZE = 10;
-    //两个指示器，分别表示池子还有可用连接和已用连接
-    private final Semaphore useful,useless;
-    //存放数据库连接的容器
-    private static final LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
-    //初始化池
-    static {
-        for (int i = 0; i &lt; POOL_SIZE; i++) {
-            pool.addLast(getConnection());
-        }
-    }
-    public DBPoolSemaphore() {
-        this.useful = new Semaphore(10);
-        this.useless = new Semaphore(0);
-    }
-    
-    /*归还连接*/
-    public void returnConnect(Connection connection) throws InterruptedException {
-        if(connection!=null) {
-            System.out.println(&quot;当前有&quot;+useful.getQueueLength()+&quot;个线程等待数据库连接!!&quot;
-                    +&quot;可用连接数：&quot;+useful.availablePermits());
-            useless.acquire();
-            synchronized (pool) {
-                pool.addLast(connection);
-            }
-            useful.release();
-        }
-    }
-    
-    /*从池子拿连接*/
-    public Connection takeConnect() throws InterruptedException {
-        useful.acquire();
-        Connection connection;
-        synchronized (pool) {
-            connection = pool.removeFirst();
-        }
-        useless.release();
-        return connection;
-    }
-    
-}
-</code></pre>
 
 ]]></content>
   </entry>
