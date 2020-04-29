@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-04-29T18:28:48+08:00</updated>
+  <updated>2020-04-29T18:30:08+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -333,7 +333,6 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
         if (t != null) System.out.println(t);
     }
 
-}
 
     public void pause() {
         pauseLock.lock();
@@ -367,8 +366,6 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 <li>如果无法将任务加入 BlockingQueue(队列已满)，则创建新的线程来处理任务。</li>
 <li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
 </ol>
-
-<p><img src="media/15878284668401/15881542018690.jpg" alt=""/></p>
 
 <h3 id="toc_4">提交任务</h3>
 
