@@ -116,7 +116,64 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>AQS提供一个框架来实现基于先进先出(FIFO)同步队列的阻塞锁和相关同步器(信号量、事件等)。它使用了一个 int 成员变量表示同步状态，通过内置的 FIFO 队列来完成资源获取线程的排队工作。</p>
+                    <ul>
+<li>
+<a href="#toc_0">了解 LockSupport</a>
+</li>
+<li>
+<a href="#toc_1">AQS 使用方式</a>
+</li>
+<li>
+<a href="#toc_2">AQS 源码解读</a>
+<ul>
+<li>
+<a href="#toc_3">AQS 中的数据结构</a>
+<ul>
+<li>
+<a href="#toc_4">Node节点</a>
+</li>
+<li>
+<a href="#toc_5">head 和 tail</a>
+</li>
+<li>
+<a href="#toc_6">state</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_7">节点在同步队列中的增加</a>
+</li>
+<li>
+<a href="#toc_8">独占式同步状态获取与释放</a>
+<ul>
+<li>
+<a href="#toc_9">获取同步状态</a>
+</li>
+<li>
+<a href="#toc_10">释放同步状态</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_11">共享式同步状态获取与释放</a>
+</li>
+<li>
+<a href="#toc_12">下面实现一个共享锁，代码如下：</a>
+</li>
+<li>
+<a href="#toc_13">ConditionObject</a>
+<ul>
+<li>
+<a href="#toc_14">ConditionObject的数据结构</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<p>AQS提供一个框架来实现基于先进先出(FIFO)同步队列的阻塞锁和相关同步器(信号量、事件等)。它使用了一个 int 成员变量表示同步状态，通过内置的 FIFO 队列来完成资源获取线程的排队工作。</p>
 
 <p>AQS同步器是实现锁(也可以是任意同步组件)的关键，在锁的实现中聚合同步器。</p>
 

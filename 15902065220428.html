@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    MyBatis 与 Spring整合 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            MyBatis 与 Spring整合   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/05/23</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>Mybatis-Spring 用于帮助你将 MyBatis 代码无缝地整合到 Spring 中，集成过程中的增强主 要体现在如下四个方面：</p>
+
+<ul>
+<li>Spring 将会加载必要的 MyBatis 工厂类和 session 类 </li>
+<li>提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean<br/>
+中</li>
+<li>方便集成 spring 事务</li>
+<li>翻译 MyBatis 的异常到 Spring 的 DataAccessException 异常(数据访问异常)中</li>
+</ul>
+
+<h2 id="toc_0">MyBatis-Spring 集成配置最佳实践</h2>
+
+<ul>
+<li>准备Mybatis-spring的maven项目</li>
+<li>pom文件中添加mybatis-spring依赖</li>
+<li>配置 SqlSessionFactoryBean，在 MyBatis-Spring 中， SqlSessionFactoryBean 用于创建 SqlSessionFactory，几个关键配置选项如下所示：
+<ul>
+<li>dataSource ：用于配置数据源，该属性为必选项，必须通过这个属性配置数 据源 ，这里使用了上一节中配置好的 dataSource 数据库连接池 。</li>
+<li> mapper Locations ： 配置 SqlSessionFactoryBean 扫描 XML 映射文件的路径， 可以使用 Ant 风格的路径进行配置。</li>
+<li> configLocation ： 用于配置mybatis config XML的路径，除了数据源外，对MyBatis 的各种配直仍然可以通过这种方式进行，并且配置 MyBatis settings 时只能使 用这种方式。但配置文件中任意环境,数据源 和 MyBatis 的事务管理器都会被 忽略；</li>
+<li> typeAliasesPackage ： 配置包中类的别名，配置后，包中的类在 XML 映射文 件中使用时可以省略包名部分 ，直接使用类名。这个配置不支持 Ant 风格的 路径，当需要配置多个包路径时可以使用分号或逗号进行分隔 ；</li>
+</ul></li>
+<li>配置 MapperScannerConfigurer，通过 MapperScannerConfigurer 类自动扫描所有的 Mapper 接口，使用时可以直接注入接口。MapperScannerConfigurer 中常配置以下两个 属性 ：
+<ul>
+<li>basePackage ： 用于配置基本的包路径。可以使用分号或逗号作为分隔符设 置多于一个的包路径，每个映射器将会在指定的包路径中递归地被搜索到 。</li>
+<li>annotationClass ： 用于过滤被扫描的接口，如果设置了该属性，那么 MyBatis 的接口只有包含该注解才会被扫描进去</li>
+</ul></li>
+<li>配置事务，让 Mybatis 集成 spring 的事务；</li>
+</ul>
+
+<p>项目GitHub地址： <a href="https://github.com/qsk1226/mybatis-spring-study">mybatis-spring-study</a></p>
+
+<h2 id="toc_1">mybatis-spring 集成原理分析</h2>
+
+<h3 id="toc_2">SqlSessionFactoryBean 源码分析</h3>
+
+<p>它创建一个MyBatis SqlSessionFactory。这是在Spring应用程序上下文中设置共享MyBatis SqlSessionFactory的常用方法;然后，SqlSessionFactory可以通过依赖注入传递到基于mybatiso的dao。DataSourceTransactionManager或JtaTransactionManager都可以与SqlSessionFactory一起用于事务界定。JTA应该用于跨多个数据库的事务或正在使用容器管理事务(container managed transactions, CMT)的事务。</p>
+
+<p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
+
+<pre><code class="language-java">public class SqlSessionFactoryBean
+    implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SqlSessionFactoryBean.class);
+
+  private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
+  private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
+
+  private Resource configLocation;
+
+  private Configuration configuration;
+
+  private Resource[] mapperLocations;
+
+  private DataSource dataSource;
+
+  private TransactionFactory transactionFactory;
+
+  private Properties configurationProperties;
+
+  private SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+
+  private SqlSessionFactory sqlSessionFactory;
+
+  // EnvironmentAware requires spring 3.1
+  private String environment = SqlSessionFactoryBean.class.getSimpleName();
+
+  private boolean failFast;
+
+  private Interceptor[] plugins;
+
+  private TypeHandler&lt;?&gt;[] typeHandlers;
+
+  private String typeHandlersPackage;
+
+  private Class&lt;?&gt;[] typeAliases;
+
+  private String typeAliasesPackage;
+
+  private Class&lt;?&gt; typeAliasesSuperType;
+
+  private LanguageDriver[] scriptingLanguageDrivers;
+
+  private Class&lt;? extends LanguageDriver&gt; defaultScriptingLanguageDriver;
+
+  // issue #19. No default provider.
+  private DatabaseIdProvider databaseIdProvider;
+
+  private Class&lt;? extends VFS&gt; vfs;
+
+  private Cache cache;
+
+  private ObjectFactory objectFactory;
+
+  private ObjectWrapperFactory objectWrapperFactory;
+
+}
+</code></pre>
+
+<h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
+
+<pre><code class="language-java"> @Override
+  public void afterPropertiesSet() throws Exception {
+notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
+notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
+state((configuration == null &amp;&amp; configLocation == null) || !(configuration != null &amp;&amp; configLocation != null),
+    &quot;Property &#39;configuration&#39; and &#39;configLocation&#39; can not specified with together&quot;);
+// 封装者MyBatis的配置初始化阶段
+this.sqlSessionFactory = buildSqlSessionFactory();
+}
+</code></pre>
+
+<h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
+
+<pre><code class="language-java">/**
+ * 将sqlSessionFactory对象注入spring容器
+ */
+public SqlSessionFactory getObject() throws Exception {
+if (this.sqlSessionFactory == null) {
+  afterPropertiesSet();
+}
+
+return this.sqlSessionFactory;
+}
+</code></pre>
+
+<p>SqlSessionFactoryBean 就是将 sqlSessionFactory 注入容器， IOC 容器中的其他类型能拿到 SqlSession 实例了，就可以进行相关的 SQL 执行任务了；</p>
+
+<h3 id="toc_5">MapperFactoryBean 源码分析</h3>
+
+<p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
+
+<pre><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
+
+  private Class&lt;T&gt; mapperInterface;
+
+  private boolean addToConfig = true;
+
+  /**
+   * 方法实际是封装了 MyBatis 的第二阶段,获取 Mapper 接口
+   * getSqlSession():用户应该使用这个方法来获取一个SqlSession来调用它的语句方法，这个SqlSession是由spring管理的。用户不应该提交/回滚/关闭它，因为它将自动完成。
+   * 
+   * getMapper(this.mapperInterface)获取mapper接口
+   */
+  @Override
+  public T getObject() throws Exception {
+    return getSqlSession().getMapper(this.mapperInterface);
+  }
+}
+</code></pre>
+
+<p>MapperFactoryBean 实现了 FactoryBean 接口，getObject 方法实际是封装了 MyBatis 的第二阶段，注入容器的是 SqlSession 实例化的 Mapper 接口的实现类。</p>
+
+<p>它是支持注入MyBatis映射器接口的BeanFactory，可以使用SqlSessionFactory或预先配置的SqlSessionTemplate进行设置，这个工厂只能注入接口，而不能注入具体的类。</p>
+
+<h3 id="toc_6">MapperScannerConfigurer 源码分析</h3>
+
+<p>MapperFactoryBean 用于帮助 Spring 生成 Mapper 接口，但我们很少直接配置 MapperFactoryBean 而是配置 MapperScannerConfigurer。</p>
+
+<p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
+
+<pre><code class="language-java">/**
+ * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
+ * 
+ */
+public class MapperScannerConfigurer
+    implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
+
+  private String basePackage;
+
+  private boolean addToConfig = true;
+
+  private String lazyInitialization;
+
+  private SqlSessionFactory sqlSessionFactory;
+
+  private SqlSessionTemplate sqlSessionTemplate;
+
+  private String sqlSessionFactoryBeanName;
+
+  private String sqlSessionTemplateBeanName;
+
+  private Class&lt;? extends Annotation&gt; annotationClass;
+
+  private Class&lt;?&gt; markerInterface;
+
+  private Class&lt;? extends MapperFactoryBean&gt; mapperFactoryBeanClass;
+
+  private ApplicationContext applicationContext;
+
+  private String beanName;
+
+  private boolean processPropertyPlaceHolders;
+
+  private BeanNameGenerator nameGenerator;
+ 
+ 
+  @Override
+  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+    if (this.processPropertyPlaceHolders) {
+      processPropertyPlaceHolders();
+    }
+
+    ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
+    scanner.setAddToConfig(this.addToConfig);
+    scanner.setAnnotationClass(this.annotationClass);
+    scanner.setMarkerInterface(this.markerInterface);
+    scanner.setSqlSessionFactory(this.sqlSessionFactory);
+    scanner.setSqlSessionTemplate(this.sqlSessionTemplate);
+    scanner.setSqlSessionFactoryBeanName(this.sqlSessionFactoryBeanName);
+    scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
+    scanner.setResourceLoader(this.applicationContext);
+    scanner.setBeanNameGenerator(this.nameGenerator);
+    scanner.setMapperFactoryBeanClass(this.mapperFactoryBeanClass);
+    if (StringUtils.hasText(lazyInitialization)) {
+      scanner.setLazyInitialization(Boolean.valueOf(lazyInitialization));
+    }
+    scanner.registerFilters();
+    scanner.scan(
+        StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
+  }
+  
+  // 省略一大堆代码
+}
+</code></pre>
+
+<p>MapperScannerConfigurer 实现了 BeanDefinitionRegistryPostProcessor 接口， 因此可以对 Bean 的结构调整之后再注入容器。那 MapperScannerConfigurer 在扫描完这些 mapper 接口之后，主要是通过ClassPathMapperScanner将 Mapper 接口一个个的转换成 MapperFactoryBean 之后注入容器。</p>
+
+<p>至此就完成了 MyBatis 与 Spring框架的整合。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

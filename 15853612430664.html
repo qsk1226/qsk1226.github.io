@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    线程基础、线程之间的共享和协作 - 大爷来玩儿啊~
+    java线程基础 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            线程基础、线程之间的共享和协作   
+                            java线程基础   
                       </h1>
                      
                     
@@ -119,16 +119,11 @@
                     <h2 id="toc_0">基础概念</h2>
 
 <ul>
-<li>Cpu 核心数和线程数的关系<br/>
-核心数:线程数 = 1:1<br/>
-超线程技术引入以后<br/>
-核心数:线程数 = 1:2</li>
-<li><p>cpu 时间片轮转机制<br/>
-轮转机制会公平的把 cpu 时间分配给各个进程，在线程的切换的过程中，会产生线程上下文开销，也称为 RR 调度</p></li>
 <li><p>什么是进程和线程</p>
 <ul>
-<li><p>进程：操作系统进行资源分配的最小单位，进程内部有多个线程共享这个进程的资源，进程与进程之间相互独立</p></li>
-<li><p>线程：cpu 调度的最小单位，必须依赖于进程而存在</p></li>
+<li>进程是程序运行资源分配的最小单位。其中资源包括：cpu、内存空间、磁盘IO等，同一个进程中的多条线程共享该进程中的全部系统资源。</li>
+<li>线程是cpu调度的最小单位，必须依赖于进程存在。<br/>
+cpu通过轮转机制会公平的把 cpu 时间分配给各个线程，在线程的切换的过程中，会产生线程上下文开销，也称为 RR 调度</li>
 </ul></li>
 <li><p>什么是并行和并发<br/>
 并行：同一时刻，可以处理事情的能力。<br/>
@@ -158,16 +153,28 @@
 
 <p>Thread类、Runnable接口，Thread类是对线程的抽象，Runnable是对任务的抽象</p>
 
-<h3 id="toc_3">停止线程方式：</h3>
+<h3 id="toc_3">线程终止的方式：</h3>
 
 <ul>
-<li>interrupt()  中断线程通知，非强制打断，中断标志位设置为true(已中断)</li>
-<li>isInterrupted()    判断线程是否要中断</li>
-<li>static interrupted()  判断当前线程是否处于中断状态，中断标志位会进行重置</li>
+<li>自然终止<br/>
+run方法执行完毕或者跑出一个未处理的异常导致线程提前结束</li>
+<li>中断
+<ul>
+<li>interrupt()<br/>
+中断线程通知，非强制打断，中断标志位设置为true(已中断)</li>
+<li>isInterrupted()<br/>
+线程通过此方法判断是否被中断</li>
+<li>static interrupted()<br/>
+线程通过此方法判断是否被中断，中断标志位会进行重置为false</li>
+</ul></li>
 </ul>
 
-<p>*** 注意：***<br/>
-stop()、destroy()、suspend()、resume()官方已作为废弃API处理</p>
+<p>*** 注意：***</p>
+
+<ul>
+<li>stop()、destroy()、suspend()、resume()官方已作为废弃API处理</li>
+<li>处于死锁状态的线程不会被中断</li>
+</ul>
 
 <h3 id="toc_4">run()和 start()区别</h3>
 
@@ -182,7 +189,8 @@ stop()、destroy()、suspend()、resume()官方已作为废弃API处理</p>
 
 <h3 id="toc_6">yield()</h3>
 
-<p>将线程从运行态转到就绪态,让线程让出cpu资源</p>
+<p>将线程从运行态转到就绪态,是当前线程让出cup占有权,让出的时间不可设定。不会释放锁资源。<br/>
+当执行yield()之后进入就绪态的线程，有可能立即又被cpu捡起来去执行了</p>
 
 <h3 id="toc_7">线程优先级</h3>
 
@@ -191,123 +199,11 @@ thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
 
 <h3 id="toc_8">守护线程</h3>
 
-<p>守护线程是一种支持型线程，因为它主要被用作程序中 后台调度以及支持性工作。</p>
+<p>守护线程是一种支持型线程，因为它主要被用作程序中 后台调度以及支持性工作。<br/>
+通过Thread.setDaemon(true)将线程设置为守护线程。</p>
 
 <p>线程的状态切换<br/>
 <img src="media/15853612430664/15862720985637.jpg" alt="" style="width:937px;"/></p>
-
-<h2 id="toc_9">线程间共享和互斥</h2>
-
-<h3 id="toc_10">Synchronized 内置锁</h3>
-
-<h3 id="toc_11">Lock</h3>
-
-<p><a href="15867933931035.html">细说java 显式锁 Lock</a></p>
-
-<h3 id="toc_12">volatile</h3>
-
-<h3 id="toc_13">ThreadLocal</h3>
-
-<p><a href="ThreadLocal.html">ThreadLocal源码分析以及使用</a></p>
-
-<h2 id="toc_14">线程间协作</h2>
-
-<h3 id="toc_15">等待/通知机制</h3>
-
-<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通 知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
-<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
-<p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
-3）条件满足则执行对应的逻辑。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    while(obj.isOk()) {
-        obj.wait();
-    }
-}
-</code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
-3）通知所有等待在对象上的线程。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    obj.notifyAll();
-}
-</code></pre>
-
-<p>在调用 wait（）、notify()系列方法之前，线程必须要获得该对象的对象级别锁，即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞 争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。<br/>
-使用wait、和notify实现一个连接池的实例如下：</p>
-
-<pre><code class="language-java">public class DBPool {
-
-    /*容器，存放连接*/
-    private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
-
-    /*限制了池的大小=20*/
-    public DBPool(int initialSize) {
-        if (initialSize &gt; 0) {
-            for (int i = 0; i &lt; initialSize; i++) {
-                pool.addLast(createConnection());
-            }
-        }
-    }
-
-    /*释放连接,通知其他的等待连接的线程*/
-    public void releaseConnection(Connection connection) {
-        if (connection != null) {
-            synchronized (pool){
-                pool.addLast(connection);
-                //通知其他等待连接的线程
-                pool.notifyAll();
-            }
-        }
-    }
-
-    /*获取*/
-    // 在mills内无法获取到连接，将会返回null 1S
-    public Connection fetchConnection(long mills)
-            throws InterruptedException {
-        synchronized (pool){
-            //永不超时
-            if(mills&lt;=0){
-                while(pool.isEmpty()){
-                    pool.wait();
-                }
-                return pool.removeFirst();
-            }else{
-                /*超时时刻*/
-                long future = System.currentTimeMillis()+mills;
-                /*等待时长*/
-                long remaining = mills;
-                while(pool.isEmpty()&amp;&amp;remaining&gt;0){
-                    pool.wait(remaining);
-                    /*唤醒一次，重新计算等待时长*/
-                    remaining = future-System.currentTimeMillis();
-                }
-                Connection connection = null;
-                if(!pool.isEmpty()){
-                    connection = pool.removeFirst();
-                }
-                return connection;
-            }
-        }
-
-    }
-}
-</code></pre>
 
                   </article>
                   <div class="comments-wrap">
@@ -351,8 +247,6 @@ thread.setPriority(int xx); 优先级不是特别靠谱的东西</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 

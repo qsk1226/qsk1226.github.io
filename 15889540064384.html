@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    ConcurrentHashMap分析 - 大爷来玩儿啊~
+    mybatis反射模块分析 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            ConcurrentHashMap分析   
+                            mybatis反射模块分析   
                       </h1>
                      
                     
@@ -94,10 +94,10 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/04/23</span>
+                                 <span class="date">2020/05/09</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                      <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
                                          
                                   
 
@@ -105,8 +105,6 @@
                                       
                                   <br />
                                   <span class="tran-tags">Tags:</span>&nbsp;
-                                  
-                                    <a class="tag is-link is-light" href='tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html'>#并发容器</a>
                                      
 
                                 </p>
@@ -116,33 +114,52 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">哈希</h2>
-
-<p>哈希又称为散列（英语：Hashing），是计算机科学中一种对数据的处理方法，把任意长度的输入(又叫做预映射， pre-image)，通过散列算法，变换成固定长度的输出，该输出就是散列值。这种转换是一种压缩映射，也就是， 散列值的空间通常远小于输入的空间，不同的输入可能会散列成相同的输出，所以不可能从散列值来确定唯一的输入值。</p>
-
-<h2 id="toc_1">使用场景：</h2>
-
-<p>它也常用作一种信息安全的实现方法，由一串数据经过散列算法（Hashing algorithms）计算出来的数据指纹（data fingerprint），经常用来识别文件与数据是否有被窜改，以保证文件与数据确实是由原创者所提供。</p>
-
-<p>散列算法也被用来加密存在数据库中的密码（password）字符串，由于散列算法所计算出来的散列值（Hash Value）具有不可逆（无法逆向演算回原本的数值）的性质，因此可有效的保护密码。</p>
-
-<h2 id="toc_2">散列函数</h2>
+                    <p>反射是 Mybatis 模块中类最多的模块，通过反射实现了 POJO 对象的实例化和 POJO 的属性赋 值，相对 JDK 自带的反射功能，MyBatis 的反射模块功能更为强大，性能更高；反射模块关 键的几个类如下：</p>
 
 <ul>
-<li>直接定址法：取关键字或关键字的某个线性函数值为散列地址。</li>
-<li>数字分析法：假设关键字是以r为基的数，并且哈希表中可能出现的关键字都是事先知道的，则可取关键字的若干数位组成哈希地址。</li>
-<li>平方取中法：取关键字平方后的中间几位为哈希地址。通常在选定哈希函数时不一定能知道关键字的全部情况，取其中的哪几位也不一定合适，而一个数平方后的中间几位数和数的每一位都相关，由此使随机分布的关键字得到的哈希地址也是随机的。取的位数由表长决定。</li>
-<li>折叠法：将关键字分割成位数相同的几部分（最后一部分的位数可以不同），然后取这几部分的叠加和（舍去进位）作为哈希地址。</li>
-<li>随机数法</li>
-<li>除留余数法：取关键字被某个不大于散列表表长m的数p除后所得的余数为散列地址。不仅可以对关键字直接取模，也可在折叠法、平方取中法等运算之后取模。对p的选择很重要，一般取素数或m，若p选择不好，容易产生冲突。<br/>
-## 哈希冲突</li>
+<li>ObjectFactory：MyBatis 每次创建结果对象的新实例时，它都会使用对象工厂 （ObjectFactory）去构建 POJO； </li>
+<li>ReflectorFactory：创建 Reflector 的工厂类，Reflector 是 MyBatis 反射模块的基础，每个 Reflector 对象都对应一个类，在其中缓存了反射操作所需要的类元信息；</li>
+<li>ObjectWrapper：对对象的包装，抽象了对象的属性信息，他定义了一系列查询对象属 性信息的方法，以及更新属性的方法； </li>
+<li>ObjectWrapperFactory： ObjectWrapper 的工厂类，用于创建 ObjectWrapper ； </li>
+<li>MetaObject：封装了对象元信息，包装了 MyBatis 中五个核心的反射类。也是提供给外 部使用的反射工具类，可以利用它可以读取或者修改对象的属性信息；</li>
 </ul>
 
-<p>对不同的关键字可能得到同一散列地址，这种现象称为冲突。</p>
+<pre><code class="language-java">public final class SystemMetaObject {
+  // 默认的ObjectFactory
+    public static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
+    // 默认的ObjectWrapperFactory
+    public static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+    public static final MetaObject NULL_META_OBJECT = MetaObject.forObject(NullObject.class, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
 
-<h2 id="toc_3">哈希冲突解决方案</h2>
+    private SystemMetaObject() {
+        // Prevent Instantiation of Static Class
+    }
 
-<p>开放定址法、</p>
+    private static class NullObject {
+    }
+
+    public static MetaObject forObject(Object object) {
+        return MetaObject.forObject(object, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
+    }
+
+}
+
+@Data
+public class RichType {
+    private RichType richType;
+    private String richField;
+    private String richProperty;
+    private Map richMap = new HashMap();
+}
+
+@Test
+void shouldGetAndSetField() {
+    RichType rich = new RichType();
+    MetaObject meta = SystemMetaObject.forObject(rich);
+    meta.setValue(&quot;richField&quot;, &quot;foo&quot;);
+    assertEquals(&quot;foo&quot;, meta.getValue(&quot;richField&quot;));
+}
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">
@@ -186,6 +203,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
