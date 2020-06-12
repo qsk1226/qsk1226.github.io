@@ -137,6 +137,168 @@
 
 <p>装饰模式的核心在于抽象装饰类的设计。</p>
 
+<p><img src="media/15917825462034/15919264601093.jpg" alt="" style="width:2398px;"/></p>
+
+<h2 id="toc_2">代码示例</h2>
+
+<pre><code class="language-java">/**
+ * 抽象车辆,组件间、装饰者、被装饰者的超类
+ * 抽象构件
+ **/
+@Data
+public abstract class AbsCar {
+    /**
+     * 车辆描述
+     */
+    public abstract String getDescription();
+
+    /**
+     * 价格
+     */
+    public abstract double cost();
+}
+</code></pre>
+
+<pre><code class="language-java">/**
+ * 被装饰的对象
+ * 具体构件
+ **/
+public class NormalCar extends AbsCar{
+
+    @Override
+    public String getDescription() {
+        return &quot;破车一两&quot;;
+    }
+
+    @Override
+    public double cost() {
+        return 100;
+    }
+}
+
+</code></pre>
+
+<pre><code class="language-java">
+/**
+ * 抽象装饰类
+ **/
+public abstract class AbsDecorator extends AbsCar {
+
+    private AbsCar absCar;
+
+    public AbsDecorator(AbsCar absCar) {
+        this.absCar = absCar;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.absCar.getDescription();
+    }
+
+    @Override
+    public double cost() {
+        return this.absCar.cost();
+    }
+
+    protected abstract void doSomething();
+
+}
+
+
+/**
+ * 发动机装饰
+ * 具体装饰类
+ **/
+public class EngineDecorator extends AbsDecorator {
+
+    public EngineDecorator(AbsCar absCar) {
+        super(absCar);
+    }
+
+    @Override
+    protected void doSomething() {
+        System.out.println(getDescription());
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription() +&quot; 更换V8发动机&quot;;
+    }
+
+    @Override
+    public double cost() {
+        return super.cost()+ 100000;
+    }
+}
+
+
+/**
+ * 外观装饰
+ **/
+public class OutWardDecorator extends AbsDecorator {
+    public OutWardDecorator(AbsCar absCar) {
+        super(absCar);
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription() +&quot; 重新喷漆&quot;;
+    }
+
+    @Override
+    public double cost() {
+        return super.cost()+10000;
+    }
+
+    @Override
+    protected void doSomething() {
+        System.out.println(getDescription());
+    }
+}
+
+</code></pre>
+
+<pre><code class="language-java">/**
+ * 装饰者客户端
+ **/
+public class DecoratorClient {
+    public static void main(String[] args) {
+        NormalCar normalCar = new NormalCar();
+        EngineDecorator engineDecorator = new EngineDecorator(normalCar);
+        OutWardDecorator outWardDecorator = new OutWardDecorator(engineDecorator);
+        outWardDecorator.doSomething();
+
+    }
+}
+</code></pre>
+
+<h2 id="toc_3">装饰者模式的类型</h2>
+
+<p>装饰者模式有可分为 透明装饰模式 与 半透明装饰模式</p>
+
+<p>(1) 透明装饰模式<br/>
+在透明装饰模式中，要求客户端完全针对抽象编程，装饰模式的透明性要求客户端程序不应该将对象声明为具体构件类型或具体装饰类型，而应该全部声明为抽象构件类型。</p>
+
+<p>(2) 半透明装饰模式<br/>
+透明装饰模式的设计难度较大，而且有时我们需要单独调用新增的业务方法。为了能够调用到新增方法，我们不得不 <strong>用具体装饰类型来定义装饰之后的对象</strong>，而具体构件类型还是可以使用抽象构件类型来定义，这种装饰模式即为半透明装饰模式。<br/>
+上面的代码示例是一种半透明装饰模式。</p>
+
+<h2 id="toc_4">装饰模式注意事项</h2>
+
+<p>(1) 尽量保持装饰类的接口与被装饰类的接口相同，这样，对于客户端而言，无论是装饰之前的对象还是装饰之后的对象都可以一致对待。这也就是说，在可能的情况下，我们应该尽量使用透明装饰模式。</p>
+
+<p>(2) 尽量保持具体构件类是一个“轻”类，也就是说不要把太多的行为放在具体构件类中，我们可以通过装饰类对其进行扩展。</p>
+
+<p>(3) 如果只有一个具体构件类，那么抽象装饰类可以作为该具体构件类的直接子类。</p>
+
+<h2 id="toc_5">jdk IO中的装饰模式</h2>
+
+<p><img src="media/15917825462034/15919491694110.jpg" alt=""/></p>
+
+<p><img src="media/15917825462034/15919493101153.jpg" alt=""/><br/>
+<img src="media/15917825462034/15919493357557.jpg" alt=""/><br/>
+<img src="media/15917825462034/15919493571997.jpg" alt=""/></p>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
@@ -179,6 +341,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
