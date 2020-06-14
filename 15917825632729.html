@@ -185,6 +185,7 @@
 public interface Observer {
     public void update(String message);
 }
+
 /**
  * 具体观察者
  **/
@@ -210,15 +211,11 @@ public class GuardianObserver implements Observer {
 public interface Subject {
     /**
      * 增加订阅者
-     *
-     * @param observer
      */
     public void addObserver(Observer observer);
 
     /**
      * 删除订阅者
-     *
-     * @param observer
      */
     public void removeObserver(Observer observer);
 
@@ -258,7 +255,6 @@ public class SubscriptionSubject implements Subject {
  * 观察者模式客户端
  **/
 public class Client {
-
     public static void main(String[] args) {
         SubscriptionSubject mSubscriptionSubject = new SubscriptionSubject();
         //创建监护人
