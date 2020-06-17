@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    内存分配策略 - 大爷来玩儿啊~
+    JVM 类加载机制 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            内存分配策略   
+                            JVM 类加载机制   
                       </h1>
                      
                     
@@ -94,7 +94,7 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/04/15</span>
+                                 <span class="date">2020/06/15</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
                                       <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
@@ -114,14 +114,71 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>对象的内存分配，概念上说都是在堆内存上分配(有可能被编译器拆散为标量类型并间接地在栈上分配)。在经典分代设计下，新对象通常会分配在新生代中，少数情况下可能直接分配在老年代。<strong>对象的分配规则并不是固定的，主要取决于JVM使用的是哪一种垃圾收集器，以及虚拟机中与内存相关的参数设定</strong>。</p>
+                    <p>JVM 类加载机制分为五个部分<br/>
+<img src="media/15922073766854/15922110200798.jpg" alt=""/></p>
 
-<p>下面看下serial+serialOld垃圾收集器下的内存分配规则</p>
+<h2 id="toc_0">加载</h2>
 
-<h2 id="toc_0">对象优先在Eden区分配</h2>
+<p>在内存中生成一个代表这个类的java.lang.Class对象，作为方法去这个类的各种数据的入口。<br/>
+此阶段完成三件事。</p>
 
-<p>大多数情况下，对象在Eden区分配，当Eden区空间不足时，将触发一次minor gc。<br/>
-jvm提供了-XX:+PrintGCDetails这个收集日志参数，或使用-XX:+PrintHeapAtGC对GC前后的GC日志进行对比</p>
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流。</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入 口。</li>
+</ul>
+
+<h2 id="toc_1">验证</h2>
+
+<p>确保Class文件的字节流中包含的信息是否符合当前虚拟机要求</p>
+
+<h2 id="toc_2">准备</h2>
+
+<p>正式为类变量分配内存并设置类变量的初始值阶段，即在方法区中分配这些变量所使用的的内存空间。</p>
+
+<h2 id="toc_3">解析</h2>
+
+<p>虚拟机将常量池中的符号引用替换为直接引用的过程</p>
+
+<ul>
+<li>符号引用：class文件中的CONSTANT_CLASS_INFO、CONSTANT_FIELD_INFO、CONSTANT_METHOD_INFO等类型的常量，符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。各种虚拟机实现的内存布局可以各不相同，但是他们能接受的符号引用必须是一致的，因为符号引用的字面量形式明确定义在java虚拟机规范的Class文件格式中</li>
+<li>直接引用：可以是执行目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经存在于内存中</li>
+</ul>
+
+<h2 id="toc_4">初始化</h2>
+
+<p>类加载阶段 的最后一个阶段，前面的类加载阶段之后，除了在加载阶段可以自定义类加载器以外，其它操作都有jvm主导，到了初始化阶段，才开始真正执行类中定义的java程序代码。</p>
+
+<p>初始化阶段是执行类构造器<client>方法的过程。<client>方法是由编译器自动收集类中的类变 量的赋值操作和静态语句块中的语句合并而成的。<strong>虚拟机会保证子<client>方法执行之前，父类 的<client>方法已经执行完毕</strong></p>
+
+<h3 id="toc_5">有且只有以下<strong>六种对类型进行主动引用的情况需要立即对类进行初始化</strong>：</h3>
+
+<ul>
+<li><p>遇到new、getstatic、putstatic或invokestatic这四条字节码指令时，如果类型没有进行过初始化，则需要先出法器初始化阶段。</p>
+<ul>
+<li>使用new关键字实例化对象的时候</li>
+<li>读取或设置一个类型的静态字段(被final修饰、已在编译器把结果放入常量池的静态字段除外)的时候</li>
+<li><strong>调用一个类型的静态方法的时候</strong></li>
+</ul></li>
+<li><p>使用java.lang.reflect包的方法对类型进行反射调用的时候，如果类型没有进行过初始化，则需要先触发器初始化</p></li>
+<li><p>当初始化类的时候，如果发现其父类没有进行过初始化，则需要先触发其父类的初始化</p></li>
+<li><p>当虚拟机启动时，用户需要制定一个要执行的主类(包含main()方法的哪个类)，虚拟机会先初始化这个主类</p></li>
+<li><p>当使用 jdk7 新加入的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_p utStatic、REF_invokeStatic、REF_newInvokeSpecial四种类型的方法句柄，并且这个方法句柄对应的类没有进行过初始化，需要先触发其初始化</p></li>
+<li><p>当一个接口中定义了jdk8新加入的默认方法(被default关键字修饰的接口方法)时，如果有这个接口的实现类发生了初始化，那该接口在其之前被初始化。</p></li>
+</ul>
+
+<hr/>
+
+<h3 id="toc_6">以下几种 对类型的被动引用情况不会执行类初始化：</h3>
+
+<ul>
+<li>通过子类引用父类的静态字段，只会触发父类的初始化，而不会触发子类的初始化</li>
+<li>通过对象数组，不会触发该类的初始化</li>
+<li>常量在编译期间会存入调用类的常量池中，本质上并没有直接引用定义常量的类，不会触发定义常量所在的类</li>
+<li>通过类名获取Class对象，不会触发类的初始化</li>
+<li>通过Class.forName加载指定类是，如果指定参数 initialize 为 false 时，也不会触发类初始化，其实这个参数是告诉虚拟机，是否要对类进行初始化</li>
+<li>通过ClassLoader 默认的 loadClass 方法，也不会触发初始化动作。</li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">

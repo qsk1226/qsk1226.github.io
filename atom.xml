@@ -4,13 +4,88 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-06-14T11:22:29+08:00</updated>
+  <updated>2020-06-17T14:11:34+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[JVM 类加载机制]]></title>
+    <link href="http://www.throne4j.com/15922073766854.html"/>
+    <updated>2020-06-15T15:49:36+08:00</updated>
+    <id>http://www.throne4j.com/15922073766854.html</id>
+    <content type="html"><![CDATA[
+<p>JVM 类加载机制分为五个部分<br/>
+<img src="media/15922073766854/15922110200798.jpg" alt=""/></p>
+
+<h2 id="toc_0">加载</h2>
+
+<p>在内存中生成一个代表这个类的java.lang.Class对象，作为方法去这个类的各种数据的入口。<br/>
+此阶段完成三件事。</p>
+
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流。</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入 口。</li>
+</ul>
+
+<h2 id="toc_1">验证</h2>
+
+<p>确保Class文件的字节流中包含的信息是否符合当前虚拟机要求</p>
+
+<h2 id="toc_2">准备</h2>
+
+<p>正式为类变量分配内存并设置类变量的初始值阶段，即在方法区中分配这些变量所使用的的内存空间。</p>
+
+<h2 id="toc_3">解析</h2>
+
+<p>虚拟机将常量池中的符号引用替换为直接引用的过程</p>
+
+<ul>
+<li>符号引用：class文件中的CONSTANT_CLASS_INFO、CONSTANT_FIELD_INFO、CONSTANT_METHOD_INFO等类型的常量，符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。各种虚拟机实现的内存布局可以各不相同，但是他们能接受的符号引用必须是一致的，因为符号引用的字面量形式明确定义在java虚拟机规范的Class文件格式中</li>
+<li>直接引用：可以是执行目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经存在于内存中</li>
+</ul>
+
+<h2 id="toc_4">初始化</h2>
+
+<p>类加载阶段 的最后一个阶段，前面的类加载阶段之后，除了在加载阶段可以自定义类加载器以外，其它操作都有jvm主导，到了初始化阶段，才开始真正执行类中定义的java程序代码。</p>
+
+<p>初始化阶段是执行类构造器<client>方法的过程。<client>方法是由编译器自动收集类中的类变 量的赋值操作和静态语句块中的语句合并而成的。<strong>虚拟机会保证子<client>方法执行之前，父类 的<client>方法已经执行完毕</strong></p>
+
+<h3 id="toc_5">有且只有以下<strong>六种对类型进行主动引用的情况需要立即对类进行初始化</strong>：</h3>
+
+<ul>
+<li><p>遇到new、getstatic、putstatic或invokestatic这四条字节码指令时，如果类型没有进行过初始化，则需要先出法器初始化阶段。</p>
+<ul>
+<li>使用new关键字实例化对象的时候</li>
+<li>读取或设置一个类型的静态字段(被final修饰、已在编译器把结果放入常量池的静态字段除外)的时候</li>
+<li><strong>调用一个类型的静态方法的时候</strong></li>
+</ul></li>
+<li><p>使用java.lang.reflect包的方法对类型进行反射调用的时候，如果类型没有进行过初始化，则需要先触发器初始化</p></li>
+<li><p>当初始化类的时候，如果发现其父类没有进行过初始化，则需要先触发其父类的初始化</p></li>
+<li><p>当虚拟机启动时，用户需要制定一个要执行的主类(包含main()方法的哪个类)，虚拟机会先初始化这个主类</p></li>
+<li><p>当使用 jdk7 新加入的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_p utStatic、REF_invokeStatic、REF_newInvokeSpecial四种类型的方法句柄，并且这个方法句柄对应的类没有进行过初始化，需要先触发其初始化</p></li>
+<li><p>当一个接口中定义了jdk8新加入的默认方法(被default关键字修饰的接口方法)时，如果有这个接口的实现类发生了初始化，那该接口在其之前被初始化。</p></li>
+</ul>
+
+<hr/>
+
+<h3 id="toc_6">以下几种 对类型的被动引用情况不会执行类初始化：</h3>
+
+<ul>
+<li>通过子类引用父类的静态字段，只会触发父类的初始化，而不会触发子类的初始化</li>
+<li>通过对象数组，不会触发该类的初始化</li>
+<li>常量在编译期间会存入调用类的常量池中，本质上并没有直接引用定义常量的类，不会触发定义常量所在的类</li>
+<li>通过类名获取Class对象，不会触发类的初始化</li>
+<li>通过Class.forName加载指定类是，如果指定参数 initialize 为 false 时，也不会触发类初始化，其实这个参数是告诉虚拟机，是否要对类进行初始化</li>
+<li>通过ClassLoader 默认的 loadClass 方法，也不会触发初始化动作。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[]]></title>
@@ -4199,474 +4274,6 @@ void shouldGetAndSetField() {
     meta.setValue(&quot;richField&quot;, &quot;foo&quot;);
     assertEquals(&quot;foo&quot;, meta.getValue(&quot;richField&quot;));
 }
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[myBatis缓存模块分析]]></title>
-    <link href="http://www.throne4j.com/15889539937027.html"/>
-    <updated>2020-05-09T00:06:33+08:00</updated>
-    <id>http://www.throne4j.com/15889539937027.html</id>
-    <content type="html"><![CDATA[
-<p>在 Web 应用中，缓存是必不可少的组件。通常我们都会用 Redis 或 memcached 等缓存中间件，拦截大量奔向数据库的请求，以减轻数据库压力。</p>
-
-<h2 id="toc_0">MyBatis缓存实现</h2>
-
-<p>MyBatis 缓存模块需满足如下需求： </p>
-
-<ol>
-<li>MyBatis 缓存的实现是基于 Map 的，从缓存里面读写数据是缓存模块的核心基础功能；</li>
-<li>除核心功能之外，有很多额外的附加功能，如：防止缓存击穿，添加缓存清空策略（fifo、 lru）、序列化功能、日志能力、定时清空能力等；</li>
-<li>附加功能可以以任意的组合附加到核心基础功能之上； </li>
-</ol>
-
-<p>基于 Map 核心缓存能力，将阻塞、清空策略、序列化、日志等等能力以任意组合的方式优 雅的增强是 Mybatis 缓存模块实现最大的难题。MyBatis采用了装饰者模式()巧妙的对缓存功能进行了可自由组合的功能增强。</p>
-
-<p>在 MyBatis 中，缓存接口 Cache，定义了一些基本的缓存操作，所有缓存类都应该实现该接口。</p>
-
-<p>MyBatis 实现缓存模块的过程中，使用了装饰模式，提供了丰富的缓存实现类</p>
-
-<ul>
-<li>PerpetualCache 基础缓存能力</li>
-<li>LruCache 增强LRU策略的缓存</li>
-<li>LoggingCache 增强日志功能的缓存</li>
-<li>ScheduledCache 定时清空的缓存</li>
-<li>BlockingCache<br/>
-阻塞版本的缓存装饰器，保证只有一个线程到数据库 去查找指定的 key 对应的数据(可以作为防止缓存雪崩造成恶劣影响一种方式，可以考虑使用具有细颗粒度锁的方式提升阻塞缓存的性能)</li>
-<li>SynchronizedCache 线程安全的缓存</li>
-</ul>
-
-<h3 id="toc_1">Cache接口</h3>
-
-<pre><code class="language-java">public interface Cache {
-
-    String getId();
-
-    void putObject(Object key, Object value);
-
-    Object getObject(Object key);
-
-    Object removeObject(Object key);
-
-    void clear();
-
-    int getSize();
-
-    default ReadWriteLock getReadWriteLock() {
-        return null;
-    }
-
-}
-</code></pre>
-
-<h3 id="toc_2">具有基本缓存功能的 PerpetualCache</h3>
-
-<pre><code class="language-java">public class PerpetualCache implements Cache {
-
-    private final String id;
-    
-    private final Map&lt;Object, Object&gt; cache = new HashMap&lt;&gt;();
-        public PerpetualCache(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public int getSize() {
-        return cache.size();
-    }
-
-    @Override
-    public void putObject(Object key, Object value) {
-        cache.put(key, value);
-    }
-
-    @Override
-    public Object getObject(Object key) {
-        return cache.get(key);
-    }
-
-    @Override
-    public Object removeObject(Object key) {
-        return cache.remove(key);
-    }
-
-    @Override
-    public void clear() {
-        cache.clear();
-    }
-}
-</code></pre>
-
-<p>这里看到缓存的实现使用了线程不安全的HashMap，那么使用mybatis缓存的时候会不会出现并发安全的问题呢？</p>
-
-<p>我们已知mybatis的缓存分为一级缓存和二级缓存。</p>
-
-<ul>
-<li><p>一级缓存是会话独享的，存在于SqlSession的生命周期中，不会出现多个线程同时操作缓存数据的场景，因此一级缓存也不存在并发安全的问题，系统默认是开启状态，要想关闭一级缓存可以在select标签上配置flushCache=&quot;true&quot;进行关闭。如果同一个SqlSession中执行的方法和参数完全一致，那么通过算法会生成相同的缓存key值，当map缓存对象中已经存在该键值key是，则会返回缓存中的对象; INSERT、UPDATE、DELETE操作会清空一级缓存</p></li>
-<li><p>二级缓存也叫做应用缓存，存在于SqlSessionFactory生命周期中，是多个SqlSession共享的缓存；缓存是一namespace为单位划分的，不同的namespace下的操作相互独立；在MyBatis的核心配置文件中cacheEnabled参数是二级缓存的全局开关，默认值是true，如果把这个参数设置为false，即使在mapper.xml文件中配置了二级缓存也不会生效。在使用二级缓存的时候，由于是跨SqlSession的缓存，它可能存在并发安全的问题，因此MyBatis默认会给它加上SynchronizedCache装饰器进行增强,对共享数据的HashMap的操作会进行同步，因此二级缓存也不存在并发安全问题。</p></li>
-</ul>
-
-<p>在mapper.xml文件中增加如下配置，在此mapper的namespace配置二级缓存：</p>
-
-<pre><code class="language-text">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;60000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot;&gt;
-
-此句语义如下：
-1、映射语句文件中的所有 select 语句将会被缓存。 
-2、映射语句文件中的所有 insert,update 和 delete 语句会刷新缓存。
-3、缓存会使用 LeastRecently Used(LRU,最近最少使用的)算法来收回。 
-4、根据时间表(比如 no Flush Interval,没有刷新间隔), 缓存不会以任何时间顺序 来刷新。 
-5、缓存会存储列表集合或对象(无论查询方法返回什么)的 1024 个引用。 
-6、缓存会被视为是 read/write(可读/可写)的缓存；
-
-</code></pre>
-
-<p><strong><em>二级缓存需注意问题</em></strong>： 使用二级缓存容易出现脏读，建议避免使用二级缓存，在业务层使用可控制的缓存代替更好；</p>
-
-<h2 id="toc_3">缓存使用过程</h2>
-
-<ol>
-<li>每次与数据库连接会有限从缓存中获取数据</li>
-<li>先查询二级缓存，二级缓存查不到再查一级缓存</li>
-<li>二级缓存一namespace为单位划分，是SqlSession共享的,容易出现脏读，建议避免使用</li>
-<li>一级缓存是SqlSession独享的，建议开启</li>
-</ol>
-
-<h2 id="toc_4">缓存的唯一标识 CacheKey</h2>
-
-<p>􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬<br/>
-mybatis 中涉及到动态sql的原因，缓存项的key不能仅仅通过一个String来表示，所以通过CacheKey来封装缓存的key值，CacheKey可以封装多个影响缓存项的因素，构成CacheKey对象的要素包括：</p>
-
-<ul>
-<li>mappedStatement的id</li>
-<li>指定查询结果集的范围（分页信息）</li>
-<li>查询所使用的的sql语句</li>
-<li>用户传递给sql语句的实际参数值</li>
-</ul>
-
-<pre><code class="language-java">public class CacheKey implements Cloneable, Serializable { 
-
-    private static final int DEFAULT_MULTIPLYER = 37;
-    private static final int DEFAULT_HASHCODE = 17;
-    // 􏳮􏳆􏱙􏸭􏸮􏳐乘子，默认是37
-    private final int multiplier;
-    // 综合各种影响因子
-    private int hashcode;
-    // 校验和
-    private long checksum;
-    //影响因子个数
-    private int count;
-    // 影响因子集合
-    private List&lt;Object&gt; updateList;
-    
-    public CacheKey() {
-        this.hashcode = DEFAULT_HASHCODE; this.multiplier = DEFAULT_MULTIPLYER; this.count = 0;
-        this.updateList = new ArrayList&lt;Object&gt;();
-    } 
-
-}
-</code></pre>
-
-<h2 id="toc_5">一级缓存源码分析</h2>
-
-<p>一级缓存是数据库的最后一道屏障，如果一级缓存未命中，查询请求将落到数据库上。一级缓存是在BaseExecutor被初始化的，我们看下代码</p>
-
-<pre><code class="language-java">
-public abstract class BaseExecutor implements Executor {
-    //一级缓存的实现，PerpetualCache
-    protected PerpetualCache localCache;
-
-    protected BaseExecutor(Configuration configuration, Transaction transaction) {
-        this.transaction = transaction;
-        this.deferredLoads = new ConcurrentLinkedQueue&lt;&gt;();
-        this.localCache = new PerpetualCache(&quot;LocalCache&quot;);
-        this.localOutputParameterCache = new PerpetualCache(&quot;LocalOutputParameterCache&quot;);
-        this.closed = false;
-        this.configuration = configuration;
-        this.wrapper = this;
-    }
-    
-    // 省略其它代码
-}
-
-</code></pre>
-
-<p>􏴓􏸵􏴕􏴖􏴀􏴆􏶉􏴜 一级缓存的类型是PerpetualCache􏳅􏶳􏶴􏽠􏵌􏸾􏴕􏴖􏴆􏴗􏴘􏶶，没有被其它缓存类修饰过。一级缓存锁存储从查询结果会在MyBatis执行更新操作(insert/update/delete)，以及提交和回滚事务时被清空。</p>
-
-<pre><code class="language-java">@Override
-    public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)
-            throws SQLException {
-    //获取sql语句信息，包括占位符，参数等信息
-    BoundSql boundSql = ms.getBoundSql(parameter);
-    // 获取缓存的key键
-    CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
-
-    return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
-}
-
-@SuppressWarnings(&quot;unchecked&quot;)
-@Override
-public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler,
-                         CacheKey key, BoundSql boundSql) throws SQLException {
-    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing a query&quot;).object(ms.getId());
-    if (closed) {
-        throw new ExecutorException(&quot;Executor was closed.&quot;);
-    }
-    //非嵌套查询，并且FlushCache配置为true，则需要清空一级缓存
-    if (queryStack == 0 &amp;&amp; ms.isFlushCacheRequired()) {
-        clearLocalCache();
-    }
-    List&lt;E&gt; list;
-    try {
-       //查询层次加 1
-        queryStack++;
-        // 查询一级缓存
-        list = resultHandler == null ? (List&lt;E&gt;) localCache.getObject(key) : null;
-        if (list != null) {
-           // 针对调用存储过程的结果处理
-            handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
-        } else {
-          // 缓存未命中，从数据库中查询
-            list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
-        }
-    } finally {
-        queryStack--;
-    }
-    if (queryStack == 0) {
-       //延迟加载处理
-        for (DeferredLoad deferredLoad : deferredLoads) {
-            deferredLoad.load();
-        }
-        deferredLoads.clear();
-        if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
-            clearLocalCache();
-        }
-    }
-    return list;
-}
-/* mybatis的增删改最终调用这个方法 */
-@Override
-public int update(MappedStatement ms, Object parameter) throws SQLException {
-    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing an update&quot;).object(ms.getId());
-    if (closed) {
-        throw new ExecutorException(&quot;Executor was closed.&quot;);
-    }
-    //清除一级缓存
-    clearLocalCache();
-    return doUpdate(ms, parameter);
-}
-</code></pre>
-
-<h3 id="toc_6">二级缓存源码分析</h3>
-
-<p>收到查询请求时，mybatis会先查询二级缓存，若二级缓存未命中，再去查询一级缓存。二级缓存和具体的命名空间进行绑定，一级缓存则是和SqlSession绑定。</p>
-
-<pre><code class="language-java">/** CachingExecutor */
-// 委托执行器，BatchExecutor、ReuseExecutor、SimpleExecutor
-private final Executor delegate;
-TransactionalCacheManager tcm = new TransactionalCacheManager();
-@Override
-public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
-    //获取sql语句信息，包括占位符，参数等信息
-    BoundSql boundSql = ms.getBoundSql(parameterObject);
-    //拼装缓存的key值
-    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
-    return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-}
-
-@Override
-public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-        throws SQLException {
-    //从MappedStatement中获取二级缓存,如果mapper配置文件中没有开启二级缓存，Cache则为空
-    Cache cache = ms.getCache();
-    if (cache != null) {
-        flushCacheIfRequired(ms);
-        
-        if (ms.isUseCache() &amp;&amp; resultHandler == null) {
-            ensureNoOutParams(ms, boundSql);
-            //从二级缓存中获取数据
-            List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);
-            if (list == null) {
-                //二级缓存为空，才会调用BaseExecutor.query
-                list = delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-                tcm.putObject(cache, key, list); 
-            }
-            return list;
-        }
-    }
-    return delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-}
-
-</code></pre>
-
-<p>二级缓存是从MappedStatement中获取的，由于MappedStatement存在于全局配置中，可以被多个CachingExecutor获取到，这样就会出现线程安全问题，除此之外，若不加以控制，多个事务共用一个缓存实例，会导致脏读问题。</p>
-
-<p>线程安全问题可以通过SynchronizedCache装饰类解决，该装饰类会在Cache实例构造期间被添加上。至于脏读问题，需要接祖其它类来处理，也就是上面代码中的 tcm 变量对应的类型。<br/>
-TransactionalCacheManager持有了cache，transactionalCache的关系，transactionalCache是一个缓存装饰器，为缓存提供事务能力。</p>
-
-<pre><code class="language-java">public class TransactionalCacheManager {
-
-    private final Map&lt;Cache, TransactionalCache&gt; transactionalCaches = new HashMap&lt;&gt;();
-
-    public void clear(Cache cache) {
-        getTransactionalCache(cache).clear();
-    }
-
-    public Object getObject(Cache cache, CacheKey key) {
-        return getTransactionalCache(cache).getObject(key);
-    }
-
-    public void putObject(Cache cache, CacheKey key, Object value) {
-        getTransactionalCache(cache).putObject(key, value);
-    }
-
-    public void commit() {
-        for (TransactionalCache txCache : transactionalCaches.values()) {
-            txCache.commit();
-        }
-    }
-
-    public void rollback() {
-        for (TransactionalCache txCache : transactionalCaches.values()) {
-            txCache.rollback();
-        }
-    }
-
-    private TransactionalCache getTransactionalCache(Cache cache) {
-        return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
-    }
-    
-  /*
-   上面getTransactionalCache(Cache cache) 相当于下面的方法，如果cache的value为null，则新建一个TransactionalCache并放如map集合中
-  private TransactionalCache getTransactionalCache(Cache cache) {
-        return transactionalCaches.computeIfAbsent(cache, new Function&lt;Cache, TransactionalCache&gt;() {
-            @Override
-            public TransactionalCache apply(Cache delegate) {
-                return new TransactionalCache(delegate);
-            }
-        });
-    }*/
-    
-}
-
-</code></pre>
-
-<p>TransactionalCache 事务缓存装饰器。</p>
-
-<pre><code class="language-java">public class TransactionalCache implements Cache {
-
-    private static final Log log = LogFactory.getLog(TransactionalCache.class);
-
-    private final Cache delegate;
-
-    private boolean clearOnCommit;
-    // 在事务提交之前所有从数据库读取到的结果都将存在此集合中
-    private final Map&lt;Object, Object&gt; entriesToAddOnCommit;
-    // 在事务提交之前，所有缓存未命中的CacheKey都将存放于此集合中。
-    private final Set&lt;Object&gt; entriesMissedInCache;
-
-    public TransactionalCache(Cache delegate) {
-        this.delegate = delegate;
-        this.clearOnCommit = false;
-        this.entriesToAddOnCommit = new HashMap&lt;&gt;();
-        this.entriesMissedInCache = new HashSet&lt;&gt;();
-    }
-
-    @Override
-    public String getId() {
-        return delegate.getId();
-    }
-
-    @Override
-    public int getSize() {
-        return delegate.getSize();
-    }
-
-    @Override
-    public Object getObject(Object key) {
-        // 查询delegate缓存，缓存中未命中key，放入entriesMissedInCache集合
-        Object object = delegate.getObject(key);
-        if (object == null) {
-            entriesMissedInCache.add(key);
-        }
-        // issue #146
-        if (clearOnCommit) {
-            return null;
-        } else {
-            return object;
-        }
-    }
-
-    @Override
-    public void putObject(Object key, Object object) {
-        entriesToAddOnCommit.put(key, object);
-    }
-
-    @Override
-    public Object removeObject(Object key) {
-        return null;
-    }
-
-    /**
-     * 清除缓存
-     */
-    @Override
-    public void clear() {
-        clearOnCommit = true;
-        entriesToAddOnCommit.clear();
-    }
-
-    public void commit() {
-        if (clearOnCommit) {
-            delegate.clear();
-        }
-        flushPendingEntries();
-        reset();
-    }
-
-    public void rollback() {
-        unlockMissedEntries();
-        reset();
-    }
-    /**
-     * 重置entriesToAddOnCommit和entriesMissedInCache
-     **/
-    private void reset() {
-        clearOnCommit = false;
-        entriesToAddOnCommit.clear();
-        entriesMissedInCache.clear();
-    }
-
-    private void flushPendingEntries() {
-        for (Map.Entry&lt;Object, Object&gt; entry : entriesToAddOnCommit.entrySet()) {
-            delegate.putObject(entry.getKey(), entry.getValue());
-        }
-        for (Object entry : entriesMissedInCache) {
-            if (!entriesToAddOnCommit.containsKey(entry)) {
-                delegate.putObject(entry, null);
-            }
-        }
-    }
-
-    private void unlockMissedEntries() {
-        // 将二级缓存未命中的key从二级缓存中移除
-        for (Object entry : entriesMissedInCache) {
-            try {
-                delegate.removeObject(entry);
-            } catch (Exception e) {
-                //log
-            }
-        }
-    }
-
-}
-
 </code></pre>
 
 ]]></content>

@@ -125,7 +125,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 <li>第三:提高线程的可管理性。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</li>
 </ul>
 
-<p>下面是线程池的简单实现:</p>
+<h2 id="toc_0">线程池的简单实现</h2>
 
 <pre><code class="language-java">public class MyThreadPool {
     // 任务队列
@@ -191,7 +191,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 }
 </code></pre>
 
-<h2 id="toc_0">jdk的线程池</h2>
+<h2 id="toc_1">jdk的线程池</h2>
 
 <pre><code class="language-text">Executor
 |----ThreadPerTaskExecutor in CompletableFuture
@@ -223,7 +223,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 
 <hr/>
 
-<h3 id="toc_1">ThreadPoolExecutor类的构造函数</h3>
+<h3 id="toc_2">ThreadPoolExecutor类的构造函数</h3>
 
 <pre><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
                               int maximumPoolSize,
@@ -248,15 +248,17 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 <li><p>TimeUnit<br/>
 keepAliveTime 的时间单位 workQueue</p></li>
 <li><p>workQueue<br/>
-workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超过它的corePoolSize 的时候，线程会进入阻塞队列进行阻塞等待。通过 workQueue，线程池实现了阻塞功能。<br/>
-用于保存等待执行的任务的阻塞队列，一般来说，我们应该尽量使用有界队列，因为使用无界队列作为工作队列会对线程池带来如下影响：</p>
+workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超过它的corePoolSize 的时候，线程会进入阻塞队列进行阻塞等待。通过 workQueue，线程池实现了阻塞功能。</p></li>
+</ul>
+
+<p>用于保存等待执行的任务的阻塞队列，一般来说，我们应该尽量使用有界队列，因为使用无界队列作为工作队列会对线程池带来如下影响：<br/>
+    - 当线程池中的线程数达到 corePoolSize 后，新任务将在无界队列中等待， 因此线程池中的线程数不会超过 corePoolSize。<br/>
+    - 使用无界队列时 maximumPoolSize 将是一个无效参数。<br/>
+    - 使用无界队列时 keepAliveTime 将是一个无效参数。<br/>
+    - 更重要的，使用无界 queue 可能会耗尽系统资源，有界队列则有助于防 止资源耗尽，同时即使使用有界队列，也要尽量控制队列的大小在一个合适的范围。<br/>
+所以我们一般会使用，ArrayBlockingQueue、LinkedBlockingQueue、 SynchronousQueue、PriorityBlockingQueue。</p>
+
 <ul>
-<li>当线程池中的线程数达到 corePoolSize 后，新任务将在无界队列中等待， 因此线程池中的线程数不会超过 corePoolSize。</li>
-<li>使用无界队列时 maximumPoolSize 将是一个无效参数。</li>
-<li>使用无界队列时 keepAliveTime 将是一个无效参数。</li>
-<li>更重要的，使用无界 queue 可能会耗尽系统资源，有界队列则有助于防 止资源耗尽，同时即使使用有界队列，也要尽量控制队列的大小在一个合适的范围。<br/>
-所以我们一般会使用，ArrayBlockingQueue、LinkedBlockingQueue、 SynchronousQueue、PriorityBlockingQueue。</li>
-</ul></li>
 <li><p>ThreadFactory<br/>
 新线程使用ThreadFactory创建。如果没有另外指定，则使用Executors.defaultThreadFactory()。通过提供不同的ThreadFactory，您可以更改线程的名称，线程组，优先级，守护进程状态等。</p></li>
 <li><p>RejectedExecutionHandler<br/>
@@ -272,7 +274,7 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <hr/>
 
-<h3 id="toc_2">扩展ThreadPoolExecutor</h3>
+<h3 id="toc_3">扩展ThreadPoolExecutor</h3>
 
 <p>该类提供了在每个任务执行之前和之后调用的protected可悲子类覆写的beforeExecute(Thread, Runnable)和afterExecute(Runnable, Throwable)方法。 这些可以用来操纵执行环境; 例如，重新初始化ThreadLocals，收集统计信息或添加日志条目。 另外，方法terminated()可以被覆盖，以执行执行程序完全终止后需要执行的任何特殊处理。</p>
 
@@ -336,7 +338,7 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <hr/>
 
-<h2 id="toc_3">线程池的工作机制</h2>
+<h2 id="toc_4">线程池的工作机制</h2>
 
 <ol>
 <li>如果当前运行的线程少于 corePoolSize，则创建新线程来执行任务(注意， 执行这一步骤需要获取全局锁)。</li>
@@ -345,19 +347,19 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 <li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
 </ol>
 
-<h3 id="toc_4">提交任务</h3>
+<h3 id="toc_5">提交任务</h3>
 
 <p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程 池执行成功。</p>
 
 <p>submit()方法用于提交需要返回值的任务。线程池会返回一个 future 类型的对象，通过这个 future 对象可以判断任务是否执行成功，并且可以通过 future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get (long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。</p>
 
-<h3 id="toc_5">关闭线程池</h3>
+<h3 id="toc_6">关闭线程池</h3>
 
 <p>可以通过调用线程池的 shutdown 或 shutdownNow 方法来关闭线程池。它们 的原理是遍历线程池中的工作线程，然后逐个调用线程的 interrupt 方法来中断 线程，所以无法响应中断的任务可能永远无法终止。</p>
 
 <p>但是它们存在一定的区别， shutdownNow 首先将线程池的状态设置成 STOP，然后尝试停止所有的正在执行 或暂停任务的线程，并返回等待执行任务的列表，而 shutdown 只是将线程池的 状态设置成 SHUTDOWN 状态，然后中断所有没有正在执行任务的线程</p>
 
-<h2 id="toc_6">如何合理使用线程池</h2>
+<h2 id="toc_7">如何合理使用线程池</h2>
 
 <p>要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。</p>
 
