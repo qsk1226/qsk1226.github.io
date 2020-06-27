@@ -146,7 +146,7 @@
 
 <h3 id="toc_2">静态代理示例</h3>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 接口
  */
 public interface IUserDao {
@@ -222,7 +222,7 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
 </ul></li>
 </ul>
 
-<pre><code class="language-java">public class DynamicProxyTest {
+<pre class="line-numbers"><code class="language-java">public class DynamicProxyTest {
 
     interface IHello{
         void sayHello();
@@ -272,7 +272,7 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
 <li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。</li>
 </ul>
 
-<pre><code class="language-java">public class ProxyFactory {
+<pre class="line-numbers"><code class="language-java">public class ProxyFactory {
     /**
      * 产生代理对象
      *

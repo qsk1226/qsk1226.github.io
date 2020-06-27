@@ -154,7 +154,7 @@
 
 <p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
 
-<pre><code class="language-java">public class SqlSessionFactoryBean
+<pre class="line-numbers"><code class="language-java">public class SqlSessionFactoryBean
     implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SqlSessionFactoryBean.class);
@@ -215,7 +215,7 @@
 
 <h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
 
-<pre><code class="language-java"> @Override
+<pre class="line-numbers"><code class="language-java"> @Override
   public void afterPropertiesSet() throws Exception {
 notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
 notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
@@ -228,7 +228,7 @@ this.sqlSessionFactory = buildSqlSessionFactory();
 
 <h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 将sqlSessionFactory对象注入spring容器
  */
 public SqlSessionFactory getObject() throws Exception {
@@ -246,7 +246,7 @@ return this.sqlSessionFactory;
 
 <p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
 
-<pre><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
+<pre class="line-numbers"><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
 
   private Class&lt;T&gt; mapperInterface;
 
@@ -275,7 +275,7 @@ return this.sqlSessionFactory;
 
 <p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
  * 
  */

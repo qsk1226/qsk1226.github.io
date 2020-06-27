@@ -147,7 +147,7 @@
 <li>SqlSource：用于创建 BoundSql，mapper.xml 文件中的 sql 语句会被解析成 BoundSql 对象，经过解析 BoundSql 包含的语句最终仅仅包含？占位符，可以直接提交给数据库执行；</li>
 </ul>
 
-<pre><code class="language-java">public class Configuration {
+<pre class="line-numbers"><code class="language-java">public class Configuration {
    /*数据库环境**/
     protected Environment environment;
     /* 是否启用行内嵌套语句**/
@@ -281,7 +281,7 @@
 
 <h4 id="toc_3">通过 SqlSessionFactoryBuilder 建造 SqlSessionFactory，并创建 XMLConfigBuilder 对象读取 MyBatis 核心配置文件，</h4>
 
-<pre><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
+<pre class="line-numbers"><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
         //1、读取配置文件
         XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
@@ -303,7 +303,7 @@
 
 <p>XMLConfigBuilder 的 parseConfiguration 方法，对 MyBatis 核心配置文件的各个 元素进行解析，读取元素信息后填充到 configuration 对象</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 解析mybatis-config.xml文档
  *
  * @param root mybatis-config.xml的root节点configuration
@@ -348,7 +348,7 @@ private void parseConfiguration(XNode root) {
 
 <p>XMLMapperBuilder 的核心方法为 configurationElement（XNode），该方法对 mapper.xml 配置文件的各个元素进行解析，读取元素信息后填充到 configuration 对象。</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 解析Mapper.xml文件
  **/
 private void configurationElement(XNode context) {
@@ -379,7 +379,7 @@ private void configurationElement(XNode context) {
 
 <p>在 XMLStatmentBuilder 的 parseStatementNode()方法中，对 Mapper.xml 中 select、 insert、update、delete 节点进行解析，并调用 MapperBuilderAssistant 负责将信息填充到 configuration。在理解 parseStatementNod()方法之前，有必要了解 MappedStatement，这个类用于封装 select 、insert 、update 、delete 节点的信息 </p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 封装mapper.xml文件信息的select 、insert 、update 、delete 节点的信息
  * id、sqlSource、parameterMap、ResultMaps、keyGenerator 
  **/
@@ -433,7 +433,7 @@ public final class MappedStatement {
 
 <p>SqlSessionFactory 使用工厂模式创建 SqlSession，其默认的实现类为 DefaultSqlSessionFactory ，其中获取 SqlSession 的核心方法为openSessionFromDataSource(ExecutorType, TransactionIsolationLevel, boolean)，在这个方法中从 configuration 中获取的 TransactionFactory 是典 型的策略模式的应用。运行期，TransactionFactory 接口的实现，是由配置文件配置决定的，可配置选项包括： JDBC、Managed, 可根据需求灵活的替换 TransactionFactory 的实现。</p>
 
-<pre><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+<pre class="line-numbers"><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
     Transaction tx = null;
 
     try {
@@ -475,7 +475,7 @@ public final class MappedStatement {
 mapper 接口和对应的代理对象工厂的注册中心； </li>
 </ul>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * mapper 接口动态代理工厂类的注册中心。
  */
 public class MapperRegistry {
@@ -550,7 +550,7 @@ public class MapperRegistry {
 用于生成 mapper 接口动态代理的实例对象；保证 Mapper 实例对象是局部变量；</li>
 </ul>
 
-<pre><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
+<pre class="line-numbers"><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
 
     private final Class&lt;T&gt; mapperInterface;
 
@@ -585,7 +585,7 @@ public class MapperRegistry {
 实现了 InvocationHandler 接口，它是增强 mapper 接口的实现；</li>
 </ul>
 
-<pre><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
+<pre class="line-numbers"><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = -4724728412955527868L;
     private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
@@ -693,7 +693,7 @@ private final SqlCommandType type;
 
 <p>看下MapperMethod的关键代码</p>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     //判断是那种类型的SQL语句
@@ -805,7 +805,7 @@ Executor 组件真正实例化的子类，使用静态代理模式，根据上�
 </ul></li>
 </ul>
 
-<pre><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+<pre class="line-numbers"><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
 
     switch (ms.getStatementType()) {
         case STATEMENT:

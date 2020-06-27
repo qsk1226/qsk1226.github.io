@@ -175,7 +175,7 @@
 
 <h2 id="toc_1">创建CompletableFuture对象</h2>
 
-<pre><code class="language-text">//比较特殊，他入参就是返回值，也就是说他可以用来执行需要其他返回值的异步任务。
+<pre class="line-numbers"><code class="language-text">//比较特殊，他入参就是返回值，也就是说他可以用来执行需要其他返回值的异步任务。
 public static &lt;U&gt; CompletableFuture&lt;U&gt; completedFuture(U value)
 
 //无返回值，使用默认线程池
@@ -196,7 +196,7 @@ public static CompletableFuture&lt;Void&gt; allOf(CompletableFuture&lt;?&gt;... 
 
 <p>举例：</p>
 
-<pre><code class="language-text">//supplyAsync方法无入参，但是返回一个String对象。此方法使用了默认的线程池执行异步任务
+<pre class="line-numbers"><code class="language-text">//supplyAsync方法无入参，但是返回一个String对象。此方法使用了默认的线程池执行异步任务
 CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; {
     //长时间的计算任务
     return &quot;·00&quot;;
@@ -218,7 +218,7 @@ CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; 
 <li>使用 exceptionally方法时，如果原始计算逻辑抛出异常，那么返回的 新的CompletableFuture对象 的返回结果由该方法的return值决定；如果原始计算逻辑没有抛出异常，那么返回的 新的CompletableFuture对象 的返回结果和原始计算逻辑返回的结果一致。有点绕，先不明白没关系，下面会有四个exceptionally实例解释这段话。</li>
 </ul>
 
-<pre><code class="language-text">BiConsumer&lt;T,U&gt; 函数接口有两个参数，无返回值。
+<pre class="line-numbers"><code class="language-text">BiConsumer&lt;T,U&gt; 函数接口有两个参数，无返回值。
 Function&lt;T,R&gt; 函数接口有一个输入参数，返回一个结果。
 
 //无Async，同步处理正常计算结果或异常，使用执行任务的那个线程来执行该方法，所以这个方法是同步的。
@@ -233,7 +233,7 @@ public CompletableFuture&lt;T&gt; exceptionally(Function&lt;Throwable,? extends 
 
 <p>注意：当没有异常抛出来的时候，上面的Throwable参数为空！举例：</p>
 
-<pre><code class="language-text">    private static Random random = new Random();
+<pre class="line-numbers"><code class="language-text">    private static Random random = new Random();
     private static long time = System.currentTimeMillis();
 
     public static int getMoreData(){
@@ -261,7 +261,7 @@ public CompletableFuture&lt;T&gt; exceptionally(Function&lt;Throwable,? extends 
 
 <p>whenComplete：</p>
 
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
+<pre class="line-numbers"><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
     public static void main(String[] args) throws Exception{
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
 
@@ -286,7 +286,7 @@ end to compute, passed:1551182552193
 
 <p>whenCompleteAsync：</p>
 
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
+<pre class="line-numbers"><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
     public static void main(String[] args) throws Exception{
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
 
@@ -310,7 +310,7 @@ end to compute, passed:1551180611064
 <p>exceptionally比较复杂，需要通过4个实例才能真正明白：<br/>
 exceptionally实例1：</p>
 
-<pre><code class="language-text">    //这段代码，由于会抛出异常，会先走whenCompleteAsync，然后再走exceptionally，而且是无法获取到返回值的。
+<pre class="line-numbers"><code class="language-text">    //这段代码，由于会抛出异常，会先走whenCompleteAsync，然后再走exceptionally，而且是无法获取到返回值的。
     public static void main(String[] args) throws Exception{
 
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
@@ -346,7 +346,7 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例2：</p>
 
-<pre><code class="language-text">    //这里的打印结果是和上面类似的，可是为什么这次要获取新的CompletableFuture对象呢？看下面的exceptionally实例3后，再回来对比吧
+<pre class="line-numbers"><code class="language-text">    //这里的打印结果是和上面类似的，可是为什么这次要获取新的CompletableFuture对象呢？看下面的exceptionally实例3后，再回来对比吧
     public static void main(String[] args) throws Exception{
 
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
@@ -384,7 +384,7 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例3：</p>
 
-<pre><code class="language-text">    //
+<pre class="line-numbers"><code class="language-text">    //
     public static void main(String[] args) throws Exception{
 
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
@@ -418,7 +418,7 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例4：</p>
 
-<pre><code class="language-text">public static void main(String[] args) throws Exception{
+<pre class="line-numbers"><code class="language-text">public static void main(String[] args) throws Exception{
 
     CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
@@ -450,7 +450,7 @@ getMoreData: 679<br/>
 执行到最后一段代码了，future2 result：679<br/>
 执行到最后一段代码了，future3 result：679</p>
 
-<pre><code class="language-text"></code></pre>
+<pre class="line-numbers"><code class="language-text"></code></pre>
 </blockquote>
 
 <h3 id="toc_4">handle* 方法</h3>
@@ -458,7 +458,7 @@ getMoreData: 679<br/>
 <p>和 whenComplete* 方法一样，都是在任务执行完后，执行该方法的逻辑，但是和 whenComplete* 不同的是：<br/>
 该操作执行完毕后，它返回的新CompletableFuture对象的计算结果是handle*方法的返回值，并不是原始计算逻辑的返回值</p>
 
-<pre><code class="language-java">//同步
+<pre class="line-numbers"><code class="language-java">//同步
 public &lt;U&gt; CompletableFuture&lt;U&gt;     handle(BiFunction&lt;? super T,Throwable,? extends U&gt; fn)
 //异步，使用原始CompletableFuture的线程
 public &lt;U&gt; CompletableFuture&lt;U&gt;     handleAsync(BiFunction&lt;? super T,Throwable,? extends U&gt; fn)
@@ -468,7 +468,7 @@ public &lt;U&gt; CompletableFuture&lt;U&gt;     handleAsync(BiFunction&lt;? supe
 
 <p>代码实例：</p>
 
-<pre><code class="language-java">    public static void main(String[] args) throws Exception{
+<pre class="line-numbers"><code class="language-java">    public static void main(String[] args) throws Exception{
 
         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
@@ -497,7 +497,7 @@ getMoreData: 395
 <p>thenApply* 可以连接多个CompletableFuture对象，相当于将一个一个的CompletableFuture串联起来了，第一个CompletableFuture对象的结果会传递到下一个对象中，并且下一个CompletableFuture对象的结算结果会作为上一个对象的CompletableFuture结果，依次类推，也就是说会改变原始CompletableFuture对象的结果。<br/>
 注：它和 handle 方法有点类似，都会拿到上一个CompletableFuture对象的结果进行计算，但是区别就是thenApply 会改变原始对象的计算结果，而 handle* 并不会**。</p>
 
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApply(Function&lt;? super T,? extends U&gt; fn)
+<pre class="line-numbers"><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApply(Function&lt;? super T,? extends U&gt; fn)
 public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApplyAsync(Function&lt;? super T,? extends U&gt; fn)
 public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApplyAsync(Function&lt;? super T,? extends U&gt; fn, Executor executor)
 复制代码public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -514,12 +514,12 @@ public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApplyAsync(Function&lt;? sup
 
 <p>thenAccept* 返回的新的CompletableFuture对象不返回结果，如果使用get方法，会返回一个null。</p>
 
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  thenAccept(Consumer&lt;? super T&gt; action)
+<pre class="line-numbers"><code class="language-java">public CompletableFuture&lt;Void&gt;  thenAccept(Consumer&lt;? super T&gt; action)
 public CompletableFuture&lt;Void&gt;  thenAcceptAsync(Consumer&lt;? super T&gt; action)
 public CompletableFuture&lt;Void&gt;  thenAcceptAsync(Consumer&lt;? super T&gt; action, Executor executor)
 </code></pre>
 
-<pre><code class="language-text">public static void main(String[] args) throws ExecutionException, InterruptedException {
+<pre class="line-numbers"><code class="language-text">public static void main(String[] args) throws ExecutionException, InterruptedException {
          CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
         CompletableFuture&lt;Void&gt; future2 = future.thenAccept(result -&gt; {
@@ -543,7 +543,7 @@ getMoreData: 171
 <p>它和 thenAccept 一样，都是纯消费，但是thenAccept<em>只能消费一个CompletableFuture对象，而thenAcceptBoth</em> 能在两个不同的CompletableFuture对象执行完成后，消费他们两个的计算结果。<br/>
 而且他仅仅在原始的两个CompletableFuture对象都计算成功之后，才开始执行。</p>
 
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBoth(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action)
+<pre class="line-numbers"><code class="language-java">public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBoth(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action)
 public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBothAsync(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action)
 public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBothAsync(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action, Executor executor)
 
@@ -551,7 +551,7 @@ public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBothAsync(CompletionSt
 public     CompletableFuture&lt;Void&gt;  runAfterBoth(CompletionStage&lt;?&gt; other,  Runnable action)
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 public static void main(String[] args) throws ExecutionException, InterruptedException {
          CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
@@ -580,7 +580,7 @@ future1 和 future都执行完成了，结果分别是：920,747
 
 <p>在原始CompletableFuture执行任务结束后，而且执行指定的任务，不消费，也不产生结果。</p>
 
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  thenRun(Runnable action)
+<pre class="line-numbers"><code class="language-java">public CompletableFuture&lt;Void&gt;  thenRun(Runnable action)
 public CompletableFuture&lt;Void&gt;  thenRunAsync(Runnable action)
 public CompletableFuture&lt;Void&gt;  thenRunAsync(Runnable action, Executor executor)
 复制代码public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -606,7 +606,7 @@ future执行完成了
 
 <p>runAfterBoth是当两个CompletableFuture都计算完成后才执行。</p>
 
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  acceptEither(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action)
+<pre class="line-numbers"><code class="language-java">public CompletableFuture&lt;Void&gt;  acceptEither(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action)
 public CompletableFuture&lt;Void&gt;  acceptEitherAsync(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action)
 public CompletableFuture&lt;Void&gt;  acceptEitherAsync(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action, Executor executor)
 </code></pre>
@@ -615,14 +615,14 @@ public CompletableFuture&lt;Void&gt;  acceptEitherAsync(CompletionStage&lt;? ext
 
 <p>runAfterBoth是当两个CompletableFuture都计算完成后才执行。而 acceptEither* 没有返回值。</p>
 
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEither(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn)
+<pre class="line-numbers"><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEither(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn)
 public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEitherAsync(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn)
 public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEitherAsync(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn, Executor executor)
 </code></pre>
 
 <h3 id="toc_11">辅助方法 ：allOf 和 anyOf</h3>
 
-<pre><code class="language-java">// allOf方法是当所有的CompletableFuture都执行完后执行计算。
+<pre class="line-numbers"><code class="language-java">// allOf方法是当所有的CompletableFuture都执行完后执行计算。
 public static CompletableFuture&lt;Void&gt;       allOf(CompletableFuture&lt;?&gt;... cfs)
 //anyOf方法是当任意一个CompletableFuture执行完后就会执行计算，计算的结果相同。
 public static CompletableFuture&lt;Object&gt;     anyOf(CompletableFuture&lt;?&gt;... cfs)
@@ -630,7 +630,7 @@ public static CompletableFuture&lt;Object&gt;     anyOf(CompletableFuture&lt;?&g
 
 <p>示例：</p>
 
-<pre><code class="language-java">Random rand = new Random();
+<pre class="line-numbers"><code class="language-java">Random rand = new Random();
 CompletableFuture&lt;Integer&gt; future1 = CompletableFuture.supplyAsync(() -&gt; {
     try {
         Thread.sleep(10000 + rand.nextInt(1000));
@@ -656,7 +656,7 @@ System.out.println(f.get());
 
 <p>如果你用过Guava的Future类，你就会知道它的Futures辅助类提供了很多便利方法，用来处理多个Future，而不像Java的CompletableFuture，只提供了allOf、anyOf两个方法。 比如有这样一个需求，将多个CompletableFuture组合成一个CompletableFuture，这个组合后的CompletableFuture的计算结果是个List,它包含前面所有的CompletableFuture的计算结果，guava的Futures.allAsList可以实现这样的功能，但是对于java CompletableFuture，我们需要一些辅助方法：</p>
 
-<pre><code class="language-java">   public static &lt;T&gt; CompletableFuture&lt;List&lt;T&gt;&gt; sequence(List&lt;CompletableFuture&lt;T&gt;&gt; futures) {
+<pre class="line-numbers"><code class="language-java">   public static &lt;T&gt; CompletableFuture&lt;List&lt;T&gt;&gt; sequence(List&lt;CompletableFuture&lt;T&gt;&gt; futures) {
        CompletableFuture&lt;Void&gt; allDoneFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
        return allDoneFuture.thenApply(v -&gt; futures.stream().map(CompletableFuture::join).collect(Collectors.&lt;T&gt;toList()));
    }
@@ -668,7 +668,7 @@ public static &lt;T&gt; CompletableFuture&lt;Stream&lt;T&gt;&gt; sequence(Stream
 
 <p>Java Future转CompletableFuture:</p>
 
-<pre><code class="language-java">public static &lt;T&gt; CompletableFuture&lt;T&gt; toCompletable(Future&lt;T&gt; future, Executor executor) {
+<pre class="line-numbers"><code class="language-java">public static &lt;T&gt; CompletableFuture&lt;T&gt; toCompletable(Future&lt;T&gt; future, Executor executor) {
     return CompletableFuture.supplyAsync(() -&gt; {
         try {
             return future.get();

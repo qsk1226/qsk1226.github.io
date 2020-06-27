@@ -124,7 +124,7 @@
 
 <p>SoftReference的特点是它的一个实例保存对一个Java对象的软引用，该软引用的存在不妨碍垃圾收集线程对该Java对象的回收。也就是说，一旦SoftReference保存了对一个Java对象的软引用后，在垃圾线程对这个Java对象回收前，SoftReference类所提供的get()方法返回Java对象的强引用。另外，一旦垃圾线程回收该Java对象之后，get()方法将返回null。</p>
 
-<pre><code class="language-java">MyObject aRef = new MyObject();
+<pre class="line-numbers"><code class="language-java">MyObject aRef = new MyObject();
 SoftReference aSoftRef=new SoftReference(aRef);
 </code></pre>
 
@@ -133,7 +133,7 @@ SoftReference aSoftRef=new SoftReference(aRef);
 
 <p>此后，这个MyObject对象成为了软可及对象。如果垃圾收集线程进行内存垃圾收集，并不会因为有一个SoftReference对该对象的引用而始终保留该对象。Java虚拟机的垃圾收集线程对软可及对象和其他一般Java对象进行了区别对待:软可及对象的清理是由垃圾收集线程根据其特定算法按照内存需求决定的。也就是说，垃圾收集线程会在虚拟机抛出OutOfMemoryError之前回收软可及对象，而且虚拟机会尽可能优先回收长时间闲置不用的软可及对象，对那些刚刚构建的或刚刚使用过的“新”软可反对象会被虚拟机尽可能保留。在回收这些对象之前，我们可以通过:</p>
 
-<pre><code class="language-java">MyObject anotherRef=(MyObject)aSoftRef.get();
+<pre class="line-numbers"><code class="language-java">MyObject anotherRef=(MyObject)aSoftRef.get();
 </code></pre>
 
 <p>重新获得对该实例的强引用。而回收之后，调用get()方法就只能得到null了。</p>
@@ -144,14 +144,14 @@ SoftReference aSoftRef=new SoftReference(aRef);
 
 <p>作为一个Java对象，SoftReference对象除了具有保存软引用的特殊性之外，也具有Java对象的一般性。所以，当软可及对象被回收之后，虽然这个SoftReference对象的get()方法返回null,但这个SoftReference对象已经不再具有存在的价值，需要一个适当的清除机制，避免大量SoftReference对象带来的内存泄漏。在java.lang.ref包里还提供了ReferenceQueue。如果在创建SoftReference对象的时候，使用了一个ReferenceQueue对象作为参数提供给SoftReference的构造方法，如:</p>
 
-<pre><code class="language-java">ReferenceQueue queue = new ReferenceQueue();
+<pre class="line-numbers"><code class="language-java">ReferenceQueue queue = new ReferenceQueue();
 SoftReference ref=new SoftReference(aMyObject, queue);
 </code></pre>
 
 <p>那么当这个SoftReference所软引用的aMyOhject被垃圾收集器回收的同时，ref所强引用的SoftReference对象被列入ReferenceQueue。也就是说，ReferenceQueue中保存的对象是Reference对象，而且是已经失去了它所软引用的对象的Reference对象。另外从ReferenceQueue这个名字也可以看出，它是一个队列，当我们调用它的poll()方法的时候，如果这个队列中不是空队列，那么将返回队列前面的那个Reference对象。<br/>
 在任何时候，我们都可以调用ReferenceQueue的poll()方法来检查是否有它所关心的非强可及对象被回收。如果队列为空，将返回一个null,否则该方法返回队列中前面的一个Reference对象。利用这个方法，我们可以检查哪个SoftReference所软引用的对象已经被回收。于是我们可以把这些失去所软引用的对象的SoftReference对象清除掉。常用的方式为:</p>
 
-<pre><code class="language-java">SoftReference ref = null;
+<pre class="line-numbers"><code class="language-java">SoftReference ref = null;
 while ((ref = (EmployeeRef) q.poll()) != null) {
     // 清除ref
 }
@@ -167,7 +167,7 @@ while ((ref = (EmployeeRef) q.poll()) != null) {
 
 <p>利用Java平台垃圾收集机制的特性以及前述的垃圾对象重获方法，我们通过一个雇员信息查询系统的小例子来说明如何构建一种高速缓存器来避免重复构建同一个对象带来的性能损失。我们将一个雇员的档案信息定义为一个Employee类:</p>
 
-<pre><code class="language-java">@Data
+<pre class="line-numbers"><code class="language-java">@Data
 public class Employee {
     private String id;// 雇员的标识号码
     private String name;// 雇员姓名
@@ -180,7 +180,7 @@ public class Employee {
 
 <p>这个Employee类的构造方法中我们可以预见，如果每次需要查询一个雇员的信息。哪怕是几秒中之前刚刚查询过的，都要重新构建一个实例，这是需要消耗很多时间的。下面是一个对Employee对象进行缓存的缓存器的定义:</p>
 
-<pre><code class="language-java">import java.lang.ref.ReferenceQueue;
+<pre class="line-numbers"><code class="language-java">import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.HashTable;
 

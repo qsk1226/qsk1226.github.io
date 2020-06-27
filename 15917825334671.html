@@ -169,7 +169,7 @@
 
 <h2 id="toc_3">实例代码</h2>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 抽象处理类
  **/
@@ -191,7 +191,7 @@ public abstract class Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 主管处理这
  **/
@@ -221,7 +221,7 @@ public class DirectorHandler extends Handler {
 
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 经理
  **/
 public class ManagerHandler extends Handler {
@@ -249,7 +249,7 @@ public class ManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 总经理
  **/
@@ -274,7 +274,7 @@ public class TopManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 请求
  **/
 @Data
@@ -285,7 +285,7 @@ public class LeaveRequest {
 }
 </code></pre>
 
-<pre><code class="language-java">public class ChainClient {
+<pre class="line-numbers"><code class="language-java">public class ChainClient {
     public static void main(String[] args) {
         Handler topManagerHandler = new TopManagerHandler(&quot;狗蛋&quot;);
         Handler managerHandler = new ManagerHandler(&quot;饭桶&quot;, topManagerHandler);

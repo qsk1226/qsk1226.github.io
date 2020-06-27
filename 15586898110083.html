@@ -179,7 +179,7 @@
 
 <p>根据上面的状态切换图，我们很容易实现一个基本的熔断器，只需要在内部维护一个状态机，并定义好状态转移的规则，可以使用State模式来实现。首先，我们定义一个表示状态转移操作的抽象类CircuitBreakerState：</p>
 
-<pre><code class="language-java">public abstract class CircuitBreakerState
+<pre class="line-numbers"><code class="language-java">public abstract class CircuitBreakerState
 {
     //熔断器
     protected static CircuitBreaker circuitBreaker;
@@ -214,7 +214,7 @@
 
 <p>然后在分别实现表示熔断器三个状态的类。首先实现闭合状态CloseState：</p>
 
-<pre><code class="language-java">public class ClosedState extends CircuitBreakerState {
+<pre class="line-numbers"><code class="language-java">public class ClosedState extends CircuitBreakerState {
     public ClosedState(CircuitBreaker circuitBreaker) {
         super(circuitBreaker)
         //重置失败计数器
@@ -234,7 +234,7 @@
 
 <p>在闭合状态下，如果发生错误，并且错误次数达到阈值，则状态机切换到断开状态。断开状态OpenState的实现如下：</p>
 
-<pre><code class="language-java">public class OpenState extends CircuitBreakerState {
+<pre class="line-numbers"><code class="language-java">public class OpenState extends CircuitBreakerState {
     private final static Timer timer;
 
     public OpenState(CircuitBreaker circuitBreaker) {
@@ -260,7 +260,7 @@
 
 <p>最后半断开Half-Open状态实现如下：</p>
 
-<pre><code class="language-java">public class HalfOpenState extends CircuitBreakerState {
+<pre class="line-numbers"><code class="language-java">public class HalfOpenState extends CircuitBreakerState {
     public HalfOpenState(CircuitBreaker circuitBreaker)  {
         // 重置连续成功计数
         circuitBreaker.resetConsecutiveSuccessCount();
@@ -286,7 +286,7 @@
 
 <p>有了以上三种状态切换之后，我们要实现CircuitBreaker类了:</p>
 
-<pre><code class="language-java">@data
+<pre class="line-numbers"><code class="language-java">@data
 public class CircuitBreaker {
     private final static object monitor = new object();
     private CircuitBreakerState state;
@@ -413,7 +413,7 @@ public class CircuitBreaker {
 
 <p>首先我们编写几个帮助类以模拟连续执行次数：</p>
 
-<pre><code class="language-java">private static void CallXAmountOfTimes(function codeToCall, int timesToCall) {
+<pre class="line-numbers"><code class="language-java">private static void CallXAmountOfTimes(function codeToCall, int timesToCall) {
     for (int i = 0; i &lt; timesToCall; i++) {
         codeToCall();
     }
@@ -422,7 +422,7 @@ public class CircuitBreaker {
 
 <p>以下类用来抛出特定异常：</p>
 
-<pre><code class="language-java">private static void AssertThatExceptionIsThrown&lt;T&gt;(Action code) where T : Exception {
+<pre class="line-numbers"><code class="language-java">private static void AssertThatExceptionIsThrown&lt;T&gt;(Action code) where T : Exception {
     try {
         code();
     } catch (T) {
@@ -435,7 +435,7 @@ public class CircuitBreaker {
 
 <p>然后，使用NUnit，可以建立如下Case：</p>
 
-<pre><code class="language-java">@test
+<pre class="line-numbers"><code class="language-java">@test
 public void ClosesIfProtectedCodeSucceedsInHalfOpenState()
 {
     var stub = new Stub(10);

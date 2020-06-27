@@ -131,7 +131,7 @@ Java 序列化中的一些高级认识。</p>
 <li><p><strong>解决</strong>：虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个类的序列化ID 是否一致（就是 private static final long serialVersionUID = 1L）。清单1 中，虽然两个类的功能代码完全一致，但是序列化 ID 不同，他们无法相互序列化和反序列化。</p></li>
 </ul>
 
-<pre><code class="language-text">package com.inout; 
+<pre class="line-numbers"><code class="language-text">package com.inout; 
 import java.io.Serializable; 
 public class A implements Serializable { 
 
@@ -175,7 +175,7 @@ public class A implements Serializable {
 
 <p>清单 2. 静态变量序列化问题代码</p>
 
-<pre><code class="language-text">public class Test implements Serializable {
+<pre class="line-numbers"><code class="language-text">public class Test implements Serializable {
     private static final long serialVersionUID = 1L;
     public static int staticVar = 5;
     public static void main(String[] args) {
@@ -234,7 +234,7 @@ public class A implements Serializable {
 <li><strong>解决</strong>：在序列化过程中，虚拟机会试图调用对象类里的writeObject和readObject方法，进行用户自定义的序列化和反序列化，如果没有这样的方法，则默认调用是ObjectOutputStream的defaultWriteObject方法以及ObjectInputStream的defaultReadObject方法。用户自定义的writeObject和readObject方法可以允许用户控制序列化的过程，比如可以在序列化的过程中动态改变序列化的数值。基于这个原理，可以在实际应用中得到使用，用于敏感字段的加密工作，清单3展示了这个过程。</li>
 </ul>
 
-<pre><code class="language-text">private static final long serialVersionUID = 1L;
+<pre class="line-numbers"><code class="language-text">private static final long serialVersionUID = 1L;
 private String password = &quot;pass&quot;;
 public String getPassword() {
     return password;
@@ -303,7 +303,7 @@ password进行解密，只有拥有密钥的客户端，才可以正确的解析
 
 <h3 id="toc_8">序列化存储规则</h3>
 
-<pre><code class="language-text">ObjectOutputStream out = new ObjectOutputStream(
+<pre class="line-numbers"><code class="language-text">ObjectOutputStream out = new ObjectOutputStream(
                    new FileOutputStream(&quot;result.obj&quot;));
    Test test = new Test();
    //试图将对象两次写入文件
@@ -337,7 +337,7 @@ password进行解密，只有拥有密钥的客户端，才可以正确的解析
 
 <h3 id="toc_9">特性案例分析</h3>
 
-<pre><code class="language-text">
+<pre class="line-numbers"><code class="language-text">
 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(&quot;result.obj&quot;));
 Test test = new Test();
 test.i = 1;

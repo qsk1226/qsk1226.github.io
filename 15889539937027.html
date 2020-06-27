@@ -144,7 +144,7 @@
 
 <h3 id="toc_1">Cache接口</h3>
 
-<pre><code class="language-java">public interface Cache {
+<pre class="line-numbers"><code class="language-java">public interface Cache {
 
     String getId();
 
@@ -167,7 +167,7 @@
 
 <h3 id="toc_2">具有基本缓存功能的 PerpetualCache</h3>
 
-<pre><code class="language-java">public class PerpetualCache implements Cache {
+<pre class="line-numbers"><code class="language-java">public class PerpetualCache implements Cache {
 
     private final String id;
     
@@ -219,7 +219,7 @@
 
 <p>在mapper.xml文件中增加如下配置，在此mapper的namespace配置二级缓存：</p>
 
-<pre><code class="language-text">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;60000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot;&gt;
+<pre class="line-numbers"><code class="language-text">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;60000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot;&gt;
 
 此句语义如下：
 1、映射语句文件中的所有 select 语句将会被缓存。 
@@ -254,7 +254,7 @@ mybatis 中涉及到动态sql的原因，缓存项的key不能仅仅通过一个
 <li>用户传递给sql语句的实际参数值</li>
 </ul>
 
-<pre><code class="language-java">public class CacheKey implements Cloneable, Serializable { 
+<pre class="line-numbers"><code class="language-java">public class CacheKey implements Cloneable, Serializable { 
 
     private static final int DEFAULT_MULTIPLYER = 37;
     private static final int DEFAULT_HASHCODE = 17;
@@ -281,7 +281,7 @@ mybatis 中涉及到动态sql的原因，缓存项的key不能仅仅通过一个
 
 <p>一级缓存是数据库的最后一道屏障，如果一级缓存未命中，查询请求将落到数据库上。一级缓存是在BaseExecutor被初始化的，我们看下代码</p>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 public abstract class BaseExecutor implements Executor {
     //一级缓存的实现，PerpetualCache
     protected PerpetualCache localCache;
@@ -303,7 +303,7 @@ public abstract class BaseExecutor implements Executor {
 
 <p>􏴓􏸵􏴕􏴖􏴀􏴆􏶉􏴜 一级缓存的类型是PerpetualCache􏳅􏶳􏶴􏽠􏵌􏸾􏴕􏴖􏴆􏴗􏴘􏶶，没有被其它缓存类修饰过。一级缓存锁存储从查询结果会在MyBatis执行更新操作(insert/update/delete)，以及提交和回滚事务时被清空。</p>
 
-<pre><code class="language-java">@Override
+<pre class="line-numbers"><code class="language-java">@Override
     public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)
             throws SQLException {
     //获取sql语句信息，包括占位符，参数等信息
@@ -371,7 +371,7 @@ public int update(MappedStatement ms, Object parameter) throws SQLException {
 
 <p>收到查询请求时，mybatis会先查询二级缓存，若二级缓存未命中，再去查询一级缓存。二级缓存和具体的命名空间进行绑定，一级缓存则是和SqlSession绑定。</p>
 
-<pre><code class="language-java">/** CachingExecutor */
+<pre class="line-numbers"><code class="language-java">/** CachingExecutor */
 // 委托执行器，BatchExecutor、ReuseExecutor、SimpleExecutor
 private final Executor delegate;
 TransactionalCacheManager tcm = new TransactionalCacheManager();
@@ -414,7 +414,7 @@ public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject,
 <p>线程安全问题可以通过SynchronizedCache装饰类解决，该装饰类会在Cache实例构造期间被添加上。至于脏读问题，需要接祖其它类来处理，也就是上面代码中的 tcm 变量对应的类型。<br/>
 TransactionalCacheManager持有了cache，transactionalCache的关系，transactionalCache是一个缓存装饰器，为缓存提供事务能力。</p>
 
-<pre><code class="language-java">public class TransactionalCacheManager {
+<pre class="line-numbers"><code class="language-java">public class TransactionalCacheManager {
 
     private final Map&lt;Cache, TransactionalCache&gt; transactionalCaches = new HashMap&lt;&gt;();
 
@@ -463,7 +463,7 @@ TransactionalCacheManager持有了cache，transactionalCache的关系，transact
 
 <p>TransactionalCache 事务缓存装饰器。</p>
 
-<pre><code class="language-java">public class TransactionalCache implements Cache {
+<pre class="line-numbers"><code class="language-java">public class TransactionalCache implements Cache {
 
     private static final Log log = LogFactory.getLog(TransactionalCache.class);
 

@@ -122,7 +122,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 <p>依赖<br/>
 如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
 
-<pre><code class="language-markup">&lt;dependency&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
     &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
 &lt;/dependency&gt;
@@ -130,7 +130,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <p>如果是Spring Mvc，那可以直接添加hibernate-validator依赖</p>
 
-<pre><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
+<pre class="line-numbers"><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
     &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
     &lt;version&gt;6.0.17.Final&lt;/version&gt;
 &lt;/dependency&gt;
@@ -140,7 +140,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <p>先给我们的Java对象添加约束注解</p>
 
-<pre><code class="language-java">@Data
+<pre class="line-numbers"><code class="language-java">@Data
 @AllArgsConstructor
 public class User {
 
@@ -165,7 +165,7 @@ public class User {
 
 <p>验证实体实例需要先获取Validator实例</p>
 
-<pre><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+<pre class="line-numbers"><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 validator = factory.getValidator();
 </code></pre>
 
@@ -177,7 +177,7 @@ validator = factory.getValidator();
 <li>Validator#validateValue()         检查给定类的单个属性是否可以成功验证</li>
 </ul>
 
-<pre><code class="language-java">public class UserTest {
+<pre class="line-numbers"><code class="language-java">public class UserTest {
     private static Validator validator;
     @BeforeAll
     public static void setUpValidator() {
@@ -205,7 +205,7 @@ validator = factory.getValidator();
 
 <p>测试结果</p>
 
-<pre><code class="language-text">不能为空
+<pre class="line-numbers"><code class="language-text">不能为空
 最大不能超过10
 需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
 不能为null
@@ -217,7 +217,7 @@ validator = factory.getValidator();
 
 <p>从Bean Validation 1.1开始，约束不仅可以应用于JavaBean及其属性，而且可以应用于任何Java类型的方法和构造函数的参数和返回值，这里简单看一个例子</p>
 
-<pre><code class="language-java">public class RentalStation {
+<pre class="line-numbers"><code class="language-java">public class RentalStation {
 
     public RentalStation(@NotNull String name) {
         //...
@@ -238,7 +238,7 @@ validator = factory.getValidator();
 
 <p>ExecutableValidator接口可以完成方法约束的验证</p>
 
-<pre><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+<pre class="line-numbers"><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 executableValidator = factory.getValidator().forExecutables();
 </code></pre>
 
@@ -249,7 +249,7 @@ executableValidator = factory.getValidator().forExecutables();
 <li>validateConstructorParameters()和validateConstructorReturnValue()用于构造函数验证</li>
 </ul>
 
-<pre><code class="language-java">public class RentalStationTest {
+<pre class="line-numbers"><code class="language-java">public class RentalStationTest {
 
     private static ExecutableValidator executableValidator;
 
@@ -275,7 +275,7 @@ executableValidator = factory.getValidator().forExecutables();
 
 <p>测试结果</p>
 
-<pre><code class="language-text">需要是一个将来的时间
+<pre class="line-numbers"><code class="language-text">需要是一个将来的时间
 最小不能小于1
 </code></pre>
 
@@ -530,7 +530,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 那么下面就直接来定义一个简单的验证手机号码的注解</li>
 </ul>
 
-<pre><code class="language-java">@Documented
+<pre class="line-numbers"><code class="language-java">@Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Constraint(validatedBy = {MobileValidator.class})
 @Retention(RUNTIME)
@@ -567,7 +567,7 @@ public @interface Mobile {
 @Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</li>
 </ul>
 
-<pre><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
+<pre class="line-numbers"><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
 
     /**
      * 手机验证规则
@@ -594,7 +594,7 @@ public @interface Mobile {
 Bean验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释<br/>
 到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
 
-<pre><code class="language-java">public class MobileTest {
+<pre class="line-numbers"><code class="language-java">public class MobileTest {
 
     public void setMobile(@Mobile String mobile){
         // to do
@@ -633,7 +633,7 @@ public interface AddGroup {<br/>
 复制代码<br/>
 然后对我们的User对象的id属性做分组标识</p>
 
-<pre><code class="language-java">@Data
+<pre class="line-numbers"><code class="language-java">@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -663,7 +663,7 @@ public void validatorGroupTest() {
 
 <p>上面的测试只有加了UpdateGroug分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
 
-<pre><code class="language-java">public interface AddGroup extends Default {
+<pre class="line-numbers"><code class="language-java">public interface AddGroup extends Default {
 }
 </code></pre>
 
@@ -672,7 +672,7 @@ public void validatorGroupTest() {
 spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的<br/>
 配置Validator</p>
 
-<pre><code class="language-java">@Configuration
+<pre class="line-numbers"><code class="language-java">@Configuration
 public class ValidatorConfig {
 
     /**
@@ -696,7 +696,7 @@ public class ValidatorConfig {
 <p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息<br/>
 如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
 
-<pre><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
 
 &lt;!-- validator基本配置 --&gt;
 &lt;bean id=&quot;validator&quot; class=&quot;org.springframework.validation.beanvalidation.LocalValidatorFactoryBean&quot;&gt;
@@ -721,7 +721,7 @@ public class ValidatorConfig {
 <p>请求参数bean验证<br/>
 接口上的Bean验证，需要在参数前加上@Valid或Spring的 @Validated注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出BindException异常，并变成400（BAD_REQUEST）响应；或者可以通过Errors或BindingResult参数在控制器内本地处理验证错误。另外，如果参数前有@RequestBody注解，验证错误会抛出MethodArgumentNotValidException异常。</p>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 @RestController
 public class UserController {
 
@@ -769,7 +769,7 @@ public class UserController {
 
 <p>配合Spring的BindingResult参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
 
-<pre><code class="language-java">@Slf4j
+<pre class="line-numbers"><code class="language-java">@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -809,7 +809,7 @@ public class GlobalExceptionHandler {
 <p>Hibernate Validator是可以在方法级验证参数的，Spring中当然也是有实现的。<br/>
 我们在Validator的配置中，添加MethodValidationPostProcessorBean，在上面的ValidatorConfig.java中添加一下配置</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 设置方法参数验证器
  */
 @Bean
@@ -823,7 +823,7 @@ public MethodValidationPostProcessor methodValidationPostProcessor() {
 
 <p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller里面是无效的</p>
 
-<pre><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
 &lt;bean id=&quot;methodValidationPostProcessor&quot; class=&quot;org.springframework.validation.beanvalidation.MethodValidationPostProcessor&quot;&gt;
     &lt;property name=&quot;validator&quot; ref=&quot;validator&quot;/&gt;
 &lt;/bean&gt;
@@ -833,7 +833,7 @@ public MethodValidationPostProcessor methodValidationPostProcessor() {
 
 <p>配置了上面的MethodValidationPostProcessor，我们就可以在方法参数或返回值使用约束注解了，要注意的是，在要使用参数验证的类上一定要加上@Validated注解，否则无效</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 一定要加上 `@Validated` 注解
  */
 @Validated
@@ -850,7 +850,7 @@ public class UserController {
 
 <p>如果验证不通过，会抛出ConstraintViolationException异常，同样的，我们可以在全局的异常处理器里面处理验证错误，在GlobalExceptionHandler中添加一下代码</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * spring validator 方法参数验证异常拦截
  *
  * @param e 绑定验证异常
@@ -869,7 +869,7 @@ public R defaultErrorHandler(ConstraintViolationException e) {
 <p>分组<br/>
 Spring的@Validate注解是可以支持分组验证的</p>
 
-<pre><code class="language-java">@PostMapping(&quot;/user&quot;)
+<pre class="line-numbers"><code class="language-java">@PostMapping(&quot;/user&quot;)
 public R handle(@Validated(AddGroup.class) @RequestBody User user) {
     // ...
     return R.success();

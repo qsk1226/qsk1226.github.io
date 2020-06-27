@@ -124,7 +124,7 @@
 <li>要查看主机名相关的设置：</li>
 </ol>
 
-<pre><code class="language-text">[godson@localhost ~]$ hostnamectl 
+<pre class="line-numbers"><code class="language-text">[godson@localhost ~]$ hostnamectl 
    Static hostname: localhost.localdomain
          Icon name: computer-vm
            Chassis: vm
@@ -141,7 +141,7 @@
 <li>只查看静态、瞬态或灵活主机名，分别使用“--static”，“--transient”或“--pretty”选项。</li>
 </ol>
 
-<pre><code class="language-text">[godson@localhost ~]$ hostnamectl --static
+<pre class="line-numbers"><code class="language-text">[godson@localhost ~]$ hostnamectl --static
 localhost.localdomain
 [[godson@localhost ~]$ hostnamectl --transient
 localhost.localdomain
@@ -152,7 +152,7 @@ localhost.localdomain
 <li>要同时修改所有三个主机名：静态、瞬态和灵活主机名：</li>
 </ol>
 
-<pre><code class="language-text">[godson@localhost ~]$ se
+<pre class="line-numbers"><code class="language-text">[godson@localhost ~]$ se
 [godson@localhost ~]$ hostnamectl --pretty
 godson
 [godson@localhost ~]$ hostnamectl --static
@@ -167,7 +167,7 @@ godson
 <li>手动更新/etc/hosts</li>
 </ol>
 
-<pre><code class="language-text">[godson@localhost ~]$ vim /etc/hosts
+<pre class="line-numbers"><code class="language-text">[godson@localhost ~]$ vim /etc/hosts
 127.0.0.1      godson
 #127.0.0.1  localhost localhost.localdomain localhost4 localhost4.localdomain
 ::1        localhost localhost.localdomain localhost6 localhost6.localdomain
@@ -177,7 +177,7 @@ godson
 <li>重启CentOS 7 之后</li>
 </ol>
 
-<pre><code class="language-text">[godson@godson ~]# hostname
+<pre class="line-numbers"><code class="language-text">[godson@godson ~]# hostname
 godson
 [godson@godson ~]# hostnamectl --transient
 godson

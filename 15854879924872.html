@@ -148,7 +148,7 @@ Docker利用容器来进行开发，运行应用。容器是镜像创建的实�
 
 <p>1、删除 Linux 机器上已存在的 docker 程序</p>
 
-<pre><code class="language-text">&gt; sudo yum list installed | grep docker
+<pre class="line-numbers"><code class="language-text">&gt; sudo yum list installed | grep docker
 &gt; sudo yum  -y remove docker \
                   docker-client \
                   docker-client-latest \
@@ -163,7 +163,7 @@ Docker利用容器来进行开发，运行应用。容器是镜像创建的实�
 
 <p>删除 docker 老的镜像</p>
 
-<pre><code class="language-text">&gt; rm -rf /var/lib/docker
+<pre class="line-numbers"><code class="language-text">&gt; rm -rf /var/lib/docker
 </code></pre>
 
 <p>2、安装 docker 程序</p>
@@ -178,7 +178,7 @@ yum list docker-ce --showduplicates | sort -r</p></li>
 <li><p>安装 docker</p></li>
 </ul>
 
-<pre><code class="language-text">sudo yum install docker-ce(最新版)
+<pre class="line-numbers"><code class="language-text">sudo yum install docker-ce(最新版)
 
 sudo yum install -y containerd.io-1.2.13-3.1.el7 docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7(指定版本)
 </code></pre>
@@ -207,14 +207,14 @@ systemctl restart docker</p></li>
 
 <p>用非 root 账户安装完 docker 之后会,执行 docker 命令会遇到这样一个问题：</p>
 
-<pre><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+<pre class="line-numbers"><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
 </code></pre>
 
 <p>原因： docker进程使用Unix Socket而不是TCP端口。而默认情况下，Unix socket属于root用户，需要root权限才能访问。</p>
 
 <p>解决方法：</p>
 
-<pre><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
+<pre class="line-numbers"><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
 &gt; sudo gpasswd -a $USER docker     #将登陆用户加入到docker用户组中
 &gt; newgrp docker     #更新用户组
 &gt; docker ps    #测试docker命令是否可以使用sudo正常使用

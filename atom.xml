@@ -4,13 +4,1007 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-06-17T14:11:34+08:00</updated>
+  <updated>2020-06-27T22:36:04+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[Redis 数据结构与命令]]></title>
+    <link href="http://www.throne4j.com/15930711977940.html"/>
+    <updated>2020-06-25T15:46:37+08:00</updated>
+    <id>http://www.throne4j.com/15930711977940.html</id>
+    <content type="html"><![CDATA[
+<p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
+
+<p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
+
+<h2 id="toc_0">一、对象结构体 robj</h2>
+
+<p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br/>
+robj结构体如下所示：</p>
+
+<pre class="line-numbers"><code class="language-c">typedef struct redisObject {     
+    unsigned type:4;    // 对象类型
+    unsigned encoding:4;    // 对象编码
+    unsigned lru:LRU_BITS;  //缓存淘汰使用, 占24比特
+    int refcount;   //存储当前对象的引用次数，用于实现对象的共享    
+    void *ptr;  //指向实际存储的某一种数据结构
+} robj;
+</code></pre>
+
+<h4 id="toc_1">结构体robj的type字段表示对象类型，由 encoding 字段决定。</h4>
+
+<pre class="line-numbers"><code class="language-c">#define OBJ_STRING 0
+#define OBJ_LIST 1
+#define OBJ_SET 2
+#define OBJ_ZSET 3
+#define OBJ_HASH 4
+</code></pre>
+
+<h4 id="toc_2">结构体 robj 的 encoding</h4>
+
+<p>结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p>
+
+<table>
+<thead>
+<tr>
+<th>编码常量</th>
+<th>编码所对应的底层数据结构</th>
+<th>可存储对象类型</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>OBJ_ENCODING_INT</td>
+<td>long类型的整数</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_EMBSTR</td>
+<td>embstr编码的简单动态字符串</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_RAW</td>
+<td>简单动态字符串</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_Quicklist</td>
+<td>快速列表</td>
+<td>列表</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_HT</td>
+<td>字典</td>
+<td>集合、散列表、有序集合</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_ZIPLIST</td>
+<td>压缩列表</td>
+<td>散列表、有序集合</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_INTSET</td>
+<td>整数集合</td>
+<td>集合</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_SKIPLIST</td>
+<td>跳跃表和字典</td>
+<td>有序集合</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_STREAM</td>
+<td>stream</td>
+<td>stream</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_LINKEDLIST</td>
+<td>双端链表(不再使用)</td>
+<td>不再使用</td>
+</tr>
+<tr>
+<td>OBJ_ENCODING_ZIPMAP</td>
+<td>未使用</td>
+<td>未使用</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="toc_3">结构体 robj 的ptr</h4>
+
+<p>ptr是void* 类型的指针，指向实际存储的某一种数据结构。</p>
+
+<h4 id="toc_4">结构体 robj 的 refcount</h4>
+
+<p>refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。</p>
+
+<h4 id="toc_5">结构体 robj 的 lru</h4>
+
+<p>用于实现缓存淘汰策略，可以在配置文件中使用maxmemory-policy配置已用内存达到最大内存限制时的缓存淘汰策略。lru根据用户配置的缓存淘汰策略存储不同数据，常用的策略就是LRU与LFU。lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</p>
+
+<hr/>
+
+<h2 id="toc_6">二、Redis 底层基本数据结构</h2>
+
+<p>Redis  自己实现了底层的数据结构，简单动态字符串、跳跃表、压缩列表、字典、整数集合、quicklist、stream</p>
+
+<table>
+<thead>
+<tr>
+<th>底层数据结构</th>
+<th>可存储对象类型</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>简单动态字符串</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>quickList</td>
+<td>快速列表</td>
+</tr>
+<tr>
+<td>字典</td>
+<td>字典</td>
+</tr>
+<tr>
+<td>压缩列表</td>
+<td>列表、散列表、有序集合</td>
+</tr>
+<tr>
+<td>整数集合</td>
+<td>集合</td>
+</tr>
+<tr>
+<td>跳跃表</td>
+<td>有序集合</td>
+</tr>
+<tr>
+<td>stream</td>
+<td>stream</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_7">简单动态字符串 SDS</h3>
+
+<p>简单动态字符串（Simple Dynamic Strings，SDS）是Redis的基本数据结构之一，用于存储字符串和整型数据。SDS兼容C语言标准字符串处理函数，且在此基础上保证了二进制安全。</p>
+
+<pre class="line-numbers"><code class="language-c">struct __attribute__ ((__packed__))sdshdr5 {     
+    unsigned char flags; /* 低3位存储类型, 高5位存储长度 */
+    char buf[];/*柔性数组，存放实际内容*/ 
+};
+struct __attribute__((__packed__))sdshdr8 {     
+    uint8_t len; /* 已使用长度，用1字节存储 */    
+     uint8_t alloc; /* 总长度，用1字节存储*/     
+     unsigned char flags; /* 低3位存储类型, 高5位预留 */    
+      char buf[];/*柔性数组，存放实际内容*/ 
+};
+ struct __attribute__((__packed__))sdshdr16 {    
+    uint16_t len; /*已使用长度，用2字节存储*/     
+    uint16_t alloc; /* 总长度，用2字节存储*/     
+    unsigned char flags; /* 低3位存储类型, 高5位预留 */     
+    char buf[];/*柔性数组，存放实际内容*/ 
+}; 
+struct __attribute__((__packed__))sdshdr32 {     
+    uint32_t len; /*已使用长度，用4字节存储*/     
+    uint32_t alloc; /* 总长度，用4字节存储*/    
+    unsigned char flags;/* 低3位存储类型, 高5位预留 */     
+    char buf[];/*柔性数组，存放实际内容*/ 
+};
+struct __attribute__((__packed__))sdshdr64 {     
+    uint64_t len; /*已使用长度，用8字节存储*/     
+    uint64_t alloc; /* 总长度，用8字节存储*/     
+    unsigned char flags; /* 低3位存储类型, 高5位预留 */     
+    char buf[];/*柔性数组，存放实际内容*/ 
+};
+</code></pre>
+
+<p>(1) SDS如何兼容C语言字符串？如何保证二进制安全？SDS对象中的buf是一个柔性数组，上层调用时，SDS直接返回了buf。由于buf是直接指向内容的指针，故兼容C语言函数。而当真正读取内容时，SDS会通过len来限制读取长度，而非“\0”，保证了二进制安全。<br/>
+(2) sdshdr5的特殊之处是什么？sdshdr5只负责存储小于32字节的字符串。一般情况下，小字符串的存储更普遍，故Redis进一步压缩了sdshdr5的数据结构，将sdshdr5的类型和长度放入了同一个属性中，用flags的低3位存储类型，高5位存储长度。创建空字符串时，sdshdr5会被sdshdr8替代。<br/>
+(3) SDS是如何扩容的？SDS在涉及字符串修改处会调用sdsMakeroomFor函数进行检查，根据不同情况动态扩容，该操作对上层透明。</p>
+
+<h3 id="toc_8">-  跳跃表 zskiplist</h3>
+
+<p>通过将有序集合的部分节点分层，由最上层开始依次向后查找，如果本层的next节点大于要查找的值或next节点为NULL，则从本节点开始，降低一层继续向后查找，依次类推，如果找到则返回节点；否则返回NULL。采用该原理查找节点，在节点数量比较多时，可以跳过一些节点，查询效率大大提升，这就是跳跃表的基本思想。</p>
+
+<p>跳跃表存储结构如下图所示：<br/>
+<img src="media/15930711977940/15932648695005.jpg" alt="跳跃表存储结构"/></p>
+
+<p>接下来看下跳跃表的数据结构 </p>
+
+<pre class="line-numbers"><code class="language-c">// 定义了skiplist的节点结构
+typedef struct zskiplistNode {    
+    sds ele;    //用于存储字符串类型的数据
+    double score;   //用于存储排序的分支
+    struct zskiplistNode *backward;     //后退指针，只能执行当前节点最底层的前一个节点，头节点和第一个节点的backward指向NULL，从后向前遍历跳跃表时使用
+    struct zskiplistLevel {
+        struct zskiplistNode *forward;      //指向本层下一个节点，尾结点的forward指向null
+        unsigned int span;      //forward 指向的节点与本节点之间的元素个数，span越大，跳过的节点个数越多。
+    } level[];      // 柔性数组，每个节点的数组长度不一样，在生成跳跃表节点时，随机生成一个 1~64 的值，值越大出现的概率越低
+} zskiplistNode;
+
+// 定义了真正的skiplist结构
+typedef struct zskiplist {     
+    struct zskiplistNode *header, *tail;    // 头指针header和尾指针tail
+    unsigned long length;   // 链表长度length，即链表包含的节点总数。创建的skiplist包含一个空的头指针，这个头指针不包含在length计数中
+    int level;  //skiplist的总层数，即所有节点层数的最大值
+} zskiplist;
+</code></pre>
+
+<p>所有节点是按照分值 score 从小到大的方式排序的，当有序集合的 score 相同时，节点会按照 ele 的字典序进行排序。</p>
+
+<h3 id="toc_9">压缩列表 ziplist</h3>
+
+<p>压缩列表ziplist本质上就是一个字节数组，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。</p>
+
+<h3 id="toc_10">字典</h3>
+
+<h3 id="toc_11">整数集合</h3>
+
+<h3 id="toc_12">quicklist</h3>
+
+<h3 id="toc_13">stream</h3>
+
+<hr/>
+
+<h2 id="toc_14">三、Redis数据类型</h2>
+
+<p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
+
+<table>
+<thead>
+<tr>
+<th>结构类型</th>
+<th>结构存储的值</th>
+<th>结构的读写能力</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>string</td>
+<td>可以使字符串、整数或者浮点数</td>
+<td>对整个字符串或字符串的一部分执行操作；对证书和浮点数执行自增、自减操作</td>
+</tr>
+<tr>
+<td>list</td>
+<td>底层由链表实现，每个节点都包含一个字符串</td>
+<td>从列表的两端推入或者弹出元素；根据偏移量对列表进行修改；读取单个或多个元素；根据值查询或者移除元素</td>
+</tr>
+<tr>
+<td>set</td>
+<td>不重复的无序集合</td>
+<td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
+</tr>
+<tr>
+<td>zset</td>
+<td>不可重复的有序集合，字符串成员(member)于浮点数分支(score)之间的有序映射，元素的排列顺序由分值的大小决定</td>
+<td>添加、获取、移除单个元素；根据分值范围(range)或者成员来获取元素</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>包含键值对的无序散列表</td>
+<td>添加、获取、移除单个键值对；获取所有键值对</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>关于key的几条建议</strong></p>
+
+<ul>
+<li>不建议太长的键值，原因：1、消耗内存；2、这类键值计算成本很高</li>
+<li>不建议太短的键值，设计键值要有良好的可读性，太短的话，看不懂就有点尴尬了</li>
+<li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
+</ul>
+
+<h3 id="toc_15">Redis 中的 string 字符串</h3>
+
+<p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
+
+<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。字符串值robj的type值为OBJ_STRING。当字符串值是string类型时，encoding的值根据字符串的长短分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
+
+<h3 id="toc_16">Redis 中的 list 列表</h3>
+
+<p>列表使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
+
+<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
+
+<h4 id="toc_17">Redis 链表结构如下：</h4>
+
+<pre class="line-numbers"><code class="language-c">typedef struct listNode{
+//前置节点
+struct listNode *prev
+//后置节点
+struct listNode *next
+// 节点值
+void *value
+}
+</code></pre>
+
+<h4 id="toc_18">Redis 链表实现的特性</h4>
+
+<ul>
+<li>双端<br/>
+链表节点带有prev和next指针，获取某个节点的前置节点和后置节点的复杂度都是O(1)</li>
+<li>无环<br/>
+表 头结点的prev指针和表尾的next指针都指向null，对链表的访问以null为终点</li>
+<li>带表头指针和表尾指针<br/>
+通过list结构的head指针和tail指针，程序获取链表的头结点和尾结点的复杂度为O(1)</li>
+<li>带链表长度计数器<br/>
+程序使用list结构的len属性来对list吃鱼哦的链表节点进行计数，程序获取链表中节点数量的复杂度为O(1)</li>
+<li>多态<br/>
+链表节点使用void* 指针来保存节点值，并且可以通过list结构的dup、free、match三个属性为节点值设置类型特定函数，所以链表可以用于存放各种不同类型的值</li>
+</ul>
+
+<h3 id="toc_19">Redis 中的 set 集合</h3>
+
+<h3 id="toc_20">Redis 中的 zset 集合</h3>
+
+<p>当有序集合或散列表的元素个数比较少，且元素都是短字符串时，Redis便使用压缩列表作为其底层数据存储结构<br/>
+跳跃表是 Redis 有序集合的底层实现之一，所以每个节点的 ele 存储的有序集合成员 member 值，score 存储成员 score 值。所有节点的分支是按从小到大的方式排序的，当有序集合的成员分值相同时，节点会按照 member 的字典序进行排序。</p>
+
+<hr/>
+
+<h2 id="toc_21">第三节、redis命令</h2>
+
+<p>Redis 服务的相关命令十分丰富，有种头疼的感觉，有意学习所有命令的同学查看网址<a href="http://www.redis.cn/commands.html">redis命令中心</a>，下面只记录一些常用的命令</p>
+
+<h3 id="toc_22">Redis 通用命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>keys parttern</td>
+<td>查看所有键</td>
+<td>keys *</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>dbsize</td>
+<td>查看键总数</td>
+<td>dbsize</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>expire key seconds</td>
+<td>设置键的过期时间</td>
+<td>expire mykey 10</td>
+<td>mykey键值对 10秒后过期</td>
+</tr>
+<tr>
+<td>persist key</td>
+<td>删除key的过期时间，使key长期有效</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ttl [key]</td>
+<td>查看键所剩的过期时间</td>
+<td>ttl mykey</td>
+<td>查看设置过期时间的键所剩过期时间还有几秒</td>
+</tr>
+<tr>
+<td>exists key</td>
+<td>查看key是否存在</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>flushall</td>
+<td>清除所有库的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>flushdb dbIndex</td>
+<td>清除指定index的库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>select dbIndex</td>
+<td>选定指定dbIndex的库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>type [key]</td>
+<td>查看键的数据结构类型</td>
+<td>type mykey</td>
+<td>键不存在返回 nil</td>
+</tr>
+<tr>
+<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
+<td>查看数据库的值对象编码</td>
+<td>object e</td>
+<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
+</tr>
+<tr>
+<td>rename key newkey</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>renamenx key newkey</td>
+<td>重命名后的key不存在时才能执行成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>scan cursor [MATCH parttern] [COUNT count]</td>
+<td></td>
+<td></td>
+<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
+</tr>
+<tr>
+<td>randomkey</td>
+<td>随机取键</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>del key [key ...</td>
+<td>同步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>unlink key [key ...]</td>
+<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>dump key</td>
+<td>序列化key并返回序列化后的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>restore key ttl serialized-value [replace]</td>
+<td>反序列化serialized-value，并与key关联</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>move key dbIndex</td>
+<td>将key移动到另一个数据库</td>
+<td>move mykey 3</td>
+<td>移动mykey到3号数据库</td>
+</tr>
+<tr>
+<td>migrate</td>
+<td>将指定 key 迁移到另一个 Redis 实例</td>
+<td></td>
+<td>用于运维数据迁移数据</td>
+</tr>
+<tr>
+<td>sort key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]</td>
+<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
+<td></td>
+<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
+</tr>
+</tbody>
+</table>
+
+<p>设置临时密码：</p>
+
+<pre class="line-numbers"><code class="language-cmd">config set requirepass 123456 
+</code></pre>
+
+<h3 id="toc_23">string 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>设置</td>
+<td>SET key value [NX] [XX] [EX seconds] [PX milliseconds]</td>
+<td>设置存储在给定键中的值</td>
+<td>set mykey  myvalue</td>
+<td>·NX： 当数据库中key不存在时，可以将key-value添加到数据库。·XX： 当数据库中key存在时，可以将key-value设置到数据库，与NX参数互斥。·EX： key的超时秒数。·PX： key的超时毫秒数，与EX参数互斥。</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>mset key value [key value ...]</td>
+<td>设置多个key-value，如果key之前存在，则使用新的value进行覆盖</td>
+<td>mset idear1 eat idear2 play</td>
+<td>设置键值对 idear1 : ear 、 idear2  : play</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setex key second value</td>
+<td>设置key-value并设置过期时间(单位：秒)</td>
+<td>setex mykey 10  hungry</td>
+<td>设置的mykey : hungry 10秒钟后过期，10秒后get mykey 返回 nil；</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setnx key value</td>
+<td>只有key不存在时才会设置key-value</td>
+<td>setnx mykey myvalue</td>
+<td>如果mykey不存在则设置，如果存在不执行覆盖操作</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>msetnx key value [key value ...]</td>
+<td>当所有的key都不存在时才会设置这些key-value</td>
+<td>msetnx mykey1 myvalue1 mykey2 myvalue2</td>
+<td>所有的key都不存在设置这些个key-value</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>get key</td>
+<td>获取存储在给定键中的值</td>
+<td>get mykey</td>
+<td>返回myvalue</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>mget key [key...]</td>
+<td>获取多个key</td>
+<td>mget mykey1 mykey2</td>
+<td>获取mykey1、mykey2的值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>getrange key start end</td>
+<td>获取存储在给定键中的值的某一段</td>
+<td>get mykey 0 -2</td>
+<td>返回myvalue 值递第一位置至倒数第二位置的value 值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>strlen</td>
+<td>获取指定key的长度</td>
+<td>strlen mykey</td>
+<td>复杂度为O(1)</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>append key value</td>
+<td>追加一个值到key上</td>
+<td>append mykey tony</td>
+<td>添加完tony之后运行get mykey 得到结果 myvalue tony</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>decr key</td>
+<td>整数原子减 1</td>
+<td>decr mykey</td>
+<td>如果mykey原先不存在，在减1之前，age会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>decrby key decrement</td>
+<td>整数原子减指定整数</td>
+<td>decrby mykey</td>
+<td>如果mykey原先不存在，在减decrement之前，mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>incr key</td>
+<td>整数原子加1</td>
+<td>incr mykey</td>
+<td>如果mykey原先不存在，在加1之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>incrby key increment</td>
+<td>整数原子加指定整数</td>
+<td>incrby mykey 10</td>
+<td>如果mykey原先不存在，在加increment之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>setrange key offset value</td>
+<td>覆盖key的value的offset之后的字符串</td>
+<td>setrange mykey 2 qu</td>
+<td>mykey之前的值是woca，执行此命令之后的结果就是woqu</td>
+</tr>
+<tr>
+<td>通用</td>
+<td>del key</td>
+<td>删除存储在给定键中的值</td>
+<td>del mykey</td>
+<td>删除 mykey 键</td>
+</tr>
+</tbody>
+</table>
+
+<p>此外还有一种字符串的位操作：<br/>
+位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
+
+<h3 id="toc_24">list 相关命令</h3>
+
+<p>每条命令操作之前 myList被设置为[list3,list2,list1]</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>blpop key [key ...] timeout</td>
+<td>lpop的阻塞版本</td>
+<td>blpop myList 0</td>
+<td>调用返回key和左边第一个元素的组合 myList、list3</td>
+</tr>
+<tr>
+<td>lindex key index</td>
+<td>通过列表索引获取key列表的value值, index  0：表示第一个元素； -1：表示最后一个元素；-2 ：表示倒数第二个原始</td>
+<td>lindex myList 0</td>
+<td>返回list3</td>
+</tr>
+<tr>
+<td>linsert key before/after pivot value</td>
+<td>把value插入myList 列表中在元素的的前面或后面</td>
+<td>linsert myList before  list2 beauty</td>
+<td>返回[list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>llen key</td>
+<td>获得列表的长度</td>
+<td>llen myList</td>
+<td>返回3</td>
+</tr>
+<tr>
+<td>lpop key</td>
+<td>从队列的左边出队一个元素</td>
+<td>lpop myList</td>
+<td>返回并删除了第一个元素list3</td>
+</tr>
+<tr>
+<td>lpush key value [value ...]</td>
+<td>从队列的左边入队一个或多个元素</td>
+<td>lpush myList list4 list 5</td>
+<td>value按照先后顺序插入到列表头，最后列表元素[list5,list4,list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>lpushx key vlaue</td>
+<td>当列表存在时，从列表左边入队一个元素</td>
+<td>lpushx myList1  hello</td>
+<td>myList1 不存在 元素插入不成功</td>
+</tr>
+<tr>
+<td>lrange key startIndex stopIndex</td>
+<td>从列表中获取指定位置范围内的元素</td>
+<td>lrange myList 0 1</td>
+<td>结果[list3,list2]</td>
+</tr>
+<tr>
+<td>lrem key count value</td>
+<td>从存于key的列表中移除前count个的值为value的元素，count&gt;0 :从头向尾移除置为value的元素；count&lt;0: 从尾向头移除置为value的元素；count=0： 移除所有值为value的元素</td>
+<td>lrem myList 1 list2</td>
+<td>[list3,list1]</td>
+</tr>
+<tr>
+<td>lset key index value</td>
+<td>设置列表里面的index位置的元素值</td>
+<td>lset myList 2 ghost</td>
+<td>列表更新为[list3,list2,ghost]</td>
+</tr>
+<tr>
+<td>ltrim key start stop</td>
+<td>修剪并保留指定范围内的元素</td>
+<td>ltrim myList 1 2</td>
+<td>列表被编辑为 [list2,list1]</td>
+</tr>
+<tr>
+<td>rpop key</td>
+<td>从列表右边出队并返回一个元素</td>
+<td>rpop myList</td>
+<td>列表被编辑为 [list3,list2]</td>
+</tr>
+<tr>
+<td>rpush key value [value ...]</td>
+<td>从列表右边入队一个或多个元素</td>
+<td>rpush myList niu</td>
+<td>列表被编辑为 [list3,list2,list1,niu]</td>
+</tr>
+<tr>
+<td>rpushx key value</td>
+<td>列表如果存在，则从列表右边入队一个元素</td>
+<td>rpushx myList leng</td>
+<td>列表被编辑为 [list3,list2,list1,leng]，如果myList不存在，啥都不干</td>
+</tr>
+<tr>
+<td>brpop key [key ...] timeout</td>
+<td>rpop的阻塞版本</td>
+<td>brpop myList</td>
+<td>没元素的话阻塞在key的列表上</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_25">set 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+<h3 id="toc_26">zset 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+<h3 id="toc_27">hash 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Redis快速入门]]></title>
+    <link href="http://www.throne4j.com/15929223279523.html"/>
+    <updated>2020-06-23T22:25:27+08:00</updated>
+    <id>http://www.throne4j.com/15929223279523.html</id>
+    <content type="html"><![CDATA[
+<p>此 Redis服务 采用 5.0+版本</p>
+
+<h2 id="toc_0">redis简介</h2>
+
+<p>redis是一个使用ANSI C语言编写的开源的基于内存的key-value高性能非关系型缓存数据库，它可以用作数据库、缓存和消息中间件。 它支持多种类型的数据结构，如 字符串（strings）， 散列（hashes）， 列表（lists）， 集合（sets）， 有序集合（sorted sets） 与范围查询， bitmaps， hyperloglogs 和 地理空间（geospatial） 索引半径查询。 Redis 内置了 复制（replication），LUA脚本（Lua scripting）， LRU驱动事件（LRU eviction），事务（transactions） 和不同级别的 磁盘持久化（persistence）， 并通过 Redis哨兵（Sentinel）和自动 分区（Cluster）提供高可用性（high availability）。</p>
+
+<h3 id="toc_1">Redis5.0版本新特性</h3>
+
+<ul>
+<li>新增Streams数据类型，可以把 Streams 当做消息队列</li>
+<li>新的模块 API 、定时器、集群集资点</li>
+<li>RDB 中持久化存储 LFU 和 LRU 的信息</li>
+<li>将集群管理功能完全用C语言集成到 redis-cli 中</li>
+<li> 有序集合新增命令 zpopmin/zpopmax</li>
+<li> 改进HyperLogLogs实现</li>
+<li> 新增 client unblock 和 client id</li>
+<li> 新增 lolwut 命令</li>
+<li> Redis主从复制中的从 不在成为Slaves，改称 Replicas</li>
+<li>引入动态哈希，一平衡 CPU 的利用率和相应性能，可以通过配置文件进行配置</li>
+<li>Redis 核心代码新型了部分重构和优化<br/>
+## Redis 可执行文件介绍<br/>
+| 名称  | 描述  | <br/>
+|---|---|<br/>
+|redis-server|启动redis|<br/>
+|redis-cli|redis命令行客户端|<br/>
+|redis-benchmark|基准测试工具|<br/>
+|redis-check-aof|AOF持久化文件检测和修复工具|<br/>
+|redis-check-rdb|RDB持久化文件检测和修复工具|<br/>
+|redis-sentinel|启动哨兵|<br/>
+|redis-trib|cluster集群构建工具|</li>
+</ul>
+
+<h2 id="toc_2">为什么使用 Redis</h2>
+
+<ul>
+<li>读写速度快<br/>
+数据存放在内存中，官方给出的读写性能可达到 10w/s
+<ul>
+<li>数据存放在内存中是速度快的主要原因</li>
+<li>C语言实现，与操作系统的距离近</li>
+<li>Redis 数据结构是专门设计的，增删改查等操作相对简单</li>
+<li>使用了单线程架构
+<ul>
+<li>避免多线程可能产生的线程切换和竞争产生的资源消耗；</li>
+<li>采用多路复用IO模型（select、poll、epoll）可以高效的处理大量并发连接；<br/>
+Redis 命令的执行过程： 发送指令 --&gt; 执行指令 --&gt; 返回结果；<br/>
+执行指令： 单线程执行，所有的指令进入队列，按顺序执行，使用I/O多路复用技术解决一个线程处理多个连接的问题。</li>
+</ul></li>
+</ul></li>
+<li>键值对的value不仅可以是字符串，还可以是复杂的数据类型，如链表、集合、散列表等<br/></li>
+<li>丰富的功能  发布订阅、主从复制、持久化、脚本、事务等功能</li>
+<li>支持数据持久化，可以采用RDB、AOF、RDB&amp;AOF三种方案。计算机重启后可以在磁盘中进行数据恢复。 <br/>
+发生断电或机器故障，数据可能会丢失，持久化到磁盘</li>
+<li> 支持主从结构，可以利用从市里进行数据备份<br/>
+实现了多个相同数据的Redis副本，提高了系统的健壮性</li>
+<li>高可用和分布式<br/>
+哨兵机制实现高可用，保证redis节点故障发现和自动转移</li>
+<li>有多种语言的客户端</li>
+</ul>
+
+<p><strong>单线程架构</strong><br/>
+单线程架构预防了多线程可能产生的线程切换和竞争产生的资源消耗(多路复用IO的应用)<br/>
+Redis 命令的执行过程： 发送指令 --&gt; 执行指令 --&gt; 返回结果<br/>
+执行指令： 单线程执行，所有的指令进入队列，按顺序执行，使用I/O多路复用技术解决一个线程处理多个连接的问题。</p>
+
+<h2 id="toc_3">Redis与其他数据库之间的比较</h2>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>类型</th>
+<th>存储数据类型</th>
+<th>查询类型</th>
+<th>附加功能</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>redis</td>
+<td>使用内存存储的非关系型数据库</td>
+<td>字符串、列表、散列表、集合、有序集合</td>
+<td>每种数据类型都有自己专属命令，另外还有批量操作和不完全的事务支持</td>
+<td>发布订阅、主从复制、持久化、脚本(存储过程)</td>
+</tr>
+<tr>
+<td>memcached</td>
+<td>使用内存存储的键值缓存</td>
+<td>键值之间的映射</td>
+<td>创建、读取、更新、删除以及其他几个命令</td>
+<td>为提升性能而设计的多线程服务器</td>
+</tr>
+<tr>
+<td>MySql</td>
+<td>关系型数据库</td>
+<td>每个数据库可以包含多个表，每个表可以包含多行，可以处理多表视图，支持空间和第三方支持</td>
+<td>insert、select、update、delete、函数、存储过程</td>
+<td>支持ACID性质、主从复制、多主复制</td>
+</tr>
+<tr>
+<td>MongoDB</td>
+<td>使用硬盘存储的非关系的文档存储</td>
+<td>每个数据库可以包含多个表，每个表可以包含无schema的BSON文档</td>
+<td>创建、读取、更新、删除、条件查询命令</td>
+<td>支持map-reduce操作、主从复制、分片、空间索引</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_4">Redis的使用场景</h2>
+
+<p>redis的应用场景可以肆意的发挥想象力，以下是Redis 较为适用的一些场景</p>
+
+<ul>
+<li>缓存<br/>
+合理使用缓存加快数据访问速度，降低后端数据源压力</li>
+<li>排行榜<br/>
+按照热度、发布时间排行，主要用到列表和有序集合</li>
+<li>计数器  网站的浏览数等</li>
+<li>社交网络</li>
+<li>消息队列  发布订阅</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15929200774650.html"/>
+    <updated>2020-06-23T21:47:57+08:00</updated>
+    <id>http://www.throne4j.com/15929200774650.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[布隆过滤器原理]]></title>
+    <link href="http://www.throne4j.com/15928436000448.html"/>
+    <updated>2020-06-23T00:33:20+08:00</updated>
+    <id>http://www.throne4j.com/15928436000448.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[java 语法树]]></title>
+    <link href="http://www.throne4j.com/15925048146279.html"/>
+    <updated>2020-06-19T02:26:54+08:00</updated>
+    <id>http://www.throne4j.com/15925048146279.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15925030861213.html"/>
+    <updated>2020-06-19T01:58:06+08:00</updated>
+    <id>http://www.throne4j.com/15925030861213.html</id>
+    <content type="html"><![CDATA[
+<ul>
+<li>id: Bean的唯一标识名。它必须是合法的XML id，在整个XML文档中唯一。</li>
+<li>name:用来为id创建一个或多个别名。它可以是任意的字母符合。多个别名之间用逗号或空格分开。</li>
+<li>class:用来定义类的全限定名（包名＋类名）。只有子类Bean不用定义该属性。</li>
+<li>parent:子类Bean定义它所引用它的父类Bean。这时前面的class属性失效。子类Bean会继承父类Bean的所有属性，子类Bean也可以覆盖父类Bean的属性。注意：子类Bean和父类Bean是同一个Java类。</li>
+<li>abstract（默认为”false”）：用来定义Bean是否为抽象Bean。它表示这个Bean将不会被实例化，一般用于父类Bean，因为父类Bean主要是供子类Bean继承使用。</li>
+<li>singleton（默认为“true”）：定义Bean是否是Singleton（单例）。如果设为“true”,则在BeanFactory作用范围内，只维护此Bean的一个实例。如果设为“flase”，Bean将是Prototype（原型）状态，BeanFactory将为每次Bean请求创建一个新的Bean实例。</li>
+<li>lazy-init（默认为“default”）：用来定义这个Bean是否实现懒初始化。如果为“true”，它将在BeanFactory启动时初始化所有的SingletonBean。反之，如果为“false”,它只在Bean请求时才开始创建SingletonBean。</li>
+<li><p>autowire（自动装配，默认为“default”）：它定义了Bean的自动装载方式。</p>
+<ul>
+<li>“no”:不使用自动装配功能。</li>
+<li>“byName”:通过Bean的属性名实现自动装配。</li>
+<li>“byType”:通过Bean的类型实现自动装配。</li>
+<li>“constructor”:类似于byType，但它是用于构造函数的参数的自动组装。</li>
+<li>“autodetect”:通过Bean类的反省机制（introspection）决定是使用“constructor”还是使用“byType”。</li>
+</ul></li>
+<li><p>dependency-check（依赖检查，默认为“default”）：它用来确保Bean组件通过JavaBean描述的所有依赖关系都得到满足。在与自动装配功能一起使用时，它特别有用。</p>
+<ul>
+<li>none：不进行依赖检查。</li>
+<li>objects：只做对象间依赖的检查。</li>
+<li>simple：只做原始类型和String类型依赖的检查</li>
+<li>all：对所有类型的依赖进行检查。它包括了前面的objects和simple。</li>
+</ul></li>
+<li><p>depends-on（依赖对象）：这个Bean在初始化时依赖的对象，这个对象会在这个Bean初始化之前创建。</p></li>
+<li><p>init-method:用来定义Bean的初始化方法，它会在Bean组装之后调用。它必须是一个无参数的方法。</p></li>
+<li><p>destroy-method：用来定义Bean的销毁方法，它在BeanFactory关闭时调用。同样，它也必须是一个无参数的方法。它只能应用于singletonBean。</p></li>
+<li><p>factory-method：定义创建该Bean对象的工厂方法。它用于下面的“factory-bean”，表示这个Bean是通过工厂方法创建。此时，“class”属性失效。</p></li>
+<li><p>factory-bean:定义创建该Bean对象的工厂类。如果使用了“factory-bean”则“class”属性失效。</p></li>
+<li><p>autowire-candidate：采用xml格式配置bean时，将<bean/>元素的autowire-candidate属性设置为false，这样容器在查找自动装配对象时，将不考虑该bean，即它不会被考虑作为其它bean自动装配的候选者，但是该bean本身还是可以使用自动装配来注入其它bean的。</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JVM 类加载机制]]></title>
@@ -27,26 +1021,60 @@
 此阶段完成三件事。</p>
 
 <ul>
-<li>通过一个类的全限定名来获取定义此类的二进制字节流。</li>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流(可以来自zip、war等压缩包，网络，动态生成，数据库等)。</li>
 <li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
-<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入 口。</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口。</li>
+</ul>
+
+<p>加载阶段既可以使用Java虚拟机里内置的引导类加载器来完成，也可以由用户自定义的类加载器去完成。</p>
+
+<p>对于数组类而言，情况就有所不同，数组类本身不通过类加载器创建，它是由Java虚拟机直接在 内存中动态构造出来的。但是数组的元素类型还是需要通过类加载器来完成加载。</p>
+
+<ul>
+<li>如果数组的组件类型是引用类型，那就递归采用本节中定义的加载过程去加载这个组件类型，数组C将被标 识在加载该组件类型的类加载器的类名称空间上(一个类型必须与类加 载器一起确定唯一性)</li>
+<li>如果数组的组件类型不是引用类型(例如int[]数组的组件类型为int)，Java虚拟机将会把数组C标记为与引导类加载器关联。</li>
+<li>数组类的可访问性与它的组件类型的可访问性一致，如果组件类型不是引用类型，它的数组类的可访问性将默认为public，可被所有的类和接口访问到。</li>
 </ul>
 
 <h2 id="toc_1">验证</h2>
 
-<p>确保Class文件的字节流中包含的信息是否符合当前虚拟机要求</p>
+<p>确保Class文件的字节流中包含的信息是否符合当前虚拟机要求.</p>
+
+<ul>
+<li>class文件格式验证</li>
+<li><p>元数据验证</p>
+<ul>
+<li>这个类是否有父类(除了java.lang.Object之外，所有的类都应当有父类)。</li>
+<li>这个类的父类是否继承了不允许被继承的类(被final修饰的类)。</li>
+<li>如果这个类不是抽象类，是否实现了其父类或接口之中要求实现的所有方法。</li>
+<li>类中的字段、方法是否与父类产生矛盾(例如覆盖了父类的final字段，或者出现不符合规则的方 法重载，例如方法参数都一致，但返回值类型却不同等)。</li>
+</ul></li>
+<li><p>字节码验证<br/>
+主要目的是通过数据流分析和控制流分析，确定 程序语义是合法的、符合逻辑的</p></li>
+<li><p>符号引用验证</p>
+<ul>
+<li>符号引用中通过字符串描述的全限定名是否能找到对应的类。</li>
+<li>在指定类中是否存在符合方法的字段描述符及简单名称所描述的方法和字段。</li>
+<li>符号引用中的类、字段、方法的可访问性(private、protected、public、<package>)是否可被当 前类访问。<br/>
+阶段的校验行为发生在虚拟机将符号引用转化为直接引用[3]的时候，这个转化动作将在 连接的第三阶段——解析阶段中发生,此阶段的目的是保证解析能够正常执行。</li>
+</ul></li>
+</ul>
 
 <h2 id="toc_2">准备</h2>
 
-<p>正式为类变量分配内存并设置类变量的初始值阶段，即在方法区中分配这些变量所使用的的内存空间。</p>
+<p>准备阶段是正式为类中定义的<strong>变量(即静态变量，被static修饰的变量)分配内存并设置类变量初始值</strong>的阶段。</p>
+
+<p><strong><em>注意</em></strong> ： 关于准备阶段，还有两个容易产生混淆的概念笔者需要着重强调，首先是这时候进行内存分配的 仅包括类变量，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。其次是这里所说的初始值“通常情况”下是数据类型的零值，</p>
 
 <h2 id="toc_3">解析</h2>
 
 <p>虚拟机将常量池中的符号引用替换为直接引用的过程</p>
 
 <ul>
-<li>符号引用：class文件中的CONSTANT_CLASS_INFO、CONSTANT_FIELD_INFO、CONSTANT_METHOD_INFO等类型的常量，符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。各种虚拟机实现的内存布局可以各不相同，但是他们能接受的符号引用必须是一致的，因为符号引用的字面量形式明确定义在java虚拟机规范的Class文件格式中</li>
-<li>直接引用：可以是执行目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经存在于内存中</li>
+<li><p>符号引用<br/>
+符号引用以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可（class文件中的CONSTANT_CLASS_INFO、CONSTANT_FIELD_INFO、CONSTANT_METHOD_INFO等类型的常量），符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。<br/>
+各种虚拟机实现的内存布局可以各不相同，但是他们能接受的符号引用必须是一致的，因为符号引用的字面量形式明确定义在java虚拟机规范的Class文件格式中</p></li>
+<li><p>直接引用：可以是执行目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经存在于内存中。</p></li>
 </ul>
 
 <h2 id="toc_4">初始化</h2>
@@ -93,6 +1121,51 @@
     <updated>2020-06-10T22:31:35+08:00</updated>
     <id>http://www.throne4j.com/15917994951575.html</id>
     <content type="html"><![CDATA[
+<p>WebMvcConfigurer<br/>
+跨域--&gt; WebMvcConfigurer#addCorsMappings(CorsRegistry registry)</p>
+
+<p>HandlerInterceptor<br/>
+WebRequestInterceptor</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#addDefaultHttpMessageConverters</p>
+
+<hr/>
+
+<p>WebMvcConfigurationSupport#requestMappingHandlerMapping</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcPathMatcher</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcUrlPathHelper</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcContentNegotiationManager</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#viewControllerHandlerMapping</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#beanNameHandlerMapping</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#resourceHandlerMapping</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcResourceUrlProvider</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#defaultServletHandlerMapping</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#requestMappingHandlerAdapter</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcConversionService</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcValidator</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcUriComponentsContributor</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#httpRequestHandlerAdapter</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#simpleControllerHandlerAdapter</p>
+
+<p><strong>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#handlerExceptionResolver</strong></p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcViewResolver</p>
+
+<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcHandlerMappingIntrospector</p>
 
 ]]></content>
   </entry>
@@ -165,7 +1238,7 @@
 
 <h2 id="toc_4">代码示例</h2>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 抽象观察者
  **/
@@ -191,7 +1264,7 @@ public class GuardianObserver implements Observer {
 }
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 抽象被观察者
  **/
@@ -238,7 +1311,7 @@ public class SubscriptionSubject implements Subject {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 观察者模式客户端
  **/
 public class Client {
@@ -300,7 +1373,7 @@ public class Client {
 
 <h2 id="toc_2">代码示例</h2>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 抽象车辆,组件间、装饰者、被装饰者的超类
  * 抽象构件
  **/
@@ -318,7 +1391,7 @@ public abstract class AbsCar {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 被装饰的对象
  * 具体构件
  **/
@@ -337,7 +1410,7 @@ public class NormalCar extends AbsCar{
 
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 抽象装饰类
  **/
@@ -417,7 +1490,7 @@ public class OutWardDecorator extends AbsDecorator {
 
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 装饰者客户端
  **/
 public class DecoratorClient {
@@ -520,7 +1593,7 @@ public class DecoratorClient {
 
 <h2 id="toc_3">实例代码</h2>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 抽象处理类
  **/
@@ -542,7 +1615,7 @@ public abstract class Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 主管处理这
  **/
@@ -572,7 +1645,7 @@ public class DirectorHandler extends Handler {
 
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 经理
  **/
 public class ManagerHandler extends Handler {
@@ -600,7 +1673,7 @@ public class ManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * 总经理
  **/
@@ -625,7 +1698,7 @@ public class TopManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 请求
  **/
 @Data
@@ -636,7 +1709,7 @@ public class LeaveRequest {
 }
 </code></pre>
 
-<pre><code class="language-java">public class ChainClient {
+<pre class="line-numbers"><code class="language-java">public class ChainClient {
     public static void main(String[] args) {
         Handler topManagerHandler = new TopManagerHandler(&quot;狗蛋&quot;);
         Handler managerHandler = new ManagerHandler(&quot;饭桶&quot;, topManagerHandler);
@@ -671,7 +1744,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 <p>依赖<br/>
 如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
 
-<pre><code class="language-markup">&lt;dependency&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
     &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
 &lt;/dependency&gt;
@@ -679,7 +1752,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <p>如果是Spring Mvc，那可以直接添加hibernate-validator依赖</p>
 
-<pre><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
+<pre class="line-numbers"><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
     &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
     &lt;version&gt;6.0.17.Final&lt;/version&gt;
 &lt;/dependency&gt;
@@ -689,7 +1762,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <p>先给我们的Java对象添加约束注解</p>
 
-<pre><code class="language-java">@Data
+<pre class="line-numbers"><code class="language-java">@Data
 @AllArgsConstructor
 public class User {
 
@@ -714,7 +1787,7 @@ public class User {
 
 <p>验证实体实例需要先获取Validator实例</p>
 
-<pre><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+<pre class="line-numbers"><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 validator = factory.getValidator();
 </code></pre>
 
@@ -726,7 +1799,7 @@ validator = factory.getValidator();
 <li>Validator#validateValue()         检查给定类的单个属性是否可以成功验证</li>
 </ul>
 
-<pre><code class="language-java">public class UserTest {
+<pre class="line-numbers"><code class="language-java">public class UserTest {
     private static Validator validator;
     @BeforeAll
     public static void setUpValidator() {
@@ -754,7 +1827,7 @@ validator = factory.getValidator();
 
 <p>测试结果</p>
 
-<pre><code class="language-text">不能为空
+<pre class="line-numbers"><code class="language-text">不能为空
 最大不能超过10
 需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
 不能为null
@@ -766,7 +1839,7 @@ validator = factory.getValidator();
 
 <p>从Bean Validation 1.1开始，约束不仅可以应用于JavaBean及其属性，而且可以应用于任何Java类型的方法和构造函数的参数和返回值，这里简单看一个例子</p>
 
-<pre><code class="language-java">public class RentalStation {
+<pre class="line-numbers"><code class="language-java">public class RentalStation {
 
     public RentalStation(@NotNull String name) {
         //...
@@ -787,7 +1860,7 @@ validator = factory.getValidator();
 
 <p>ExecutableValidator接口可以完成方法约束的验证</p>
 
-<pre><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+<pre class="line-numbers"><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 executableValidator = factory.getValidator().forExecutables();
 </code></pre>
 
@@ -798,7 +1871,7 @@ executableValidator = factory.getValidator().forExecutables();
 <li>validateConstructorParameters()和validateConstructorReturnValue()用于构造函数验证</li>
 </ul>
 
-<pre><code class="language-java">public class RentalStationTest {
+<pre class="line-numbers"><code class="language-java">public class RentalStationTest {
 
     private static ExecutableValidator executableValidator;
 
@@ -824,7 +1897,7 @@ executableValidator = factory.getValidator().forExecutables();
 
 <p>测试结果</p>
 
-<pre><code class="language-text">需要是一个将来的时间
+<pre class="line-numbers"><code class="language-text">需要是一个将来的时间
 最小不能小于1
 </code></pre>
 
@@ -1079,7 +2152,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 那么下面就直接来定义一个简单的验证手机号码的注解</li>
 </ul>
 
-<pre><code class="language-java">@Documented
+<pre class="line-numbers"><code class="language-java">@Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Constraint(validatedBy = {MobileValidator.class})
 @Retention(RUNTIME)
@@ -1116,7 +2189,7 @@ public @interface Mobile {
 @Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</li>
 </ul>
 
-<pre><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
+<pre class="line-numbers"><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
 
     /**
      * 手机验证规则
@@ -1143,7 +2216,7 @@ public @interface Mobile {
 Bean验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释<br/>
 到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
 
-<pre><code class="language-java">public class MobileTest {
+<pre class="line-numbers"><code class="language-java">public class MobileTest {
 
     public void setMobile(@Mobile String mobile){
         // to do
@@ -1182,7 +2255,7 @@ public interface AddGroup {<br/>
 复制代码<br/>
 然后对我们的User对象的id属性做分组标识</p>
 
-<pre><code class="language-java">@Data
+<pre class="line-numbers"><code class="language-java">@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -1212,7 +2285,7 @@ public void validatorGroupTest() {
 
 <p>上面的测试只有加了UpdateGroug分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
 
-<pre><code class="language-java">public interface AddGroup extends Default {
+<pre class="line-numbers"><code class="language-java">public interface AddGroup extends Default {
 }
 </code></pre>
 
@@ -1221,7 +2294,7 @@ public void validatorGroupTest() {
 spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的<br/>
 配置Validator</p>
 
-<pre><code class="language-java">@Configuration
+<pre class="line-numbers"><code class="language-java">@Configuration
 public class ValidatorConfig {
 
     /**
@@ -1245,7 +2318,7 @@ public class ValidatorConfig {
 <p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息<br/>
 如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
 
-<pre><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
 
 &lt;!-- validator基本配置 --&gt;
 &lt;bean id=&quot;validator&quot; class=&quot;org.springframework.validation.beanvalidation.LocalValidatorFactoryBean&quot;&gt;
@@ -1270,7 +2343,7 @@ public class ValidatorConfig {
 <p>请求参数bean验证<br/>
 接口上的Bean验证，需要在参数前加上@Valid或Spring的 @Validated注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出BindException异常，并变成400（BAD_REQUEST）响应；或者可以通过Errors或BindingResult参数在控制器内本地处理验证错误。另外，如果参数前有@RequestBody注解，验证错误会抛出MethodArgumentNotValidException异常。</p>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 @RestController
 public class UserController {
 
@@ -1318,7 +2391,7 @@ public class UserController {
 
 <p>配合Spring的BindingResult参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
 
-<pre><code class="language-java">@Slf4j
+<pre class="line-numbers"><code class="language-java">@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -1358,7 +2431,7 @@ public class GlobalExceptionHandler {
 <p>Hibernate Validator是可以在方法级验证参数的，Spring中当然也是有实现的。<br/>
 我们在Validator的配置中，添加MethodValidationPostProcessorBean，在上面的ValidatorConfig.java中添加一下配置</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 设置方法参数验证器
  */
 @Bean
@@ -1372,7 +2445,7 @@ public MethodValidationPostProcessor methodValidationPostProcessor() {
 
 <p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller里面是无效的</p>
 
-<pre><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
 &lt;bean id=&quot;methodValidationPostProcessor&quot; class=&quot;org.springframework.validation.beanvalidation.MethodValidationPostProcessor&quot;&gt;
     &lt;property name=&quot;validator&quot; ref=&quot;validator&quot;/&gt;
 &lt;/bean&gt;
@@ -1382,7 +2455,7 @@ public MethodValidationPostProcessor methodValidationPostProcessor() {
 
 <p>配置了上面的MethodValidationPostProcessor，我们就可以在方法参数或返回值使用约束注解了，要注意的是，在要使用参数验证的类上一定要加上@Validated注解，否则无效</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 一定要加上 `@Validated` 注解
  */
 @Validated
@@ -1399,7 +2472,7 @@ public class UserController {
 
 <p>如果验证不通过，会抛出ConstraintViolationException异常，同样的，我们可以在全局的异常处理器里面处理验证错误，在GlobalExceptionHandler中添加一下代码</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * spring validator 方法参数验证异常拦截
  *
  * @param e 绑定验证异常
@@ -1418,7 +2491,7 @@ public R defaultErrorHandler(ConstraintViolationException e) {
 <p>分组<br/>
 Spring的@Validate注解是可以支持分组验证的</p>
 
-<pre><code class="language-java">@PostMapping(&quot;/user&quot;)
+<pre class="line-numbers"><code class="language-java">@PostMapping(&quot;/user&quot;)
 public R handle(@Validated(AddGroup.class) @RequestBody User user) {
     // ...
     return R.success();
@@ -1556,7 +2629,7 @@ public R handle(@Validated(AddGroup.class) @RequestBody User user) {
 </ul></li>
 </ul>
 
-<pre><code class="language-text">&lt;!-- 开启懒加载 ，当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每 种属性将会按需要加载。默认：true --&gt; 
+<pre class="line-numbers"><code class="language-text">&lt;!-- 开启懒加载 ，当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每 种属性将会按需要加载。默认：true --&gt; 
 &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
 </code></pre>
 
@@ -1656,7 +2729,7 @@ public R handle(@Validated(AddGroup.class) @RequestBody User user) {
 
 <p>MyBatis插件的实现必须实现Interceptor接口，该接口有3个方法</p>
 
-<pre><code class="language-java">public interface Interceptor {
+<pre class="line-numbers"><code class="language-java">public interface Interceptor {
   // 插件对业务进行增强的核心方法
   Object intercept(Invocation invocation) throws Throwable;
   // target是配拦截的对象，它的作用就是给被拦截的对象生成一个代理对象
@@ -1677,7 +2750,7 @@ public R handle(@Validated(AddGroup.class) @RequestBody User user) {
 <p>注解 @Intercepts 和 @Signature就是用于表示插件拦截的位置，@Intercepts 其值是一个 @Signature 数组。 @Intercepts 用于表明当前的对象是一个Interceptor， 而@Signature 则表明要拦截的接口、方法以及对应的参数类型。<br/>
 如下所示：</p>
 
-<pre><code class="language-java">@Intercepts(
+<pre class="line-numbers"><code class="language-java">@Intercepts(
         {
                 @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
                 @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
@@ -1696,7 +2769,7 @@ public class PageInterceptor implements Interceptor {
 
 <p>在MyBatis配置初始化的时候，对标签plugins进行解析的时候，对插件进行了初始化</p>
 
-<pre><code class="language-java">private void pluginElement(XNode parent) throws Exception {
+<pre class="line-numbers"><code class="language-java">private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         String interceptor = child.getStringAttribute(&quot;interceptor&quot;);
@@ -1719,7 +2792,7 @@ public class PageInterceptor implements Interceptor {
 <li>Executor的添加拦截功能</li>
 </ul>
 
-<pre><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+<pre class="line-numbers"><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
@@ -1743,7 +2816,7 @@ public class PageInterceptor implements Interceptor {
 <li>为StatementHandler添加拦截功能</li>
 </ul>
 
-<pre><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+<pre class="line-numbers"><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
@@ -1754,7 +2827,7 @@ public class PageInterceptor implements Interceptor {
 <li>为ParameterHandler添加拦截功能</li>
 </ul>
 
-<pre><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+<pre class="line-numbers"><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
@@ -1765,7 +2838,7 @@ public class PageInterceptor implements Interceptor {
 <li>为ResultSetHandler添加拦截功能</li>
 </ul>
 
-<pre><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
+<pre class="line-numbers"><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
       ResultHandler resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
     resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
@@ -1777,7 +2850,7 @@ public class PageInterceptor implements Interceptor {
 
 <p>插件加载是通过 ExamplePlugin.plugin(Object)来增强的，plugin 方法内部一般使用 Plugin.wrap(target,this)来对四大对象进行增强</p>
 
-<pre><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
+<pre class="line-numbers"><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
     Map&lt;Class&lt;?&gt;, Set&lt;Method&gt;&gt; signatureMap = getSignatureMap(interceptor);
     Class&lt;?&gt; type = target.getClass();
     Class&lt;?&gt;[] interfaces = getAllInterfaces(type, signatureMap);
@@ -1853,7 +2926,7 @@ public class PageInterceptor implements Interceptor {
 
 <p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
 
-<pre><code class="language-java">public class SqlSessionFactoryBean
+<pre class="line-numbers"><code class="language-java">public class SqlSessionFactoryBean
     implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SqlSessionFactoryBean.class);
@@ -1914,7 +2987,7 @@ public class PageInterceptor implements Interceptor {
 
 <h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
 
-<pre><code class="language-java"> @Override
+<pre class="line-numbers"><code class="language-java"> @Override
   public void afterPropertiesSet() throws Exception {
 notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
 notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
@@ -1927,7 +3000,7 @@ this.sqlSessionFactory = buildSqlSessionFactory();
 
 <h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 将sqlSessionFactory对象注入spring容器
  */
 public SqlSessionFactory getObject() throws Exception {
@@ -1945,7 +3018,7 @@ return this.sqlSessionFactory;
 
 <p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
 
-<pre><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
+<pre class="line-numbers"><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
 
   private Class&lt;T&gt; mapperInterface;
 
@@ -1974,7 +3047,7 @@ return this.sqlSessionFactory;
 
 <p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
  * 
  */
@@ -2072,7 +3145,7 @@ public class MapperScannerConfigurer
 2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
 3）条件满足则执行对应的逻辑。</p>
 
-<pre><code class="language-text">synchronized(obj) {
+<pre class="line-numbers"><code class="language-text">synchronized(obj) {
     while(obj.isOk()) {
         obj.wait();
     }
@@ -2085,7 +3158,7 @@ public class MapperScannerConfigurer
 2）改变条件。 <br/>
 3）通知所有等待在对象上的线程。</p>
 
-<pre><code class="language-text">synchronized(obj) {
+<pre class="line-numbers"><code class="language-text">synchronized(obj) {
     obj.notifyAll();
 }
 </code></pre>
@@ -2103,7 +3176,7 @@ public class MapperScannerConfigurer
 
 <p>使用wait、和notify实现一个连接池的实例如下：</p>
 
-<pre><code class="language-java">public class DBPool {
+<pre class="line-numbers"><code class="language-java">public class DBPool {
 
     /*容器，存放连接*/
     private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
@@ -2174,7 +3247,7 @@ public class MapperScannerConfigurer
 
 <p>generator.properties</p>
 
-<pre><code class="language-properties">jdbc.driverClass=com.mysql.jdbc.Driver
+<pre class="line-numbers"><code class="language-properties">jdbc.driverClass=com.mysql.jdbc.Driver
 jdbc.connectionURL=jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
 jdbc.user=root
 jdbc.password=12345678
@@ -2187,7 +3260,7 @@ sql.mapper.target.package=mapper
 
 <p>generatorConfig.xml</p>
 
-<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE generatorConfiguration
         PUBLIC &quot;-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN&quot;
         &quot;http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd&quot;&gt;
@@ -2427,7 +3500,7 @@ sql.mapper.target.package=mapper
 
 <h2 id="toc_1">maven关于mybatis反向工程的插件</h2>
 
-<pre><code class="language-markup">&lt;plugin&gt;
+<pre class="line-numbers"><code class="language-markup">&lt;plugin&gt;
     &lt;groupId&gt;org.mybatis.generator&lt;/groupId&gt;
     &lt;artifactId&gt;mybatis-generator-maven-plugin&lt;/artifactId&gt;
     &lt;version&gt;1.3.6&lt;/version&gt;
@@ -2500,7 +3573,7 @@ sql.mapper.target.package=mapper
 
 <h2 id="toc_4">代码示例</h2>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 抽象享元角色类
  *
  **/
@@ -2512,7 +3585,7 @@ public interface Flyweight {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 具体享元角色类
  * &lt;p&gt;
  * 具体享元角色类ConcreteFlyweight有一个内蕴状态，在本例中一个Character类型的intrinsicState属性代表，它的值应当在享元对象
@@ -2548,7 +3621,7 @@ public class ConcreteFlyweight implements Flyweight {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 享元工厂角色类
  * &lt;p&gt;
  * 必须指出的是，客户端不可以直接将具体享元类实例化，而必须通过一个工厂对象，利用一个factory()方法得到享元对象。
@@ -2585,7 +3658,7 @@ public class FlyweightFactory {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 复合享元角色类
  * &lt;p&gt;
  * 复合享元对象是由单纯享元对象通过复合而成的，因此它提供了add()这样的聚集管理方法。由于一个复合享元对象具有不同的聚集元素，
@@ -2621,7 +3694,7 @@ public class ConcreteCompositeFlyweight implements Flyweight {
 }
 </code></pre>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 复合享元工厂角色类
  * &lt;p&gt;
  * 享元工厂角色提供两种不同的方法，一种用于提供单纯享元对象，另一种用于提供复合享元对象。
@@ -2755,1526 +3828,6 @@ public class CompositeFlyweightFactory {
 <li>控制子类扩展。<br/>
 模板方法只在特定点调用操作，这样就只允许在这些点进行扩展。如果你不愿子类来修改你的模板方法定义的框架，你可以采用两种方式来做:一是在 API 中不体现出你的模板方法;或者将你的模板方法置为 final 就可以了。 可以看出，使用模板方法模式可以将代码的公共行为提取出来，达到复用的目的。而且，在模板方法模式中，是由父类的模板方法来控制子类中的具体实现。这样你在实现子类的时候，根本不需要对业务流程有太多的了解。</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[适配器模式]]></title>
-    <link href="http://www.throne4j.com/15896081275436.html"/>
-    <updated>2020-05-16T13:48:47+08:00</updated>
-    <id>http://www.throne4j.com/15896081275436.html</id>
-    <content type="html"><![CDATA[
-<ul>
-<li>
-<a href="#toc_0">适配器定义</a>
-</li>
-<li>
-<a href="#toc_1">适配器模式结构</a>
-<ul>
-<li>
-<a href="#toc_2">对象适配器模式</a>
-</li>
-<li>
-<a href="#toc_3">类适配器模式</a>
-</li>
-<li>
-<a href="#toc_4">优点</a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#toc_6">代码示例</a>
-</li>
-<li>
-<a href="#toc_7">使用场景</a>
-</li>
-</ul>
-
-
-<h2 id="toc_0">适配器定义</h2>
-
-<p>适配器模式(Adapter Pattern) ：将一个接口转换成客户希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作，其别名为包装器(Wrapper)。适配器模式既可以作为类结构型模式，也可以作为对象结构型模式。</p>
-
-<h2 id="toc_1">适配器模式结构</h2>
-
-<p>适配器模式角色：</p>
-
-<ul>
-<li>Target： 目标角色，客户端期待得到的接口</li>
-<li>Adaptee: 适配者角色，被适配的接口</li>
-<li>Adapter：适配器角色，将原接口转换成目标接口</li>
-</ul>
-
-<h3 id="toc_2">对象适配器模式</h3>
-
-<p><img src="media/15896081275436/%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="对象适配器模式"/></p>
-
-<h3 id="toc_3">类适配器模式</h3>
-
-<p><img src="media/15896081275436/%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="类适配器模式"/></p>
-
-<h3 id="toc_4">优点</h3>
-
-<ul>
-<li><p>将目标类和适配者类解耦，通过引入一个适配器类来重用现有的适配者类，而无须修改原有代码。</p></li>
-<li><p>增加了类的透明性和复用性，将具体的实现封装在适配者类中，对于客户端类来说是透明的，而且提高了适配者的复用性。</p></li>
-<li><p>灵活性和扩展性都非常好，通过使用配置文件，可以很方便地更换适配器，也可以在不修改原有代码的基础上增加新的适配器类，完全符合“开闭原则”。</p></li>
-<li><p>类适配器模式还具有如下优点：<br/>
-由于适配器类是适配者类的子类，因此可以在适配器类中置换一些适配者的方法，使得适配器的灵活性更强。</p></li>
-<li><p>对象适配器模式还具有如下优点：<br/>
-一个对象适配器可以把多个不同的适配者适配到同一个目标，也就是说，同一个适配器可以把适配者类和它的子类都适配到目标接口。 </p>
-<h3 id="toc_5">缺点</h3></li>
-<li><p>类适配器模式的缺点如下：<br/>
-对于Java、C#等不支持多重继承的语言，一次最多只能适配一个适配者类，而且目标抽象类只能为抽象类，不能为具体类，其使用有一定的局限性，不能将一个适配者类和它的子类都适配到目标接口。</p></li>
-<li><p>对象适配器模式的缺点如下：<br/>
-与类适配器模式相比，要想置换适配者类的方法就不容易。如果一定要置换掉适配者类的一个或多个方法，就只好先做一个适配者类的子类，将适配者类的方法置换掉，然后再把适配者类的子类当做真正的适配者进行适配，实现过程较为复杂。 </p></li>
-</ul>
-
-<h2 id="toc_6">代码示例</h2>
-
-<pre><code class="language-java">
-/**
- * 被适配接口--安卓传统方式充电接口
- */
-public interface TraditionalCharge {
-
-    /**
-     * 传统充电
-     */
-    void chargeWithTraditional();
-}
-
-/**
- * 安卓传统方式充电实现--adaptee
- *
- **/
-public class TraditionalChargeImpl implements TraditionalCharge {
-    @Override
-    public void chargeWithTraditional() {
-        System.out.println(&quot;使用传统的安卓充电头进行充电&quot;);
-    }
-}
-
-
-/**
- * typeC充电接口 target
- **/
-public interface TypeCCharge {
-    /**
-     * type-C充电
-     */
-    void chargeWithTypeC();
-}
-
-</code></pre>
-
-<p>对象适配器</p>
-
-<pre><code class="language-java">/**
- * 对象适配器  --- adapter
- **/
-public class ChargeAdapter implements TypeCCharge {
-    /**
-     * 被适配对象
-     */
-    private TraditionalCharge traditionalCharge;
-
-    public ChargeAdapter(TraditionalCharge traditionalCharge) {
-        this.traditionalCharge = traditionalCharge;
-    }
-
-    @Override
-    public void chargeWithTypeC() {
-        System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
-        traditionalCharge.chargeWithTraditional();
-    }
-
-    public static void main(String[] args) {
-        ChargeAdapter chargeAdapter = new ChargeAdapter(new TraditionalChargeImpl());
-        chargeAdapter.chargeWithTypeC();
-    }
-}
-</code></pre>
-
-<p>类适配器</p>
-
-<pre><code class="language-java">/**
- * 类适配器  --- adapter
- **/
-public class AndroidChargeAdapter extends TraditionalChargeImpl implements TypeCCharge{
-
-    @Override
-    public void chargeWithTypeC() {
-        System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
-        chargeWithTraditional();
-    }
-
-    public static void main(String[] args) {
-        AndroidChargeAdapter androidChargeAdapter = new AndroidChargeAdapter();
-        androidChargeAdapter.chargeWithTypeC();
-    }
-}
-
-</code></pre>
-
-<h2 id="toc_7">使用场景</h2>
-
-<ul>
-<li>系统需要使用现有的类，而这些类的接口不符合系统的需要。</li>
-<li>想要建立一个可以重复使用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[单例模式]]></title>
-    <link href="http://www.throne4j.com/15896032913368.html"/>
-    <updated>2020-05-16T12:28:11+08:00</updated>
-    <id>http://www.throne4j.com/15896032913368.html</id>
-    <content type="html"><![CDATA[
-<p>单例模式(Singleton Pattern)：单例模式确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例，这个类称为单例类，它提供全局访问的方法。</p>
-
-<p>单例模式的要点有三个：</p>
-
-<ul>
-<li>是某个类只能有一个实例；</li>
-<li>是它必须自行创建这个实例；</li>
-<li>是它必须自行向整个系统提供这个实例。</li>
-</ul>
-
-<p>单例模式是一种对象创建型模式。单例模式又名单件模式或单态模式。</p>
-
-<h2 id="toc_0">单例模式结构</h2>
-
-<p>单例模式的目的是保证一个类仅有一个实例，并提供一个访问它的全局访问点。</p>
-
-<p>单例模式包含的角色只有一个，就是单例类——Singleton。</p>
-
-<p>单例类拥有一个私有构造函数，确保用户无法通过new关键字直接实例化它。</p>
-
-<p>除此之外，该模式中包含一个静态私有成员变量与静态公有的工厂方法，该工厂方法负责检验实例的存在性并实例化自己，然后存储在静态成员变量中，以确保只有一个实例被创建。</p>
-
-<p>在单例模式的实现过程中，需要注意如下三点：</p>
-
-<ul>
-<li>单例类的构造函数为私有；</li>
-<li>提供一个自身的静态私有成员变量；</li>
-<li>提供一个公有的静态工厂方法。</li>
-</ul>
-
-<p><img src="media/15896032913368/15896221967721.jpg" alt=""/></p>
-
-<h2 id="toc_1">常见的单例实现</h2>
-
-<h3 id="toc_2">饿汉模式</h3>
-
-<pre><code class="language-java">public class Singleton {  
-     private static Singleton instance = new Singleton();  
-     private Singleton (){
-     }
-     public static Singleton getInstance() {  
-     return instance;  
-     }  
- }  
-</code></pre>
-
-<h3 id="toc_3">懒汉模式</h3>
-
-<pre><code class="language-java">public class Singleton {
-
-    private Singleton(){} // 私有构造
-
-    private static volatile Singleton instance = null; // 私有单例对象
-
-    // 静态工厂
-    public static Singleton getInstance(){
-        if (instance == null) { // 双重检测机制
-            synchronized (Singleton.class) { // 同步锁
-                if (instance == null) { // 双重检测机制
-                    instance = new Singleton();
-                }
-            }
-        }
-        return instance;
-    }
-
-}
-
-</code></pre>
-
-<h3 id="toc_4">静态内部类实现方式</h3>
-
-<pre><code class="language-java">/**
- * 从外部无法访问静态内部类 LazyHolder，只有当调用 Singleton.getInstance() 方法的时候，才能得到单例对象 INSTANCE。
-* INSTANCE 对象初始化的时机并不是在单例类 Singleton 被加载的时候，而是在调用 getInstance 方法，使得静态内部类 LazyHolder 被加载的时候。
-* 这种实现方式是利用classloader的加载机制来实现懒加载，并保证构建单例的线程安全。
- */
-public class Singleton {
-
-    private static class LazyHolder {
-        private static final Singleton INSTANCE = new Singleton();
-    }
-
-    private Singleton (){}
-
-    public static Singleton getInstance() {
-        return LazyHolder.INSTANCE;
-    }
-
-}
-
-</code></pre>
-
-<h3 id="toc_5">使用容器实现</h3>
-
-<pre><code class="language-java">public class SingletonManager { 
-　　private static Map&lt;String, Object&gt; objMap = new HashMap&lt;String,Object&gt;();
-　　private Singleton() { 
-　　}
-　　public static void registerService(String key, Object instance) {
-　　　　if (!objMap.containsKey(key) ) {
-　　　　　　objMap.put(key, instance) ;
-　　　　}
-　　}
-　　public static Object getService(String key) {
-　　　　return objMap.get(key) ;
-　　}
-}
-</code></pre>
-
-<h3 id="toc_6">枚举实现</h3>
-
-<pre><code class="language-java">public enum Singleton {
-    INSTANCE;
-    
-    public void doSomeThing() {
-        //做点什么
-    }  
-}
-</code></pre>
-
-<h2 id="toc_7">使用场景</h2>
-
-<p>系统只需要一个实例对象，如系统要求提供一个唯一的序列号生成器，或者需要考虑资源消耗太大而只允许创建一个对象。</p>
-
-<p>客户调用类的单个实例只允许使用一个公共访问点，除了该公共访问点，不能通过其他途径访问该实例。</p>
-
-<p>在一个系统中要求一个类只有一个实例时才应当使用单例模式。反过来，如果一个类可以有几个实例共存，就需要对单例模式进行改进，使之成为多例模式</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[建造者模式]]></title>
-    <link href="http://www.throne4j.com/15894404386842.html"/>
-    <updated>2020-05-14T15:13:58+08:00</updated>
-    <id>http://www.throne4j.com/15894404386842.html</id>
-    <content type="html"><![CDATA[
-<p>建造者模式(Builder Pattern)：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。建造者模式属于对象创建型模式，建造者模式又可以称为生成器模式。</p>
-
-<p>建造者模式是一步一步创建一个复杂的对象，它允许用户只通过指定复杂对象的类型和内容就可以构建它们，用户不需要知道内部的具体构建细节。</p>
-
-<h2 id="toc_0">建造者模式结构</h2>
-
-<p>建造者模式包含如下角色：</p>
-
-<ul>
-<li>Builder 抽象建造者</li>
-<li>BuilderImpl 具体建造者</li>
-<li>Director 指挥者</li>
-<li>Product 产品</li>
-</ul>
-
-<p><img src="media/15894404386842/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F.jpg" alt="建造者模式"/></p>
-
-<p>抽象建造者类中定义了产品的创建方法和返回方法;</p>
-
-<p>建造者模式的结构中还引入了一个指挥者类Director，该类的作用主要有两个：一方面它隔离了客户与生产过程；另一方面它负责控制产品的生成过程。指挥者针对抽象建造者编程，客户端只需要知道具体建造者的类型，即可通过指挥者类调用建造者的相关方法，返回一个完整的产品对象。</p>
-
-<p>在客户端代码中，无须关心产品对象的具体组装过程，只需确定具体建造者的类型即可，建造者模式将复杂对象的构建与对象的表现分离开来，这样使得同样的构建过程可以创建出不同的表现。</p>
-
-<h2 id="toc_1">优点</h2>
-
-<ul>
-<li>在建造者模式中， 客户端不必知道产品内部组成的细节，将产品本身与产品的创建过程解耦，使得相同的创建过程可以创建不同的产品对象。</li>
-<li>每一个具体建造者都相对独立，而与其他的具体建造者无关，因此可以很方便地替换具体建造者或增加新的具体建造者， 用户使用不同的具体建造者即可得到不同的产品对象 。</li>
-<li>可以更加精细地控制产品的创建过程 。将复杂产品的创建步骤分解在不同的方法中，使得创建过程更加清晰，也更方便使用程序来控制创建过程。</li>
-<li>增加新的具体建造者无须修改原有类库的代码，指挥者类针对抽象建造者类编程，系统扩展方便，符合“开闭原则”。</li>
-</ul>
-
-<h2 id="toc_2">代码示例（简化版的建造者模式）</h2>
-
-<pre><code class="language-java">public class Race {
-    private String name;
-    private String feature;
-
-    public Race(String name, String feature) {
-        this.name = name;
-        this.feature = feature;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFeature() {
-        return feature;
-    }
-
-    public void setFeature(String feature) {
-        this.feature = feature;
-    }
-
-    public static RaceBuilder builder() {
-        return new RaceBuilder();
-    }
-
-    public static class RaceBuilder {
-        private String name;
-        private String feature;
-
-        public RaceBuilder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public RaceBuilder feature(String feature) {
-            this.feature = feature;
-            return this;
-        }
-
-        public Race build() {
-            return new Race(this.name, this.feature);
-        }
-
-    }
-}
-</code></pre>
-
-<h2 id="toc_3">使用场景</h2>
-
-<p>在以下情况下可以使用建造者模式：</p>
-
-<ul>
-<li>需要生成的产品对象有复杂的内部结构，这些产品对象通常包含多个成员属性。</li>
-<li>需要生成的产品对象的属性相互依赖，需要指定其生成顺序。</li>
-<li>对象的创建过程独立于创建该对象的类。在建造者模式中引入了指挥者类，将创建过程封装在指挥者类中，而不在建造者类中。</li>
-<li>隔离复杂对象的创建和使用，并使得相同的创建过程可以创建不同的产品。</li>
-</ul>
-
-<h3 id="toc_4">注意</h3>
-
-<p>建造者模式所创建的产品一般具有较多的共同点，其组成部分相似，如果产品之间的差异性很大，则不适合使用建造者模式，因此其使用范围受到一定的限制。<br/>
-如果产品的内部变化复杂，可能会导致需要定义很多具体建造者类来实现这种变化，导致系统变得很庞大。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[# 阿里面试题]]></title>
-    <link href="http://www.throne4j.com/15892642645497.html"/>
-    <updated>2020-05-12T14:17:44+08:00</updated>
-    <id>http://www.throne4j.com/15892642645497.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">Java基础</h2>
-
-<ul>
-<li>List 和 Set 的区别<br/>
-list是可以重复. 在遍历时按照插入顺序<br/>
-set底层实现是hashMap. 是不可以重复的. 遍历的顺序页不是插入时的循序</li>
-<li><p>HashSet 是如何保证不重复的<br/>
-HashSet的add方法, 内部调用的是hashMap的put方法. <br/>
-put方法的插入步骤如下:</p></li>
-</ul>
-
-<ol>
-<li>检查table的数组是否为null或者length是否为0  true 初始化table</li>
-<li>通过key的hash和length-1算出桶的位置i table[i] == null. newNode(hash, key , val, null) 直接插入, p</li>
-<li>如果p的hash值和key都和当前待插入的key和hash值相等. 插入</li>
-<li>如果p位置是treeNode, 调用红黑树的put方法插入</li>
-<li>上述都不是. 那p一定是链表. 遍历整个链表. 如果能找到当期key相等的. 替换他的val 否则尾插法. 插入链表. 当链表的长度超过阈值时, 转换为treeNode</li>
-<li>当size阈值的时候. 扩容.</li>
-</ol>
-
-<p>通过上述流程. 保证了HashSet是不会出现重复的.</p>
-
-<ul>
-<li>HashMap 是线程安全的吗，为什么不是线程安全的（最好画图说明多线程环境下不安全）?</li>
-</ul>
-
-<p>HashMap是线程不安全的. 在扩容和计算map容量的时候, 添加链表修改指针的时候  没有进行同步操作. </p>
-
-<ul>
-<li>HashMap 1.7 与 1.8 的 区别，说明 1.8 做了哪些优化，如何优化的？</li>
-</ul>
-
-<p>1.8的hashMap 将超过阈值的链表转化为红黑树. 这是一点优化. </p>
-
-<ul>
-<li>final finally finalize</li>
-</ul>
-
-<p>final关键字修饰的类. 表示类不可以被继承.<br/>
-final关键字修饰的方法. 表示不可以被重写. <br/>
-final修饰的成员变量. 表示必须要在构造器初始化.</p>
-
-<p>final修饰的成员变量. 在java的内存模型中是有语义的. </p>
-
-<p>构造函数对final属性的初始化, 和随后把这个被构造对象的引用赋值给一个引用对象. 是不能重排序的<br/>
-初次读一个包含final域的对象.于随后初次读这个final域. 不能重排序</p>
-
-<p>重排序是现代计算机在执行程序时，为了保证性能，处理器和编译器常常会对指令进行重排序. </p>
-
-<p>而java内存模型会进制特定类型的重排序. <br/>
-比如 一个锁的解锁, 和随后对这个锁的加锁. <br/>
-对一个volatile域的写, 和随后对这个volatile的读. <br/>
-线程A执行线程b.start()操作, 和随后线程b的任意操作. <br/>
-线程A执行线程b.join返回成功. name线程b的所有操作和线程a执行b.join操作. 以上这些都是不可以重排序的. </p>
-
-<p>禁止重排序是通过内存屏障完成的. </p>
-
-<ul>
-<li>强引用 、软引用、 弱引用、虚引用</li>
-</ul>
-
-<p>强 是通常我们new的对象. 只要对象是可达的. 就不会被回收<br/>
-软 但内存紧张时会被回收  softReference可以和ReferenceQueue关联<br/>
-弱 只能活到下次GC  weakReference可以和ReferenceQueue关联<br/>
-虚 并不会影响执行object的声明周期. 但是在被回收时, 会将应引用对象放入队列中. phantomReference必须和ReferenceQueue管理</p>
-
-<ul>
-<li>Java反射</li>
-</ul>
-
-<p>获得实例的Class信息, Class信息包含类的方法 属性 构造器 父类 注解等信息.  也可以操作他们. 比如赋值什么的</p>
-
-<ul>
-<li>Arrays.sort 实现原理和 Collection 实现原理</li>
-</ul>
-
-<p>不同的数组大小 应用不同排序. </p>
-
-<ul>
-<li>LinkedHashMap的应用</li>
-</ul>
-
-<p>为了保证hashMap在遍历的时候. 按照插入顺序遍历. linked内部的entry拓展hashMap的Node节点, 添加了额外的指针 before和after. 来保存插入时表示的前后信息</p>
-
-<ul>
-<li>cloneable接口实现原理</li>
-</ul>
-
-<p>cloneable接口相当于标记, 表示该对象可以被克隆, 克隆的实现是直接复制对象二进制数据. 深拷贝和浅拷贝的问题</p>
-
-<p>克隆不会执行构造函数</p>
-
-<ul>
-<li><p>异常分类以及处理机制</p></li>
-<li><p>wait和sleep的区别<br/>
-wait 必须要同步的情况才能使用 会释放锁. 语义是线程在加锁对象上等待. 可以被notify/all方法唤醒<br/>
-sleep 不会释放锁. 语义是休眠当前线程</p></li>
-</ul>
-
-<h2 id="toc_1">Java 并发</h2>
-
-<ul>
-<li>synchronized 的实现原理以及锁优化？</li>
-</ul>
-
-<p>synchronized是锁的意思. </p>
-
-<ol>
-<li>锁放在那里. 对象的头部会有一个叫Mark Ward的结构. 存放着对象的hashcode 分代年龄 gc标记  锁信息, MW的数据结构是动态变化的. 比如偏向锁 就会保存线程ID. 轻量级锁则保存指向栈信息的指针, 重量级锁会保存一个指向Monitor的指针,</li>
-<li>Monitor的数据结构可以简单描述为 WaitSet EntryList owner count 当线程在等待获得锁的时候 它在entryList中. 获得了锁 进入owner区域. count+1. 当调用wait()方法, owner会释放锁, 进入waitSet区域. count-1. 当线程被notify后. 会从waitset区域进入entryList区域. 等待获得锁. 重量级锁是性能低下的, 因为需要依赖系统的互斥体, 线程间的切换也需要从用户态到核心态的切换, 这都非常消耗性能. jvm在此基础上添加了偏向锁和轻量级锁.</li>
-<li>偏向锁是基于一种大多数情况下是不存在竞争的, 都是一个线程多次获得. 思路是当线程获得了锁. 就会进入偏向模式, MW也会变为偏向结构. 记录线程ID, 线程加锁时会判断线程ID是否和自己相等. 如果相等直接进入同步块. 当线程ID不相等. 说明存在竞争了. 锁会膨胀为轻量级锁.</li>
-<li>轻量级锁是基于一种 大多数情况都是多个线程交替获取. 这样对象的MW会转变为轻量级锁结构. 加锁实际上是将MW的部分信息CAS的放入栈中, 成功进入同步块. 失败 当期线程则尝试通过自旋来获得锁.  解锁, 是将栈的MW信息CAS的替换回对象头.成功释放锁, 失败了说明有其他线程在尝试获得锁,  则锁膨胀为重量级锁</li>
-</ol>
-
-<p>锁只能膨胀. 不能撤销,  自旋锁是为了防止用户态和和心态的切换. </p>
-
-<ul>
-<li>volatile 的实现原理？</li>
-</ul>
-
-<p>为了平衡cpu和硬盘效率的不一致. 所以引入了内存. 但是现代CPU越来越快. 还出现了多核心. 所以在cpu周围出现大量寄存器. 可称为缓存. 缓存和内存的信息同步. 内存和硬盘的信息同步. 都是问题.<br/>
-Java内存模型描述为  线程的本地缓存  和  直接内存也可以叫共享内存</p>
-
-<p>volatile的写入数据会直接同步到直接内存的. 这一点是通过lock前缀的命令实现的. </p>
-
-<p>其他的缓存如何知道本地的缓存失效了呢, 是基于缓存一致性协议. 是通过嗅探总线上的指令来判定自己的缓存是否有效的. </p>
-
-<p>基本流程是 volatile域的写入会直接写入直接内存. 其他本地缓存通过嗅探总线得知了自己本地缓存失效了, 下次再读取的时候, 回去直接内存读取. </p>
-
-<p>volatile域只能保证可见性. </p>
-
-<ul>
-<li>Java 的信号灯？</li>
-</ul>
-
-<p>java并发包的信号量. 可以理解为许可证. 创建信号量的时候, 会初始化一定数量的许可证, 线程想要执行必须获得一定数量的许可证, 执行完成后释放许可证. </p>
-
-<p>内部实现是基于AQS的共享锁实现的. 信号量分公平和非公平的区别. 默认是非公平的.  例如 Semaphore s = new Semaphore(2); TA.acquire(1) TB.acquire(2) TC.acquire(1) TA.release(1) TB.release(2) TC.release(1)</p>
-
-<p>公平锁的流程:<br/>
-TA.acquire(1) </p>
-
-<ol>
-<li>响应中断</li>
-<li><p>tryAcquireShared(1)尝试获得state</p>
-<ol>
-<li>自旋 保证CAS成功</li>
-<li>判断等待队列中是否存在等待的节点. 存在获得状态失败 结束自自旋返回 -1</li>
-<li>不存在.int s =  getState - 1  s &lt; 0或者CAS将state更新为s失败 都会结束自旋 返回s</li>
-</ol></li>
-<li><p>这里会成功  state =1<br/>
-TB.acquire(2) s=-1  &lt;0. 执行等待流程.</p></li>
-<li><p>addWaiter()  将当期线程封装成共享Node. 加入等待队列尾部.</p></li>
-<li><p>自旋. </p></li>
-<li><p>获取当期节点的前置节点p, 如果p==head. 执行tryAcquireShared(2)  TB会失败, 因为1-2 =-1</p></li>
-<li><p>shouldParkAfterFailedAcquire(p, node) 获得许可证失败后应该阻塞的前置方法</p>
-<ol>
-<li>检查p的waitStatus, ws  == SIGNAL(-1) 相等自己可以安心阻塞了 return</li>
-<li>ws&gt;0 说明节点超时或者取消了, p开始向前遍历 直到找到节点的ws&lt;=0的, 将node节点添加在他的后面</li>
-<li>CAS的更新p的ws为SIGNAL</li>
-</ol></li>
-<li><p>阻塞自己 lockSupport.park(this)      state =1</p></li>
-</ol>
-
-<p>TC.acquire(1)<br/>
-因为是公平的缘故, 在执行tryAcquireShared(1)的时候 发现等待队列中存在等待的节点. 也会执行和TB相同的流程. 最后阻塞自己. </p>
-
-<p>TA.release(1)</p>
-
-<ol>
-<li>tryReleaseShared(1) 
-<ol>
-<li>自旋 保证CAS一定能成功</li>
-<li>获得当期状态int c = getState + 1 </li>
-<li>CAS的将state更新为c. 成功返回true.</li>
-</ol></li>
-<li><p>执行唤醒操作</p>
-<ol>
-<li>自旋 </li>
-<li>哨兵 head !=null &amp;&amp; head != tail</li>
-<li>int ws = head.waitStatus. 获得head的等待状态</li>
-<li>ws == signal  并且将成功用CAS将h的状态从-1改为0后 唤醒h.next
-<ol>
-<li>判断h节点的ws &lt; 0 将状态改为0</li>
-<li>&gt;0 从tail节点开始向前遍历. 直到找到一个ws&lt;=0的s  唤醒s lockSupor</li>
-</ol></li>
-</ol></li>
-</ol>
-
-<ul>
-<li><p>synchronized 在静态方法和普通方法的区别？</p></li>
-<li><p>怎么实现所有线程在等待某个事件的发生才会去执行？</p></li>
-<li><p>CAS？CAS 有什么缺陷，如何解决？</p></li>
-<li><p>synchronized 和 lock 有什么区别？</p></li>
-<li><p>Hashtable 是怎么加锁的 ？</p></li>
-<li><p>HashMap 的并发问题？</p></li>
-<li><p>ConcurrenHashMap 介绍？1.8 中为什么要用红黑树？</p></li>
-<li><p>AQS</p></li>
-<li><p>如何检测死锁？怎么预防死锁？</p></li>
-<li><p>Java 内存模型？</p></li>
-<li><p>如何保证多线程下 i++ 结果正确？</p></li>
-<li><p>线程池的种类，区别和使用场景？</p></li>
-<li><p>分析线程池的实现原理和线程的调度过程？</p></li>
-<li><p>线程池如何调优，最大数目如何确认？</p></li>
-<li><p>ThreadLocal原理，用的时候需要注意什么</p></li>
-<li><p>CountDownLatch 和 CyclicBarrier 的用法，以及相互之间的差别?</p></li>
-<li><p>LockSupport工具</p></li>
-<li><p>Condition接口及其实现原理</p></li>
-<li><p>Fork/Join框架的理解</p></li>
-<li><p>分段锁的原理,锁力度减小的思考</p></li>
-<li><p>八种阻塞队列以及各个阻塞队列的特性</p></li>
-</ul>
-
-<h2 id="toc_2">Spring</h2>
-
-<p>BeanFactory 和 FactoryBean<br/>
-Spring IOC 的理解，其初始化过程？<br/>
-BeanFactory 和 ApplicationContext？<br/>
-Spring Bean 的生命周期，如何被管理的？Spring Bean 的加载过程是怎样的？<br/>
-如果要你实现Spring AOP，请问怎么实现？<br/>
-如果要你实现Spring IOC，你会注意哪些问题？<br/>
-Spring 是如何管理事务的，事务管理机制？<br/>
-Spring 的不同事务传播行为有哪些，干什么用的？<br/>
-Spring 中用到了那些设计模式？<br/>
-Spring MVC 的工作原理？<br/>
-Spring 循环注入的原理？<br/>
-Spring 如何保证 Controller 并发的安全？</p>
-
-<h2 id="toc_3">分布式相关</h2>
-
-<p>Dubbo的底层实现原理和机制<br/>
-描述一个服务从发布到被消费的详细过程<br/>
-分布式系统怎么做服务治理<br/>
-接口的幂等性的概念<br/>
-消息中间件如何解决消息丢失问题<br/>
-Dubbo的服务请求失败怎么处理<br/>
-重连机制会不会造成错误<br/>
-对分布式事务的理解<br/>
-如何实现负载均衡，有哪些算法可以实现？<br/>
-Zookeeper的用途，选举的原理是什么？<br/>
-数据的垂直拆分水平拆分。<br/>
-zookeeper原理和适用场景<br/>
-zookeeper watch机制<br/>
-redis/zk节点宕机如何处理<br/>
-分布式集群下如何做到唯一序列号<br/>
-如何做一个分布式锁<br/>
-用过哪些MQ，怎么用的，和其他mq比较有什么优缺点，MQ的连接是线程安全的吗<br/>
-MQ系统的数据如何保证不丢失<br/>
-列举出你能想到的数据库分库分表策略；分库分表后，如何解决全表查询的问题<br/>
-zookeeper的选举策略</p>
-
-<h2 id="toc_4">数据库</h2>
-
-<p>事务四大特性（ACID）原子性、一致性、隔离性、持久性？<br/>
-事务的并发？事务隔离级别，每个级别会引发什么问题，MySQL默认是哪个级别？<br/>
-MySQL常见的三种存储引擎（InnoDB、MyISAM、MEMORY）的区别？<br/>
-MySQL的MyISAM与InnoDB两种存储引擎在，事务、锁级别，各自的适用场景？<br/>
-查询语句不同元素（where、jion、limit、group by、having等等）执行先后顺序？<br/>
-什么是临时表，临时表什么时候删除?<br/>
-MySQL B+Tree索引和Hash索引的区别？<br/>
-sql查询语句确定创建哪种类型的索引？如何优化查询？<br/>
-聚集索引和非聚集索引区别？<br/>
-有哪些锁（乐观锁悲观锁），select 时怎么加排它锁？<br/>
-非关系型数据库和关系型数据库区别，优势比较？<br/>
-数据库三范式，根据某个场景设计数据表？<br/>
-数据库的读写分离、主从复制，主从复制分析的 7 个问题？<br/>
-使用explain优化sql和索引？<br/>
-MySQL慢查询怎么解决？<br/>
-什么是 内连接、外连接、交叉连接、笛卡尔积等？<br/>
-mysql都有什么锁，死锁判定原理和具体场景，死锁怎么解决？<br/>
-varchar和char的使用场景？<br/>
-mysql 高并发环境解决方案？<br/>
-数据库崩溃时事务的恢复机制（REDO日志和UNDO日志）？</p>
-
-<h2 id="toc_5">Redis</h2>
-
-<p>Redis用过哪些数据数据，以及Redis底层怎么实现<br/>
-Redis缓存穿透，缓存雪崩<br/>
-如何使用Redis来实现分布式锁<br/>
-Redis的并发竞争问题如何解决<br/>
-Redis持久化的几种方式，优缺点是什么，怎么实现的<br/>
-Redis的缓存失效策略<br/>
-Redis集群，高可用，原理<br/>
-Redis缓存分片，Redis的数据淘汰策略</p>
-
-<h2 id="toc_6">Netty</h2>
-
-<p>BIO、NIO和AIO<br/>
-Netty 的各大组件，Netty的线程模型<br/>
-TCP 粘包/拆包的原因及解决方法<br/>
-了解哪几种序列化协议？包括使用场景和如何去选择<br/>
-Netty的零拷贝实现<br/>
-Netty的高性能表现在哪些方面</p>
-
-<h2 id="toc_7">JVM</h2>
-
-<p>详细jvm内存模型<br/>
-讲讲什么情况下回出现内存溢出，内存泄漏？<br/>
-说说Java线程栈<br/>
-JVM 年轻代到年老代的晋升过程的判断条件是什么呢？<br/>
-JVM 出现 fullGC 很频繁，怎么去线上排查问题？<br/>
-类加载为什么要使用双亲委派模式，有没有什么场景是打破了这个模式？<br/>
-类的实例化顺序<br/>
-JVM垃圾回收机制，何时触发MinorGC等操作<br/>
-JVM 中一次完整的 GC 流程（从 ygc 到 fgc）是怎样的<br/>
-各种回收器，各自优缺点，重点CMS、G1<br/>
-各种回收算法<br/>
-OOM错误，stackoverflow错误，permgen space错误</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MyBatis执行流程分析]]></title>
-    <link href="http://www.throne4j.com/15889543039853.html"/>
-    <updated>2020-05-09T00:11:43+08:00</updated>
-    <id>http://www.throne4j.com/15889543039853.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">MyBatis运行流程之配置初始化</h2>
-
-<p>首先了解下大致流程<br/>
-<img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="配置初始化"/></p>
-
-<p>在MyBatis中负责加载配置文件的核心类有三个:</p>
-
-<ul>
-<li>BaseBuilder：所有解析器的父类，包含配置文件实例，为解析文件提供的一些通用的方 法；</li>
-<li>XMLConfigBuilder： 主要负责解析 mybatis-config.xml全局配置文件，将相关配置放入Configuration对象中； </li>
-<li>XMLMapperBuilder： 主要负责解析映射配置 Mapper.xml 文件，填充Configuration的caches、resultMappings； </li>
-<li>XMLStatementBuilder： 主要负责解析映射配置文件中的 INSERT、UPDATE、DELETE、SELECT 节点，填充Configuration的MappedStatement；</li>
-</ul>
-
-<p>UML类图如下所示：<br/>
-<img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD.png" alt="配置文件加载继承关系"/></p>
-
-<p>XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 这三个类在配置文件加载过程中非常重要，另外MapperBuilderAssistant可辅助XMLMapperBuilder和XMLStatementBuilder完成配置工作。</p>
-
-<h3 id="toc_1">Configuration对象</h3>
-
-<p>实例化并初始化 Configuration 对象是第一个阶段的最终目的，所以熟悉 configuration 对象是理解这一阶段代码的核心；<br/>
-看下Configuration对象中的关键属性：</p>
-
-<ul>
-<li>MapperRegistry：mapper 接口动态代理工厂类的注册中心。在 MyBatis 中，通过 mapperProxy 实现 InvocationHandler 接口，MapperProxyFactory 用于生成动态代理的实 例对象；</li>
-<li>ResultMap：用于解析 mapper.xml 文件中的 resultMap 节点，使用 ResultMapping 来封装 id，result 等子元素； </li>
-<li>MappedStatement：用于存储 mapper.xml 文件中的 select、 insert、 update 和 delete 节点， 同时还包含了这些节点的很多重要属性； </li>
-<li>SqlSource：用于创建 BoundSql，mapper.xml 文件中的 sql 语句会被解析成 BoundSql 对象，经过解析 BoundSql 包含的语句最终仅仅包含？占位符，可以直接提交给数据库执行；</li>
-</ul>
-
-<pre><code class="language-java">public class Configuration {
-   /*数据库环境**/
-    protected Environment environment;
-    /* 是否启用行内嵌套语句**/
-    protected boolean safeRowBoundsEnabled;
-    protected boolean safeResultHandlerEnabled = true;
-    /* 是否启用数据组A_column自动映射到Java类中的驼峰命名的属性**/
-    protected boolean mapUnderscoreToCamelCase;
-
-    /*当对象使用延迟加载时 属性的加载取决于能被引用到的那些延迟属性,否则,按需加载(需要的是时候才去加载)**/
-    protected boolean aggressiveLazyLoading;
-
-    /*是否允许单条sql 返回多个数据集  (取决于驱动的兼容性) default:true **/
-    protected boolean multipleResultSetsEnabled = true;
-
-    /*-允许JDBC 生成主键。需要驱动器支持。如果设为了true，这个设置将强制使用被生成的主键，有一些驱动器不兼容不过仍然可以执行。  default:false**/
-    protected boolean useGeneratedKeys;
-
-    /* 使用列标签代替列名。不同的驱动在这方面会有不同的表现， 具体可参考相关驱动文档或通过测试这两种不同的模式来观察所用驱动的结果。**/
-    protected boolean useColumnLabel = true;
-
-    /*配置全局性的cache开关，默认为true**/
-    protected boolean cacheEnabled = true;
-    protected boolean callSettersOnNulls;
-    protected boolean useActualParamName = true;
-    protected boolean returnInstanceForEmptyRow;
-
-    /* 日志打印所有的前缀 **/
-    protected String logPrefix;
-
-    /* 指定 MyBatis 所用日志的具体实现，未指定时将自动查找**/
-    protected Class&lt;? extends Log&gt; logImpl;
-
-    /*虚拟文件系统实现*/
-    protected Class&lt;? extends VFS&gt; vfsImpl;
-
-    /* 设置本地缓存范围，session：就会有数据的共享，statement：语句范围，这样不会有数据的共享**/
-    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
-
-    /* 设置但JDBC类型为空时,某些驱动程序 要指定值**/
-    protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
-    /* 设置触发延迟加载的方法**/
-    protected Set&lt;String&gt; lazyLoadTriggerMethods = new HashSet&lt;&gt;(Arrays.asList(&quot;equals&quot;, &quot;clone&quot;, &quot;hashCode&quot;, &quot;toString&quot;));
-    /* 设置驱动等待数据响应超时数**/
-    protected Integer defaultStatementTimeout;
-    /* 设置驱动返回结果数的大小**/
-    protected Integer defaultFetchSize;
-
-    protected ResultSetType defaultResultSetType;
-    /* 执行类型，有simple、resue及batch**/
-    protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
-
-    /*指定 MyBatis 应如何自动映射列到字段或属性*/
-    protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
-    protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
-    // 在&lt;properties&gt;标签下的属性以及
-    protected Properties variables = new Properties();
-
-    protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
-
-    /*MyBatis每次创建结果对象的新实例时，它都会使用对象工厂（ObjectFactory）去构建POJO*/
-    protected ObjectFactory objectFactory = new DefaultObjectFactory();
-    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
-
-    /*延迟加载的全局开关*/
-    protected boolean lazyLoadingEnabled = false;
-
-    /*指定 Mybatis 创建具有延迟加载能力的对象所用到的代理工具*/
-    protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
-
-    protected String databaseId;
-    /**
-     * 创建用于加载反序列化未读属性的配置。
-     */
-    protected Class&lt;?&gt; configurationFactory;
-
-
-    /*插件集合，plugins标签容器*/
-    protected final InterceptorChain interceptorChain = new InterceptorChain();
-
-    /*TypeHandler注册中心*/
-    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
-
-    /*TypeAlias注册中心*/
-    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
-
-    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
-
-    /*mapper接口的动态代理注册中心*/
-    protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
-    /*mapper文件中增删改查操作的注册中心*/
-    protected final Map&lt;String, MappedStatement&gt; mappedStatements = new StrictMap&lt;MappedStatement&gt;(&quot;Mapped Statements collection&quot;)
-            .conflictMessageProducer((savedValue, targetValue) -&gt; &quot;. please check &quot; + savedValue.getResource() + &quot; and &quot; + targetValue.getResource());
-
-    /*mapper文件中配置cache节点的 二级缓存*/
-    protected final Map&lt;String, Cache&gt; caches = new StrictMap&lt;&gt;(&quot;Caches collection&quot;);
-
-    /*mapper文件中配置的所有resultMap对象  key为命名空间+ID*/
-    protected final Map&lt;String, ResultMap&gt; resultMaps = new StrictMap&lt;&gt;(&quot;Result Maps collection&quot;);
-
-    /*mapper文件中配置所有的parameterMap对象，key为命名空间+ID*/
-    protected final Map&lt;String, ParameterMap&gt; parameterMaps = new StrictMap&lt;&gt;(&quot;Parameter Maps collection&quot;);
-
-    /*mapper文件中配置KeyGenerator的insert和update节点，key为命名空间+ID*/
-    protected final Map&lt;String, KeyGenerator&gt; keyGenerators = new StrictMap&lt;&gt;(&quot;Key Generators collection&quot;);
-
-    /*加载到的所有*mapper.xml文件*/
-    protected final Set&lt;String&gt; loadedResources = new HashSet&lt;&gt;();
-
-    /*mapper文件中配置的sql元素，key为命名空间+ID*/
-    protected final Map&lt;String, XNode&gt; sqlFragments = new StrictMap&lt;&gt;(&quot;XML fragments parsed from previous mappers&quot;);
-
-    protected final Collection&lt;XMLStatementBuilder&gt; incompleteStatements = new LinkedList&lt;&gt;();
-    protected final Collection&lt;CacheRefResolver&gt; incompleteCacheRefs = new LinkedList&lt;&gt;();
-    protected final Collection&lt;ResultMapResolver&gt; incompleteResultMaps = new LinkedList&lt;&gt;();
-    protected final Collection&lt;MethodResolver&gt; incompleteMethods = new LinkedList&lt;&gt;();
-
-    /*
-     * key: 在哪个namespace中声明
-     * value: 引用哪个namespace中的cache
-     */
-    protected final Map&lt;String, String&gt; cacheRefMap = new HashMap&lt;&gt;();
-}
-</code></pre>
-
-<h3 id="toc_2">配置加载过程</h3>
-
-<p>MyBatis配置加载的过程大致可如下图所示：<br/>
-<img src="media/15889543039853/Mysql%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="Mysql初始化"/></p>
-
-<p>现在看下配置加载的核心代码：</p>
-
-<h4 id="toc_3">通过 SqlSessionFactoryBuilder 建造 SqlSessionFactory，并创建 XMLConfigBuilder 对象读取 MyBatis 核心配置文件，</h4>
-
-<pre><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
-    try {
-        //1、读取配置文件
-        XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
-        //1.1、解析配置文件得到configuration对象，并返回SqlSessionFactory的实现DefaultSqlSessionFactory
-        return build(parser.parse());
-    } catch (Exception e) {
-        throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, e);
-    } finally {
-        ErrorContext.instance().reset();
-        try {
-            // 关闭输入流
-            reader.close();
-        } catch (IOException e) {
-            // Intentionally ignore. Prefer previous error.
-        }
-    }
-}
-</code></pre>
-
-<p>XMLConfigBuilder 的 parseConfiguration 方法，对 MyBatis 核心配置文件的各个 元素进行解析，读取元素信息后填充到 configuration 对象</p>
-
-<pre><code class="language-java">/**
- * 解析mybatis-config.xml文档
- *
- * @param root mybatis-config.xml的root节点configuration
- */
-private void parseConfiguration(XNode root) {
-    try {
-        // issue #117 read properties first
-        /* 解析&lt;properties&gt;节点,填充configuration的variables属性*/
-        propertiesElement(root.evalNode(&quot;properties&quot;));
-        /* 解析&lt;settings&gt;节点*/
-        Properties settings = settingsAsProperties(root.evalNode(&quot;settings&quot;));
-        /*VFS含义是虚拟文件系统；主要是通过程序能够方便读取本地文件系统、FTP文件系统等系统中的文件资源。*/
-        loadCustomVfs(settings);
-        loadCustomLogImpl(settings);
-        /*解析&lt;typeAliases&gt;节点，填充Configuration的typeAliasRegistry属性*/
-        typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));
-        /*解析&lt;plugins&gt;节点*，填充Configuration的interceptorChain属性/
-        pluginElement(root.evalNode(&quot;plugins&quot;));
-        /*解析ObjectFactory*/
-        objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));
-        /*解析&lt;objectWrapperFactory&gt;节点*/
-        objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));
-        /*解析&lt;reflectorFactory&gt;节点*/
-        reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));
-
-        /*将settings填充到configuration*/
-        settingsElement(settings);
-
-        /*解析&lt;environments&gt;节点，填充Configuration的environment*/
-        environmentsElement(root.evalNode(&quot;environments&quot;));
-        //解析&lt;databaseIdProvider&gt;节点
-        databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));
-        /*解析&lt;typeHandlers&gt;节点，填充Configuration的typeHandlerRegistry*/
-        typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));
-        /*解析mapper节点*/
-        mapperElement(root.evalNode(&quot;mappers&quot;));
-    } catch (Exception e) {
-        throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + e, e);
-    }
-}
-</code></pre>
-
-<p>XMLMapperBuilder 的核心方法为 configurationElement（XNode），该方法对 mapper.xml 配置文件的各个元素进行解析，读取元素信息后填充到 configuration 对象。</p>
-
-<pre><code class="language-java">/**
- * 解析Mapper.xml文件
- **/
-private void configurationElement(XNode context) {
-    try {
-        // 获取mapper.xml 的 namespace 名字
-        String namespace = context.getStringAttribute(&quot;namespace&quot;);
-        if (namespace == null || namespace.isEmpty()) {
-            throw new BuilderException(&quot;Mapper&#39;s namespace cannot be empty&quot;);
-        }
-        //设置builderAssistant的namespace属性
-        builderAssistant.setCurrentNamespace(namespace);
-
-        cacheRefElement(context.evalNode(&quot;cache-ref&quot;));
-        /* 1. 分析缓存cache节点，二级缓存  configuration.addCache(cache);*/
-        cacheElement(context.evalNode(&quot;cache&quot;));
-        parameterMapElement(context.evalNodes(&quot;/mapper/parameterMap&quot;));
-        /* 2. 分析 ：解析resultMap节点，填充Configuration的 resultMap*/
-        resultMapElements(context.evalNodes(&quot;/mapper/resultMap&quot;));
-        /* 3. 解析sql节点*/
-        sqlElement(context.evalNodes(&quot;/mapper/sql&quot;));
-        /* 4. 解析select、insert、update、delete节点 ，填充Configuration的 MappedStatement*/
-        buildStatementFromContext(context.evalNodes(&quot;select|insert|update|delete&quot;));
-    } catch (Exception e) {
-        throw new BuilderException(&quot;Error parsing Mapper XML. The XML location is &#39;&quot; + resource + &quot;&#39;. Cause: &quot; + e, e);
-    }
-}
-</code></pre>
-
-<p>在 XMLStatmentBuilder 的 parseStatementNode()方法中，对 Mapper.xml 中 select、 insert、update、delete 节点进行解析，并调用 MapperBuilderAssistant 负责将信息填充到 configuration。在理解 parseStatementNod()方法之前，有必要了解 MappedStatement，这个类用于封装 select 、insert 、update 、delete 节点的信息 </p>
-
-<pre><code class="language-java">/**
- * 封装mapper.xml文件信息的select 、insert 、update 、delete 节点的信息
- * id、sqlSource、parameterMap、ResultMaps、keyGenerator 
- **/
-public final class MappedStatement {
-
-    private String resource;//节点的完整的id属性，包括命名空间
-    private Configuration configuration;
-    private String id;//节点的id属性
-    private Integer fetchSize;//节点的fetchSize属性,查询数据的条数
-    private Integer timeout;//节点的timeout属性，超时时间
-    private StatementType statementType;//节点的statementType属性,默认值：StatementType.PREPARED
-    private ResultSetType resultSetType;//节点的resultSetType属性,jdbc知识
-    private SqlSource sqlSource;//节点中sql语句信息
-    private Cache cache;//对应的二级缓存
-    private ParameterMap parameterMap;
-    private List&lt;ResultMap&gt; resultMaps;//节点的resultMaps属性
-    private boolean flushCacheRequired;//节点的flushCache属性是否刷新缓存
-    private boolean useCache;//节点的useCache属性是否使用二级缓存
-    private boolean resultOrdered;
-    private SqlCommandType sqlCommandType;//sql语句的类型，包括：INSERT, UPDATE, DELETE, SELECT
-    private KeyGenerator keyGenerator;//节点keyGenerator属性
-    private String[] keyProperties;
-    private String[] keyColumns;
-    private boolean hasNestedResultMaps;//是否有嵌套resultMap
-    private String databaseId;
-    private Log statementLog;
-    private LanguageDriver lang;
-    private String[] resultSets;//多结果集使用
-}
-</code></pre>
-
-<h2 id="toc_4">mybatis运行流程之代理封装</h2>
-
-<p>在经过第一阶段之后，MyBatis的Configuration已经初始化完毕，接下来进入第二阶段，获取SqlSessijon和Mapper接口代理类。</p>
-
-<p>其执行的过程如下图所示：</p>
-
-<p><img src="media/15889543373179/mybatis%E8%8E%B7%E5%8F%96mapper%E4%BB%A3%E7%90%86.jpg" alt="mybatis获取mapper代理"/></p>
-
-<h3 id="toc_5">MyBatis的接口层</h3>
-
-<h4 id="toc_6">SqlSession</h4>
-
-<p>第一个对象就是 SqlSession，SqlSession 是 MyBaits 对外提供的最关键的核心接口，通过它可以执行数据库读写命令、获取映射器、管理事务等；SqlSession 也 意味着客户端与数据库的一次连接，客户端对数据库的访问请求都是由SqlSession来处理的， SqlSession 由 SqlSessionFactory 创建，每个 SqlSession 都会引用 SqlSessionFactory 中全局唯一单例存在的 configuration 对象；</p>
-
-<p>SqlSession 默认实现类为 org.apache.ibatis.session.defaults.DefaultSqlSession,是 MyBatis 对外提供数据访问的主要 API。如下图所示，sqlSession是围绕着Executor在运转的。</p>
-
-<p><img src="media/15889543373179/SqlSession.png" alt="SqlSession"/></p>
-
-<h3 id="toc_7">SqlSessionFactory</h3>
-
-<p>SqlSessionFactory 使用工厂模式创建 SqlSession，其默认的实现类为 DefaultSqlSessionFactory ，其中获取 SqlSession 的核心方法为openSessionFromDataSource(ExecutorType, TransactionIsolationLevel, boolean)，在这个方法中从 configuration 中获取的 TransactionFactory 是典 型的策略模式的应用。运行期，TransactionFactory 接口的实现，是由配置文件配置决定的，可配置选项包括： JDBC、Managed, 可根据需求灵活的替换 TransactionFactory 的实现。</p>
-
-<pre><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
-    Transaction tx = null;
-
-    try {
-        //获取mybatis配置文件中的environment对象
-        final Environment environment = configuration.getEnvironment();
-        //从environment获取transactionFactory工厂对象
-        final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
-        //创建事务对象
-        tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
-        //根据配置创建executor
-        final Executor executor = configuration.newExecutor(tx, execType);
-        //创建DefaultSqlSession
-        return new DefaultSqlSession(configuration, executor, autoCommit);
-    } catch (Exception e) {
-        closeTransaction(tx); // may have fetched a connection so lets call close()
-        throw ExceptionFactory.wrapException(&quot;Error opening session.  Cause: &quot; + e, e);
-    } finally {
-        ErrorContext.instance().reset();
-    }
-}
-</code></pre>
-
-<h3 id="toc_8">Mapper接口</h3>
-
-<p>在使用 Mapper 接口编程的时候，实际上 MyBatis 的内部，将对 Mapper 接口的调用转发给了 SqlSession，这个请求的转发是建立在 配置文件解读、动态代理增强的基础之上实现的，实现的过程有三个关键要素： </p>
-
-<ul>
-<li>找到 SqlSession 中对应的方法执行； </li>
-<li>找到命名空间和方法名（两维坐标）</li>
-<li>传递参数 </li>
-</ul>
-
-<h4 id="toc_9">如何获取Mapper接口</h4>
-
-<p>了解binding模块中如下几个关键类：</p>
-
-<ul>
-<li>MapperRegistry<br/>
-mapper 接口和对应的代理对象工厂的注册中心； </li>
-</ul>
-
-<pre><code class="language-java">/**
- * mapper 接口动态代理工厂类的注册中心。
- */
-public class MapperRegistry {
-
-    private final Configuration config;
-    // 存放MapperProxyFactory
-    private final Map&lt;Class&lt;?&gt;, MapperProxyFactory&lt;?&gt;&gt; knownMappers = new HashMap&lt;&gt;();
-
-    public MapperRegistry(Configuration config) {
-        this.config = config;
-    }
-
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
-        final MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
-        if (mapperProxyFactory == null) {
-            throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
-        }
-        try {
-            return mapperProxyFactory.newInstance(sqlSession);
-        } catch (Exception e) {
-            throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
-        }
-    }
-
-    public &lt;T&gt; boolean hasMapper(Class&lt;T&gt; type) {
-        return knownMappers.containsKey(type);
-    }
-
-    public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
-        if (type.isInterface()) {
-            if (hasMapper(type)) {
-                throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
-            }
-            boolean loadCompleted = false;
-            try {
-                knownMappers.put(type, new MapperProxyFactory&lt;&gt;(type));
-                MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
-                parser.parse();
-                loadCompleted = true;
-            } finally {
-                if (!loadCompleted) {
-                    knownMappers.remove(type);
-                }
-            }
-        }
-    }
-    
-    public Collection&lt;Class&lt;?&gt;&gt; getMappers() {
-        return Collections.unmodifiableCollection(knownMappers.keySet());
-    }
-
-    
-    public void addMappers(String packageName, Class&lt;?&gt; superType) {
-        ResolverUtil&lt;Class&lt;?&gt;&gt; resolverUtil = new ResolverUtil&lt;&gt;();
-        resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
-        Set&lt;Class&lt;? extends Class&lt;?&gt;&gt;&gt; mapperSet = resolverUtil.getClasses();
-        for (Class&lt;?&gt; mapperClass : mapperSet) {
-            addMapper(mapperClass);
-        }
-    }
-
-    public void addMappers(String packageName) {
-        addMappers(packageName, Object.class);
-    }
-
-}
-</code></pre>
-
-<ul>
-<li>MapperProxyFactory<br/>
-用于生成 mapper 接口动态代理的实例对象；保证 Mapper 实例对象是局部变量；</li>
-</ul>
-
-<pre><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
-
-    private final Class&lt;T&gt; mapperInterface;
-
-    private final Map&lt;Method, MapperMethodInvoker&gt; methodCache = new ConcurrentHashMap&lt;&gt;();
-
-    public MapperProxyFactory(Class&lt;T&gt; mapperInterface) {
-        this.mapperInterface = mapperInterface;
-    }
-
-    public Class&lt;T&gt; getMapperInterface() {
-        return mapperInterface;
-    }
-
-    public Map&lt;Method, MapperMethodInvoker&gt; getMethodCache() {
-        return methodCache;
-    }
-
-    protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
-        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
-    }
-
-    public T newInstance(SqlSession sqlSession) {
-        final MapperProxy&lt;T&gt; mapperProxy = new MapperProxy&lt;&gt;(sqlSession, mapperInterface, methodCache);
-        return newInstance(mapperProxy);
-    }
-
-}
-</code></pre>
-
-<ul>
-<li> MapperProxy<br/>
-实现了 InvocationHandler 接口，它是增强 mapper 接口的实现；</li>
-</ul>
-
-<pre><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
-
-    private static final long serialVersionUID = -4724728412955527868L;
-    private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
-            | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
-    private static final Constructor&lt;Lookup&gt; lookupConstructor;
-    private static final Method privateLookupInMethod;
-    //记录关联的sqlsession对象
-    private final SqlSession sqlSession;
-    //mapper接口对应的class对象；
-    private final Class&lt;T&gt; mapperInterface;
-    //key是mapper接口中的某个方法的method对象，value是对应的MapperMethodInvoker，封装了MapperMethod，MapperMethod对象不记录任何状态信息，所以它可以在多个代理对象之间共享
-    private final Map&lt;Method, MapperMethodInvoker&gt; methodCache;
-
-    public MapperProxy(SqlSession sqlSession, Class&lt;T&gt; mapperInterface, Map&lt;Method, MapperMethodInvoker&gt; methodCache) {
-        this.sqlSession = sqlSession;
-        this.mapperInterface = mapperInterface;
-        this.methodCache = methodCache;
-    }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        try {
-            if (Object.class.equals(method.getDeclaringClass())) {
-                return method.invoke(this, args);
-            } else {
-                return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
-            }
-        } catch (Throwable t) {
-            throw ExceptionUtil.unwrapThrowable(t);
-        }
-    }
-
-    private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
-        try {
-            return methodCache.computeIfAbsent(method, m -&gt; {
-                if (m.isDefault()) {
-                    try {
-                        if (privateLookupInMethod == null) {
-                            return new DefaultMethodInvoker(getMethodHandleJava8(method));
-                        } else {
-                            return new DefaultMethodInvoker(getMethodHandleJava9(method));
-                        }
-                    } catch (IllegalAccessException | InstantiationException | InvocationTargetException
-                            | NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
-                }
-            });
-        } catch (RuntimeException re) {
-            Throwable cause = re.getCause();
-            throw cause == null ? re : cause;
-        }
-    }
-
-    interface MapperMethodInvoker {
-        Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable;
-    }
-
-    private static class PlainMethodInvoker implements MapperMethodInvoker {
-        private final MapperMethod mapperMethod;
-
-        public PlainMethodInvoker(MapperMethod mapperMethod) {
-            super();
-            this.mapperMethod = mapperMethod;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
-            return mapperMethod.execute(sqlSession, args);
-        }
-    }
-
-    private static class DefaultMethodInvoker implements MapperMethodInvoker {
-        private final MethodHandle methodHandle;
-
-        public DefaultMethodInvoker(MethodHandle methodHandle) {
-            super();
-            this.methodHandle = methodHandle;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
-            return methodHandle.bindTo(proxy).invokeWithArguments(args);
-        }
-    }
-}
-</code></pre>
-
-<ul>
-<li> MapperMethod<br/>
-封装了 Mapper 接口中对应方法的信息，以及对应的 sql 语句的信息； 它是 mapper 接口与映射配置文件中 sql 语句的桥梁； MapperMethod 对象不记录任何 状态信息，所以它可以在多个代理对象之间共享；MapperMethod 内几个关键数据结构： 
-<ul>
-<li> SqlCommand 从 configuration 中获取方法的命名空间.方法名以及 SQL 语句的类型；
-<code>
-//sql节点的id： namespace+方法名<br/>
-private final String name;<br/>
-//是什么类型的sql（UNKNOWN, INSERT, UPDATE, DELETE, SELECT, FLUSH）<br/>
-private final SqlCommandType type;
-</code></li>
-<li> MethodSignature：封装 mapper 接口方法的相关信息（入参，返回类型）和ParamNameResolver信息(解析 mapper 接口方法中的入参，将多个参数转成 Map)</li>
-</ul></li>
-</ul>
-
-<p>看下MapperMethod的关键代码</p>
-
-<pre><code class="language-java">
-public Object execute(SqlSession sqlSession, Object[] args) {
-    Object result;
-    //判断是那种类型的SQL语句
-    switch (command.getType()) {
-        case INSERT: {
-           //解析参数
-            Object param = method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.insert(command.getName(), param));
-            break;
-        }
-        case UPDATE: {
-            Object param = method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.update(command.getName(), param));
-            break;
-        }
-        case DELETE: {
-            Object param = method.convertArgsToSqlCommandParam(args);
-            result = rowCountResult(sqlSession.delete(command.getName(), param));
-            break;
-        }
-        case SELECT:
-            if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
-                executeWithResultHandler(sqlSession, args);
-                result = null;
-            } else if (method.returnsMany()) {
-                result = executeForMany(sqlSession, args);
-            } else if (method.returnsMap()) {
-                result = executeForMap(sqlSession, args);
-            } else if (method.returnsCursor()) {
-                result = executeForCursor(sqlSession, args);
-            } else {
-                Object param = method.convertArgsToSqlCommandParam(args);
-                result = sqlSession.selectOne(command.getName(), param);
-                if (method.returnsOptional()
-                        &amp;&amp; (result == null || !method.getReturnType().equals(result.getClass()))) {
-                    result = Optional.ofNullable(result);
-                }
-            }
-            break;
-        case FLUSH:
-            result = sqlSession.flushStatements();
-            break;
-        default:
-            throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
-    }
-    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
-        throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName()
-                + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
-    }
-    return result;
-}
-</code></pre>
-
-<h2 id="toc_10">mybatis运行流程之数据访问阶段</h2>
-
-<p>在了解数据访问源码之前，先看下数据访问的时序图，如下图所示：</p>
-
-<p><img src="media/15889543782019/MyBatis%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E9%98%B6%E6%AE%B5.jpg" alt="MyBatis数据访问阶段"/></p>
-
-<h3 id="toc_11">ExeCutor组件</h3>
-
-<p>从图中看到访问数据是从SqlSession开始的，SqlSession的功能是给予ExeCutor来实现的，Executor是MyBatis的核心接口之一，定义了数据库操作的基本方法，遵循JDBC规范完成对数据库的访问，Executor类的继承关系如下图所示：<br/>
-<img src="media/15889543039853/Executor.png" alt="Executo"/></p>
-
-<ul>
-<li>ExeCutor<br/>
-MyBatis核心接口之一，定义了数据库操作的基本方法</li>
-<li>CachingExecutor<br/>
-使用装饰者模式，对真正提供数据库查询功能的Executor增强了二级缓存的能力，二级缓存在DefaultSqlSessionFactory.openSession()方法中完成初始化</li>
-<li>BaseExector<br/>
-实现了Executor接口大部分方法的抽象类，主要提供了缓存管理和事务管理能力，其它子类需要实现的抽象方法为doUpdate、doQuery等方法</li>
-<li>BatchExeCutor<br/>
-批量执行所有更新语句，在doQuery方法中实现批量执行多条SQL语句的能力，基于JDBC的batch操作实现批处理</li>
-<li>SimpleExecutor<br/>
-默认执行器，在doQuery方法中使用PrepareStatement对象访问数据库，每次执行都会创建一个statement，用完后关闭。</li>
-<li>ReuseExecutor<br/>
-可重用执行器，在doQuery方法中使用PrepareStatement对象访问数据库，将statement存入map中，操作map中的statement儿不会重复创建statement。</li>
-</ul>
-
-<h3 id="toc_12">Executor依赖的三个重要类</h3>
-
-<p>通过对SimpleExecutor.doQuery方法的解读发现，Executor负责调度3个类来完成数据库的访问工作，这3个类如下：</p>
-
-<ul>
-<li>StatementHandler<br/>
-使用数据库的Statement或PrepareStatement执行操作。</li>
-<li>ParameterHandler<br/>
-对预编译的sql语句进行参数设置，sql语句中的占位符 &#39;?&#39; 对对应BoundSql.parameterMappings集合中的一个元素，在该对象中记录了对应的参数名称一级该参数的相关属性</li>
-<li>ResultSetHandler<br/>
-对数据库返回的结果及ResultSet进行封装，返回用户指定的实体类型</li>
-</ul>
-
-<p><img src="media/15889543039853/%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.jpg" alt="数据访问执行流程"/></p>
-
-<h3 id="toc_13">StatementHandler</h3>
-
-<p>StatementHandler完成MyBatis最核心的工作，功能包括创建statement对象，为sql语句绑定参数，执行增删改查等sql语句、将结果集映射进行转化等。</p>
-
-<p><img src="media/15889543039853/StatementHandler.png" alt="StatementHandle"/></p>
-
-<ul>
-<li>BaseStatementHandler<br/>
-所有子类的抽象父类，定义了初始化 statement 的操作顺序，由 子类实现具体的实例化不同的 statement（模板模式）； </li>
-<li>RoutingStatementHandler<br/>
-Executor 组件真正实例化的子类，使用静态代理模式，根据上下文决定创建哪个具体实体类
-<ul>
-<li>RoutingStatementHandler 是在 Configuration 的 newStatementHandler 中创建的</li>
-<li> RoutingStatementHandler 在构造方法中， 根据上下文（配置）决定创建具体实现类</li>
-</ul></li>
-</ul>
-
-<pre><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-
-    switch (ms.getStatementType()) {
-        case STATEMENT:
-            delegate = new SimpleStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
-            break;
-        case PREPARED:
-            delegate = new PreparedStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
-            break;
-        case CALLABLE:
-            delegate = new CallableStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
-            break;
-        default:
-            throw new ExecutorException(&quot;Unknown statement type: &quot; + ms.getStatementType());
-    }
-
-}
-</code></pre>
-
-<ul>
-<li> SimpleStatmentHandler ：使用 statement 对象访问数据库，无须参数化； </li>
-<li> PreparedStatmentHandler ：使用预编译 PrepareStatement 对象访问数据库； </li>
-<li> CallableStatmentHandler ：调用存储过程；</li>
-</ul>
-
-<h3 id="toc_14">ResultHandler</h3>
-
-<p>映射规则匹配<br/>
-反射实例化对象<br/>
-根据规则填充属性值</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[mybatis反射模块分析]]></title>
-    <link href="http://www.throne4j.com/15889540064384.html"/>
-    <updated>2020-05-09T00:06:46+08:00</updated>
-    <id>http://www.throne4j.com/15889540064384.html</id>
-    <content type="html"><![CDATA[
-<p>反射是 Mybatis 模块中类最多的模块，通过反射实现了 POJO 对象的实例化和 POJO 的属性赋 值，相对 JDK 自带的反射功能，MyBatis 的反射模块功能更为强大，性能更高；反射模块关 键的几个类如下：</p>
-
-<ul>
-<li>ObjectFactory：MyBatis 每次创建结果对象的新实例时，它都会使用对象工厂 （ObjectFactory）去构建 POJO； </li>
-<li>ReflectorFactory：创建 Reflector 的工厂类，Reflector 是 MyBatis 反射模块的基础，每个 Reflector 对象都对应一个类，在其中缓存了反射操作所需要的类元信息；</li>
-<li>ObjectWrapper：对对象的包装，抽象了对象的属性信息，他定义了一系列查询对象属 性信息的方法，以及更新属性的方法； </li>
-<li>ObjectWrapperFactory： ObjectWrapper 的工厂类，用于创建 ObjectWrapper ； </li>
-<li>MetaObject：封装了对象元信息，包装了 MyBatis 中五个核心的反射类。也是提供给外 部使用的反射工具类，可以利用它可以读取或者修改对象的属性信息；</li>
-</ul>
-
-<pre><code class="language-java">public final class SystemMetaObject {
-  // 默认的ObjectFactory
-    public static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
-    // 默认的ObjectWrapperFactory
-    public static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
-    public static final MetaObject NULL_META_OBJECT = MetaObject.forObject(NullObject.class, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
-
-    private SystemMetaObject() {
-        // Prevent Instantiation of Static Class
-    }
-
-    private static class NullObject {
-    }
-
-    public static MetaObject forObject(Object object) {
-        return MetaObject.forObject(object, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
-    }
-
-}
-
-@Data
-public class RichType {
-    private RichType richType;
-    private String richField;
-    private String richProperty;
-    private Map richMap = new HashMap();
-}
-
-@Test
-void shouldGetAndSetField() {
-    RichType rich = new RichType();
-    MetaObject meta = SystemMetaObject.forObject(rich);
-    meta.setValue(&quot;richField&quot;, &quot;foo&quot;);
-    assertEquals(&quot;foo&quot;, meta.getValue(&quot;richField&quot;));
-}
-</code></pre>
 
 ]]></content>
   </entry>

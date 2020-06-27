@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    细说AbstractQueuedSynchronizer(AQS) - 大爷来玩儿啊~
+    AbstractQueuedSynchronizer(AQS) - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            细说AbstractQueuedSynchronizer(AQS)   
+                            AbstractQueuedSynchronizer(AQS)   
                       </h1>
                      
                     
@@ -190,7 +190,7 @@
 <p>LockSupport 增加了 park(Object blocker)、parkNanos(Object blocker,long nanos)和 parkUntil(Object blocker,long deadline)3 个方法，用于实现阻塞当前线程的功能，其中参数 blocker 是用来标识当前线程在等待的对象(以下称为阻塞对象)，线程被阻塞时记录此对象，以允许监视和诊断工具识别线程被阻塞的原因。<br/>
 关于LockSupport给出一个样例</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 先入先出的不可重入锁
  */
 public class FiFOMutex {
@@ -370,7 +370,7 @@ public class FiFOMutex {
 
 <p>开发者可以自定义同步器，例如：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 门闩锁
  */
 class BooleanLatch {
@@ -412,7 +412,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 
 <p>Node节点设计如下：</p>
 
-<pre><code class="language-java">static final class Node {
+<pre class="line-numbers"><code class="language-java">static final class Node {
         // 初始 共享模式节点
         static final Node SHARED = new Node();
         // 独占模式节点
@@ -497,7 +497,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 <strong>其次</strong>如果同步状态获取失败(tryAcquire 返回 false)，则构造同步节点(独占式 Node.EXCLUSIVE，同一时刻只能有一个线程成功获取同步状态)并通过 addWaiter(Node node)方法将该节点加入到同步队列的尾部，<br/>
 <strong>最后</strong>调用 acquireQueued(Node node,int arg)方法，使得该节点以“死循环” 的方式获取同步状态。如果获取不到则阻塞节点中的线程，而被阻塞线程的唤醒 主要依靠前驱节点的出队或阻塞线程被中断来实现。</p>
 
-<pre><code class="language-java">public final void acquire(int arg) {
+<pre class="line-numbers"><code class="language-java">public final void acquire(int arg) {
     if (!tryAcquire(arg) &amp;&amp; acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
         selfInterrupt();
 }
@@ -511,7 +511,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 
 <p>尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许，则应该获取它。需要我们自定义实现</p>
 
-<pre><code class="language-java">protected boolean tryAcquire(int arg) {
+<pre class="line-numbers"><code class="language-java">protected boolean tryAcquire(int arg) {
         throw new UnsupportedOperationException();
     }
 </code></pre>
@@ -525,7 +525,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 <p>在 enq(final Node node)方法中，同步器通过“死循环”来保证节点的正确添加，这个死循环中，做了两件事，第一件，如果队列为空，初始化队列，new 出一个空节点，并让首节点(head)和尾节点(tail)两个引用都指向这个空节点; 第二件事，把当前节点加入队列。<br/>
 在“死循环”中只有通过 CAS 将节点设置成为尾节点之后，当前线程才能从 该方法返回，否则，当前线程不断地尝试设置。</p>
 
-<pre><code class="language-java">private Node addWaiter(Node mode) {
+<pre class="line-numbers"><code class="language-java">private Node addWaiter(Node mode) {
     Node node = new Node(Thread.currentThread(), mode);
     // 尝试一次快速排队操作，失败的话，enq来补位。
     Node pred = tail;
@@ -571,7 +571,7 @@ private Node enq(final Node node) {
 第二，维护同步队列的 FIFO 原则。<br/>
 当前线程获取到同步状态后，让首节点(head)这个引用指向自己所在节点。 当同步状态获取成功后，当前线程就从 acquire 方法返回了。如果同步器实现的 是锁，那就代表当前线程获得了锁。</p>
 
-<pre><code class="language-java">final boolean acquireQueued(final Node node, int arg) {
+<pre class="line-numbers"><code class="language-java">final boolean acquireQueued(final Node node, int arg) {
     boolean failed = true;
     try {
         boolean interrupted = false;
@@ -601,7 +601,7 @@ private Node enq(final Node node) {
 
 <p>当前线程获取同步状态并执行了相应逻辑之后，就需要释放同步状态，使得后续节点能够继续获取同步状态。通过调用同步器的 release(int arg)方法可以释 放同步状态，该方法在释放了同步状态之后，会唤醒其后继节点(进而使后继节 点重新尝试获取同步状态)。</p>
 
-<pre><code class="language-java">public final boolean release(int arg) {
+<pre class="line-numbers"><code class="language-java">public final boolean release(int arg) {
     if (tryRelease(arg)) {
         Node h = head;
         if (h != null &amp;&amp; h.waitStatus != 0)
@@ -614,7 +614,7 @@ private Node enq(final Node node) {
 
 <p>该方法执行时，会唤醒首节点(head)所指向节点的后继节点线程， unparkSuccessor(Node node)方法使用 LockSupport 来唤醒处于等待状态的线程。</p>
 
-<pre><code class="language-java">private void unparkSuccessor(Node node) {
+<pre class="line-numbers"><code class="language-java">private void unparkSuccessor(Node node) {
         int ws = node.waitStatus;
         if (ws &lt; 0)
             compareAndSetWaitStatus(node, ws, 0);
@@ -642,7 +642,7 @@ private Node enq(final Node node) {
 <p>因此，在共享式获取的自旋过程中，成功获取到同步状态并退出自旋的条件就是 tryAcquireShared(int arg)方法返回值大于 等于 0。可以看到，在 doAcquireShared(int arg)方法的自旋过程中，如果当前节<br/>
   点的前驱为头节点时，尝试获取同步状态，如果返回值大于等于 0，表示该次获 取同步状态成功并从自旋过程中退出。</p>
 
-<pre><code class="language-java">public final void acquireShared(int arg) {
+<pre class="line-numbers"><code class="language-java">public final void acquireShared(int arg) {
     // tryAcquireShared共享方式尝试获取资源。负数表示失败；0表示成功获得同步状态，但没有剩余可用资源；正数表示成功，且有剩余资源。
     if (tryAcquireShared(arg) &lt; 0)
         doAcquireShared(arg);
@@ -651,7 +651,7 @@ private Node enq(final Node node) {
 
 <p>我们看下doAcquireShared(int arg)方法的实现</p>
 
-<pre><code class="language-java">// 以共享不可中断模式获取。
+<pre class="line-numbers"><code class="language-java">// 以共享不可中断模式获取。
 private void doAcquireShared(int arg) {
     // 构建当前线程的共享节点
     final Node node = addWaiter(Node.SHARED);
@@ -703,7 +703,7 @@ private void setHeadAndPropagate(Node node, int propagate) {
 
 <p>该方法在释放同步状态之后，将会唤醒后续处于等待状态的节点。对于能够 支持多个线程同时访问的并发组件(比如 Semaphore)，它和独占式主要区别在 于 tryReleaseShared(int arg)方法必须确保同步状态(或者资源数)线程安全释放， 一般是通过循环和 CAS 来保证的，因为释放同步状态的操作会同时来自多个线程。</p>
 
-<pre><code class="language-java">private void doReleaseShared() {
+<pre class="line-numbers"><code class="language-java">private void doReleaseShared() {
         
         for (; ; ) {
             Node h = head;
@@ -729,7 +729,7 @@ private void setHeadAndPropagate(Node node, int propagate) {
 
 <h3 id="toc_12">下面实现一个共享锁，代码如下：</h3>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 共享锁简单实现
  **/
 public class SimpleShareLock implements Lock {
@@ -847,7 +847,7 @@ public class SimpleShareLock implements Lock {
 
 <p>ConditionObject 是同步器的条件实现。</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * 条件等待
  */
 public final void await() throws InterruptedException {

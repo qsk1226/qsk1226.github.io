@@ -195,7 +195,7 @@
 <li>AbstractFactory：抽象工厂</li>
 </ul>
 
-<pre><code class="language-java">public abstract class AbstractComputerFactory {
+<pre class="line-numbers"><code class="language-java">public abstract class AbstractComputerFactory {
 
     /**
      * cpu
@@ -213,7 +213,7 @@
 <li>ConcreteFactory：具体工厂</li>
 </ul>
 
-<pre><code class="language-java">public class GameComputerFactory extends AbstractComputerFactory {
+<pre class="line-numbers"><code class="language-java">public class GameComputerFactory extends AbstractComputerFactory {
 
     @Override
     Cpu createCpu() {
@@ -244,7 +244,7 @@ public class OfficeComputerFactory extends AbstractComputerFactory{
 <li>AbstractProduct：抽象产品</li>
 </ul>
 
-<pre><code class="language-java">public interface Cpu {
+<pre class="line-numbers"><code class="language-java">public interface Cpu {
     /**
      * 计算
      */
@@ -264,7 +264,7 @@ public interface Memory {
 <li>Product：具体产品</li>
 </ul>
 
-<pre><code class="language-java">public class AMDCpu implements Cpu {
+<pre class="line-numbers"><code class="language-java">public class AMDCpu implements Cpu {
     @Override
     public long calculate() {
         System.out.println(&quot;飞机以300公里每小时速度前进&quot;);
@@ -296,7 +296,7 @@ public class KingstonMemory implements Memory {
 <li>client</li>
 </ul>
 
-<pre><code class="language-java">@Test
+<pre class="line-numbers"><code class="language-java">@Test
 public void testFactory() {
     AbstractComputerFactory factory = new GameComputerFactory();
     Cpu cpu = factory.createCpu();

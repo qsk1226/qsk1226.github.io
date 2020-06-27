@@ -125,7 +125,7 @@
 <p>c查看<br/>
 show global variables like &quot;%binlog_format%&quot;;</p>
 
-<pre><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
+<pre class="line-numbers"><code class="language-text">mysqlbinlog -u temp_admin  -h psi.mysql.test.tcit.cc -P 3306 --read-from-remote-server -p  --base64-output=&quot;decode-rows&quot; -v  --start-datetime=&#39;2020-04-01 14:00:00&#39; --stop-datetime=&#39;2020-04-01 16:00:00&#39;  mysql-bin.000030 &gt; xxx.txt
 </code></pre>
 
                   </article>

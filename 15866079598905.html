@@ -158,7 +158,7 @@
 <p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。<br/>
 OutOfMemoryError：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * jvm栈OOM(此操作可能拖垮cpu，请谨慎执行)
  * -Xss256k
  **/
@@ -177,7 +177,7 @@ public class StackOOMErrorMock {
 
 <p>StackOverFlowError：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * StackOverFlowError
  * -Xss256k 栈大小
  */
@@ -219,7 +219,7 @@ public class StackOverFlowMock {
 
 <p>可引起OutOfMemoryError异常</p>
 
-<pre><code class="language-java">
+<pre class="line-numbers"><code class="language-java">
 /**
  * OOM 异常 -Xms5m -Xmx5m
  */
@@ -251,7 +251,7 @@ jdk8之后移除永久代而采用了本地内存来实现方法区，理论上�
 
 <p>可引起OutOfMemoryError异常：</p>
 
-<pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
+<pre class="line-numbers"><code class="language-java">import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
@@ -296,7 +296,7 @@ public class MetaSpaceMemory {
 
 <p>可引起OutOfMemoryError异常：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * jdk1.6之前 -XX:PermSize=6M -XX:MaxPermSize=6M
  * jdk1.6之后 -Xmx6M
  **/
@@ -321,7 +321,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 
 <p>OOM异常：</p>
 
-<pre><code class="language-java">/**
+<pre class="line-numbers"><code class="language-java">/**
  * -XX:MaxDirectMemorySize=5M -Xmx20M
  **/
 public class DirectMemoryOOMMock {
