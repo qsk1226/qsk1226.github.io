@@ -343,19 +343,140 @@ typedef struct zskiplist {
 
 <h3 id="toc_9">压缩列表 ziplist</h3>
 
-<p>压缩列表ziplist本质上就是一个字节数组，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。</p>
+<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。</p>
 
-<h3 id="toc_10">字典</h3>
+<h4 id="toc_10">压缩列表 ziplist 存储结构</h4>
 
-<h3 id="toc_11">整数集合</h3>
+<p>压缩列表 结构示意图如下：<br/>
+<img src="media/15930711977940/15932748544287.jpg" alt="" style="width:856px;"/></p>
 
-<h3 id="toc_12">quicklist</h3>
+<ul>
+<li>zlbytes： 占4个字节，压缩列表的字节长度，因此压缩列表最多有232 -1个字节。</li>
+<li>zltail： 占4个字节,压缩列表尾元素相对于压缩列表起始地址的偏移量。</li>
+<li>zllen： 占2个字节,压缩列表的元素个数。zllen无法存储元素个数超过65535（216 -1）的压缩列表，必须遍历整个压缩列表才能获取到元素个数。</li>
+<li>entryX： 压缩列表存储的元素，可以是字节数组或者整数，长度不限。</li>
+<li>zlend： 占1个字节，压缩列表的结尾，恒为0xFF。</li>
+</ul>
 
-<h3 id="toc_13">stream</h3>
+<p>查看一个压缩列表示例：</p>
+
+<p><img src="media/15930711977940/15932741442146.jpg" alt="" style="width:888px;"/></p>
+
+<p>了解了压缩列表的基本结构，我们可以很容易地获得压缩列表的字节长度、元素个数等，那么如何遍历压缩列表呢？对于任意一个元素，我们如何判断其存储的是什么类型呢？我们又如何获取字节数组的长度呢？</p>
+
+<p><strong>压缩列表元素</strong>的结构示意图如下所示：<br/>
+<img src="media/15930711977940/15932749731815.jpg" alt="" style="width:900px;"/></p>
+
+<p>previous_entry_length 字段表示前一个元素的字节长度，占1个或者5个字节，</p>
+
+<ul>
+<li>当前一个元素的长度小于254字节时，用1个字节表示；</li>
+<li>当前一个元素的长度大于或等于254字节时，用5个字节来表示。而此时previous_entry_length字段的第1个字节是固定的0xFE，后面4个字节才真正表示前一个元素的长度。<br/>
+假设已知当前元素的首地址为p，那么p - previous_entry_length就是前一个元素的首地址，从而实现压缩列表从尾到头的遍历。</li>
+</ul>
+
+<p>encoding字段表示当前元素的编码，即content字段存储的数据类型（整数或者字节数组），数据内容存储在content字段。为了节约内存，encoding字段同样长度可变。</p>
+
+<p>压缩列表元素的编码如下表所示：</p>
+
+<table>
+<thead>
+<tr>
+<th>encoding编码</th>
+<th>encoding 长度</th>
+<th>content类型</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>00 bbbbbb (6 比特表示content长度)</td>
+<td>1字节</td>
+<td>最大长度为63的字节数组</td>
+</tr>
+<tr>
+<td>01 bbbbbb xxxxxxxx (14比特表示content 长度)</td>
+<td>2字节</td>
+<td>最大长度为2<sup>14</sup> -1 的字节数组</td>
+</tr>
+<tr>
+<td>10 aaaaaaaa bbbbbbbb cccccccc dddddddd (32比特表示 content长度)</td>
+<td>5字节</td>
+<td>最大长度为2<sup>32</sup> -1 的字节数组</td>
+</tr>
+<tr>
+<td>11 00 0000</td>
+<td>1字节</td>
+<td>int 16整数</td>
+</tr>
+<tr>
+<td>11 01 0000</td>
+<td>1字节</td>
+<td>int 32整数</td>
+</tr>
+<tr>
+<td>11 10 0000</td>
+<td>1字节</td>
+<td>int 64整数</td>
+</tr>
+<tr>
+<td>11 11 0000</td>
+<td>1字节</td>
+<td>24位整数</td>
+</tr>
+<tr>
+<td>11 11 1110</td>
+<td>1字节</td>
+<td>8位 整数</td>
+</tr>
+<tr>
+<td>11 11 xxxx</td>
+<td>1字节</td>
+<td>没有 content 字段 xxxx 表示 0~12的整数，数据直接存储在encoding字段的最后4位</td>
+</tr>
+</tbody>
+</table>
+
+<p>Redis 定义的 encoding 字段的各个编码类型：</p>
+
+<pre class="line-numbers"><code class="language-c">#define ZIP_STR_06B (0 &lt;&lt; 6) 
+#define ZIP_STR_14B (1 &lt;&lt; 6) 
+#define ZIP_STR_32B (2 &lt;&lt; 6) 
+#define ZIP_INT_16B (0xc0 | 0&lt;&lt;4) 
+#define ZIP_INT_32B (0xc0 | 1&lt;&lt;4) 
+#define ZIP_INT_64B (0xc0 | 2&lt;&lt;4) 
+#define ZIP_INT_24B (0xc0 | 3&lt;&lt;4) 
+#define ZIP_INT_8B 0xfe
+</code></pre>
+
+<p>由于previous_entry_length存储前一个元素的字节长度，长度占1个或5个字节，为了能存储前一个元素的字节长度，在更新压缩列表过程中可能会出现一种被称为“连锁更新”的现象，Redis 在删除和插入元素操作的末尾检查是需要更新后续元素的 previous_entry_length字段，不过其造成性能问题的几率很低</p>
+
+<h4 id="toc_11">压缩列表 ziplist 的结构体</h4>
+
+<p>我们发现对于压缩列表的任意元素，获取前一个元素的长度、判断存储的数据类型、获取数据内容都需要经过复杂的解码运算。解码后的结果应该被缓存起来，为此定义了结构体zlentry，用于表示解码后的压缩列表元素。</p>
+
+<pre class="line-numbers"><code class="language-c">typedef struct zlentry {
+    unsigned int prevrawlensize;    //previous_entry_length 字段的长度
+    unsigned int prevrawlen;    //previous_entry_length 字段存储的内容
+    unsigned int lensize;   //encoding 字段的长度
+    unsigned int len;   //encoding 元素数据内容的长度
+    unsigned char encoding;     //encoding中 数据类型
+    unsigned int headersize;    // 表示当前元素的首部长度，即previous_entry_lengh字段长度与encoding字段长度之和
+    unsigned char *p;   //当前元素首地址
+} zlentry;
+</code></pre>
+
+<h3 id="toc_12">字典</h3>
+
+<h3 id="toc_13">整数集合</h3>
+
+<h3 id="toc_14">quicklist</h3>
+
+<h3 id="toc_15">stream</h3>
 
 <hr/>
 
-<h2 id="toc_14">三、Redis数据类型</h2>
+<h2 id="toc_16">三、Redis数据类型</h2>
 
 <p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
 
@@ -405,19 +526,19 @@ typedef struct zskiplist {
 <li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
 </ul>
 
-<h3 id="toc_15">Redis 中的 string 字符串</h3>
+<h3 id="toc_17">Redis 中的 string 字符串</h3>
 
 <p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
 
 <p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。字符串值robj的type值为OBJ_STRING。当字符串值是string类型时，encoding的值根据字符串的长短分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
 
-<h3 id="toc_16">Redis 中的 list 列表</h3>
+<h3 id="toc_18">Redis 中的 list 列表</h3>
 
 <p>列表使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
 
 <p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
 
-<h4 id="toc_17">Redis 链表结构如下：</h4>
+<h4 id="toc_19">Redis 链表结构如下：</h4>
 
 <pre class="line-numbers"><code class="language-c">typedef struct listNode{
 //前置节点
@@ -429,7 +550,7 @@ void *value
 }
 </code></pre>
 
-<h4 id="toc_18">Redis 链表实现的特性</h4>
+<h4 id="toc_20">Redis 链表实现的特性</h4>
 
 <ul>
 <li>双端<br/>
@@ -444,20 +565,20 @@ void *value
 链表节点使用void* 指针来保存节点值，并且可以通过list结构的dup、free、match三个属性为节点值设置类型特定函数，所以链表可以用于存放各种不同类型的值</li>
 </ul>
 
-<h3 id="toc_19">Redis 中的 set 集合</h3>
+<h3 id="toc_21">Redis 中的 set 集合</h3>
 
-<h3 id="toc_20">Redis 中的 zset 集合</h3>
+<h3 id="toc_22">Redis 中的 zset 集合</h3>
 
-<p>当有序集合或散列表的元素个数比较少，且元素都是短字符串时，Redis便使用压缩列表作为其底层数据存储结构<br/>
+<p>当有序集合或散列表的元素个数比较少，且元素都是短字符串时，Redis便使用压缩列表作为其底层数据存储结构，<br/>
 跳跃表是 Redis 有序集合的底层实现之一，所以每个节点的 ele 存储的有序集合成员 member 值，score 存储成员 score 值。所有节点的分支是按从小到大的方式排序的，当有序集合的成员分值相同时，节点会按照 member 的字典序进行排序。</p>
 
 <hr/>
 
-<h2 id="toc_21">第三节、redis命令</h2>
+<h2 id="toc_23">第三节、redis命令</h2>
 
 <p>Redis 服务的相关命令十分丰富，有种头疼的感觉，有意学习所有命令的同学查看网址<a href="http://www.redis.cn/commands.html">redis命令中心</a>，下面只记录一些常用的命令</p>
 
-<h3 id="toc_22">Redis 通用命令</h3>
+<h3 id="toc_24">Redis 通用命令</h3>
 
 <table>
 <thead>
@@ -610,7 +731,7 @@ void *value
 <pre class="line-numbers"><code class="language-cmd">config set requirepass 123456 
 </code></pre>
 
-<h3 id="toc_23">string 相关命令</h3>
+<h3 id="toc_25">string 相关命令</h3>
 
 <table>
 <thead>
@@ -742,7 +863,7 @@ void *value
 <p>此外还有一种字符串的位操作：<br/>
 位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
 
-<h3 id="toc_24">list 相关命令</h3>
+<h3 id="toc_26">list 相关命令</h3>
 
 <p>每条命令操作之前 myList被设置为[list3,list2,list1]</p>
 
@@ -850,7 +971,7 @@ void *value
 </tbody>
 </table>
 
-<h3 id="toc_25">set 相关命令</h3>
+<h3 id="toc_27">set 相关命令</h3>
 
 <table>
 <thead>
@@ -866,7 +987,7 @@ void *value
 </tbody>
 </table>
 
-<h3 id="toc_26">zset 相关命令</h3>
+<h3 id="toc_28">zset 相关命令</h3>
 
 <table>
 <thead>
@@ -882,7 +1003,7 @@ void *value
 </tbody>
 </table>
 
-<h3 id="toc_27">hash 相关命令</h3>
+<h3 id="toc_29">hash 相关命令</h3>
 
 <table>
 <thead>
