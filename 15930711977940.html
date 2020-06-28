@@ -97,7 +97,7 @@
                                  <span class="date">2020/06/25</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='redis-1.html'>redis</a></span>
+                                      <span class="posted-in"><a href='redis.html'>redis</a></span>
                                          
                                   
 
@@ -248,11 +248,11 @@ robj结构体如下所示：</p>
 </tr>
 <tr>
 <td>quickList</td>
-<td>快速列表</td>
+<td>列表</td>
 </tr>
 <tr>
 <td>字典</td>
-<td>字典</td>
+<td>集合、散列表、有序集合</td>
 </tr>
 <tr>
 <td>压缩列表</td>
@@ -466,7 +466,59 @@ typedef struct zskiplist {
 } zlentry;
 </code></pre>
 
-<h3 id="toc_12">字典</h3>
+<h3 id="toc_12">字典 Dict</h3>
+
+<p>字典又称为散列表，是用来存储键值 (key-value) 对的一种数据结构，Redis 是K-V 型数据库，任何的增删改查操作实际上都是对字典中的数据进行增删改查操作。</p>
+
+<p>Redis 字典实现依赖的数据结构主要包含了三部分：字典、Hash表、Hash表节点。字典中嵌入了两个 Hash 表，Hash 表中的table字段存放 Hash 表节点，Hash 表节点对应存储的是键值对。</p>
+
+<ul>
+<li>Hash表的数据结构如下：</li>
+</ul>
+
+<pre class="line-numbers"><code class="language-c">typedef struct dictht {     
+    dictEntry **table;                /* 指针数组，用于存储键值对*/     
+    unsigned long size;                /* table数组的总大小*/     
+    unsigned long sizemask;        /* 掩码 = size - 1 ，用来计算键的索引值*/     
+    unsigned long used;                /* table数组已存元素个数，包含next单链表的数据*/ 
+} dictht;
+</code></pre>
+
+<ul>
+<li>Hash 表节点的数据结构如下：</li>
+</ul>
+
+<pre class="line-numbers"><code class="language-c">typedef struct dictEntry {     
+    void *key;                        /*存储键*/     
+    union {         
+        void *val;                        /*db.dict中的val*/         
+        uint64_t u64;         
+        int64_t s64;                /*db.expires中存储过期时间*/         
+        double d;     
+    } v;                                /*值，是个联合体*/     
+    struct dictEntry *next;        /*当Hash冲突时，指向冲突的元素，形成单链表*/ 
+} dictEntry;
+</code></pre>
+
+<ul>
+<li>最外层的 字典 Dict 数据结构 如下：</li>
+</ul>
+
+<pre class="line-numbers"><code class="language-c">typedef struct dict {     
+    dictType *type;           /*该字典对应的一组特定操作抽象函数*/     
+    void *privdata;           /*该字典依赖的数据，配合type字段指向的函数一起使用*/     
+    dictht ht[2];               /*  Hash 表的数组，键值对存储在这里，一般情况下只会使用ht[0]，只有当盖子点扩容、缩容需要进行rehash ，才会使用到ht[1]*/     
+    long rehashidx;            /*rehash标识。默认值为-1，代表没进行rehash操作；不为-1时，代表正进行rehash操作，存储的值表示Hash表ht[0]的rehash操作进行到了哪个索引值*/     
+    unsigned long iterators; /* 当前运行的迭代器数*/ 
+} dict;
+</code></pre>
+
+<p>Redis字典这个数据结构，除了主数据库的K-V数据存储外，还有很多其他地方会用到。例如，Redis的哨兵模式，就用字典存储管理所有的Master节点及Slave节点；再如，数据库中键值对的值为Hash类型时，存储这个Hash类型的值也是用的字典。在不同的应用中，字典中的键值对形态都可能不同，而dictType结构体，则是为了实现各种形态的字典而抽象出来的一组操作函数。</p>
+
+<p>Redis 字典结构的完整版<br/>
+<img src="media/15930711977940/15933377033789.jpg" alt=""/></p>
+
+<p><strong><em>在Hash 表扩容或者收缩的时候，程序需要将现有的哈希表中的所有键值对rehash 到新的 Hash表里面，此rehash 过程不是一次性完成的，而是渐进式的完成。</em></strong></p>
 
 <h3 id="toc_13">整数集合</h3>
 
@@ -596,6 +648,12 @@ void *value
 <td>查看所有键</td>
 <td>keys *</td>
 <td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>hscan</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td>dbsize</td>
@@ -865,7 +923,8 @@ void *value
 
 <h3 id="toc_26">list 相关命令</h3>
 
-<p>每条命令操作之前 myList被设置为[list3,list2,list1]</p>
+<p>Redis列表对象的底层数据结构是quicklist，下面看下list 列表的相关命令<br/>
+每条命令操作之前 myList被设置为[list3,list2,list1]</p>
 
 <table>
 <thead>
@@ -883,6 +942,12 @@ void *value
 <td>lpop的阻塞版本</td>
 <td>blpop myList 0</td>
 <td>调用返回key和左边第一个元素的组合 myList、list3</td>
+</tr>
+<tr>
+<td>brpop key [key ...] timeout</td>
+<td>rpop的阻塞版本</td>
+<td>brpop myList</td>
+<td>没元素的话阻塞在key的列表上</td>
 </tr>
 <tr>
 <td>lindex key index</td>
@@ -904,7 +969,7 @@ void *value
 </tr>
 <tr>
 <td>lpop key</td>
-<td>从队列的左边出队一个元素</td>
+<td>从队列的左边出队并返回一个元素，列表为空时返回nil</td>
 <td>lpop myList</td>
 <td>返回并删除了第一个元素list3</td>
 </tr>
@@ -946,7 +1011,7 @@ void *value
 </tr>
 <tr>
 <td>rpop key</td>
-<td>从列表右边出队并返回一个元素</td>
+<td>从列表右边出队并返回一个元素，列表为空时返回nil</td>
 <td>rpop myList</td>
 <td>列表被编辑为 [list3,list2]</td>
 </tr>
@@ -961,12 +1026,6 @@ void *value
 <td>列表如果存在，则从列表右边入队一个元素</td>
 <td>rpushx myList leng</td>
 <td>列表被编辑为 [list3,list2,list1,leng]，如果myList不存在，啥都不干</td>
-</tr>
-<tr>
-<td>brpop key [key ...] timeout</td>
-<td>rpop的阻塞版本</td>
-<td>brpop myList</td>
-<td>没元素的话阻塞在key的列表上</td>
 </tr>
 </tbody>
 </table>
