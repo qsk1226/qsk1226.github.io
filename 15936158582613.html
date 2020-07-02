@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    四、Redis 基本数据类型与其命令 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            四、Redis 基本数据类型与其命令   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/07/01</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
+
+<p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
+
+<h2 id="toc_0">Redis数据类型</h2>
+
+<p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
+
+<table>
+<thead>
+<tr>
+<th>结构类型</th>
+<th>结构存储的值</th>
+<th>结构的读写能力</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>string</td>
+<td>可以使字符串、整数或者浮点数</td>
+<td>对整个字符串或字符串的一部分执行操作；对证书和浮点数执行自增、自减操作</td>
+</tr>
+<tr>
+<td>list</td>
+<td>底层由链表实现，每个节点都包含一个字符串</td>
+<td>从列表的两端推入或者弹出元素；根据偏移量对列表进行修改；读取单个或多个元素；根据值查询或者移除元素</td>
+</tr>
+<tr>
+<td>set</td>
+<td>不重复的无序集合</td>
+<td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
+</tr>
+<tr>
+<td>zset</td>
+<td>不可重复的有序集合，字符串成员(member)于浮点数分支(score)之间的有序映射，元素的排列顺序由分值的大小决定</td>
+<td>添加、获取、移除单个元素；根据分值范围(range)或者成员来获取元素</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>包含键值对的无序散列表</td>
+<td>添加、获取、移除单个键值对；获取所有键值对</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>关于key的几条建议</strong></p>
+
+<ul>
+<li>不建议太长的键值，原因：1、消耗内存；2、这类键值计算成本很高</li>
+<li>不建议太短的键值，设计键值要有良好的可读性，太短的话，看不懂就有点尴尬了</li>
+<li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
+</ul>
+
+<h3 id="toc_1">Redis 中的 string 字符串</h3>
+
+<p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
+
+<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。字符串值robj的type值为OBJ_STRING。当字符串值是string类型时，encoding的值根据字符串的长短分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
+
+<h3 id="toc_2">Redis 中的 list 列表</h3>
+
+<p>列表使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
+
+<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
+
+<h4 id="toc_3">Redis 链表结构如下：</h4>
+
+<pre class="line-numbers"><code class="language-c">typedef struct listNode{
+//前置节点
+struct listNode *prev
+//后置节点
+struct listNode *next
+// 节点值
+void *value
+}
+</code></pre>
+
+<h4 id="toc_4">Redis 链表实现的特性</h4>
+
+<ul>
+<li>双端<br/>
+链表节点带有prev和next指针，获取某个节点的前置节点和后置节点的复杂度都是O(1)</li>
+<li>无环<br/>
+表 头结点的prev指针和表尾的next指针都指向null，对链表的访问以null为终点</li>
+<li>带表头指针和表尾指针<br/>
+通过list结构的head指针和tail指针，程序获取链表的头结点和尾结点的复杂度为O(1)</li>
+<li>带链表长度计数器<br/>
+程序使用list结构的len属性来对list吃鱼哦的链表节点进行计数，程序获取链表中节点数量的复杂度为O(1)</li>
+<li>多态<br/>
+链表节点使用void* 指针来保存节点值，并且可以通过list结构的dup、free、match三个属性为节点值设置类型特定函数，所以链表可以用于存放各种不同类型的值</li>
+</ul>
+
+<h3 id="toc_5">Redis 中的 set 集合</h3>
+
+<h3 id="toc_6">Redis 中的 zset 集合</h3>
+
+<p>当有序集合或散列表的元素个数比较少，且元素都是短字符串时，Redis便使用压缩列表作为其底层数据存储结构，<br/>
+跳跃表是 Redis 有序集合的底层实现之一，所以每个节点的 ele 存储的有序集合成员 member 值，score 存储成员 score 值。所有节点的分支是按从小到大的方式排序的，当有序集合的成员分值相同时，节点会按照 member 的字典序进行排序。</p>
+
+<hr/>
+
+<h3 id="toc_7">Redis 通用命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>keys parttern</td>
+<td>查看所有键</td>
+<td>keys *</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>hscan</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>dbsize</td>
+<td>查看键总数</td>
+<td>dbsize</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>expire key seconds</td>
+<td>设置键的过期时间</td>
+<td>expire mykey 10</td>
+<td>mykey键值对 10秒后过期</td>
+</tr>
+<tr>
+<td>persist key</td>
+<td>删除key的过期时间，使key长期有效</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ttl [key]</td>
+<td>查看键所剩的过期时间</td>
+<td>ttl mykey</td>
+<td>查看设置过期时间的键所剩过期时间还有几秒</td>
+</tr>
+<tr>
+<td>exists key</td>
+<td>查看key是否存在</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>flushall</td>
+<td>清除所有库的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>flushdb dbIndex</td>
+<td>清除指定index的库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>select dbIndex</td>
+<td>选定指定dbIndex的库</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>type [key]</td>
+<td>查看键的数据结构类型</td>
+<td>type mykey</td>
+<td>键不存在返回 nil</td>
+</tr>
+<tr>
+<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
+<td>查看数据库的值对象编码</td>
+<td>object e</td>
+<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
+</tr>
+<tr>
+<td>rename key newkey</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>renamenx key newkey</td>
+<td>重命名后的key不存在时才能执行成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>scan cursor [MATCH parttern] [COUNT count]</td>
+<td></td>
+<td></td>
+<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
+</tr>
+<tr>
+<td>randomkey</td>
+<td>随机取键</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>del key [key ...</td>
+<td>同步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>unlink key [key ...]</td>
+<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>dump key</td>
+<td>序列化key并返回序列化后的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>restore key ttl serialized-value [replace]</td>
+<td>反序列化serialized-value，并与key关联</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>move key dbIndex</td>
+<td>将key移动到另一个数据库</td>
+<td>move mykey 3</td>
+<td>移动mykey到3号数据库</td>
+</tr>
+<tr>
+<td>migrate</td>
+<td>将指定 key 迁移到另一个 Redis 实例</td>
+<td></td>
+<td>用于运维数据迁移数据</td>
+</tr>
+<tr>
+<td>sort key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]</td>
+<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
+<td></td>
+<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
+</tr>
+</tbody>
+</table>
+
+<p>设置临时密码：</p>
+
+<pre class="line-numbers"><code class="language-cmd">config set requirepass 123456 
+</code></pre>
+
+<h3 id="toc_8">string 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>设置</td>
+<td>SET key value [NX] [XX] [EX seconds] [PX milliseconds]</td>
+<td>设置存储在给定键中的值</td>
+<td>set mykey  myvalue</td>
+<td>·NX： 当数据库中key不存在时，可以将key-value添加到数据库。·XX： 当数据库中key存在时，可以将key-value设置到数据库，与NX参数互斥。·EX： key的超时秒数。·PX： key的超时毫秒数，与EX参数互斥。</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>mset key value [key value ...]</td>
+<td>设置多个key-value，如果key之前存在，则使用新的value进行覆盖</td>
+<td>mset idear1 eat idear2 play</td>
+<td>设置键值对 idear1 : ear 、 idear2  : play</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setex key second value</td>
+<td>设置key-value并设置过期时间(单位：秒)</td>
+<td>setex mykey 10  hungry</td>
+<td>设置的mykey : hungry 10秒钟后过期，10秒后get mykey 返回 nil；</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setnx key value</td>
+<td>只有key不存在时才会设置key-value</td>
+<td>setnx mykey myvalue</td>
+<td>如果mykey不存在则设置，如果存在不执行覆盖操作</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>msetnx key value [key value ...]</td>
+<td>当所有的key都不存在时才会设置这些key-value</td>
+<td>msetnx mykey1 myvalue1 mykey2 myvalue2</td>
+<td>所有的key都不存在设置这些个key-value</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>get key</td>
+<td>获取存储在给定键中的值</td>
+<td>get mykey</td>
+<td>返回myvalue</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>mget key [key...]</td>
+<td>获取多个key</td>
+<td>mget mykey1 mykey2</td>
+<td>获取mykey1、mykey2的值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>getrange key start end</td>
+<td>获取存储在给定键中的值的某一段</td>
+<td>get mykey 0 -2</td>
+<td>返回myvalue 值递第一位置至倒数第二位置的value 值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>strlen</td>
+<td>获取指定key的长度</td>
+<td>strlen mykey</td>
+<td>复杂度为O(1)</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>append key value</td>
+<td>追加一个值到key上</td>
+<td>append mykey tony</td>
+<td>添加完tony之后运行get mykey 得到结果 myvalue tony</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>decr key</td>
+<td>整数原子减 1</td>
+<td>decr mykey</td>
+<td>如果mykey原先不存在，在减1之前，age会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>decrby key decrement</td>
+<td>整数原子减指定整数</td>
+<td>decrby mykey</td>
+<td>如果mykey原先不存在，在减decrement之前，mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>incr key</td>
+<td>整数原子加1</td>
+<td>incr mykey</td>
+<td>如果mykey原先不存在，在加1之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>incrby key increment</td>
+<td>整数原子加指定整数</td>
+<td>incrby mykey 10</td>
+<td>如果mykey原先不存在，在加increment之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>setrange key offset value</td>
+<td>覆盖key的value的offset之后的字符串</td>
+<td>setrange mykey 2 qu</td>
+<td>mykey之前的值是woca，执行此命令之后的结果就是woqu</td>
+</tr>
+<tr>
+<td>通用</td>
+<td>del key</td>
+<td>删除存储在给定键中的值</td>
+<td>del mykey</td>
+<td>删除 mykey 键</td>
+</tr>
+</tbody>
+</table>
+
+<p>此外还有一种字符串的位操作：<br/>
+位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
+
+<h3 id="toc_9">list 相关命令</h3>
+
+<p>Redis列表对象的底层数据结构是quicklist，下面看下list 列表的相关命令<br/>
+每条命令操作之前 myList被设置为[list3,list2,list1]</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>blpop key [key ...] timeout</td>
+<td>lpop的阻塞版本</td>
+<td>blpop myList 0</td>
+<td>调用返回key和左边第一个元素的组合 myList、list3</td>
+</tr>
+<tr>
+<td>brpop key [key ...] timeout</td>
+<td>rpop的阻塞版本</td>
+<td>brpop myList</td>
+<td>没元素的话阻塞在key的列表上</td>
+</tr>
+<tr>
+<td>lindex key index</td>
+<td>通过列表索引获取key列表的value值, index  0：表示第一个元素； -1：表示最后一个元素；-2 ：表示倒数第二个原始</td>
+<td>lindex myList 0</td>
+<td>返回list3</td>
+</tr>
+<tr>
+<td>linsert key before/after pivot value</td>
+<td>把value插入myList 列表中在元素的的前面或后面</td>
+<td>linsert myList before  list2 beauty</td>
+<td>返回[list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>llen key</td>
+<td>获得列表的长度</td>
+<td>llen myList</td>
+<td>返回3</td>
+</tr>
+<tr>
+<td>lpop key</td>
+<td>从队列的左边出队并返回一个元素，列表为空时返回nil</td>
+<td>lpop myList</td>
+<td>返回并删除了第一个元素list3</td>
+</tr>
+<tr>
+<td>lpush key value [value ...]</td>
+<td>从队列的左边入队一个或多个元素</td>
+<td>lpush myList list4 list 5</td>
+<td>value按照先后顺序插入到列表头，最后列表元素[list5,list4,list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>lpushx key vlaue</td>
+<td>当列表存在时，从列表左边入队一个元素</td>
+<td>lpushx myList1  hello</td>
+<td>myList1 不存在 元素插入不成功</td>
+</tr>
+<tr>
+<td>lrange key startIndex stopIndex</td>
+<td>从列表中获取指定位置范围内的元素</td>
+<td>lrange myList 0 1</td>
+<td>结果[list3,list2]</td>
+</tr>
+<tr>
+<td>lrem key count value</td>
+<td>从存于key的列表中移除前count个的值为value的元素，count&gt;0 :从头向尾移除置为value的元素；count&lt;0: 从尾向头移除置为value的元素；count=0： 移除所有值为value的元素</td>
+<td>lrem myList 1 list2</td>
+<td>[list3,list1]</td>
+</tr>
+<tr>
+<td>lset key index value</td>
+<td>设置列表里面的index位置的元素值</td>
+<td>lset myList 2 ghost</td>
+<td>列表更新为[list3,list2,ghost]</td>
+</tr>
+<tr>
+<td>ltrim key start stop</td>
+<td>修剪并保留指定范围内的元素</td>
+<td>ltrim myList 1 2</td>
+<td>列表被编辑为 [list2,list1]</td>
+</tr>
+<tr>
+<td>rpop key</td>
+<td>从列表右边出队并返回一个元素，列表为空时返回nil</td>
+<td>rpop myList</td>
+<td>列表被编辑为 [list3,list2]</td>
+</tr>
+<tr>
+<td>rpush key value [value ...]</td>
+<td>从列表右边入队一个或多个元素</td>
+<td>rpush myList niu</td>
+<td>列表被编辑为 [list3,list2,list1,niu]</td>
+</tr>
+<tr>
+<td>rpushx key value</td>
+<td>列表如果存在，则从列表右边入队一个元素</td>
+<td>rpushx myList leng</td>
+<td>列表被编辑为 [list3,list2,list1,leng]，如果myList不存在，啥都不干</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_10">set 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+<h3 id="toc_11">zset 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+<h3 id="toc_12">hash 相关命令</h3>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+</tbody>
+</table>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>
