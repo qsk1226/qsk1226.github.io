@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    四、Redis 通用命令 - 大爷来玩儿啊~
+     - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            四、Redis 通用命令   
+                               
                       </h1>
                      
                     
@@ -94,7 +94,7 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/07/01</span>
+                                 <span class="date">2020/07/04</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
                                       <span class="posted-in"><a href='redis.html'>redis</a></span>
@@ -114,208 +114,7 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">1、Redis 键相关命令</h2>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>del key [key ...]</td>
-<td>同步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>exists key</td>
-<td>查看key是否存在</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>expire key seconds</td>
-<td>设置键的过期时间</td>
-<td>expire mykey 10</td>
-<td>mykey键值对 10秒后过期</td>
-</tr>
-<tr>
-<td>pexpire key milliseconds</td>
-<td>设置key的过期时间，时间单位是毫秒</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>expireat key timestamp</td>
-<td>设置key的生存时间，接收的时间参数以秒为单位的unix时间戳</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>pexpireat key milliseconds-timestamp</td>
-<td>设置key的生存时间，接收的时间参数为毫秒为单位时间戳</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>keys parttern</td>
-<td>查看所有键</td>
-<td>keys *</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>hscan</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>migrate host post key destination-db timeout [COPY] [REPLACE]</td>
-<td>将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功， key 保证会出现在目标实例上，而当前实例上的 key 会被删除。</td>
-<td></td>
-<td>这个命令是一个原子操作，它在执行的时候会阻塞进行迁移的两个实例，直到以下任意结果发生：迁移成功，迁移失败，等到超时。</td>
-</tr>
-<tr>
-<td>dump key</td>
-<td>序列化key并返回序列化后的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>restore key ttl serialized-value [replace]</td>
-<td>反序列化serialized-value，并与key关联</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>move key dbIndex</td>
-<td>将key移动到另一个数据库</td>
-<td>move mykey 3</td>
-<td>移动mykey到3号数据库</td>
-</tr>
-<tr>
-<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
-<td>查看数据库的值对象编码</td>
-<td>object e</td>
-<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
-</tr>
-<tr>
-<td>persist key</td>
-<td>删除key的过期时间，使key长期有效</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>ttl [key]</td>
-<td>查看键所剩的过期时间(时间单位：秒)</td>
-<td>ttl mykey</td>
-<td>查看设置过期时间的键所剩过期时间还有几秒</td>
-</tr>
-<tr>
-<td>pttl [key]</td>
-<td>查看键所剩的过期时间(时间单位：毫秒)</td>
-<td>pttl mykey</td>
-<td>查看设置过期时间的键所剩过期时间还有几毫秒</td>
-</tr>
-<tr>
-<td>randomkey</td>
-<td>从当前数据库随机返回一个key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>rename key newkey</td>
-<td>将key重命名为newkey，如果newkey已存在，则值将被覆盖</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>renamenx key newkey</td>
-<td>重命名后的key不存在时才能执行成功</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>scan cursor [MATCH parttern] [COUNT count]</td>
-<td></td>
-<td></td>
-<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
-</tr>
-<tr>
-<td>sort key key [BY pattern] [LIMIT offset count] [GET pattern] [ASC/DESC] [ALPHA] destination</td>
-<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
-<td></td>
-<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
-</tr>
-<tr>
-<td>touch key [key]</td>
-<td>修改指定key(s) 最后访问时间 若key不存在，不做操作</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>type [key]</td>
-<td>查看键的数据结构类型</td>
-<td>type mykey</td>
-<td>键不存在返回 nil</td>
-</tr>
-<tr>
-<td>unlink key [key ...]</td>
-<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>wait numslaves timeout</td>
-<td>阻塞当前客户端，直到所有以前的写命令都成功的传输和指定的slaves确认。如果超时，指定以毫秒为单位，即使指定的slaves还没有到达，命令任然返回。</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_1">2、Redis服务器相关命令</h2>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>dbsize</td>
-<td>查看当前数据库里面的 keys 总数</td>
-<td>dbsize</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>flushall</td>
-<td>清除所有库的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>flushdb dbIndex</td>
-<td>清除指定index的库</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<p>|select dbIndex|选定指定dbIndex的库|||</p>
-
+                    
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">

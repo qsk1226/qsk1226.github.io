@@ -228,7 +228,7 @@ typedef struct zskiplist {
 
 <h3 id="toc_2">压缩列表 ziplist</h3>
 
-<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。</p>
+<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。ziplist 的存储顺序与插入顺序一致，而散列表的存储则不一致。</p>
 
 <h4 id="toc_3">压缩列表 ziplist 存储结构</h4>
 
@@ -448,26 +448,41 @@ intset 数据结构如下：<br/>
 <p>quicklist是Redis底层最重要的数据结构之一，它是Redis对外提供的6种基本数据结构中List的底层实现。</p>
 
 <ul>
-<li>list 链表<br/>
-链表是这样一种数据结构，其中的各对象按线性顺序排列。链表与数组的不同点在于，数组的顺序由下标决定，链表的顺序由对象中的指针决定。List是链型数据存储常用的数据结构，可以是单向链表、双向链表，可以是排序链表、无序链表，可以是循环链表、非循环链表。链表具有可快速插入、删除的优点。由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。</li>
-<li>quicklist<br/>
-quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。quicklist是一个由ziplist充当节点的双向链表。。Redis中对quciklist的注释为A doubly linked list of ziplists。顾名思义，quicklist是一个双向链表，链表中的每个节点是一个ziplist结构。quicklist可以看成是用双向链表将若干小型的ziplist连接到一起组成的一种数据结构。当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</li>
+<li><p>list<br/>
+链表是这样一种数据结构，其中的各对象按线性顺序排列。<br/>
+链表与数组的不同点在于，数组的顺序由下标决定，链表的顺序由对象中的指针决定。<br/>
+List是链型数据存储常用的数据结构，可以是单向链表、双向链表，可以是排序链表、无序链表，可以是循环链表、非循环链表。<br/>
+链表具有可快速插入、删除的优点。<br/>
+由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。<br/>
+双向非循环链表结构图：<br/>
+<img src="media/15930711977940/15937659545835.jpg" alt=""/></p></li>
+<li><p>quicklist<br/>
+quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。<br/>
+<strong>quicklist是一个由 ziplist 充当节点的双向链表</strong>。quicklist是一个双向链表，链表中的每个节点是一个 ziplist 结构。<br/>
+quicklist可以看成是用双向链表将若干小型的ziplist连接到一起组成的一种数据结构。<br/>
+当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</p></li>
 </ul>
+
+<p><img src="media/15930711977940/15934465912385.jpg" alt=""/></p>
+
+<p>quicklist核心结构如下：</p>
 
 <pre class="line-numbers"><code class="language-c">typedef struct quicklist {     
     quicklistNode *head;     // 头节点
     quicklistNode *tail;     // 尾节点
     unsigned long count;        //quicklist中元素总数 
     unsigned long len;          // quicklistNode节点个数   
-    //指明每个quickListNade 中ziplist长度，
+    //指明每个quickListNade 中ziplist长度
     //当fill为正数时，表明每个ziplist最多含有的数据项数。
-    // 当fill为负数时，fill == -1 ：ziplist节点最大为 4KB；
-    // fill == -2 ：ziplist节点最大为8KB； 
-    // fill == -3 ：ziplist节点最大为16KB；
-    // fill == -4 ：ziplist节点最大为32KB；
-    // fill == -5 ：ziplist节点最大为64KB
+    //当fill为负数时，fill == -1 ：ziplist节点最大为 4KB；
+    //fill == -2 ：ziplist节点最大为8KB； 
+    //fill == -3 ：ziplist节点最大为16KB；
+    //fill == -4 ：ziplist节点最大为32KB；
+    //fill == -5 ：ziplist节点最大为64KB
     int fill : 16;        
-     //  该项的具体含义是两端各有compress个节点不压缩 ,  
+     //Redis允许对中间的quicklistNode节点进行压缩，
+     //通过修改参数list-compress-depth进行配置，即设置compress参数
+     //该项的具体含义是两端各有compress个节点不压缩 ,  
      //通过修改参数list-compress-depth进行配置，0=off          
     unsigned int compress : 16; 
 } quicklist;
@@ -476,7 +491,7 @@ typedef struct quicklistNode {
     struct quicklistNode *prev;     // 指向该节点的前节点
     struct quicklistNode *next;     // 指向该节点的后节点
     unsigned char *zl;      //指向该节点对应的 ziplist 结构
-    unsigned int sz;        //   代表整个 ziplist 结构的大小
+    unsigned int sz;        //代表整个 ziplist 结构的大小
     unsigned int count : 16;        // ziplist 中元素个数
     unsigned int encoding : 2;      //代表采用的编码，1：原生结构；2：使用 LZF 进行压缩    
     unsigned int container : 2;     //为quicklistNode节点 zl 指向的容器类型，1: none；2: 使用 ziplist 存储数据    
@@ -512,16 +527,37 @@ typedef struct quicklistIter {
 } quicklistIter;
 </code></pre>
 
-<p><img src="media/15930711977940/15934465912385.jpg" alt=""/></p>
-
 <h4 id="toc_9">数据压缩</h4>
 
-<p>quicklist每个节点的实际数据存储结构为ziplist，这种结构的主要优势在于节省存储空间。为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。<br/>
+<p>quicklist每个节点的实际数据存储结构为ziplist，这种结构的主要优势在于节省存储空间。</p>
+
+<p>为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。</p>
+
+<p>LZF压缩后的数据结构图如下所示：<br/>
 <img src="media/15930711977940/15935992099183.jpg" alt=""/></p>
+
+<p>LZF压缩的数据格式有3种，即解释字段有3种：</p>
+
+<ul>
+<li><p>字面型，解释字段占用1个字节，数据字段长度由解释字段后5位决定。<br/>
+<img src="media/15930711977940/15937674478317.jpg" alt=""/></p></li>
+<li><p>简短重复型，解释字段占用2个字节，没有数据字段，数据内容与前面数据内容重复，重复长度小于8，图中L 是长度字段，数据长度为长度字段的字面值加2，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
+<img src="media/15930711977940/15937678687562.jpg" alt=""/></p></li>
+<li><p>批量重复型，解释字段占3个字节，没有数据字段，数据内容与前面内容重复。图中L是长度字段，数据长度为长度字段的字面值加9，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
+<img src="media/15930711977940/15937679218472.jpg" alt=""/></p></li>
+</ul>
+
+<h4 id="toc_10">压缩</h4>
 
 <p>LZF数据压缩的基本思想是：数据与前面重复的，记录重复位置以及重复长度，否则直接记录原始数据内容。</p>
 
-<h3 id="toc_10">stream</h3>
+<p>压缩算法的流程如下：遍历输入字符串，对当前字符及其后面2个字符进行散列运算，如果在Hash表中找到曾经出现的记录，则计算重复字节的长度以及位置，反之直接输出数据。</p>
+
+<h4 id="toc_11">解压缩</h4>
+
+<p>根据LZF压缩后的数据格式，我们可以较为容易地实现LZF的解压缩。值得注意的是，可能存在重复数据与当前位置重叠的情况，此时需要按位逐个进行复制。</p>
+
+<h3 id="toc_12">stream</h3>
 
 <p>消息队列是分布式系统中不可缺少的组件之一，主要有异步处理、应用解耦、限流削峰的功能。目前应用较为广泛的消息队列有RabbitMQ、RocketMQ、Kafka等。Redis在最新的5.0.0版本中也加入了消息队列的功能，这就是Stream。</p>
 

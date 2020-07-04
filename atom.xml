@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-02T20:34:04+08:00</updated>
+  <updated>2020-07-05T00:04:25+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,16 +13,48 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[四、Redis 基本数据类型与其命令]]></title>
-    <link href="http://www.throne4j.com/15936158582613.html"/>
-    <updated>2020-07-01T23:04:18+08:00</updated>
-    <id>http://www.throne4j.com/15936158582613.html</id>
+    <title type="html"><![CDATA[限流]]></title>
+    <link href="http://www.throne4j.com/15938782054278.html"/>
+    <updated>2020-07-04T23:56:45+08:00</updated>
+    <id>http://www.throne4j.com/15938782054278.html</id>
+    <content type="html"><![CDATA[
+<p>保证系统能正常稳定的运行</p>
+
+<ul>
+<li>限制总并发数<br/>
+数据库连接池、线程池</li>
+<li>限制瞬时并发数<br/>
+如nginx的limit_conn 模块，用来限制瞬时并发连接数</li>
+<li>限制时间窗口内的平均速率<br/>
+如guava的 RateLimiter、nginx的limit_req 模块，限制每秒平均速率</li>
+<li>其它限制<br/>
+如限制远程接口调用速率、限制mq的消费速率</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15938782048225.html"/>
+    <updated>2020-07-04T23:56:44+08:00</updated>
+    <id>http://www.throne4j.com/15938782048225.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[五、Redis 基本数据类型与其命令]]></title>
+    <link href="http://www.throne4j.com/15937003019170.html"/>
+    <updated>2020-07-02T22:31:41+08:00</updated>
+    <id>http://www.throne4j.com/15937003019170.html</id>
     <content type="html"><![CDATA[
 <p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
 
 <p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
 
-<h2 id="toc_0">Redis数据类型</h2>
+<h2 id="toc_0">1、Redis基本数据类型</h2>
 
 <p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
 
@@ -48,7 +80,7 @@
 </tr>
 <tr>
 <td>set</td>
-<td>不重复的无序集合</td>
+<td>不重复的无序集合，但当底层实现是intset的时候则是有序的</td>
 <td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
 </tr>
 <tr>
@@ -76,210 +108,9 @@
 
 <p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
 
-<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。字符串值robj的type值为OBJ_STRING。当字符串值是string类型时，encoding的值根据字符串的长短分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
+<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。</p>
 
-<h3 id="toc_2">Redis 中的 list 列表</h3>
-
-<p>列表使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
-
-<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
-
-<h4 id="toc_3">Redis 链表结构如下：</h4>
-
-<pre class="line-numbers"><code class="language-c">typedef struct listNode{
-//前置节点
-struct listNode *prev
-//后置节点
-struct listNode *next
-// 节点值
-void *value
-}
-</code></pre>
-
-<h4 id="toc_4">Redis 链表实现的特性</h4>
-
-<ul>
-<li>双端<br/>
-链表节点带有prev和next指针，获取某个节点的前置节点和后置节点的复杂度都是O(1)</li>
-<li>无环<br/>
-表 头结点的prev指针和表尾的next指针都指向null，对链表的访问以null为终点</li>
-<li>带表头指针和表尾指针<br/>
-通过list结构的head指针和tail指针，程序获取链表的头结点和尾结点的复杂度为O(1)</li>
-<li>带链表长度计数器<br/>
-程序使用list结构的len属性来对list吃鱼哦的链表节点进行计数，程序获取链表中节点数量的复杂度为O(1)</li>
-<li>多态<br/>
-链表节点使用void* 指针来保存节点值，并且可以通过list结构的dup、free、match三个属性为节点值设置类型特定函数，所以链表可以用于存放各种不同类型的值</li>
-</ul>
-
-<h3 id="toc_5">Redis 中的 set 集合</h3>
-
-<h3 id="toc_6">Redis 中的 zset 集合</h3>
-
-<p>当有序集合或散列表的元素个数比较少，且元素都是短字符串时，Redis便使用压缩列表作为其底层数据存储结构，<br/>
-跳跃表是 Redis 有序集合的底层实现之一，所以每个节点的 ele 存储的有序集合成员 member 值，score 存储成员 score 值。所有节点的分支是按从小到大的方式排序的，当有序集合的成员分值相同时，节点会按照 member 的字典序进行排序。</p>
-
-<hr/>
-
-<h3 id="toc_7">Redis 通用命令</h3>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>keys parttern</td>
-<td>查看所有键</td>
-<td>keys *</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>hscan</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>dbsize</td>
-<td>查看键总数</td>
-<td>dbsize</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>expire key seconds</td>
-<td>设置键的过期时间</td>
-<td>expire mykey 10</td>
-<td>mykey键值对 10秒后过期</td>
-</tr>
-<tr>
-<td>persist key</td>
-<td>删除key的过期时间，使key长期有效</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>ttl [key]</td>
-<td>查看键所剩的过期时间</td>
-<td>ttl mykey</td>
-<td>查看设置过期时间的键所剩过期时间还有几秒</td>
-</tr>
-<tr>
-<td>exists key</td>
-<td>查看key是否存在</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>flushall</td>
-<td>清除所有库的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>flushdb dbIndex</td>
-<td>清除指定index的库</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>select dbIndex</td>
-<td>选定指定dbIndex的库</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>type [key]</td>
-<td>查看键的数据结构类型</td>
-<td>type mykey</td>
-<td>键不存在返回 nil</td>
-</tr>
-<tr>
-<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
-<td>查看数据库的值对象编码</td>
-<td>object e</td>
-<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
-</tr>
-<tr>
-<td>rename key newkey</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>renamenx key newkey</td>
-<td>重命名后的key不存在时才能执行成功</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>scan cursor [MATCH parttern] [COUNT count]</td>
-<td></td>
-<td></td>
-<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
-</tr>
-<tr>
-<td>randomkey</td>
-<td>随机取键</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>del key [key ...</td>
-<td>同步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>unlink key [key ...]</td>
-<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>dump key</td>
-<td>序列化key并返回序列化后的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>restore key ttl serialized-value [replace]</td>
-<td>反序列化serialized-value，并与key关联</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>move key dbIndex</td>
-<td>将key移动到另一个数据库</td>
-<td>move mykey 3</td>
-<td>移动mykey到3号数据库</td>
-</tr>
-<tr>
-<td>migrate</td>
-<td>将指定 key 迁移到另一个 Redis 实例</td>
-<td></td>
-<td>用于运维数据迁移数据</td>
-</tr>
-<tr>
-<td>sort key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]</td>
-<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
-<td></td>
-<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
-</tr>
-</tbody>
-</table>
-
-<p>设置临时密码：</p>
-
-<pre class="line-numbers"><code class="language-cmd">config set requirepass 123456 
-</code></pre>
-
-<h3 id="toc_8">string 相关命令</h3>
+<p>字符串值robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
 
 <table>
 <thead>
@@ -316,6 +147,13 @@ void *value
 </tr>
 <tr>
 <td>设置</td>
+<td>psetex　key　milliseconds　value</td>
+<td>设置key-value并设置过期时间(单位：毫秒)</td>
+<td>setex mykey 10  hungry</td>
+<td>设置的mykey : hungry 10毫秒钟后过期，10毫秒后get mykey 返回 nil；</td>
+</tr>
+<tr>
+<td>设置</td>
 <td>setnx key value</td>
 <td>只有key不存在时才会设置key-value</td>
 <td>setnx mykey myvalue</td>
@@ -334,6 +172,13 @@ void *value
 <td>获取存储在给定键中的值</td>
 <td>get mykey</td>
 <td>返回myvalue</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>getset key value</td>
+<td>将给定keuy的值设置为value，并返回key的旧值</td>
+<td>getset mykey newValue</td>
+<td>返回mykey的旧值myvalue，并设置mykey为新值 newValue</td>
 </tr>
 <tr>
 <td>获取</td>
@@ -364,28 +209,28 @@ void *value
 <td>添加完tony之后运行get mykey 得到结果 myvalue tony</td>
 </tr>
 <tr>
-<td>修改</td>
+<td>计数</td>
 <td>decr key</td>
 <td>整数原子减 1</td>
 <td>decr mykey</td>
 <td>如果mykey原先不存在，在减1之前，age会被置为0</td>
 </tr>
 <tr>
-<td>修改</td>
+<td>计数</td>
 <td>decrby key decrement</td>
 <td>整数原子减指定整数</td>
 <td>decrby mykey</td>
 <td>如果mykey原先不存在，在减decrement之前，mykey会被置为0</td>
 </tr>
 <tr>
-<td>修改</td>
+<td>计数</td>
 <td>incr key</td>
 <td>整数原子加1</td>
 <td>incr mykey</td>
 <td>如果mykey原先不存在，在加1之前mykey会被置为0</td>
 </tr>
 <tr>
-<td>修改</td>
+<td>计数</td>
 <td>incrby key increment</td>
 <td>整数原子加指定整数</td>
 <td>incrby mykey 10</td>
@@ -411,10 +256,18 @@ void *value
 <p>此外还有一种字符串的位操作：<br/>
 位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
 
-<h3 id="toc_9">list 相关命令</h3>
+<p>Q：追加字符串时，需要判断追加后的字符串长度必须小于512MB，否则会报错，那么在set命令时为什么没有限制最大长度呢？<br/>
+A:在服务端接收到命令的时候，就已经判断了命令的最大长度不能大于512 MB，所以set命令不需要再次判断了</p>
 
-<p>Redis列表对象的底层数据结构是quicklist，下面看下list 列表的相关命令<br/>
-每条命令操作之前 myList被设置为[list3,list2,list1]</p>
+<p>字符串追加会修改原字符串的值，所以必须保证字符串是非共享的。如果字符串是共享的，则需要解除共享，新创建一个值对象。</p>
+
+<h3 id="toc_2">Redis 中的 list 列表</h3>
+
+<p>在 Redis 引入 quicklist之前，Redis采用压缩链表（ziplist）以及双向链表（adlist）作为List的底层实现。当元素个数比较少并且元素长度比较小时，Redis 采用 ziplist 作为其底层存储；当任意一个条件不满足时，Redis采用adlist作为底层存储结构。这么做的主要原因是，当元素长度较小时，采用ziplist可以有效节省存储空间，但ziplist的存储空间是连续的，当元素个数比较多时，修改元素时，必须重新分配存储空间，这无疑会影响Redis的执行效率，故而采用一般的双向链表。</p>
+
+<p>Redis3.2版本之后，列表底层使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
+
+<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
 
 <table>
 <thead>
@@ -520,7 +373,72 @@ void *value
 </tbody>
 </table>
 
-<h3 id="toc_10">set 相关命令</h3>
+<h4 id="toc_3">栈和队列命令列表</h4>
+
+<p>栈与队列是操作受限制的线性表</p>
+
+<p>栈只允许在线性表的同一侧执行插入或删除操作，具有先进后出的特性；</p>
+
+<p>队列只允许在一侧插入另一侧删除，具有先进先出的特性。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令类型</th>
+<th>左侧</th>
+<th>右侧</th>
+<th>左侧阻塞</th>
+<th>右侧阻塞</th>
+<th>左侧必须键存在</th>
+<th>右侧必须键存在</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>push类</td>
+<td>lpush</td>
+<td>rpush</td>
+<td>无</td>
+<td>无</td>
+<td>lpushx</td>
+<td>rpushx</td>
+</tr>
+<tr>
+<td>pop类</td>
+<td>lpop</td>
+<td>rpop</td>
+<td>blpop</td>
+<td>brpop</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_4">Redis 中的 set 集合</h3>
+
+<p>在Redis中，集合元素为字符串和数字，分别用dict和intset存储。对于单个集合，Redis 实现了元素的新增、删除、遍历等操作；对于多个集合，Redis实现了集合间求交集、并集和差集等操作。</p>
+
+<p>set集合中添加元素的时候分两种情况：</p>
+
+<ul>
+<li><p>当encoding方式为OBJ_ENCODING_HT时，set的底层用的是字典，将key直接添加进dict。需要注意的是，用dict存储集合元素时，元素值存储于字典的key中，字典的value值为null。</p></li>
+<li><p>当encoding方式为OBJ_ENCODING_INTSET时，又有两种情况：</p>
+<ul>
+<li>若新增的元素本身非数字（value转long long失败），需要通过setTypeConvert转化后再存储；</li>
+<li>若新增的元素本身是数字，则用intsetAdd新增元素。且当新增成功，但intset的元素个数过多（个数大于server.set_max_intset_entries时。该参数可配置，默认为512），同样会触发setTypeConvert，将OBJ_ENCODING_INTSET转化为OBJ_ENCODING_HT，为避免转化过程中发生字典的rehash操作，代码中用 dictExpand主动扩容。</li>
+</ul></li>
+</ul>
+
+<p>移除元素的时候同样分两种情况进行处理：</p>
+
+<ul>
+<li>若encoding为OBJ_ENCODING_HT时，则调用dictDelete处理删除元素时，会检查字典容量，字典容量不足也会触发扩容操作。</li>
+<li>当encoding为OBJ_ENCODING_INTSET时，调用intsetRemove处理</li>
+</ul>
+
+<p>Set集合相关命令如下表：</p>
 
 <table>
 <thead>
@@ -533,10 +451,104 @@ void *value
 </thead>
 
 <tbody>
+<tr>
+<td>sadd key member [member ...]</td>
+<td>添加一个或多个指定的member元素到集合key中.</td>
+<td>sadd myset &quot;hello&quot;</td>
+<td>返回新成功添加到集合里元素的数量，不包括已经存在于集合中的元素.指定的一个或者多个元素member 如果已经在集合key中存在则忽略.如果集合key 不存在，则新建集合key,并添加member元素到集合key中。如果key 的类型不是集合则返回错误。</td>
+</tr>
+<tr>
+<td>scard key</td>
+<td>返回集合存储的key的基数 (集合元素的数量).</td>
+<td>SCARD myset</td>
+<td>集合的基数(元素的数量),如果key不存在,则返回 0.</td>
+</tr>
+<tr>
+<td>sdiff key [key ...]</td>
+<td>返回一个集合与给定集合的差集的元素.</td>
+<td>sdiff  myset1 myset2</td>
+<td>返回myset1和myset2的差集元素，不存在的key认为是空集.</td>
+</tr>
+<tr>
+<td>sdiffstore destination key [key ...]</td>
+<td>返回一个集合与给定集合的差集元素的个数，并将结果放入destination中</td>
+<td>sdiffstore myset myset1 myset2</td>
+<td>将myset1和myset2的差集存储在myset中</td>
+</tr>
+<tr>
+<td>sinter key [key ...]</td>
+<td>返回所有集合的元素交集列表</td>
+<td>sinter myset1 myset2</td>
+<td>如果key不存在则被认为是一个空的集合,当给定的集合为空的时候,结果也为空.(一个集合为空，结果一直为空).</td>
+</tr>
+<tr>
+<td>sinterstore destination key [key ...]</td>
+<td>返回所有集合的元素交集的元素数目，并存储到 destination中</td>
+<td>sinterstore myset myset1 myset2</td>
+<td>myset1和myset2的交集存储到 myset集合中，并返回集合元素的数目，如果destination 集合存在, 则会被重写.</td>
+</tr>
+<tr>
+<td>sismember key member</td>
+<td>判断member是否存在于key集合中，存在返回1，不存在返回0</td>
+<td>sismember myset &quot;121&quot;</td>
+<td>判断121是否存在于myset集合中，myset不存在或121不是myset集合元素返回0，否则返回 1</td>
+</tr>
+<tr>
+<td>smembers key</td>
+<td>返回集合所有元素</td>
+<td>smembers myset</td>
+<td>该命令的作用与使用一个参数的 sinter 命令作用相同.</td>
+</tr>
+<tr>
+<td>smove source destination member</td>
+<td>将member 从source集合移动到destination集合中</td>
+<td>smove myset1 myset2 &quot;sb&quot;</td>
+<td>将sb元素从 myset1 集合 移动到 myset2 集合中</td>
+</tr>
+<tr>
+<td>spop key [count]</td>
+<td>从存储在key的集合中移除并返回一个或多个随机元素</td>
+<td>spop myset 3</td>
+<td>从myset中删除并返回3个元素，被删除的元素，或者当key不存在时返回nil。</td>
+</tr>
+<tr>
+<td>srandmember key [count]</td>
+<td>随机返回集合key中count个数元素</td>
+<td>srandmember myset 3</td>
+<td>随机返回myset集合中的3个元素</td>
+</tr>
+<tr>
+<td>srem key member [member ...]</td>
+<td>移除key 集合中指定的元素</td>
+<td>srem myset &quot;sb1&quot; &quot;sb2&quot;</td>
+<td>从myset中删除sb1 和 sb2，如果集合中不存在 sb1则忽略，myset集合不存在则被视为一个空集合，返回 0</td>
+</tr>
+<tr>
+<td>sscan key cursor [match pattern] [count count]</td>
+<td>遍历集合中所有的元素</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sunion key [key ...]</td>
+<td>返回给定的多个集合的并集中的所有成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sunionstore destination key [key ...]</td>
+<td>将多个集合的并集存储到destination集合中</td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
-<h3 id="toc_11">zset 相关命令</h3>
+<h3 id="toc_5">Redis 中的 zset  有序集合</h3>
+
+<p>有序集合中，用到的关键数据结构是ziplist以及dict和skiplist，当服务器属性server.zset_max_ziplist_entries的值大于0且元素的member 长度小于服务器属性server.zset_max_ziplist_value的值（默认为64）时，使用的是ziplist，否则使用的是dict和skiplist。</p>
+
+<p>有序集合里面的成员是不能重复的都是唯一的，但是，不同成员间有可能有相同的分数。当多个成员有相同的分数时，相同分数的成员按照字典规则相对排序，字典顺序排序用的是二进制，它比较的是字符串的字节数组。</p>
 
 <table>
 <thead>
@@ -549,10 +561,169 @@ void *value
 </thead>
 
 <tbody>
+<tr>
+<td>zadd key [nx|xx] [ch] [incr] score member [score member]</td>
+<td>将一个或多个member元素及其分值score加入到有序集合对应的key当中。其中，分值score可以是整数值或双精度浮点数。XX：只更新已经存在的元素，不添加元素。NX：不更新已经存在的元素，总是添加新的元素。CH：将返回值从添加的新元素数量修改为更改的元素总数。INCR：对成员的分数进行递增操作。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrem key member [member]</td>
+<td>删除有序集合 key中的一个或者多个member</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zcard key</td>
+<td>获取有序集合key中的技基数</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zcount key min max</td>
+<td>返回有序集合 key 中 scroe 值在 [min,max]区间的成员数量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zincrby key increment member</td>
+<td>在有序集合 key 的 member 的分值上增加 increment</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrank key member</td>
+<td>按照分值从小到大返回有序集合成员member的排名，其中排名从0开始计算</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrank key member</td>
+<td>按照分值从大到小返回有序集合成员member的排名</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zscore key member</td>
+<td>获取有序集合key中成员member的分值</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zscan key cursor [match parttern] [count count]</td>
+<td>迭代有序集合中的元素和分值，match可以通过正则匹配元素，count 是返回的元素数量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrange key start stop [withscores]</td>
+<td>获取有序集合key中指定区间的成员，成员按照分值递增排序，如果分值相同，成员按照字典序排序</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrange key start stop [withscores]</td>
+<td>获取有序集合key中指定区间的成员，成员按照分值递减排序，如果分值相同，成员按照字典序排序</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrangebyscore key min max [withscores] [limit offset count]</td>
+<td>返回有序集key中，所有score值介于min和max之间（包括等于min或max）的成员。有序集成员按score值递增（从小到大）次序排列。具有相同score值的成员按字典序排列。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrangebyscore key min max [withscores] [limit offset count]</td>
+<td>除了有序集合按score值递减之外，跟zrangebyscore完全一样。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrangebylex key min max [limit offset count]</td>
+<td>分数必须相同，返回给定的有序集合键key中值介于min和max之间的成员，根据成员的字典序排序。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td>合法的min和max参数必须包含“(”或者“[”，其中“(”表示开区间，“[”表示闭区间；可以使用 “-“ 和 “+” 表示得分最小值和最大值；成员字符串作为二进制数组的字节数进行比较；</td>
+</tr>
+<tr>
+<td>zlexcount key min max</td>
+<td>返回给定的有序集合键key中值介于min和max之间的成员数量。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebyrank key start stop</td>
+<td>移除有序集合key 中指定排名区间的所有成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebyscore key min max</td>
+<td>移除有序集合key中所有score值介于[min,max]之间的成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebylex key min max</td>
+<td>移除该集合中成员字典序介于min和max范围的所有元素</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zunionstore destination numkeys key [key ...] [weights weight] [sumiminimax]</td>
+<td>计算给定的numkeys个有序集合的并集，并且把结果放到destination中。WEIGHTS选项可以在使用聚合函数时为每个有序集分别指定一个乘法因子</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zinterstore destination numkeys key [key ...] [WEIGHTS weight] [SUMIMINIMAX]</td>
+<td>计算给定的numkeys个有序集合的交集，并且把结果放到destination中。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zpopmax key [count]</td>
+<td>删除并返回有序集合key中的最多count个具有最高得分的成员。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zpopmin key [count]</td>
+<td>删除并返回有序集合key中的最多count个具有最少得分的成员。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bzpopmax key [key ...] timeout</td>
+<td>删除并返回 有序集合 key 中分值最高的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
+<td>bzpopmax zset2 zset1 0</td>
+<td>按照zset的key前后顺序，删除并返回zset2的分值最高的成员</td>
+</tr>
+<tr>
+<td>bzpopmin key [key ..] timeout</td>
+<td>删除并返回 有序集合 key 中分值最低的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
-<h3 id="toc_12">hash 相关命令</h3>
+<h3 id="toc_6">Redis 中的 hash 散列表</h3>
+
+<p>Redis散列存储有 ziplist 和 散列表(hashtable) 2种，有时我们需要从ziplist编码转换为散列表编码。值得注意的是，即使后期满足条件，也不会从散列表编码转换为ziplist编码。</p>
+
+<p>当需要存储的key-value结构同时满足下面两个条件时，采用ziplist作为底层存储：</p>
+
+<ul>
+<li>key-value结构的所有键值对的字符串长度都小于hash-max- ziplist-value（默认值64），该值可以通过配置文件配置</li>
+<li>散列对象保存的键值对的个数（一个键值对记为1个）小于hash-max-ziplist-entries（默认值512），该值也可以通过配置文件配置。</li>
+</ul>
 
 <table>
 <thead>
@@ -565,8 +736,309 @@ void *value
 </thead>
 
 <tbody>
+<tr>
+<td>hset key field value</td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+<td></td>
+<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段在哈希集中存在，它将被重写。</td>
+</tr>
+<tr>
+<td>hmset key field value [field value]</td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+<td></td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+</tr>
+<tr>
+<td>hsetnx key field value</td>
+<td>只在 key 指定的哈希集中不存在指定的字段时，设置字段的值</td>
+<td></td>
+<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段已存在，该操作无效果。</td>
+</tr>
+<tr>
+<td>hexists key field</td>
+<td>查看某个field是否存在，可以用于标识某个操作之前是否已经执行过</td>
+<td>xxx</td>
+<td>查看field是否存在，存在返回1，key不存在或者field不存在返回0。</td>
+</tr>
+<tr>
+<td>hget key field</td>
+<td>获取单个field对应的value值</td>
+<td></td>
+<td>该字段所关联的值。当字段不存在或者 key 不存在时返回nil。</td>
+</tr>
+<tr>
+<td>hmget key field [field...]</td>
+<td>获取多个field对应的value值</td>
+<td></td>
+<td>当字段不存在或者 key 不存在时返回nil</td>
+</tr>
+<tr>
+<td>hkeys key</td>
+<td>获取某个key下的所有field信息</td>
+<td></td>
+<td>当 key 指定的哈希集不存在时返回空列表</td>
+</tr>
+<tr>
+<td>hvals key</td>
+<td>获取某个key下的所有value信息</td>
+<td></td>
+<td>哈希集中的值的列表，当 key 指定的哈希集不存在时返回空列表</td>
+</tr>
+<tr>
+<td>hgetall key</td>
+<td>获取某个key下的所有key-field信息</td>
+<td></td>
+<td>哈希集中字段和值的列表。当 key 指定的哈希集不存在时返回空列表。</td>
+</tr>
+<tr>
+<td>hlen key</td>
+<td>获取散列表中field的个数，主要用于数据统计。</td>
+<td></td>
+<td>哈希集中字段的数量，当 key 指定的哈希集不存在时返回 0</td>
+</tr>
+<tr>
+<td>hscan key cursor [match pattern] [COUNT count]</td>
+<td>遍历散列表中所有的field-value对</td>
+<td></td>
+<td>cursor指向当前的位置，0代表新一轮的迭代，返回0代表本轮迭代结束；count是需要返回的field 个数，默认值是10，当底层编码为ziplist时，该值无效，Redis会将ziplist中所有field-value返回，当编码为散列表时，返回的元素个数不一定，可能大于，也可能小于或等于此值；pattern是需要匹配的模式，这一步是读取完数据之后，发送数据之前执行的</td>
+</tr>
+<tr>
+<td>hdel key field [field ...]</td>
+<td>将key对应的散列表中的field删除，key为空时返回0，key 不为空时返回成功删除的field个数</td>
+<td></td>
+<td>直接调用ziplist或者散列表的接口将数据删除。散列表中field全部被删除时，key也会被删除。</td>
+</tr>
+<tr>
+<td>hincrby key field increment</td>
+<td>将field对应的value增加increment</td>
+<td></td>
+<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
+</tr>
+<tr>
+<td>hincrbyfloat key field increment</td>
+<td>将field对应的value增加increment</td>
+<td></td>
+<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
+</tr>
+<tr>
+<td>hstrlen key field</td>
+<td>返回hash指定field的value的字符串长度</td>
+<td></td>
+<td>如果hash或field不存在，返回0</td>
+</tr>
 </tbody>
 </table>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[四、Redis 通用命令]]></title>
+    <link href="http://www.throne4j.com/15936158582613.html"/>
+    <updated>2020-07-01T23:04:18+08:00</updated>
+    <id>http://www.throne4j.com/15936158582613.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">1、Redis 键相关命令</h2>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>del key [key ...]</td>
+<td>同步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exists key</td>
+<td>查看key是否存在</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>expire key seconds</td>
+<td>设置键的过期时间</td>
+<td>expire mykey 10</td>
+<td>mykey键值对 10秒后过期</td>
+</tr>
+<tr>
+<td>pexpire key milliseconds</td>
+<td>设置key的过期时间，时间单位是毫秒</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>expireat key timestamp</td>
+<td>设置key的生存时间，接收的时间参数以秒为单位的unix时间戳</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>pexpireat key milliseconds-timestamp</td>
+<td>设置key的生存时间，接收的时间参数为毫秒为单位时间戳</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>keys parttern</td>
+<td>查看所有键</td>
+<td>keys *</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>hscan</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>migrate host post key destination-db timeout [COPY] [REPLACE]</td>
+<td>将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功， key 保证会出现在目标实例上，而当前实例上的 key 会被删除。</td>
+<td></td>
+<td>这个命令是一个原子操作，它在执行的时候会阻塞进行迁移的两个实例，直到以下任意结果发生：迁移成功，迁移失败，等到超时。</td>
+</tr>
+<tr>
+<td>dump key</td>
+<td>序列化key并返回序列化后的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>restore key ttl serialized-value [replace]</td>
+<td>反序列化serialized-value，并与key关联</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>move key dbIndex</td>
+<td>将key移动到另一个数据库</td>
+<td>move mykey 3</td>
+<td>移动mykey到3号数据库</td>
+</tr>
+<tr>
+<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
+<td>查看数据库的值对象编码</td>
+<td>object e</td>
+<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
+</tr>
+<tr>
+<td>persist key</td>
+<td>删除key的过期时间，使key长期有效</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ttl [key]</td>
+<td>查看键所剩的过期时间(时间单位：秒)</td>
+<td>ttl mykey</td>
+<td>查看设置过期时间的键所剩过期时间还有几秒</td>
+</tr>
+<tr>
+<td>pttl [key]</td>
+<td>查看键所剩的过期时间(时间单位：毫秒)</td>
+<td>pttl mykey</td>
+<td>查看设置过期时间的键所剩过期时间还有几毫秒</td>
+</tr>
+<tr>
+<td>randomkey</td>
+<td>从当前数据库随机返回一个key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>rename key newkey</td>
+<td>将key重命名为newkey，如果newkey已存在，则值将被覆盖</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>renamenx key newkey</td>
+<td>重命名后的key不存在时才能执行成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>scan cursor [MATCH parttern] [COUNT count]</td>
+<td></td>
+<td></td>
+<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
+</tr>
+<tr>
+<td>sort key key [BY pattern] [LIMIT offset count] [GET pattern] [ASC/DESC] [ALPHA] destination</td>
+<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
+<td></td>
+<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
+</tr>
+<tr>
+<td>touch key [key]</td>
+<td>修改指定key(s) 最后访问时间 若key不存在，不做操作</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>type [key]</td>
+<td>查看键的数据结构类型</td>
+<td>type mykey</td>
+<td>键不存在返回 nil</td>
+</tr>
+<tr>
+<td>unlink key [key ...]</td>
+<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>wait numslaves timeout</td>
+<td>阻塞当前客户端，直到所有以前的写命令都成功的传输和指定的slaves确认。如果超时，指定以毫秒为单位，即使指定的slaves还没有到达，命令任然返回。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_1">2、Redis服务器相关命令</h2>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dbsize</td>
+<td>查看当前数据库里面的 keys 总数</td>
+<td>dbsize</td>
+<td>Redis存在大量键时，禁止使用此命令</td>
+</tr>
+<tr>
+<td>flushall</td>
+<td>清除所有库的数据</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>flushdb dbIndex</td>
+<td>清除指定index的库</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>|select dbIndex|选定指定dbIndex的库|||</p>
 
 ]]></content>
   </entry>
@@ -683,7 +1155,7 @@ robj结构体如下所示：</p>
 
 <ul>
 <li><p>结构体 robj 的ptr<br/>
-ptr是void* 类型的指针，指向实际存储的某一种数据结构。</p></li>
+ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
 <li><p>结构体 robj 的 refcount <br/>
 refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
 只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
@@ -717,17 +1189,16 @@ lru的低8比特存储的是对象的访问次数，高16比特存储的是对�
     int bufpos; 
 } client;
 
+// 用来管理数据库相关数据和实现相关操作
 typedef struct redisDb {     
     int id;     // id为数据库序号，默认情况下Redis有16个数据库，id序号为0～15。
     long long avg_ttl;         //avg_ttl存储数据库对象的平均TTL，用于统计
-    dict *dict;     //·dict存储数据库所有键值对。
-    dict *expires;     //·expires存储键的过期时间
-    // blpop 阻塞列表的时候，会将此列表键记录在blocking_keys，
-    // 在push的时候，blocking_keys 存在该列表键，则将此列表键记录到字典 ready_keys
-    dict *blocking_keys;     
-    dict *ready_keys;     
-    
-    dict *watched_keys;     //被watch命令监控的所有数据键
+    dict *dict;     //键空间散列表，存储数据库所有键值对。
+    dict *expires;     //过期时间散列表，存放键的过期时间，注意dict和expires中的键都指向同一个键的sds。
+    dict *blocking_keys;     // 处于阻塞状态的键和对应的client，比如blpop命令阻塞键和对应客户端，而解除客户端的阻塞状态有两种 1：进行push操作；2：阻塞超时
+    dict *ready_keys;     //解除阻塞状态的键和对应的client
+    list *defrag_later;         // 逐渐尝试逐个碎片整理的key列表
+    dict *watched_keys;     //watch的键和对应的client，主要用于事务
 } redisDb;
 </code></pre>
 
@@ -951,6 +1422,24 @@ Redis 使用自定义格式区分不同的命令，客户端会对命令请求�
 
 <h3 id="toc_11">3.2、命令调用</h3>
 
+<p>在处理命令请求之前会进行很多的校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
+
+<p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
+
+<h3 id="toc_12">3.3、返回结果</h3>
+
+<p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
+
+<p>Redis的返回结果可以分为5类：</p>
+
+<ul>
+<li><code>状态回复，第一个字符是“+”；例如，SET命令执行完毕会向客户端返回“+OK\r\n”。</code></li>
+<li><code>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回“-ERR unknown command&#39;testcmd&#39;”。</code></li>
+<li><code>整数回复，第一个字符是“:”。例如，INCR命令执行完毕向客户端返回“:100\r\n”。</code></li>
+<li><code>批量回复，第一个字符是 &quot;$&quot;。例如，GET命令查找键向客户端返回结果&quot;$5\r\nhello\r\n&quot;，其中$5表示返回字符串长度</code></li>
+<li><code>多条批量回复，第一个字符是“*”。例如，LRANGE命令可能会返回多个值，格式为“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”，与命令请求协议格式相同，“*3”表示返回值数目，“$6”表示当前返回值字符串长度</code></li>
+</ul>
+
 ]]></content>
   </entry>
   
@@ -1072,7 +1561,7 @@ typedef struct zskiplist {
 
 <h3 id="toc_2">压缩列表 ziplist</h3>
 
-<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。</p>
+<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。ziplist 的存储顺序与插入顺序一致，而散列表的存储则不一致。</p>
 
 <h4 id="toc_3">压缩列表 ziplist 存储结构</h4>
 
@@ -1292,26 +1781,41 @@ intset 数据结构如下：<br/>
 <p>quicklist是Redis底层最重要的数据结构之一，它是Redis对外提供的6种基本数据结构中List的底层实现。</p>
 
 <ul>
-<li>list 链表<br/>
-链表是这样一种数据结构，其中的各对象按线性顺序排列。链表与数组的不同点在于，数组的顺序由下标决定，链表的顺序由对象中的指针决定。List是链型数据存储常用的数据结构，可以是单向链表、双向链表，可以是排序链表、无序链表，可以是循环链表、非循环链表。链表具有可快速插入、删除的优点。由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。</li>
-<li>quicklist<br/>
-quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。quicklist是一个由ziplist充当节点的双向链表。。Redis中对quciklist的注释为A doubly linked list of ziplists。顾名思义，quicklist是一个双向链表，链表中的每个节点是一个ziplist结构。quicklist可以看成是用双向链表将若干小型的ziplist连接到一起组成的一种数据结构。当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</li>
+<li><p>list<br/>
+链表是这样一种数据结构，其中的各对象按线性顺序排列。<br/>
+链表与数组的不同点在于，数组的顺序由下标决定，链表的顺序由对象中的指针决定。<br/>
+List是链型数据存储常用的数据结构，可以是单向链表、双向链表，可以是排序链表、无序链表，可以是循环链表、非循环链表。<br/>
+链表具有可快速插入、删除的优点。<br/>
+由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。<br/>
+双向非循环链表结构图：<br/>
+<img src="media/15930711977940/15937659545835.jpg" alt=""/></p></li>
+<li><p>quicklist<br/>
+quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。<br/>
+<strong>quicklist是一个由 ziplist 充当节点的双向链表</strong>。quicklist是一个双向链表，链表中的每个节点是一个 ziplist 结构。<br/>
+quicklist可以看成是用双向链表将若干小型的ziplist连接到一起组成的一种数据结构。<br/>
+当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</p></li>
 </ul>
+
+<p><img src="media/15930711977940/15934465912385.jpg" alt=""/></p>
+
+<p>quicklist核心结构如下：</p>
 
 <pre class="line-numbers"><code class="language-c">typedef struct quicklist {     
     quicklistNode *head;     // 头节点
     quicklistNode *tail;     // 尾节点
     unsigned long count;        //quicklist中元素总数 
     unsigned long len;          // quicklistNode节点个数   
-    //指明每个quickListNade 中ziplist长度，
+    //指明每个quickListNade 中ziplist长度
     //当fill为正数时，表明每个ziplist最多含有的数据项数。
-    // 当fill为负数时，fill == -1 ：ziplist节点最大为 4KB；
-    // fill == -2 ：ziplist节点最大为8KB； 
-    // fill == -3 ：ziplist节点最大为16KB；
-    // fill == -4 ：ziplist节点最大为32KB；
-    // fill == -5 ：ziplist节点最大为64KB
+    //当fill为负数时，fill == -1 ：ziplist节点最大为 4KB；
+    //fill == -2 ：ziplist节点最大为8KB； 
+    //fill == -3 ：ziplist节点最大为16KB；
+    //fill == -4 ：ziplist节点最大为32KB；
+    //fill == -5 ：ziplist节点最大为64KB
     int fill : 16;        
-     //  该项的具体含义是两端各有compress个节点不压缩 ,  
+     //Redis允许对中间的quicklistNode节点进行压缩，
+     //通过修改参数list-compress-depth进行配置，即设置compress参数
+     //该项的具体含义是两端各有compress个节点不压缩 ,  
      //通过修改参数list-compress-depth进行配置，0=off          
     unsigned int compress : 16; 
 } quicklist;
@@ -1320,7 +1824,7 @@ typedef struct quicklistNode {
     struct quicklistNode *prev;     // 指向该节点的前节点
     struct quicklistNode *next;     // 指向该节点的后节点
     unsigned char *zl;      //指向该节点对应的 ziplist 结构
-    unsigned int sz;        //   代表整个 ziplist 结构的大小
+    unsigned int sz;        //代表整个 ziplist 结构的大小
     unsigned int count : 16;        // ziplist 中元素个数
     unsigned int encoding : 2;      //代表采用的编码，1：原生结构；2：使用 LZF 进行压缩    
     unsigned int container : 2;     //为quicklistNode节点 zl 指向的容器类型，1: none；2: 使用 ziplist 存储数据    
@@ -1356,16 +1860,37 @@ typedef struct quicklistIter {
 } quicklistIter;
 </code></pre>
 
-<p><img src="media/15930711977940/15934465912385.jpg" alt=""/></p>
-
 <h4 id="toc_9">数据压缩</h4>
 
-<p>quicklist每个节点的实际数据存储结构为ziplist，这种结构的主要优势在于节省存储空间。为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。<br/>
+<p>quicklist每个节点的实际数据存储结构为ziplist，这种结构的主要优势在于节省存储空间。</p>
+
+<p>为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。</p>
+
+<p>LZF压缩后的数据结构图如下所示：<br/>
 <img src="media/15930711977940/15935992099183.jpg" alt=""/></p>
+
+<p>LZF压缩的数据格式有3种，即解释字段有3种：</p>
+
+<ul>
+<li><p>字面型，解释字段占用1个字节，数据字段长度由解释字段后5位决定。<br/>
+<img src="media/15930711977940/15937674478317.jpg" alt=""/></p></li>
+<li><p>简短重复型，解释字段占用2个字节，没有数据字段，数据内容与前面数据内容重复，重复长度小于8，图中L 是长度字段，数据长度为长度字段的字面值加2，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
+<img src="media/15930711977940/15937678687562.jpg" alt=""/></p></li>
+<li><p>批量重复型，解释字段占3个字节，没有数据字段，数据内容与前面内容重复。图中L是长度字段，数据长度为长度字段的字面值加9，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
+<img src="media/15930711977940/15937679218472.jpg" alt=""/></p></li>
+</ul>
+
+<h4 id="toc_10">压缩</h4>
 
 <p>LZF数据压缩的基本思想是：数据与前面重复的，记录重复位置以及重复长度，否则直接记录原始数据内容。</p>
 
-<h3 id="toc_10">stream</h3>
+<p>压缩算法的流程如下：遍历输入字符串，对当前字符及其后面2个字符进行散列运算，如果在Hash表中找到曾经出现的记录，则计算重复字节的长度以及位置，反之直接输出数据。</p>
+
+<h4 id="toc_11">解压缩</h4>
+
+<p>根据LZF压缩后的数据格式，我们可以较为容易地实现LZF的解压缩。值得注意的是，可能存在重复数据与当前位置重叠的情况，此时需要按位逐个进行复制。</p>
+
+<h3 id="toc_12">stream</h3>
 
 <p>消息队列是分布式系统中不可缺少的组件之一，主要有异步处理、应用解耦、限流削峰的功能。目前应用较为广泛的消息队列有RabbitMQ、RocketMQ、Kafka等。Redis在最新的5.0.0版本中也加入了消息队列的功能，这就是Stream。</p>
 
@@ -3470,655 +3995,6 @@ public class PageInterceptor implements Interceptor {
       throw ExceptionUtil.unwrapThrowable(e);
     }
 }
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MyBatis 与 Spring整合]]></title>
-    <link href="http://www.throne4j.com/15902065220428.html"/>
-    <updated>2020-05-23T12:02:02+08:00</updated>
-    <id>http://www.throne4j.com/15902065220428.html</id>
-    <content type="html"><![CDATA[
-<p>Mybatis-Spring 用于帮助你将 MyBatis 代码无缝地整合到 Spring 中，集成过程中的增强主 要体现在如下四个方面：</p>
-
-<ul>
-<li>Spring 将会加载必要的 MyBatis 工厂类和 session 类 </li>
-<li>提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean<br/>
-中</li>
-<li>方便集成 spring 事务</li>
-<li>翻译 MyBatis 的异常到 Spring 的 DataAccessException 异常(数据访问异常)中</li>
-</ul>
-
-<h2 id="toc_0">MyBatis-Spring 集成配置最佳实践</h2>
-
-<ul>
-<li>准备Mybatis-spring的maven项目</li>
-<li>pom文件中添加mybatis-spring依赖</li>
-<li>配置 SqlSessionFactoryBean，在 MyBatis-Spring 中， SqlSessionFactoryBean 用于创建 SqlSessionFactory，几个关键配置选项如下所示：
-<ul>
-<li>dataSource ：用于配置数据源，该属性为必选项，必须通过这个属性配置数 据源 ，这里使用了上一节中配置好的 dataSource 数据库连接池 。</li>
-<li> mapper Locations ： 配置 SqlSessionFactoryBean 扫描 XML 映射文件的路径， 可以使用 Ant 风格的路径进行配置。</li>
-<li> configLocation ： 用于配置mybatis config XML的路径，除了数据源外，对MyBatis 的各种配直仍然可以通过这种方式进行，并且配置 MyBatis settings 时只能使 用这种方式。但配置文件中任意环境,数据源 和 MyBatis 的事务管理器都会被 忽略；</li>
-<li> typeAliasesPackage ： 配置包中类的别名，配置后，包中的类在 XML 映射文 件中使用时可以省略包名部分 ，直接使用类名。这个配置不支持 Ant 风格的 路径，当需要配置多个包路径时可以使用分号或逗号进行分隔 ；</li>
-</ul></li>
-<li>配置 MapperScannerConfigurer，通过 MapperScannerConfigurer 类自动扫描所有的 Mapper 接口，使用时可以直接注入接口。MapperScannerConfigurer 中常配置以下两个 属性 ：
-<ul>
-<li>basePackage ： 用于配置基本的包路径。可以使用分号或逗号作为分隔符设 置多于一个的包路径，每个映射器将会在指定的包路径中递归地被搜索到 。</li>
-<li>annotationClass ： 用于过滤被扫描的接口，如果设置了该属性，那么 MyBatis 的接口只有包含该注解才会被扫描进去</li>
-</ul></li>
-<li>配置事务，让 Mybatis 集成 spring 的事务；</li>
-</ul>
-
-<p>项目GitHub地址： <a href="https://github.com/qsk1226/mybatis-spring-study">mybatis-spring-study</a></p>
-
-<h2 id="toc_1">mybatis-spring 集成原理分析</h2>
-
-<h3 id="toc_2">SqlSessionFactoryBean 源码分析</h3>
-
-<p>它创建一个MyBatis SqlSessionFactory。这是在Spring应用程序上下文中设置共享MyBatis SqlSessionFactory的常用方法;然后，SqlSessionFactory可以通过依赖注入传递到基于mybatiso的dao。DataSourceTransactionManager或JtaTransactionManager都可以与SqlSessionFactory一起用于事务界定。JTA应该用于跨多个数据库的事务或正在使用容器管理事务(container managed transactions, CMT)的事务。</p>
-
-<p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
-
-<pre class="line-numbers"><code class="language-java">public class SqlSessionFactoryBean
-    implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SqlSessionFactoryBean.class);
-
-  private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
-  private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
-
-  private Resource configLocation;
-
-  private Configuration configuration;
-
-  private Resource[] mapperLocations;
-
-  private DataSource dataSource;
-
-  private TransactionFactory transactionFactory;
-
-  private Properties configurationProperties;
-
-  private SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-
-  private SqlSessionFactory sqlSessionFactory;
-
-  // EnvironmentAware requires spring 3.1
-  private String environment = SqlSessionFactoryBean.class.getSimpleName();
-
-  private boolean failFast;
-
-  private Interceptor[] plugins;
-
-  private TypeHandler&lt;?&gt;[] typeHandlers;
-
-  private String typeHandlersPackage;
-
-  private Class&lt;?&gt;[] typeAliases;
-
-  private String typeAliasesPackage;
-
-  private Class&lt;?&gt; typeAliasesSuperType;
-
-  private LanguageDriver[] scriptingLanguageDrivers;
-
-  private Class&lt;? extends LanguageDriver&gt; defaultScriptingLanguageDriver;
-
-  // issue #19. No default provider.
-  private DatabaseIdProvider databaseIdProvider;
-
-  private Class&lt;? extends VFS&gt; vfs;
-
-  private Cache cache;
-
-  private ObjectFactory objectFactory;
-
-  private ObjectWrapperFactory objectWrapperFactory;
-
-}
-</code></pre>
-
-<h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
-
-<pre class="line-numbers"><code class="language-java"> @Override
-  public void afterPropertiesSet() throws Exception {
-notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
-notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
-state((configuration == null &amp;&amp; configLocation == null) || !(configuration != null &amp;&amp; configLocation != null),
-    &quot;Property &#39;configuration&#39; and &#39;configLocation&#39; can not specified with together&quot;);
-// 封装者MyBatis的配置初始化阶段
-this.sqlSessionFactory = buildSqlSessionFactory();
-}
-</code></pre>
-
-<h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
-
-<pre class="line-numbers"><code class="language-java">/**
- * 将sqlSessionFactory对象注入spring容器
- */
-public SqlSessionFactory getObject() throws Exception {
-if (this.sqlSessionFactory == null) {
-  afterPropertiesSet();
-}
-
-return this.sqlSessionFactory;
-}
-</code></pre>
-
-<p>SqlSessionFactoryBean 就是将 sqlSessionFactory 注入容器， IOC 容器中的其他类型能拿到 SqlSession 实例了，就可以进行相关的 SQL 执行任务了；</p>
-
-<h3 id="toc_5">MapperFactoryBean 源码分析</h3>
-
-<p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
-
-<pre class="line-numbers"><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
-
-  private Class&lt;T&gt; mapperInterface;
-
-  private boolean addToConfig = true;
-
-  /**
-   * 方法实际是封装了 MyBatis 的第二阶段,获取 Mapper 接口
-   * getSqlSession():用户应该使用这个方法来获取一个SqlSession来调用它的语句方法，这个SqlSession是由spring管理的。用户不应该提交/回滚/关闭它，因为它将自动完成。
-   * 
-   * getMapper(this.mapperInterface)获取mapper接口
-   */
-  @Override
-  public T getObject() throws Exception {
-    return getSqlSession().getMapper(this.mapperInterface);
-  }
-}
-</code></pre>
-
-<p>MapperFactoryBean 实现了 FactoryBean 接口，getObject 方法实际是封装了 MyBatis 的第二阶段，注入容器的是 SqlSession 实例化的 Mapper 接口的实现类。</p>
-
-<p>它是支持注入MyBatis映射器接口的BeanFactory，可以使用SqlSessionFactory或预先配置的SqlSessionTemplate进行设置，这个工厂只能注入接口，而不能注入具体的类。</p>
-
-<h3 id="toc_6">MapperScannerConfigurer 源码分析</h3>
-
-<p>MapperFactoryBean 用于帮助 Spring 生成 Mapper 接口，但我们很少直接配置 MapperFactoryBean 而是配置 MapperScannerConfigurer。</p>
-
-<p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
-
-<pre class="line-numbers"><code class="language-java">/**
- * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
- * 
- */
-public class MapperScannerConfigurer
-    implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
-
-  private String basePackage;
-
-  private boolean addToConfig = true;
-
-  private String lazyInitialization;
-
-  private SqlSessionFactory sqlSessionFactory;
-
-  private SqlSessionTemplate sqlSessionTemplate;
-
-  private String sqlSessionFactoryBeanName;
-
-  private String sqlSessionTemplateBeanName;
-
-  private Class&lt;? extends Annotation&gt; annotationClass;
-
-  private Class&lt;?&gt; markerInterface;
-
-  private Class&lt;? extends MapperFactoryBean&gt; mapperFactoryBeanClass;
-
-  private ApplicationContext applicationContext;
-
-  private String beanName;
-
-  private boolean processPropertyPlaceHolders;
-
-  private BeanNameGenerator nameGenerator;
- 
- 
-  @Override
-  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
-    if (this.processPropertyPlaceHolders) {
-      processPropertyPlaceHolders();
-    }
-
-    ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
-    scanner.setAddToConfig(this.addToConfig);
-    scanner.setAnnotationClass(this.annotationClass);
-    scanner.setMarkerInterface(this.markerInterface);
-    scanner.setSqlSessionFactory(this.sqlSessionFactory);
-    scanner.setSqlSessionTemplate(this.sqlSessionTemplate);
-    scanner.setSqlSessionFactoryBeanName(this.sqlSessionFactoryBeanName);
-    scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
-    scanner.setResourceLoader(this.applicationContext);
-    scanner.setBeanNameGenerator(this.nameGenerator);
-    scanner.setMapperFactoryBeanClass(this.mapperFactoryBeanClass);
-    if (StringUtils.hasText(lazyInitialization)) {
-      scanner.setLazyInitialization(Boolean.valueOf(lazyInitialization));
-    }
-    scanner.registerFilters();
-    scanner.scan(
-        StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
-  }
-  
-  // 省略一大堆代码
-}
-</code></pre>
-
-<p>MapperScannerConfigurer 实现了 BeanDefinitionRegistryPostProcessor 接口， 因此可以对 Bean 的结构调整之后再注入容器。那 MapperScannerConfigurer 在扫描完这些 mapper 接口之后，主要是通过ClassPathMapperScanner将 Mapper 接口一个个的转换成 MapperFactoryBean 之后注入容器。</p>
-
-<p>至此就完成了 MyBatis 与 Spring框架的整合。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[线程等待/通知机制]]></title>
-    <link href="http://www.throne4j.com/15896322618729.html"/>
-    <updated>2020-05-16T20:31:01+08:00</updated>
-    <id>http://www.throne4j.com/15896322618729.html</id>
-    <content type="html"><![CDATA[
-<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，<br/>
-而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，<br/>
-线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。</p>
-
-<p>上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
-<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
-<p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
-3）条件满足则执行对应的逻辑。</p>
-
-<pre class="line-numbers"><code class="language-text">synchronized(obj) {
-    while(obj.isOk()) {
-        obj.wait();
-    }
-}
-</code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
-3）通知所有等待在对象上的线程。</p>
-
-<pre class="line-numbers"><code class="language-text">synchronized(obj) {
-    obj.notifyAll();
-}
-</code></pre>
-
-<p>在调用 wait()、notify()系列方法之前，线程必须要获得该对象的对象级别锁，<br/>
-即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。</p>
-
-<p>Question: 调用 yield() 、sleep()、wait()、notify()等方法对锁有何影响？ </p>
-
-<p>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。 </p>
-
-<p>调用 wait()方法后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行 wait 方法后面的代码。 </p>
-
-<p>调用 notify()系列方法后，对锁无影响，线程只有在 syn 同步代码执行完后才 会自然而然的释放锁，所以 notify()系列方法一般都是 syn 同步代码的最后一行</p>
-
-<p>使用wait、和notify实现一个连接池的实例如下：</p>
-
-<pre class="line-numbers"><code class="language-java">public class DBPool {
-
-    /*容器，存放连接*/
-    private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
-
-    /*限制了池的大小=20*/
-    public DBPool(int initialSize) {
-        if (initialSize &gt; 0) {
-            for (int i = 0; i &lt; initialSize; i++) {
-                pool.addLast(createConnection());
-            }
-        }
-    }
-
-    /*释放连接,通知其他的等待连接的线程*/
-    public void releaseConnection(Connection connection) {
-        if (connection != null) {
-            synchronized (pool){
-                pool.addLast(connection);
-                //通知其他等待连接的线程
-                pool.notifyAll();
-            }
-        }
-    }
-
-    /*获取*/
-    // 在mills内无法获取到连接，将会返回null 1S
-    public Connection fetchConnection(long mills)
-            throws InterruptedException {
-        synchronized (pool){
-            //永不超时
-            if(mills&lt;=0){
-                while(pool.isEmpty()){
-                    pool.wait();
-                }
-                return pool.removeFirst();
-            }else{
-                /*超时时刻*/
-                long future = System.currentTimeMillis()+mills;
-                /*等待时长*/
-                long remaining = mills;
-                while(pool.isEmpty()&amp;&amp;remaining&gt;0){
-                    pool.wait(remaining);
-                    /*唤醒一次，重新计算等待时长*/
-                    remaining = future-System.currentTimeMillis();
-                }
-                Connection connection = null;
-                if(!pool.isEmpty()){
-                    connection = pool.removeFirst();
-                }
-                return connection;
-            }
-        }
-
-    }
-}
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MyBatis逆向工程]]></title>
-    <link href="http://www.throne4j.com/15896298256850.html"/>
-    <updated>2020-05-16T19:50:25+08:00</updated>
-    <id>http://www.throne4j.com/15896298256850.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">配置文件</h2>
-
-<p>generator.properties</p>
-
-<pre class="line-numbers"><code class="language-properties">jdbc.driverClass=com.mysql.jdbc.Driver
-jdbc.connectionURL=jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
-jdbc.user=root
-jdbc.password=12345678
-java.target.package=com.shengke.sbd.entity
-example.target.package=com.shengke.sbd.entity.example
-mapper.target.package=com.shengke.sbd.mapper
-sql.mapper.target.package=mapper
-
-</code></pre>
-
-<p>generatorConfig.xml</p>
-
-<pre class="line-numbers"><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;!DOCTYPE generatorConfiguration
-        PUBLIC &quot;-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN&quot;
-        &quot;http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd&quot;&gt;
-&lt;!-- 配置生成器 --&gt;
-&lt;generatorConfiguration&gt;
-    &lt;properties resource=&quot;generator/generator.properties&quot;/&gt;
-
-    &lt;!--MyBatis3、 Mybatis3Simple（没有example这些个东西），defaultModelType推荐 flat， 可选值flat、conditional、hierarchical--&gt;
-    &lt;context id=&quot;mysql&quot; targetRuntime=&quot;Mybatis3Simple&quot; defaultModelType=&quot;flat&quot;&gt;
-        &lt;!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
-                   一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖
-                --&gt;
-        &lt;property name=&quot;autoDelimitKeywords&quot; value=&quot;false&quot;/&gt;
-        &lt;!-- 生成的Java文件的编码 --&gt;
-        &lt;property name=&quot;javaFileEncoding&quot; value=&quot;UTF-8&quot;/&gt;
-        &lt;!-- 格式化java代码 --&gt;
-        &lt;property name=&quot;javaFormatter&quot; value=&quot;org.mybatis.generator.api.dom.DefaultJavaFormatter&quot;/&gt;
-        &lt;!-- 格式化XML代码 --&gt;
-        &lt;property name=&quot;xmlFormatter&quot; value=&quot;org.mybatis.generator.api.dom.DefaultXmlFormatter&quot;/&gt;
-
-
-        &lt;!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； --&gt;
-        &lt;property name=&quot;beginningDelimiter&quot; value=&quot;`&quot;/&gt;
-        &lt;property name=&quot;endingDelimiter&quot; value=&quot;`&quot;/&gt;
-
-
-        &lt;plugin type=&quot;org.mybatis.generator.plugins.SerializablePlugin&quot;/&gt;
-        &lt;!--重新生成覆盖原mapper.XML文件--&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.OverIsMergeablePlugin&quot;/&gt;
-        &lt;!-- Example和mapper类中文注释 --&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.CommentPlugin&quot;/&gt;
-        &lt;!-- .Lombok插件 默认在实体类里增加@Data 不生成Get、Set方法 --&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.LombokPlugin&quot;&gt;
-            &lt;property name=&quot;lombokAnnotations&quot; value=&quot;@Data&quot;/&gt;
-        &lt;/plugin&gt;
-
-        &lt;!-- 修改生成的Example类的类名和Mapper类中的方法名或参数名--&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.ExampleConfigPlugin&quot;&gt;
-            &lt;!-- example包名 --&gt;
-            &lt;property name=&quot;targetPackage&quot; value=&quot;${example.target.package}&quot;/&gt;
-            &lt;property name=&quot;classMethodSearchString&quot; value=&quot;Example&quot;/&gt;
-            &lt;property name=&quot;classMethodReplaceString&quot; value=&quot;Condition&quot;/&gt;
-            &lt;property name=&quot;parameterSearchString&quot; value=&quot;example&quot;/&gt;
-            &lt;property name=&quot;parameterReplaceString&quot; value=&quot;condition&quot;/&gt;
-        &lt;/plugin&gt;
-        &lt;!--生成中文注释--&gt;
-        &lt;commentGenerator type=&quot;com.mybatis.generator.comment.MyCommentGenerator&quot;&gt;
-            &lt;!-- 是否禁止显示日期 true：是 ： false:否 --&gt;
-            &lt;property name=&quot;suppressDate&quot; value=&quot;false&quot;/&gt;
-            &lt;!-- 是否去除自动生成的所有注释 true：是 ： false:否 --&gt;
-            &lt;property name=&quot;suppressAllComments&quot; value=&quot;false&quot;/&gt;
-            &lt;!--注释是否包含数据库表的注释--&gt;
-            &lt;property name=&quot;addRemarkComments&quot; value=&quot;true&quot;/&gt;
-        &lt;/commentGenerator&gt;
-
-        &lt;!--数据库链接URL，用户名、密码 --&gt;
-        &lt;jdbcConnection driverClass=&quot;${jdbc.driverClass}&quot; connectionURL=&quot;${jdbc.connectionURL}&quot; userId=&quot;${jdbc.user}&quot;
-                        password=&quot;${jdbc.password}&quot;&gt;
-            &lt;property name=&quot;useInformationSchema&quot; value=&quot;true&quot;/&gt;
-        &lt;/jdbcConnection&gt;
-
-        &lt;!-- java类型处理器
-            用于处理DB中的类型到Java中的类型，默认使用JavaTypeResolverDefaultImpl；
-            注意一点，默认会先尝试使用Integer，Long，Short等来对应DECIMAL和 NUMERIC数据类型；
-        --&gt;
-        &lt;javaTypeResolver type=&quot;org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl&quot;&gt;
-            &lt;property name=&quot;forceBigDecimals&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;useJava8Time&quot; value=&quot;${jdk.use_jdk8_time}&quot;/&gt;
-        &lt;/javaTypeResolver&gt;
-
-        &lt;!-- 配置生成实体类的包名和位置 --&gt;
-        &lt;javaModelGenerator targetPackage=&quot;${java.target.package}&quot; targetProject=&quot;src/main/java&quot;&gt;
-            &lt;!--  for MyBatis3/MyBatis3Simple
-                自动为每一个生成的类创建一个构造方法，构造方法包含了所有的field；而不是使用setter；
-             --&gt;
-            &lt;property name=&quot;constructorBased&quot; value=&quot;false&quot;/&gt;
-
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-
-            &lt;!-- for MyBatis3 / MyBatis3Simple
-                是否创建一个不可变的类，如果为true，
-                那么MBG会创建一个没有setter方法的类，取而代之的是类似constructorBased的类
-             --&gt;
-            &lt;property name=&quot;immutable&quot; value=&quot;false&quot;/&gt;
-
-            &lt;!-- 设置一个根对象，
-                如果设置了这个根对象，那么生成的keyClass或者recordClass会继承这个类；在Table的rootClass属性中可以覆盖该选项
-                注意：如果在key class或者record class中有root class相同的属性，MBG就不会重新生成这些属性了，包括：
-                    1，属性名相同，类型相同，有相同的getter/setter方法；
-                比如BaseEntity中定义的createdTime、createUserId、createUserName等
-             --&gt;
-            &lt;!--&lt;property name=&quot;rootClass&quot; value=&quot;com.indexes.server.domain.BaseDomain&quot;/&gt;--&gt;
-
-            &lt;!-- 设置是否在getter方法中，对String类型字段调用trim()方法 --&gt;
-            &lt;property name=&quot;trimStrings&quot; value=&quot;true&quot;/&gt;
-        &lt;/javaModelGenerator&gt;
-
-
-        &lt;!-- 生成SQL map的XML文件生成器，
-            注意，在Mybatis3之后，我们可以使用mapper.xml文件+Mapper接口（或者不用mapper接口），
-                或者只使用Mapper接口+Annotation，所以，如果 javaClientGenerator配置中配置了需要生成XML的话，这个元素就必须配置
-            targetPackage/targetProject:同javaModelGenerator
-         --&gt;
-        &lt;sqlMapGenerator targetPackage=&quot;${sql.mapper.target.package}&quot; targetProject=&quot;src/main/resources&quot;&gt;
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-        &lt;/sqlMapGenerator&gt;
-
-
-        &lt;!-- 对于mybatis来说，即生成Mapper接口，注意，如果没有配置该元素，那么默认不会生成Mapper接口
-            targetPackage/targetProject:同javaModelGenerator
-            type：选择怎么生成mapper接口（在MyBatis3/MyBatis3Simple下）：
-                1，ANNOTATEDMAPPER：会生成使用Mapper接口+Annotation的方式创建（SQL生成在annotation中），不会生成对应的XML；
-                2，MIXEDMAPPER：使用混合配置，会生成Mapper接口，并适当添加合适的Annotation，但是XML会生成在XML中；
-                3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
-            注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER
-        --&gt;
-        &lt;javaClientGenerator targetPackage=&quot;${mapper.target.package}&quot; type=&quot;XMLMAPPER&quot;
-                             targetProject=&quot;src/main/java&quot;&gt;
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-
-            &lt;!--可以为所有生成的接口添加一个父接口，但是MBG只负责生成，不负责检查--&gt;
-            &lt;property name=&quot;rootInterface&quot; value=&quot;com.shengke.sbd.mapper.BaseMapper&quot;/&gt;
-
-        &lt;/javaClientGenerator&gt;
-
-
-        &lt;!-- 选择一个table来生成相关文件，可以有一个或多个table，必须要有table元素
-            选择的table会生成一下文件：
-            1，SQL map文件
-            2，生成一个主键类；
-            3，除了BLOB和主键的其他字段的类；
-            4，包含BLOB的类；
-            5，一个用户生成动态查询的条件类（selectByExample, deleteByExample），可选；
-            6，Mapper接口（可选）
-
-            tableName（必要）：要生成对象的表名；
-            注意：大小写敏感问题。正常情况下，MBG会自动的去识别数据库标识符的大小写敏感度，在一般情况下，MBG会
-                根据设置的schema，catalog或tablename去查询数据表，按照下面的流程：
-                1，如果schema，catalog或tablename中有空格，那么设置的是什么格式，就精确的使用指定的大小写格式去查询；
-                2，否则，如果数据库的标识符使用大写的，那么MBG自动把表名变成大写再查找；
-                3，否则，如果数据库的标识符使用小写的，那么MBG自动把表名变成小写再查找；
-                4，否则，使用指定的大小写格式查询；
-            另外的，如果在创建表的时候，使用的&quot;&quot;把数据库对象规定大小写，就算数据库标识符是使用的大写，在这种情况下也会使用给定的大小写来创建表名；
-            这个时候，请设置delimitIdentifiers=&quot;true&quot;即可保留大小写格式；
-
-            可选：
-            1，schema：数据库的schema；
-            2，catalog：数据库的catalog；
-            3，alias：为数据表设置的别名，如果设置了alias，那么生成的所有的SELECT SQL语句中，列名会变成：alias_actualColumnName
-            4，domainObjectName：生成的domain类的名字，如果不设置，直接使用表名作为domain类的名字；可以设置为somepck.domainName，那么会自动把domainName类再放到somepck包里面；
-            5，enableInsert（默认true）：指定是否生成insert语句；
-            6，enableSelectByPrimaryKey（默认true）：指定是否生成按照主键查询对象的语句（就是getById或get）；
-            7，enableSelectByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询语句；
-            8，enableUpdateByPrimaryKey（默认true）：指定是否生成按照主键修改对象的语句（即update)；
-            9，enableDeleteByPrimaryKey（默认true）：指定是否生成按照主键删除对象的语句（即delete）；
-            10，enableDeleteByExample（默认true）：MyBatis3Simple为false，指定是否生成动态删除语句；
-            11，enableCountByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询总条数语句（用于分页的总条数查询）；
-            12，enableUpdateByExample（默认true）：MyBatis3Simple为false，指定是否生成动态修改语句（只修改对象中不为空的属性）；
-            13，modelType：参考context元素的defaultModelType，相当于覆盖；
-            14，delimitIdentifiers：参考tableName的解释，注意，默认的delimitIdentifiers是双引号，如果类似MYSQL这样的数据库，使用的是`（反引号，那么还需要设置context的beginningDelimiter和endingDelimiter属性）
-            15，delimitAllColumns：设置是否所有生成的SQL中的列名都使用标识符引起来。默认为false，delimitIdentifiers参考context的属性
-
-            注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
-         --&gt;
-        &lt;!--
-            &lt;table tableName=&quot;t_collection_order_approval&quot; domainObjectName=&quot;CollectionOrderApproval&quot;
-                   enableSelectByExample=&quot;true&quot;
-                   enableCountByExample=&quot;true&quot;
-                   enableDeleteByExample=&quot;true&quot;
-                   enableUpdateByExample=&quot;true&quot;&gt;
-              &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-              &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-              &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-              &lt;columnOverride column=&quot;create_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;update_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;cancel_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;customer_type&quot; javaType=&quot;java.lang.Integer&quot;/&gt;
-              &lt;columnOverride column=&quot;special_customer_reason&quot; javaType=&quot;java.lang.Integer&quot;/&gt;
-            &lt;/table&gt;
-        --&gt;
-        &lt;!--&lt;table  tableName=&quot;%&quot;&gt;&lt;/table&gt;--&gt;
-
-        &lt;table tableName=&quot;t_user&quot; domainObjectName=&quot;User&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_role_permission&quot; domainObjectName=&quot;RolePermission&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_health_report_female&quot; domainObjectName=&quot;HealthReportFemale&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_health_report_male&quot; domainObjectName=&quot;HealthReportMale&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_job_history&quot; domainObjectName=&quot;JobHistory&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_position&quot; domainObjectName=&quot;Position&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_role&quot; domainObjectName=&quot;Role&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_user_role&quot; domainObjectName=&quot;UserRole&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_user_test&quot; domainObjectName=&quot;UserTest&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-    &lt;/context&gt;
-
-&lt;/generatorConfiguration&gt;
-
-
-</code></pre>
-
-<h2 id="toc_1">maven关于mybatis反向工程的插件</h2>
-
-<pre class="line-numbers"><code class="language-markup">&lt;plugin&gt;
-    &lt;groupId&gt;org.mybatis.generator&lt;/groupId&gt;
-    &lt;artifactId&gt;mybatis-generator-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;1.3.6&lt;/version&gt;
-    &lt;configuration&gt;
-        &lt;configurationFile&gt;src/main/resources/generator/generatorConfig.xml&lt;/configurationFile&gt;
-        &lt;outputDirectory&gt;${project.build.directory}/generated/mybatis-generator&lt;/outputDirectory&gt;
-        &lt;verbose&gt;true&lt;/verbose&gt;
-        &lt;overwrite&gt;true&lt;/overwrite&gt;
-    &lt;/configuration&gt;
-
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;mysql&lt;/groupId&gt;
-            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-            &lt;version&gt;8.0.19&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.mybatis.generator.plugin&lt;/groupId&gt;
-            &lt;artifactId&gt;generator-plugin&lt;/artifactId&gt;
-            &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-&lt;/plugin&gt;
 </code></pre>
 
 ]]></content>

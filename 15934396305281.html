@@ -220,7 +220,7 @@ robj结构体如下所示：</p>
 
 <ul>
 <li><p>结构体 robj 的ptr<br/>
-ptr是void* 类型的指针，指向实际存储的某一种数据结构。</p></li>
+ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
 <li><p>结构体 robj 的 refcount <br/>
 refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
 只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
@@ -254,17 +254,16 @@ lru的低8比特存储的是对象的访问次数，高16比特存储的是对�
     int bufpos; 
 } client;
 
+// 用来管理数据库相关数据和实现相关操作
 typedef struct redisDb {     
     int id;     // id为数据库序号，默认情况下Redis有16个数据库，id序号为0～15。
     long long avg_ttl;         //avg_ttl存储数据库对象的平均TTL，用于统计
-    dict *dict;     //·dict存储数据库所有键值对。
-    dict *expires;     //·expires存储键的过期时间
-    // blpop 阻塞列表的时候，会将此列表键记录在blocking_keys，
-    // 在push的时候，blocking_keys 存在该列表键，则将此列表键记录到字典 ready_keys
-    dict *blocking_keys;     
-    dict *ready_keys;     
-    
-    dict *watched_keys;     //被watch命令监控的所有数据键
+    dict *dict;     //键空间散列表，存储数据库所有键值对。
+    dict *expires;     //过期时间散列表，存放键的过期时间，注意dict和expires中的键都指向同一个键的sds。
+    dict *blocking_keys;     // 处于阻塞状态的键和对应的client，比如blpop命令阻塞键和对应客户端，而解除客户端的阻塞状态有两种 1：进行push操作；2：阻塞超时
+    dict *ready_keys;     //解除阻塞状态的键和对应的client
+    list *defrag_later;         // 逐渐尝试逐个碎片整理的key列表
+    dict *watched_keys;     //watch的键和对应的client，主要用于事务
 } redisDb;
 </code></pre>
 
@@ -487,6 +486,24 @@ Redis 使用自定义格式区分不同的命令，客户端会对命令请求�
 <img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程"/></p>
 
 <h3 id="toc_11">3.2、命令调用</h3>
+
+<p>在处理命令请求之前会进行很多的校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
+
+<p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
+
+<h3 id="toc_12">3.3、返回结果</h3>
+
+<p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
+
+<p>Redis的返回结果可以分为5类：</p>
+
+<ul>
+<li><code>状态回复，第一个字符是“+”；例如，SET命令执行完毕会向客户端返回“+OK\r\n”。</code></li>
+<li><code>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回“-ERR unknown command&#39;testcmd&#39;”。</code></li>
+<li><code>整数回复，第一个字符是“:”。例如，INCR命令执行完毕向客户端返回“:100\r\n”。</code></li>
+<li><code>批量回复，第一个字符是 &quot;$&quot;。例如，GET命令查找键向客户端返回结果&quot;$5\r\nhello\r\n&quot;，其中$5表示返回字符串长度</code></li>
+<li><code>多条批量回复，第一个字符是“*”。例如，LRANGE命令可能会返回多个值，格式为“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”，与命令请求协议格式相同，“*3”表示返回值数目，“$6”表示当前返回值字符串长度</code></li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">
