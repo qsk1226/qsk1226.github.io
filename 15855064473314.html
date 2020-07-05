@@ -128,7 +128,7 @@
 
 <p>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</p>
 
-<pre class="line-numbers"><code class="language-text">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；
+<pre><code class="language-text">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；
 -d: 后台运行容器，并返回容器ID；
 -i: 以交互模式运行容器，通常与 -t 同时使用；
 -P: 随机端口映射，容器内部端口随机映射到主机的高端口
@@ -164,7 +164,7 @@ docker run -d --name nginx -p 80:80 --volumes-from data nginx</p>
 <li>start/stop/restart</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">start： 启动一个或多个已被停止的容器
+<pre><code class="language-text">start： 启动一个或多个已被停止的容器
 stop： 停止一个或多个运行中的容器
 restart: 重启一个或多个容器
 </code></pre>
@@ -174,7 +174,7 @@ restart: 重启一个或多个容器
 <li><p>rm 删除一个或多个容器</p></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">-f :通过SIGKILL信号强制删除一个运行中的容器
+<pre><code class="language-text">-f :通过SIGKILL信号强制删除一个运行中的容器
 -l :移除容器间的网络连接，而非容器本身
 -v :-v 删除与容器关联的卷
 </code></pre>
@@ -187,7 +187,7 @@ restart: 重启一个或多个容器
 <li><p>exec</p></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">&gt; docker exec -it nginx /bin/bash
+<pre><code class="language-text">&gt; docker exec -it nginx /bin/bash
 -d :分离模式: 在后台运行
 -i :即使没有附加也保持STDIN 打开
 -t :分配一个伪终端
@@ -199,7 +199,7 @@ restart: 重启一个或多个容器
 <li>ps  列出容器</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">-a :显示所有的容器，包括未运行的。
+<pre><code class="language-text">-a :显示所有的容器，包括未运行的。
 -f :根据条件过滤显示的内容。
 --format :指定返回值的模板文件。
 -l :显示最近创建的容器。
@@ -214,7 +214,7 @@ restart: 重启一个或多个容器
 docker inspect -f &#39;{{.NetworkSettings.IPAddress}}&#39; nginx</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">-f :指定返回值的模板文件。
+<pre><code class="language-text">-f :指定返回值的模板文件。
 -s :显示总的文件大小。
 --type :为指定类型返回JSON。
 </code></pre>
@@ -226,7 +226,7 @@ docker inspect -f &#39;{{.NetworkSettings.IPAddress}}&#39; nginx</li>
 <li>logs</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">-f : 跟踪日志输出
+<pre><code class="language-text">-f : 跟踪日志输出
 --since :显示某个开始时间的所有日志
 -t : 显示时间戳
 --tail :仅列出最新N条容器日志
@@ -238,7 +238,7 @@ docker inspect -f &#39;{{.NetworkSettings.IPAddress}}&#39; nginx</li>
 <li>port  列出指定的容器的端口映射，或者查找将PRIVATE_PORT NAT到面向公众的端口。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">&gt; docker port nginx
+<pre><code class="language-text">&gt; docker port nginx
 80/tcp -&gt; 0.0.0.0:8080
 </code></pre>
 
@@ -269,7 +269,7 @@ docker cp nginx:/etc/nginx/conf.ddefault.conf ./</li>
 <li>images  列出本地镜像。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">-a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
+<pre><code class="language-text">-a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
 --digests :显示镜像的摘要信息；
 -f :显示满足条件的镜像；
 --format :指定返回值的模板文件；
@@ -282,7 +282,7 @@ docker cp nginx:/etc/nginx/conf.ddefault.conf ./</li>
 <li>tag  标记本地镜像，将其归入某一仓库。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+<pre><code class="language-text">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
 
 将镜像ubuntu:15.10标记为 w3cschool/ubuntu:v3 镜像
 
@@ -293,7 +293,7 @@ docker tag nginx w3cschool/ubuntu:v3
 <li>build   使用Dockerfile创建镜像。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">&gt; docker build -t w3cschool/ubuntu:v1 ./
+<pre><code class="language-text">&gt; docker build -t w3cschool/ubuntu:v1 ./
 &gt; docker build -f /home/user/Dockerfile ./
 
 --build-arg=[] :设置镜像创建时的变量；
@@ -335,7 +335,7 @@ setenforce 1</p>
 
 <p>vi /etc/sysconfig/selinux</p>
 
-<p><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;"/></p>
+<p><figure><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;"/></figure></p>
 
 <p>SELINUX=disable</p>
 

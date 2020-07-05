@@ -116,7 +116,7 @@
                   <article class="markdown-body single-content">
                     <h2 id="toc_0">Mybatis是如何配置数据源的</h2>
 
-<pre class="line-numbers"><code class="language-markup">&lt;!--配置environment环境, 默认使用配置dev --&gt;
+<pre><code class="language-markup">&lt;!--配置environment环境, 默认使用配置dev --&gt;
 &lt;environments default=&quot;dev&quot;&gt;
     &lt;!-- 环境配置1，每个SqlSessionFactory对应一个环境 --&gt;
     &lt;environment id=&quot;development&quot;&gt;
@@ -146,12 +146,12 @@
 
 <h2 id="toc_1">Mybatis关于数据源的结构分析</h2>
 
-<p><img src="media/15889539650351/15890169905279.jpg" alt=""/></p>
+<p><figure><img src="media/15889539650351/15890169905279.jpg" alt=""/></figure></p>
 
 <p>DataSource: 数据源接口，JDBC标准规范之一，定义获取Connection的方法。<br/>
 UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会返回一个新的数据库连接，而非复用旧的连接。</p>
 
-<pre class="line-numbers"><code class="language-java">public class UnpooledDataSource implements DataSource {
+<pre><code class="language-java">public class UnpooledDataSource implements DataSource {
     /**
      * 获取真实的数据库连接
      *
@@ -175,7 +175,7 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>UnpooledDataSourceFactory：工厂接口的实现，用于创建UnPooledDataSource</p>
 
-<pre class="line-numbers"><code class="language-java">public class UnpooledDataSourceFactory implements DataSourceFactory {
+<pre><code class="language-java">public class UnpooledDataSourceFactory implements DataSourceFactory {
 
     private static final String DRIVER_PROPERTY_PREFIX = &quot;driver.&quot;;
     private static final int DRIVER_PROPERTY_PREFIX_LENGTH = DRIVER_PROPERTY_PREFIX.length();
@@ -238,7 +238,7 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>PooledDataSourceFactory：工厂接口的实现，用于创建PooledDataSource。</p>
 
-<pre class="line-numbers"><code class="language-java">public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+<pre><code class="language-java">public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
     public PooledDataSourceFactory() {
         this.dataSource = new PooledDataSource();
@@ -264,7 +264,7 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>看下数据库连接的增强代理类</p>
 
-<pre class="line-numbers"><code class="language-java">class PooledConnection implements InvocationHandler {
+<pre><code class="language-java">class PooledConnection implements InvocationHandler {
 
     private static final String CLOSE = &quot;close&quot;;
     private static final Class&lt;?&gt;[] IFACES = new Class&lt;?&gt;[]{Connection.class};
@@ -315,7 +315,7 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>再看下数据库连接池的实现</p>
 
-<pre class="line-numbers"><code class="language-java">public class PooledDataSource implements DataSource {
+<pre><code class="language-java">public class PooledDataSource implements DataSource {
     // 用于管理PooledConnection对象状态的组件，
     // 通过两个list分别管理空闲状态的连接资源和活跃状态的连接资源
     private final PoolState state = new PoolState(this);
@@ -527,7 +527,7 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>再看下管理PooledConnection对象状态的组件PooleState</p>
 
-<pre class="line-numbers"><code class="language-java">public class PoolState {
+<pre><code class="language-java">public class PoolState {
 
     protected PooledDataSource dataSource;
 
@@ -602,17 +602,17 @@ UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会�
 
 <p>重新梳理一下获取数据库连接的流程</p>
 
-<p><img src="media/15889539650351/15890449209327.jpg" alt="" style="width:815px;"/></p>
+<p><figure><img src="media/15889539650351/15890449209327.jpg" alt="" style="width:815px;"/></figure></p>
 
 <p>释放连接流程</p>
 
-<p><img src="media/15889539650351/15890456168806.jpg" alt="" style="width:552px;"/></p>
+<p><figure><img src="media/15889539650351/15890456168806.jpg" alt="" style="width:552px;"/></figure></p>
 
 <h2 id="toc_3">使用第三方数据源产品</h2>
 
 <p>mybatis配置数据源的代码段</p>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 private DataSourceFactory dataSourceElement(XNode context) throws Exception {
     if (context != null) {
         String type = context.getStringAttribute(&quot;type&quot;);
@@ -628,7 +628,7 @@ private DataSourceFactory dataSourceElement(XNode context) throws Exception {
 
 <p>实现UnpooledDataSourceFactory类</p>
 
-<pre class="line-numbers"><code class="language-java">public class DruidDataSourceFactory extends UnpooledDataSourceFactory {
+<pre><code class="language-java">public class DruidDataSourceFactory extends UnpooledDataSourceFactory {
     public DruidDataSourceFactory() {
         dataSource = new DruidDataSource();
     }
@@ -637,7 +637,7 @@ private DataSourceFactory dataSourceElement(XNode context) throws Exception {
 
 <p>mybatis-config.xml配置修改如下：</p>
 
-<pre class="line-numbers"><code class="language-markup">&lt;environments default=&quot;default&quot;&gt;
+<pre><code class="language-markup">&lt;environments default=&quot;default&quot;&gt;
     &lt;environment id=&quot;default&quot;&gt;
         &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;/transactionManager&gt;
         &lt;dataSource type=&quot;com.goddess.sbd.DruidDataSourceFactory&quot;&gt;

@@ -132,7 +132,7 @@
 <h2 id="toc_0">运行时数据区域</h2>
 
 <p>JVM在运行过程中，会把内存分为多个不同的数据区，他们各有各的用途，我们通过下图看下JVM是如何对内存结构进行划分的：<br/>
-<img src="media/15866079598905/15866802670837.jpg" alt="" style="width:1082px;"/></p>
+<figure><img src="media/15866079598905/15866802670837.jpg" alt="" style="width:1082px;"/></figure></p>
 
 <h2 id="toc_1">程序计数器</h2>
 
@@ -158,7 +158,7 @@
 <p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。<br/>
 OutOfMemoryError：</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * jvm栈OOM(此操作可能拖垮cpu，请谨慎执行)
  * -Xss256k
  **/
@@ -177,7 +177,7 @@ public class StackOOMErrorMock {
 
 <p>StackOverFlowError：</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * StackOverFlowError
  * -Xss256k 栈大小
  */
@@ -219,7 +219,7 @@ public class StackOverFlowMock {
 
 <p>可引起OutOfMemoryError异常</p>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 /**
  * OOM 异常 -Xms5m -Xmx5m
  */
@@ -251,7 +251,7 @@ jdk8之后移除永久代而采用了本地内存来实现方法区，理论上�
 
 <p>可引起OutOfMemoryError异常：</p>
 
-<pre class="line-numbers"><code class="language-java">import net.sf.cglib.proxy.Enhancer;
+<pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
@@ -296,7 +296,7 @@ public class MetaSpaceMemory {
 
 <p>可引起OutOfMemoryError异常：</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * jdk1.6之前 -XX:PermSize=6M -XX:MaxPermSize=6M
  * jdk1.6之后 -Xmx6M
  **/
@@ -321,7 +321,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 
 <p>OOM异常：</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * -XX:MaxDirectMemorySize=5M -Xmx20M
  **/
 public class DirectMemoryOOMMock {

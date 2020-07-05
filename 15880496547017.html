@@ -140,7 +140,7 @@
 
 <h3 id="toc_4">1、架构图</h3>
 
-<p> <img src="media/15586898110083/15590230630201.jpg" alt="" style="width:556px;"/></p>
+<p> <figure><img src="media/15586898110083/15590230630201.jpg" alt="" style="width:556px;"/></figure></p>
 
 <h3 id="toc_5">2、构成</h3>
 
@@ -162,7 +162,7 @@ Concrete Event Handler ：事件处理器的实际实现，而且绑定了一个
  5）Initiation Dispatcher根据发生事件的Handle找出所对应的Handler。 <br/>
  6）Initiation Dispatcher调用Handler的handle_event方法处理事件。</p>
 
-<pre class="line-numbers"><code class="language-text">import java.io.IOException;  
+<pre><code class="language-text">import java.io.IOException;  
 import java.net.InetAddress;  
 import java.net.InetSocketAddress;  
 import java.nio.channels.SelectionKey;  
@@ -235,7 +235,7 @@ public class Reactor implements Runnable{
 } 
 </code></pre>
 
-<pre class="line-numbers"><code class="language-text">import java.io.IOException;  
+<pre><code class="language-text">import java.io.IOException;  
 import java.nio.channels.SocketChannel;  
 
 public class Acceptor implements Runnable{  
@@ -256,7 +256,7 @@ public class Acceptor implements Runnable{
 } 
 </code></pre>
 
-<pre class="line-numbers"><code class="language-text">import java.io.IOException;  
+<pre><code class="language-text">import java.io.IOException;  
 import java.nio.ByteBuffer;  
 import java.nio.channels.SelectionKey;  
 import java.nio.channels.Selector;  

@@ -141,12 +141,12 @@
 <li>Subject: 抽象主题角色</li>
 <li>Proxy: 代理主题角色</li>
 <li>RealSubject: 真实主题角色
-<img src="media/15880844669175/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.jpg" alt="代理模式"/></li>
+<figure><img src="media/15880844669175/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.jpg" alt="代理模式"/><figcaption>代理模式</figcaption></figure></li>
 </ul>
 
 <h3 id="toc_2">静态代理示例</h3>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 接口
  */
 public interface IUserDao {
@@ -222,7 +222,7 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
 </ul></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class DynamicProxyTest {
+<pre><code class="language-java">public class DynamicProxyTest {
 
     interface IHello{
         void sayHello();
@@ -272,7 +272,7 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
 <li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class ProxyFactory {
+<pre><code class="language-java">public class ProxyFactory {
     /**
      * 产生代理对象
      *

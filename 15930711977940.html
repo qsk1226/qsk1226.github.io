@@ -162,7 +162,7 @@
 
 <p>简单动态字符串（Simple Dynamic Strings，SDS）是Redis的基本数据结构之一，用于存储字符串和整型数据。SDS兼容C语言标准字符串处理函数，且在此基础上保证了二进制安全。</p>
 
-<pre class="line-numbers"><code class="language-c">struct __attribute__ ((__packed__))sdshdr5 {     
+<pre><code class="language-c">struct __attribute__ ((__packed__))sdshdr5 {     
     unsigned char flags; /* 低3位存储类型, 高5位存储长度 */
     char buf[];/*柔性数组，存放实际内容*/ 
 };
@@ -201,11 +201,11 @@ struct __attribute__((__packed__))sdshdr64 {
 <p>通过将有序集合的部分节点分层，由最上层开始依次向后查找，如果本层的next节点大于要查找的值或next节点为NULL，则从本节点开始，降低一层继续向后查找，依次类推，如果找到则返回节点；否则返回NULL。采用该原理查找节点，在节点数量比较多时，可以跳过一些节点，查询效率大大提升，这就是跳跃表的基本思想。</p>
 
 <p>跳跃表存储结构如下图所示：<br/>
-<img src="media/15930711977940/15932648695005.jpg" alt="跳跃表存储结构"/></p>
+<figure><img src="media/15930711977940/15932648695005.jpg" alt="跳跃表存储结构"/><figcaption>跳跃表存储结构</figcaption></figure></p>
 
 <p>接下来看下跳跃表的数据结构 </p>
 
-<pre class="line-numbers"><code class="language-c">// 定义了skiplist的节点结构
+<pre><code class="language-c">// 定义了skiplist的节点结构
 typedef struct zskiplistNode {    
     sds ele;    //用于存储字符串类型的数据
     double score;   //用于存储排序的分支
@@ -233,7 +233,7 @@ typedef struct zskiplist {
 <h4 id="toc_3">压缩列表 ziplist 存储结构</h4>
 
 <p>压缩列表 结构示意图如下：<br/>
-<img src="media/15930711977940/15932748544287.jpg" alt="" style="width:856px;"/></p>
+<figure><img src="media/15930711977940/15932748544287.jpg" alt="" style="width:856px;"/></figure></p>
 
 <ul>
 <li>zlbytes： 占4个字节，压缩列表的字节长度，因此压缩列表最多有232 -1个字节。</li>
@@ -245,12 +245,12 @@ typedef struct zskiplist {
 
 <p>查看一个压缩列表示例：</p>
 
-<p><img src="media/15930711977940/15932741442146.jpg" alt="" style="width:888px;"/></p>
+<p><figure><img src="media/15930711977940/15932741442146.jpg" alt="" style="width:888px;"/></figure></p>
 
 <p>了解了压缩列表的基本结构，我们可以很容易地获得压缩列表的字节长度、元素个数等，那么如何遍历压缩列表呢？对于任意一个元素，我们如何判断其存储的是什么类型呢？我们又如何获取字节数组的长度呢？</p>
 
 <p><strong>压缩列表元素</strong>的结构示意图如下所示：<br/>
-<img src="media/15930711977940/15932749731815.jpg" alt="" style="width:900px;"/></p>
+<figure><img src="media/15930711977940/15932749731815.jpg" alt="" style="width:900px;"/></figure></p>
 
 <p>previous_entry_length 字段表示前一个元素的字节长度，占1个或者5个字节，</p>
 
@@ -324,7 +324,7 @@ typedef struct zskiplist {
 
 <p>Redis 定义的 encoding 字段的各个编码类型：</p>
 
-<pre class="line-numbers"><code class="language-c">#define ZIP_STR_06B (0 &lt;&lt; 6) 
+<pre><code class="language-c">#define ZIP_STR_06B (0 &lt;&lt; 6) 
 #define ZIP_STR_14B (1 &lt;&lt; 6) 
 #define ZIP_STR_32B (2 &lt;&lt; 6) 
 #define ZIP_INT_16B (0xc0 | 0&lt;&lt;4) 
@@ -340,7 +340,7 @@ typedef struct zskiplist {
 
 <p>我们发现对于压缩列表的任意元素，获取前一个元素的长度、判断存储的数据类型、获取数据内容都需要经过复杂的解码运算。解码后的结果应该被缓存起来，为此定义了结构体zlentry，用于表示解码后的压缩列表元素。</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct zlentry {
+<pre><code class="language-c">typedef struct zlentry {
     unsigned int prevrawlensize;    //previous_entry_length 字段的长度
     unsigned int prevrawlen;    //previous_entry_length 字段存储的内容
     unsigned int lensize;   //encoding 字段的长度
@@ -361,7 +361,7 @@ typedef struct zskiplist {
 <li>Hash表的数据结构如下：</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-c">typedef struct dictht {     
+<pre><code class="language-c">typedef struct dictht {     
     dictEntry **table;                /* 指针数组，用于存储键值对*/     
     unsigned long size;                /* table数组的总大小*/     
     unsigned long sizemask;        /* 掩码 = size - 1 ，用来计算键的索引值*/     
@@ -373,7 +373,7 @@ typedef struct zskiplist {
 <li>Hash 表节点的数据结构如下：</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-c">typedef struct dictEntry {     
+<pre><code class="language-c">typedef struct dictEntry {     
     void *key;                        /*存储键*/     
     union {         
         void *val;                        /*db.dict中的val*/         
@@ -389,7 +389,7 @@ typedef struct zskiplist {
 <li>最外层的 字典 Dict 数据结构 如下：</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-c">typedef struct dict {     
+<pre><code class="language-c">typedef struct dict {     
     dictType *type;           /*该字典对应的一组特定操作抽象函数*/     
     void *privdata;           /*该字典依赖的数据，配合type字段指向的函数一起使用*/     
     dictht ht[2];               /*  Hash 表的数组，键值对存储在这里，一般情况下只会使用ht[0]，只有当盖子点扩容、缩容需要进行rehash ，才会使用到ht[1]*/     
@@ -401,7 +401,7 @@ typedef struct zskiplist {
 <p>Redis字典这个数据结构，除了主数据库的K-V数据存储外，还有很多其他地方会用到。例如，Redis的哨兵模式，就用字典存储管理所有的Master节点及Slave节点；再如，数据库中键值对的值为Hash类型时，存储这个Hash类型的值也是用的字典。在不同的应用中，字典中的键值对形态都可能不同，而dictType结构体，则是为了实现各种形态的字典而抽象出来的一组操作函数。</p>
 
 <p>Redis 字典结构的完整版<br/>
-<img src="media/15930711977940/15933377033789.jpg" alt=""/></p>
+<figure><img src="media/15930711977940/15933377033789.jpg" alt=""/></figure></p>
 
 <p><strong><em>在Hash 表扩容或者收缩的时候，程序需要将现有的哈希表中的所有键值对rehash 到新的 Hash表里面，此rehash 过程不是一次性完成的，而是渐进式的完成。</em></strong></p>
 
@@ -418,9 +418,9 @@ typedef struct zskiplist {
 
 <p>整数集合在Redis 中可以保存 int16_t、int32_t、int64_t类型的整型数据，并且可以保证集合中<strong>不会出现重复数据</strong>。每个整数集合使用一个 intset 类型的数据结构表示。<br/>
 intset 数据结构如下：<br/>
-<img src="media/15930711977940/15934343810923.jpg" alt=""/></p>
+<figure><img src="media/15930711977940/15934343810923.jpg" alt=""/></figure></p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct intset {     
+<pre><code class="language-c">typedef struct intset {     
     uint32_t encoding;//编码类型    
     uint32_t length;//元素个数    
     int8_t contents[];//柔性数组,根据encoding字段决定几个字节表示一个元素
@@ -455,7 +455,7 @@ List是链型数据存储常用的数据结构，可以是单向链表、双向�
 链表具有可快速插入、删除的优点。<br/>
 由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。<br/>
 双向非循环链表结构图：<br/>
-<img src="media/15930711977940/15937659545835.jpg" alt=""/></p></li>
+<figure><img src="media/15930711977940/15937659545835.jpg" alt=""/></figure></p></li>
 <li><p>quicklist<br/>
 quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。<br/>
 <strong>quicklist是一个由 ziplist 充当节点的双向链表</strong>。quicklist是一个双向链表，链表中的每个节点是一个 ziplist 结构。<br/>
@@ -463,11 +463,11 @@ quicklist可以看成是用双向链表将若干小型的ziplist连接到一起�
 当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</p></li>
 </ul>
 
-<p><img src="media/15930711977940/15934465912385.jpg" alt=""/></p>
+<p><figure><img src="media/15930711977940/15934465912385.jpg" alt=""/></figure></p>
 
 <p>quicklist核心结构如下：</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct quicklist {     
+<pre><code class="language-c">typedef struct quicklist {     
     quicklistNode *head;     // 头节点
     quicklistNode *tail;     // 尾节点
     unsigned long count;        //quicklist中元素总数 
@@ -534,17 +534,17 @@ typedef struct quicklistIter {
 <p>为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。</p>
 
 <p>LZF压缩后的数据结构图如下所示：<br/>
-<img src="media/15930711977940/15935992099183.jpg" alt=""/></p>
+<figure><img src="media/15930711977940/15935992099183.jpg" alt="LZF压缩后的数据结构"/><figcaption>LZF压缩后的数据结构</figcaption></figure></p>
 
 <p>LZF压缩的数据格式有3种，即解释字段有3种：</p>
 
 <ul>
 <li><p>字面型，解释字段占用1个字节，数据字段长度由解释字段后5位决定。<br/>
-<img src="media/15930711977940/15937674478317.jpg" alt=""/></p></li>
+<figure><img src="media/15930711977940/15937674478317.jpg" alt=""/></figure></p></li>
 <li><p>简短重复型，解释字段占用2个字节，没有数据字段，数据内容与前面数据内容重复，重复长度小于8，图中L 是长度字段，数据长度为长度字段的字面值加2，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
-<img src="media/15930711977940/15937678687562.jpg" alt=""/></p></li>
+<figure><img src="media/15930711977940/15937678687562.jpg" alt=""/></figure></p></li>
 <li><p>批量重复型，解释字段占3个字节，没有数据字段，数据内容与前面内容重复。图中L是长度字段，数据长度为长度字段的字面值加9，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
-<img src="media/15930711977940/15937679218472.jpg" alt=""/></p></li>
+<figure><img src="media/15930711977940/15937679218472.jpg" alt=""/></figure></p></li>
 </ul>
 
 <h4 id="toc_10">压缩</h4>
@@ -556,39 +556,6 @@ typedef struct quicklistIter {
 <h4 id="toc_11">解压缩</h4>
 
 <p>根据LZF压缩后的数据格式，我们可以较为容易地实现LZF的解压缩。值得注意的是，可能存在重复数据与当前位置重叠的情况，此时需要按位逐个进行复制。</p>
-
-<h3 id="toc_12">stream</h3>
-
-<p>消息队列是分布式系统中不可缺少的组件之一，主要有异步处理、应用解耦、限流削峰的功能。目前应用较为广泛的消息队列有RabbitMQ、RocketMQ、Kafka等。Redis在最新的5.0.0版本中也加入了消息队列的功能，这就是Stream。</p>
-
-<p>Redis Stream 它主要由消息、生产者、消费者、消费组4部分组成。可以通过如下指令创建一个消息流并项其中加入一条消息</p>
-
-<pre class="line-numbers"><code class="language-text">xadd mystream * name zhangsan age 10
-</code></pre>
-
-<p>其中，</p>
-
-<ul>
-<li>mystream 为 Stream 的名称；</li>
-<li>* 代表由Redis自行生成消息ID；</li>
-<li>name、age为该消息的field；hb、20则为对应的field的值。</li>
-</ul>
-
-<p>每个消息都由以下两部分组成:</p>
-
-<ul>
-<li>每个消息有唯一的消息ID，消息ID严格递增。</li>
-<li>消息内容由多个field-value对组成。</li>
-</ul>
-
-<p>消费组是Stream 具有如下特点</p>
-
-<ul>
-<li>每个消费组通过组名称唯一标识，每个消费组都可以消费该消息队列的全部消息，多个消费组之间相互独立。</li>
-<li>每个消费组可以有多个消费者，消费者通过名称唯一标识，消费者之间的关系是竞争关系，也就是说一个消息只能由该组的一个成员消费。</li>
-<li>组内成员消费消息后需要确认，每个消息组都有一个待确认消息队列（pending entry list，pel），用以维护该消费组已经消费但没有确认的消息。</li>
-<li>消费组中的每个成员也有一个待确认消息队列，维护着该消费者已经消费尚未确认的消息。</li>
-</ul>
 
                   </article>
                   <div class="comments-wrap">

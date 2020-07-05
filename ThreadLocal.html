@@ -156,17 +156,17 @@
 <li>首先我们看下ThreadLocal和Thread的它们之间的关系，如下图所示：</li>
 </ul>
 
-<p><img src="media/15864440934982/15865132297584.jpg" alt=""/></p>
+<p><figure><img src="media/15864440934982/15865132297584.jpg" alt=""/></figure></p>
 
 <p><strong>Thread类内部声明了一个ThreadLocal.ThreadLocalMap类型的变量 threadLocals</strong>，ThreadLocal类负责维护ThreadLocal与Thread 之间关系的 ThreadLocalMap散列映射。</p>
 
 <h2 id="toc_1">ThreadLocal的源码解析</h2>
 
-<p><img src="media/15864440934982/15865038471517.jpg" alt=""/></p>
+<p><figure><img src="media/15864440934982/15865038471517.jpg" alt=""/></figure></p>
 
 <p>我们一起来看下ThreadLocal 内部代码</p>
 
-<pre class="line-numbers"><code class="language-java">// 创建线程和ThreadLocal的关联映射
+<pre><code class="language-java">// 创建线程和ThreadLocal的关联映射
 void createMap(Thread t, T firstValue) {
     t.threadLocals = new ThreadLocalMap(this, firstValue);
 }
@@ -224,9 +224,9 @@ public void remove() {
 
 <h3 id="toc_3">ThreadLocalMap源码分析</h3>
 
-<p><img src="media/15864440934982/15865034564443.jpg" alt=""/></p>
+<p><figure><img src="media/15864440934982/15865034564443.jpg" alt=""/></figure></p>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 private Entry getEntry(ThreadLocal&lt;?&gt; key) {
     int i = key.threadLocalHashCode &amp; (table.length - 1);
     Entry e = table[i];
@@ -312,7 +312,7 @@ private void rehash() {
 
 <p>ThreadLocal的引用关系 如下图所示：</p>
 
-<p><img src="media/15864440934982/15865783936571.jpg" alt="" style="width:708px;"/></p>
+<p><figure><img src="media/15864440934982/15865783936571.jpg" alt="" style="width:708px;"/></figure></p>
 
 <h4 id="toc_5">内存泄漏问题及解决办法</h4>
 
@@ -329,7 +329,7 @@ current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <
 
 <p>如下代码所示：</p>
 
-<pre class="line-numbers"><code class="language-java">public class ThreadLocalContext {
+<pre><code class="language-java">public class ThreadLocalContext {
 
     private static final ThreadLocal&lt;Object&gt; UNKNOWN_THREAD_LOCAL = new ThreadLocal&lt;&gt;();
 
@@ -383,10 +383,10 @@ public class ThreadOOM {
 </code></pre>
 
 <p>放开ThreadLocalContext.remove的gc信息<br/>
-<img src="media/15864440934982/15865803964880.jpg" alt="" style="width:1569px;"/></p>
+<figure><img src="media/15864440934982/15865803964880.jpg" alt="" style="width:1569px;"/></figure></p>
 
 <p>注释掉ThreadLocalContext.remove的部分gc信息：<br/>
-<img src="media/15864440934982/15865798232002.jpg" alt="" style="width:1570px;"/></p>
+<figure><img src="media/15864440934982/15865798232002.jpg" alt="" style="width:1570px;"/></figure></p>
 
 <p><strong>方式1 的前提条件是当key为null的时候咱得去调用getEntry、set方法，单这并不是任何时候都会执行的操作，所以保险的做法就是手动调用ThreadLocal的remove函数，删除不再需要的ThreadLocal，防止内存泄露。</strong></p>
 
@@ -396,7 +396,7 @@ public class ThreadOOM {
 
 <p>ThreadLocalMap解决Hash冲突的方式就是简单的步长加1或减1，寻找下一个相邻的位置，如下代码：</p>
 
-<pre class="line-numbers"><code class="language-text">private static int nextIndex(int i, int len) {
+<pre><code class="language-text">private static int nextIndex(int i, int len) {
     return ((i + 1 &lt; len) ? i + 1 : 0);
 }
 private static int prevIndex(int i, int len) {
@@ -413,7 +413,7 @@ private static int prevIndex(int i, int len) {
 <p>记住一点，本次线程任务使用完ThreadLocal之后要调用threadLocal.remove()方法。当使用线程池的时候，线程执行完任务之后，线程并不会消亡，而是重新回到了线程池中，等待下次任务的分派。可能产生的问题：<strong>造成线程不安全的问题，访问threadLocal.get()获取的值可能不是自己预期的变量值</strong><br/>
 看如下代码：</p>
 
-<pre class="line-numbers"><code class="language-java">public class ThreadUnsafe {
+<pre><code class="language-java">public class ThreadUnsafe {
 
     static class UseThreadUnsafe implements Runnable {
         private int value;

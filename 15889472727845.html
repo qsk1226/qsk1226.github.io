@@ -137,7 +137,7 @@
 2) 抽象对象角色:它一般是具体产品继承的父类或者实现的接口<br/>
 3) 具体产品角色:工厂类所创建的对象就是此角色的实例。</p>
 
-<p><img src="media/15889472727845/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82.jpg" alt="简单工厂"/></p>
+<p><figure><img src="media/15889472727845/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82.jpg" alt="简单工厂"/><figcaption>简单工厂</figcaption></figure></p>
 
 <hr/>
 
@@ -169,7 +169,7 @@
 <li>ConcreteFactory：具体工厂</li>
 </ul>
 
-<p><img src="media/15889472727845/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.jpg" alt="工厂模式"/></p>
+<p><figure><img src="media/15889472727845/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.jpg" alt="工厂模式"/><figcaption>工厂模式</figcaption></figure></p>
 
 <h3 id="toc_5">使用场景</h3>
 
@@ -187,7 +187,7 @@
 
 <h3 id="toc_7">抽象工厂结构</h3>
 
-<p><img src="media/15889472727845/15916015353768.jpg" alt=""/></p>
+<p><figure><img src="media/15889472727845/15916015353768.jpg" alt=""/></figure></p>
 
 <p>抽象工厂模式包含如下角色：</p>
 
@@ -195,7 +195,7 @@
 <li>AbstractFactory：抽象工厂</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public abstract class AbstractComputerFactory {
+<pre><code class="language-java">public abstract class AbstractComputerFactory {
 
     /**
      * cpu
@@ -213,7 +213,7 @@
 <li>ConcreteFactory：具体工厂</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class GameComputerFactory extends AbstractComputerFactory {
+<pre><code class="language-java">public class GameComputerFactory extends AbstractComputerFactory {
 
     @Override
     Cpu createCpu() {
@@ -244,7 +244,7 @@ public class OfficeComputerFactory extends AbstractComputerFactory{
 <li>AbstractProduct：抽象产品</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public interface Cpu {
+<pre><code class="language-java">public interface Cpu {
     /**
      * 计算
      */
@@ -264,7 +264,7 @@ public interface Memory {
 <li>Product：具体产品</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class AMDCpu implements Cpu {
+<pre><code class="language-java">public class AMDCpu implements Cpu {
     @Override
     public long calculate() {
         System.out.println(&quot;飞机以300公里每小时速度前进&quot;);
@@ -296,7 +296,7 @@ public class KingstonMemory implements Memory {
 <li>client</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">@Test
+<pre><code class="language-java">@Test
 public void testFactory() {
     AbstractComputerFactory factory = new GameComputerFactory();
     Cpu cpu = factory.createCpu();

@@ -123,7 +123,7 @@
 <p>允许你将请求沿着处理者链进行发送。 收到请求后， 每个处理者均可对请求进行处理， 或将其传递给链上的下个处理者。</p>
 
 <p>用图例来表示的话如下图所示：<br/>
-<img src="media/15917825334671/15918442545791.jpg" alt=""/></p>
+<figure><img src="media/15917825334671/15918442545791.jpg" alt=""/></figure></p>
 
 <h2 id="toc_1">责任链模式结构</h2>
 
@@ -132,7 +132,7 @@
 <li><p>ConcreteHandler（具体处理者）：它是抽象处理者的子类，可以处理用户请求，在具体处理者类中实现了抽象处理者中定义的抽象请求处理方法，在处理请求之前需要进行判断，看是否有相应的处理权限，如果可以处理请求就处理它，否则将请求转发给后继者；在具体处理者中可以访问链中下一个对象，以便请求的转发。</p></li>
 </ul>
 
-<p><img src="media/15917825334671/15918572263532.jpg" alt=""/></p>
+<p><figure><img src="media/15917825334671/15918572263532.jpg" alt=""/></figure></p>
 
 <p>纯的责任链模式：</p>
 
@@ -169,7 +169,7 @@
 
 <h2 id="toc_3">实例代码</h2>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 /**
  * 抽象处理类
  **/
@@ -191,7 +191,7 @@ public abstract class Handler {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 /**
  * 主管处理这
  **/
@@ -221,7 +221,7 @@ public class DirectorHandler extends Handler {
 
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 经理
  **/
 public class ManagerHandler extends Handler {
@@ -249,7 +249,7 @@ public class ManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 /**
  * 总经理
  **/
@@ -274,7 +274,7 @@ public class TopManagerHandler extends Handler {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 请求
  **/
 @Data
@@ -285,7 +285,7 @@ public class LeaveRequest {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">public class ChainClient {
+<pre><code class="language-java">public class ChainClient {
     public static void main(String[] args) {
         Handler topManagerHandler = new TopManagerHandler(&quot;狗蛋&quot;);
         Handler managerHandler = new ManagerHandler(&quot;饭桶&quot;, topManagerHandler);

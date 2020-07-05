@@ -134,7 +134,7 @@
 2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
 3）条件满足则执行对应的逻辑。</p>
 
-<pre class="line-numbers"><code class="language-text">synchronized(obj) {
+<pre><code class="language-text">synchronized(obj) {
     while(obj.isOk()) {
         obj.wait();
     }
@@ -147,7 +147,7 @@
 2）改变条件。 <br/>
 3）通知所有等待在对象上的线程。</p>
 
-<pre class="line-numbers"><code class="language-text">synchronized(obj) {
+<pre><code class="language-text">synchronized(obj) {
     obj.notifyAll();
 }
 </code></pre>
@@ -165,7 +165,7 @@
 
 <p>使用wait、和notify实现一个连接池的实例如下：</p>
 
-<pre class="line-numbers"><code class="language-java">public class DBPool {
+<pre><code class="language-java">public class DBPool {
 
     /*容器，存放连接*/
     private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();

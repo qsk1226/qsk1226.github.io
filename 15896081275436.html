@@ -161,11 +161,11 @@
 
 <h3 id="toc_2">对象适配器模式</h3>
 
-<p><img src="media/15896081275436/%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="对象适配器模式"/></p>
+<p><figure><img src="media/15896081275436/%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="对象适配器模式"/><figcaption>对象适配器模式</figcaption></figure></p>
 
 <h3 id="toc_3">类适配器模式</h3>
 
-<p><img src="media/15896081275436/%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="类适配器模式"/></p>
+<p><figure><img src="media/15896081275436/%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="类适配器模式"/><figcaption>类适配器模式</figcaption></figure></p>
 
 <h3 id="toc_4">优点</h3>
 
@@ -186,7 +186,7 @@
 
 <h2 id="toc_6">代码示例</h2>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 /**
  * 被适配接口--安卓传统方式充电接口
  */
@@ -224,7 +224,7 @@ public interface TypeCCharge {
 
 <p>对象适配器</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 对象适配器  --- adapter
  **/
 public class ChargeAdapter implements TypeCCharge {
@@ -252,7 +252,7 @@ public class ChargeAdapter implements TypeCCharge {
 
 <p>类适配器</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 类适配器  --- adapter
  **/
 public class AndroidChargeAdapter extends TraditionalChargeImpl implements TypeCCharge{

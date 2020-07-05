@@ -119,7 +119,7 @@
                     <h2 id="toc_0">MyBatis运行流程之配置初始化</h2>
 
 <p>首先了解下大致流程<br/>
-<img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="配置初始化"/></p>
+<figure><img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="配置初始化"/><figcaption>配置初始化</figcaption></figure></p>
 
 <p>在MyBatis中负责加载配置文件的核心类有三个:</p>
 
@@ -131,7 +131,7 @@
 </ul>
 
 <p>UML类图如下所示：<br/>
-<img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD.png" alt="配置文件加载继承关系"/></p>
+<figure><img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD.png" alt="配置文件加载继承关系"/><figcaption>配置文件加载继承关系</figcaption></figure></p>
 
 <p>XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 这三个类在配置文件加载过程中非常重要，另外MapperBuilderAssistant可辅助XMLMapperBuilder和XMLStatementBuilder完成配置工作。</p>
 
@@ -147,7 +147,7 @@
 <li>SqlSource：用于创建 BoundSql，mapper.xml 文件中的 sql 语句会被解析成 BoundSql 对象，经过解析 BoundSql 包含的语句最终仅仅包含？占位符，可以直接提交给数据库执行；</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class Configuration {
+<pre><code class="language-java">public class Configuration {
    /*数据库环境**/
     protected Environment environment;
     /* 是否启用行内嵌套语句**/
@@ -275,13 +275,13 @@
 <h3 id="toc_2">配置加载过程</h3>
 
 <p>MyBatis配置加载的过程大致可如下图所示：<br/>
-<img src="media/15889543039853/Mysql%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="Mysql初始化"/></p>
+<figure><img src="media/15889543039853/Mysql%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="Mysql初始化"/><figcaption>Mysql初始化</figcaption></figure></p>
 
 <p>现在看下配置加载的核心代码：</p>
 
 <h4 id="toc_3">通过 SqlSessionFactoryBuilder 建造 SqlSessionFactory，并创建 XMLConfigBuilder 对象读取 MyBatis 核心配置文件，</h4>
 
-<pre class="line-numbers"><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
+<pre><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
         //1、读取配置文件
         XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
@@ -303,7 +303,7 @@
 
 <p>XMLConfigBuilder 的 parseConfiguration 方法，对 MyBatis 核心配置文件的各个 元素进行解析，读取元素信息后填充到 configuration 对象</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 解析mybatis-config.xml文档
  *
  * @param root mybatis-config.xml的root节点configuration
@@ -348,7 +348,7 @@ private void parseConfiguration(XNode root) {
 
 <p>XMLMapperBuilder 的核心方法为 configurationElement（XNode），该方法对 mapper.xml 配置文件的各个元素进行解析，读取元素信息后填充到 configuration 对象。</p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 解析Mapper.xml文件
  **/
 private void configurationElement(XNode context) {
@@ -379,7 +379,7 @@ private void configurationElement(XNode context) {
 
 <p>在 XMLStatmentBuilder 的 parseStatementNode()方法中，对 Mapper.xml 中 select、 insert、update、delete 节点进行解析，并调用 MapperBuilderAssistant 负责将信息填充到 configuration。在理解 parseStatementNod()方法之前，有必要了解 MappedStatement，这个类用于封装 select 、insert 、update 、delete 节点的信息 </p>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 封装mapper.xml文件信息的select 、insert 、update 、delete 节点的信息
  * id、sqlSource、parameterMap、ResultMaps、keyGenerator 
  **/
@@ -417,7 +417,7 @@ public final class MappedStatement {
 
 <p>其执行的过程如下图所示：</p>
 
-<p><img src="media/15889543373179/mybatis%E8%8E%B7%E5%8F%96mapper%E4%BB%A3%E7%90%86.jpg" alt="mybatis获取mapper代理"/></p>
+<p><figure><img src="media/15889543373179/mybatis%E8%8E%B7%E5%8F%96mapper%E4%BB%A3%E7%90%86.jpg" alt="mybatis获取mapper代理"/><figcaption>mybatis获取mapper代理</figcaption></figure></p>
 
 <h3 id="toc_5">MyBatis的接口层</h3>
 
@@ -427,13 +427,13 @@ public final class MappedStatement {
 
 <p>SqlSession 默认实现类为 org.apache.ibatis.session.defaults.DefaultSqlSession,是 MyBatis 对外提供数据访问的主要 API。如下图所示，sqlSession是围绕着Executor在运转的。</p>
 
-<p><img src="media/15889543373179/SqlSession.png" alt="SqlSession"/></p>
+<p><figure><img src="media/15889543373179/SqlSession.png" alt="SqlSession"/><figcaption>SqlSession</figcaption></figure></p>
 
 <h3 id="toc_7">SqlSessionFactory</h3>
 
 <p>SqlSessionFactory 使用工厂模式创建 SqlSession，其默认的实现类为 DefaultSqlSessionFactory ，其中获取 SqlSession 的核心方法为openSessionFromDataSource(ExecutorType, TransactionIsolationLevel, boolean)，在这个方法中从 configuration 中获取的 TransactionFactory 是典 型的策略模式的应用。运行期，TransactionFactory 接口的实现，是由配置文件配置决定的，可配置选项包括： JDBC、Managed, 可根据需求灵活的替换 TransactionFactory 的实现。</p>
 
-<pre class="line-numbers"><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+<pre><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
     Transaction tx = null;
 
     try {
@@ -475,7 +475,7 @@ public final class MappedStatement {
 mapper 接口和对应的代理对象工厂的注册中心； </li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * mapper 接口动态代理工厂类的注册中心。
  */
 public class MapperRegistry {
@@ -550,7 +550,7 @@ public class MapperRegistry {
 用于生成 mapper 接口动态代理的实例对象；保证 Mapper 实例对象是局部变量；</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
+<pre><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
 
     private final Class&lt;T&gt; mapperInterface;
 
@@ -585,7 +585,7 @@ public class MapperRegistry {
 实现了 InvocationHandler 接口，它是增强 mapper 接口的实现；</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
+<pre><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = -4724728412955527868L;
     private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
@@ -693,7 +693,7 @@ private final SqlCommandType type;
 
 <p>看下MapperMethod的关键代码</p>
 
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     //判断是那种类型的SQL语句
@@ -751,12 +751,12 @@ public Object execute(SqlSession sqlSession, Object[] args) {
 
 <p>在了解数据访问源码之前，先看下数据访问的时序图，如下图所示：</p>
 
-<p><img src="media/15889543782019/MyBatis%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E9%98%B6%E6%AE%B5.jpg" alt="MyBatis数据访问阶段"/></p>
+<p><figure><img src="media/15889543782019/MyBatis%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E9%98%B6%E6%AE%B5.jpg" alt="MyBatis数据访问阶段"/><figcaption>MyBatis数据访问阶段</figcaption></figure></p>
 
 <h3 id="toc_11">ExeCutor组件</h3>
 
 <p>从图中看到访问数据是从SqlSession开始的，SqlSession的功能是给予ExeCutor来实现的，Executor是MyBatis的核心接口之一，定义了数据库操作的基本方法，遵循JDBC规范完成对数据库的访问，Executor类的继承关系如下图所示：<br/>
-<img src="media/15889543039853/Executor.png" alt="Executo"/></p>
+<figure><img src="media/15889543039853/Executor.png" alt="Executo"/><figcaption>Executo</figcaption></figure></p>
 
 <ul>
 <li>ExeCutor<br/>
@@ -786,13 +786,13 @@ MyBatis核心接口之一，定义了数据库操作的基本方法</li>
 对数据库返回的结果及ResultSet进行封装，返回用户指定的实体类型</li>
 </ul>
 
-<p><img src="media/15889543039853/%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.jpg" alt="数据访问执行流程"/></p>
+<p><figure><img src="media/15889543039853/%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.jpg" alt="数据访问执行流程"/><figcaption>数据访问执行流程</figcaption></figure></p>
 
 <h3 id="toc_13">StatementHandler</h3>
 
 <p>StatementHandler完成MyBatis最核心的工作，功能包括创建statement对象，为sql语句绑定参数，执行增删改查等sql语句、将结果集映射进行转化等。</p>
 
-<p><img src="media/15889543039853/StatementHandler.png" alt="StatementHandle"/></p>
+<p><figure><img src="media/15889543039853/StatementHandler.png" alt="StatementHandle"/><figcaption>StatementHandle</figcaption></figure></p>
 
 <ul>
 <li>BaseStatementHandler<br/>
@@ -805,7 +805,7 @@ Executor 组件真正实例化的子类，使用静态代理模式，根据上�
 </ul></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+<pre><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
 
     switch (ms.getStatementType()) {
         case STATEMENT:

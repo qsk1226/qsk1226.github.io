@@ -125,7 +125,7 @@
 <p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br/>
 robj结构体如下所示：</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct redisObject {     
+<pre><code class="language-c">typedef struct redisObject {     
     unsigned type:4;    // 对象类型
     unsigned encoding:4;    // 对象编码
     unsigned lru:LRU_BITS;  //缓存淘汰使用, 占24比特
@@ -138,7 +138,7 @@ robj结构体如下所示：</p>
 <li>结构体robj的type字段表示对象类型，由 encoding 字段决定。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-c">#define OBJ_STRING 0
+<pre><code class="language-c">#define OBJ_STRING 0
 #define OBJ_LIST 1
 #define OBJ_SET 2
 #define OBJ_ZSET 3
@@ -146,8 +146,19 @@ robj结构体如下所示：</p>
 </code></pre>
 
 <ul>
-<li>结构体 robj 的 encoding <br/>
-结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</li>
+<li><p>结构体 robj 的ptr<br/>
+ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
+<li><p>结构体 robj 的 refcount <br/>
+refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
+只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
+<li><p>结构体 robj 的 lru<br/>
+用于实现缓存淘汰策略，可以在配置文件中使用maxmemory-policy配置已用内存达到最大内存限制时的缓存淘汰策略。lru根据用户配置的缓存淘汰策略存储不同数据，常用的策略就是LRU与LFU。</p>
+<ul>
+<li>LRU的核心思想是，如果数据最近被访问过，那么将来被访问的几率也更高，此时lru字段存储的是对象访问时间；</li>
+<li>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数，lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</li>
+</ul></li>
+<li><p>结构体 robj 的 encoding <br/>
+结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p></li>
 </ul>
 
 <table>
@@ -218,26 +229,13 @@ robj结构体如下所示：</p>
 </tbody>
 </table>
 
-<ul>
-<li><p>结构体 robj 的ptr<br/>
-ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
-<li><p>结构体 robj 的 refcount <br/>
-refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
-只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
-<li><p>结构体 robj 的 lru<br/>
-用于实现缓存淘汰策略，可以在配置文件中使用maxmemory-policy配置已用内存达到最大内存限制时的缓存淘汰策略。lru根据用户配置的缓存淘汰策略存储不同数据，常用的策略就是LRU与LFU。</p></li>
-<li><p>LRU的核心思想是，如果数据最近被访问过，那么将来被访问的几率也更高，此时lru字段存储的是对象访问时间；</p></li>
-<li><p>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数<br/>
-lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</p></li>
-</ul>
-
 <hr/>
 
 <h3 id="toc_2">1.2、客户端结构体 client</h3>
 
 <p>Redis是典型的客户端服务器结构，客户端通过socket与服务端建立网络连接并发送命令请求，服务端处理命令请求并回复。Redis使用结构体client存储客户端连接的所有信息，包括但不限于客户端的名称、客户端连接的套接字描述符、客户端当前选择的数据库ID、客户端的输入缓冲区与输出缓冲区等。</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct client {     
+<pre><code class="language-c">typedef struct client {     
     uint64_t id;     
     int fd;     
     redisDb *db;     
@@ -281,7 +279,7 @@ typedef struct redisDb {
 <li>reply：输出链表，存储待返回给客户端的命令回复数据。链表节点存储的值类型为 clientReplyBlock，定义为如下：</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-c">typedef struct clientReplyBlock {     
+<pre><code class="language-c">typedef struct clientReplyBlock {     
     size_t size, used;     
     char buf[]; 
 } clientReplyBlock;
@@ -297,7 +295,7 @@ typedef struct redisDb {
 
 <p>结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
 
-<pre class="line-numbers"><code class="language-c">struct redisServer {     
+<pre><code class="language-c">struct redisServer {     
     // 配置文件绝对路径
     char *configfile;     
     // 数据库的数目,默认16，可通过参数databases配置
@@ -329,7 +327,7 @@ typedef struct redisDb {
 
 <p>Redis支持的所有命令初始都存储在全局变量redisCommandTable，类型为redisCommand，结构体redisCommand相对简单，主要定义了命令的名称、命令处理函数以及命令标志等</p>
 
-<pre class="line-numbers"><code class="language-c">struct redisCommand {     
+<pre><code class="language-c">struct redisCommand {     
     //命令名称
     char *name;     
     //命令处理函数
@@ -350,7 +348,7 @@ typedef struct redisDb {
 
 <p>Redis服务器是典型的事件驱动程序，而事件又分为 <strong><em>文件事件（socket的可读可写事件）</em></strong> 与 <strong><em>时间事件（定时任务）</em></strong> 两大类。无论是文件事件还是时间事件都封装在结构体aeEventLoop中：</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct aeEventLoop {     
+<pre><code class="language-c">typedef struct aeEventLoop {     
     //事件循环是否结束
     int stop;         
     //为文件事件数组，存储已经注册的文件事件
@@ -396,7 +394,7 @@ typedef struct redisDb {
 
 <p>Redis服务器内部有很多定时任务需要执行，定时任务被封装为时间事件aeTimeEvent对象，多个时间事件形成链表，存储在aeEventLoop结构体的timeEventHead字段，它指向链表首节点。</p>
 
-<pre class="line-numbers"><code class="language-c">typedef struct aeTimeEvent {     
+<pre><code class="language-c">typedef struct aeTimeEvent {     
     //时间事件唯一ID，通过字段eventLoop-&gt;timeEventNextId实现
     long long id;     
     //时间事件触发的秒数与毫秒数
@@ -428,7 +426,7 @@ typedef struct redisDb {
 ⑥创建文件事件与时间事件；<br/>
 ⑦开启事件循环，等待文件时间和时间事件发生即可。</p>
 
-<pre class="line-numbers"><code class="language-c">void aeMain(aeEventLoop *eventLoop) {     
+<pre><code class="language-c">void aeMain(aeEventLoop *eventLoop) {     
     eventLoop-&gt;stop = 0;     //开始事件循环    
     while (!eventLoop-&gt;stop) {         
         if (eventLoop-&gt;beforesleep != NULL)             
@@ -438,7 +436,7 @@ typedef struct redisDb {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-c">int aeProcessEvents(aeEventLoop *eventLoop, int flags) {
+<pre><code class="language-c">int aeProcessEvents(aeEventLoop *eventLoop, int flags) {
     shortest = aeSearchNearestTimer(eventLoop);     
     long long ms = shortest-&gt;when_sec - now_sec)*1000 + shortest-&gt;when_ms - now_ms;     
     …………    
@@ -465,25 +463,23 @@ typedef struct redisDb {
 
 <p>命令的处理过程，此过程分为3个阶段：解析命令请求、调用命令和返回结果给客户端。</p>
 
-<h3 id="toc_10">3.1命令解析</h3>
+<h3 id="toc_10">3.1、命令解析</h3>
 
 <p>TCP是一种基于字节流的传输层通信协议，因此接收到的TCP数据不一定是一个完整的数据包，其有可能是多个数据包的组合，也有可能是某一个数据包的部分，这种现象被称为半包与粘包。</p>
 
 <p>为了区分一个完整的数据包，通常有如下3种方法：①数据包长度固定；②通过特定的分隔符区分，比如HTTP协议就是通过换行符区分的；③通过在数据包头部设置长度字段区分数据包长度，比如FastCGI协议。</p>
 
-<p><code><br/>
-Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符\r\n用于区分命令请求的若干参数，“*3”表示该命令请求有3个参数，“$3”“$9” 和 “$6” 等表示该参数字符串长度。<br/>
-</code></p>
-
-<pre class="line-numbers"><code class="language-text">SET redis-key value1
+<pre><code class="language-text">SET redis-key value1
 被翻译为如下结构
 *3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
 </code></pre>
 
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code> <code>“$9”</code>和 <code>“$6”</code> 等表示该参数字符串长度。</strong></p>
+
 <p>Redis服务器接收到的命令请求首先存储在客户端对象的querybuf 输入缓冲区，然后解析命令请求各个参数，并存储在客户端对象的argv（参数对象数组）和argc（参数数目）字段。</p>
 
 <p>客户端命令请求的入口函数为readQueryFromClient，会读取socket数据存储到客户端对象的输入缓冲区，并调用函数processInputBuffer解析命令请求。<br/>
-<img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程"/></p>
+<figure><img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程"/><figcaption>processInputBuffer解析流程</figcaption></figure></p>
 
 <h3 id="toc_11">3.2、命令调用</h3>
 

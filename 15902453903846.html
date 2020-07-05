@@ -129,7 +129,7 @@
 
 <p>MyBatis插件的实现必须实现Interceptor接口，该接口有3个方法</p>
 
-<pre class="line-numbers"><code class="language-java">public interface Interceptor {
+<pre><code class="language-java">public interface Interceptor {
   // 插件对业务进行增强的核心方法
   Object intercept(Invocation invocation) throws Throwable;
   // target是配拦截的对象，它的作用就是给被拦截的对象生成一个代理对象
@@ -150,7 +150,7 @@
 <p>注解 @Intercepts 和 @Signature就是用于表示插件拦截的位置，@Intercepts 其值是一个 @Signature 数组。 @Intercepts 用于表明当前的对象是一个Interceptor， 而@Signature 则表明要拦截的接口、方法以及对应的参数类型。<br/>
 如下所示：</p>
 
-<pre class="line-numbers"><code class="language-java">@Intercepts(
+<pre><code class="language-java">@Intercepts(
         {
                 @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
                 @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
@@ -169,7 +169,7 @@ public class PageInterceptor implements Interceptor {
 
 <p>在MyBatis配置初始化的时候，对标签plugins进行解析的时候，对插件进行了初始化</p>
 
-<pre class="line-numbers"><code class="language-java">private void pluginElement(XNode parent) throws Exception {
+<pre><code class="language-java">private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         String interceptor = child.getStringAttribute(&quot;interceptor&quot;);
@@ -192,7 +192,7 @@ public class PageInterceptor implements Interceptor {
 <li>Executor的添加拦截功能</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+<pre><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
@@ -216,7 +216,7 @@ public class PageInterceptor implements Interceptor {
 <li>为StatementHandler添加拦截功能</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+<pre><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
@@ -227,7 +227,7 @@ public class PageInterceptor implements Interceptor {
 <li>为ParameterHandler添加拦截功能</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+<pre><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
@@ -238,7 +238,7 @@ public class PageInterceptor implements Interceptor {
 <li>为ResultSetHandler添加拦截功能</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
+<pre><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
       ResultHandler resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
     resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
@@ -250,7 +250,7 @@ public class PageInterceptor implements Interceptor {
 
 <p>插件加载是通过 ExamplePlugin.plugin(Object)来增强的，plugin 方法内部一般使用 Plugin.wrap(target,this)来对四大对象进行增强</p>
 
-<pre class="line-numbers"><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
+<pre><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
     Map&lt;Class&lt;?&gt;, Set&lt;Method&gt;&gt; signatureMap = getSignatureMap(interceptor);
     Class&lt;?&gt; type = target.getClass();
     Class&lt;?&gt;[] interfaces = getAllInterfaces(type, signatureMap);

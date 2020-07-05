@@ -116,7 +116,7 @@
                   <article class="markdown-body single-content">
                     <p>mybatis本身并没有提供日志的实现类，她需要计入第三方的日志组件，由于是第三方的日志实现，实现上也会有所不同，但是mybatis统一提供的日志的基本操作行为, 如下所示</p>
 
-<pre class="line-numbers"><code class="language-java">void error(String s, Throwable e);
+<pre><code class="language-java">void error(String s, Throwable e);
 void error(String s);
 void debug(String s);
 void trace(String s);
@@ -132,7 +132,7 @@ void warn(String s);
 <p>不同的日志框架的实现各不相同，mybatis如何适配这些不同的日志框架呢，这里使用到一种适配器模式<a href="15896081275436.html">适配器模式</a></p>
 
 <p>实现了Log接口的各个适配器，内部适配各自的日志框架实现。<br/>
-<img src="media/15889338912208/15889495671258.jpg" alt="" style="width:450px;"/><br/>
+<figure><img src="media/15889338912208/15889495671258.jpg" alt="" style="width:450px;"/></figure><br/>
 适配器模式是如何实现MyBatis日志功能的呢？</p>
 
 <ul>
@@ -147,7 +147,7 @@ void warn(String s);
 
 <p>org.apache.ibatis.logging.LogFactory日志工厂的静态代码块确保第三方日志插件的加载优先级</p>
 
-<pre class="line-numbers"><code class="language-java">//mybatis所使用的第三方日志组件适配器的构造方法
+<pre><code class="language-java">//mybatis所使用的第三方日志组件适配器的构造方法
 private static Constructor&lt;? extends Log&gt; logConstructor;
 //自动扫描日志实现，第三方日志插件加载优先级如下：slf4J → commonsLoging → Log4J2 → Log4J → JdkLog → noLogging
 static {
@@ -205,7 +205,7 @@ private static void setImplementation(Class&lt;? extends Log&gt; implClass) {
 
 <p>􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴以上介绍的日志增强类是在什么时候，哪个地方被mybatis所调用的呢？看下面的代码：</p>
 
-<pre class="line-numbers"><code class="language-java">/*org.apache.ibatis.executor.SimpleExecutor#prepareStatement*/
+<pre><code class="language-java">/*org.apache.ibatis.executor.SimpleExecutor#prepareStatement*/
 private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
     //获取connection对象的动态代理，添加日志能力；

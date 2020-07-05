@@ -140,7 +140,7 @@
 <li>客户端角色: 维护对所有享元对象的引用，而且还需要存储对应的外蕴状态。 来用类图来形象地表示出它们的关系吧。</li>
 </ul>
 
-<p><img src="media/15896298176989/15917826923765.jpg" alt=""/></p>
+<p><figure><img src="media/15896298176989/15917826923765.jpg" alt=""/></figure></p>
 
 <h3 id="toc_2">优点</h3>
 
@@ -154,7 +154,7 @@
 
 <h2 id="toc_4">代码示例</h2>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 抽象享元角色类
  *
  **/
@@ -166,7 +166,7 @@ public interface Flyweight {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 具体享元角色类
  * &lt;p&gt;
  * 具体享元角色类ConcreteFlyweight有一个内蕴状态，在本例中一个Character类型的intrinsicState属性代表，它的值应当在享元对象
@@ -202,7 +202,7 @@ public class ConcreteFlyweight implements Flyweight {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 享元工厂角色类
  * &lt;p&gt;
  * 必须指出的是，客户端不可以直接将具体享元类实例化，而必须通过一个工厂对象，利用一个factory()方法得到享元对象。
@@ -239,7 +239,7 @@ public class FlyweightFactory {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 复合享元角色类
  * &lt;p&gt;
  * 复合享元对象是由单纯享元对象通过复合而成的，因此它提供了add()这样的聚集管理方法。由于一个复合享元对象具有不同的聚集元素，
@@ -275,7 +275,7 @@ public class ConcreteCompositeFlyweight implements Flyweight {
 }
 </code></pre>
 
-<pre class="line-numbers"><code class="language-java">/**
+<pre><code class="language-java">/**
  * 复合享元工厂角色类
  * &lt;p&gt;
  * 享元工厂角色提供两种不同的方法，一种用于提供单纯享元对象，另一种用于提供复合享元对象。

@@ -127,7 +127,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 
 <h2 id="toc_0">线程池的简单实现</h2>
 
-<pre class="line-numbers"><code class="language-java">public class MyThreadPool {
+<pre><code class="language-java">public class MyThreadPool {
     // 任务队列
     private static BlockingQueue&lt;Runnable&gt; taskBlockingQueue;
 
@@ -193,7 +193,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 
 <h2 id="toc_1">jdk的线程池</h2>
 
-<pre class="line-numbers"><code class="language-text">Executor
+<pre><code class="language-text">Executor
 |----ThreadPerTaskExecutor in CompletableFuture
 |----ExecutorService 
 |--------AbstractExecutorService
@@ -225,7 +225,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 
 <h3 id="toc_2">ThreadPoolExecutor类的构造函数</h3>
 
-<pre class="line-numbers"><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
+<pre><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
                               int maximumPoolSize,
                               long keepAliveTime,
                               TimeUnit unit,
@@ -278,7 +278,7 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <p>该类提供了在每个任务执行之前和之后调用的protected可悲子类覆写的beforeExecute(Thread, Runnable)和afterExecute(Runnable, Throwable)方法。 这些可以用来操纵执行环境; 例如，重新初始化ThreadLocals，收集统计信息或添加日志条目。 另外，方法terminated()可以被覆盖，以执行执行程序完全终止后需要执行的任何特殊处理。</p>
 
-<pre class="line-numbers"><code class="language-java">public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
+<pre><code class="language-java">public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     private boolean isPaused;
     private ReentrantLock pauseLock = new ReentrantLock();
 

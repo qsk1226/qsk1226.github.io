@@ -142,7 +142,7 @@ RUN &lt;命令行命令&gt;<br/>
 
 <p>格式：</p>
 
-<pre class="line-numbers"><code class="language-text">CMD &lt;shell 命令&gt; 
+<pre><code class="language-text">CMD &lt;shell 命令&gt; 
 CMD [&quot;&lt;可执行文件或命令&gt;&quot;,&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...] 
 CMD [&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...]  # 该写法是为 ENTRYPOINT 指令指定的程序提供
 默认参数
@@ -157,7 +157,7 @@ CMD [&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...]  # 该写法是�
 <p>复制指令，同 ADD 从上下文目录中复制文件或者目录到容器里指定路径。<br/>
 格式：</p>
 
-<pre class="line-numbers"><code class="language-text">COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;
+<pre><code class="language-text">COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;
 COPY [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;源路径1&gt;&quot;,...  &quot;&lt;目标路径&gt;&quot;]
 </code></pre>
 
@@ -165,7 +165,7 @@ COPY [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;源路径1&gt;&quot;,...  &
 
 <p>&lt;源路径&gt;：源文件或者源目录，这里可以是通配符表达式，其通配符规则要满足 Go 的 filepath.Match 规则。例如：</p>
 
-<pre class="line-numbers"><code class="language-text">COPY hom* /mydir/
+<pre><code class="language-text">COPY hom* /mydir/
 COPY hom?.txt /mydir/
 </code></pre>
 

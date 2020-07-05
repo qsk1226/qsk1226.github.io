@@ -162,10 +162,10 @@
 <ul>
 <li><p>指针碰撞 <br/>
 定义： 假设堆内存是规整的，所有使用过的堆内存放在一边，空闲的内存被放在另一边，中间放着一个指针作为分界点的指示器，那所分配内存就是是把这个指针向空闲空间方向移动一段与对象大小相等的的距离。<br/>
-<img src="media/15866239860150/15869624345720.jpg" alt="" style="width:869px;"/></p></li>
+<figure><img src="media/15866239860150/15869624345720.jpg" alt="" style="width:869px;"/></figure></p></li>
 <li><p>空闲列表<br/>
 如果堆内存是不规整的，已使用和未被使用的内存是交错在一起的，那就没办法简简单单地进行“指针碰撞”了，虚拟机就必须维护一个用来记录那些内存块是可用的列表，在分配对象的时候找一个内存大小适中的内存空间划分给对象，并更新列表上的记录，这种分配方式被称为空闲列表<br/>
-<img src="media/15866239860150/15869639142729.jpg" alt="" style="width:877px;"/></p></li>
+<figure><img src="media/15866239860150/15869639142729.jpg" alt="" style="width:877px;"/></figure></p></li>
 </ul>
 
 <p>选择哪种分配方式有java堆是否规整决定，堆是否规整取决于jvm采用哪种垃圾回收器(<a href="mweblib://15869610752834">垃圾收集器</a>)来决定。</p>
@@ -200,11 +200,11 @@
 </ul>
 
 <p>下图是在64位虚拟机上的对象头的堆内存布局：<br/>
-<img src="media/15866239860150/15889568831679.jpg" alt=""/></p>
+<figure><img src="media/15866239860150/15889568831679.jpg" alt=""/></figure></p>
 
 <p>通过Jol工具可以查看对象信息,例如查看Object对象的信息如下：</p>
 
-<pre class="line-numbers"><code class="language-text">Object a = new Object();
+<pre><code class="language-text">Object a = new Object();
 System.out.println(ClassLayout.parseInstance(a).toPrintable());
 
 -----------------------------------------------------------------------

@@ -122,20 +122,20 @@
 
 <h3 id="toc_2">通过Mac终端进入VMware Fusion的vmnet8目录</h3>
 
-<pre class="line-numbers"><code class="language-text">cd /Library/Preferences/VMware Fusion/vmnet8
+<pre><code class="language-text">cd /Library/Preferences/VMware Fusion/vmnet8
 </code></pre>
 
 <ul>
 <li>查看nat.conf内容</li>
 </ul>
 
-<p><img src="media/15855011797141/15855038592835.jpg" alt=""/></p>
+<p><figure><img src="media/15855011797141/15855038592835.jpg" alt=""/></figure></p>
 
 <ul>
 <li>查看cat dhcpd.conf</li>
 </ul>
 
-<p><img src="media/15855011797141/15855037846968.jpg" alt=""/></p>
+<p><figure><img src="media/15855011797141/15855037846968.jpg" alt=""/></figure></p>
 
 <p>注意range 这个是虚拟机允许选择的静态ip地址范围，自定义的静态ip地址必须要在这个范围内</p>
 
@@ -143,13 +143,13 @@
 
 <p>进入虚拟机的network-scripts目录</p>
 
-<pre class="line-numbers"><code class="language-text">cd /etc/sysconfig/network-scripts
+<pre><code class="language-text">cd /etc/sysconfig/network-scripts
 </code></pre>
 
 <p>找到ifcfg-en开头的文件,上图中我的是ifcfg-ens33<br/>
 修改前：</p>
 
-<pre class="line-numbers"><code class="language-text">&gt; cd /etc/sysconfig/network-scripts
+<pre><code class="language-text">&gt; cd /etc/sysconfig/network-scripts
 &gt; vim ifcfg-ens33
 
 TYPE=Ethernet
@@ -173,7 +173,7 @@ IPV6_PRIVACY=no
 
 <p>我们将它改成如下配置:</p>
 
-<pre class="line-numbers"><code class="language-text">TYPE=Ethernet
+<pre><code class="language-text">TYPE=Ethernet
 PROXY_METHOD=none
 BROWSER_ONLY=no
 BOOTPROTO=static

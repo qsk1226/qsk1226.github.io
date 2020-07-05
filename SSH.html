@@ -124,14 +124,14 @@
 
 <h2 id="toc_0">生成本地公钥和私钥</h2>
 
-<pre class="line-numbers"><code class="language-text">&gt; ssh-keygen -t rsa -C &#39;注释&#39;
+<pre><code class="language-text">&gt; ssh-keygen -t rsa -C &#39;注释&#39;
 </code></pre>
 
 <p>本地机器 .ssh 目录下生成文件 :  id_rsa  id_rsa.pub</p>
 
 <h2 id="toc_1">将本地生成的id_rsa.pub(公钥)追加到 Server-A 的目录~/.ssh/authorized_keys文件中</h2>
 
-<pre class="line-numbers"><code class="language-text">&gt; ssh-copyid jetty@172.16.65.133
+<pre><code class="language-text">&gt; ssh-copyid jetty@172.16.65.133
 </code></pre>
 
 <p>上传文件方式：</p>
@@ -145,7 +145,7 @@
 
 <p>上面步骤做完之后我们就可以免密登录 Server-A 了</p>
 
-<pre class="line-numbers"><code class="language-text">&gt; ssh jetty@172.16.65.133
+<pre><code class="language-text">&gt; ssh jetty@172.16.65.133
 Last login: Sun Mar 29 12:17:53 2020 from 172.16.65.1
 -bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
 &gt; [jetty@jetty ~]$ 

@@ -131,7 +131,7 @@ Java 序列化中的一些高级认识。</p>
 <li><p><strong>解决</strong>：虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个类的序列化ID 是否一致（就是 private static final long serialVersionUID = 1L）。清单1 中，虽然两个类的功能代码完全一致，但是序列化 ID 不同，他们无法相互序列化和反序列化。</p></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">package com.inout; 
+<pre><code class="language-text">package com.inout; 
 import java.io.Serializable; 
 public class A implements Serializable { 
 
@@ -163,7 +163,7 @@ public class A implements Serializable {
 <h3 id="toc_2">特性使用案例</h3>
 
 <p>　　读者应该听过Façade模式，它是为应用程序提供统一的访问接口，案例程序中的Client客户端使用了该模式，案例程序结构图如图1所示。<br/>
-<img src="media/15865876286788/image.png" alt="image"/></p>
+<figure><img src="media/15865876286788/image.png" alt="image"/><figcaption>image</figcaption></figure></p>
 
 <p>　　Client端通过FaçadeObject才可以与业务逻辑对象进行交互。而客户端的FaçadeObject不能直接由Client生成，而是需要Server端生成，然后序列化后通过网络将二进制对象数据传给Client，Client负责反序列化得到Façade对象。该模式可以使得Client端程序的使用需要服务器端的许可,同时Client端和服务器端的FaçadeObject类需要保持一致。当服务器端想要进行版本更新时，只要将服务器端的FaçadeObject类的序列化ID再次生成，当Client端反序列化FaçadeObject就会失败，也就是强制Client端从服务器端获取最新程序。</p>
 
@@ -175,7 +175,7 @@ public class A implements Serializable {
 
 <p>清单 2. 静态变量序列化问题代码</p>
 
-<pre class="line-numbers"><code class="language-text">public class Test implements Serializable {
+<pre><code class="language-text">public class Test implements Serializable {
     private static final long serialVersionUID = 1L;
     public static int staticVar = 5;
     public static void main(String[] args) {
@@ -223,7 +223,7 @@ public class A implements Serializable {
 
 <p>　　我们熟悉使用Transient关键字可以使得字段不被序列化，那么还有别的方法吗？根据父类对象序列化的规则，我们可以将不需要被序列化的字段抽取出来放到父类中，子类实现Serializable接口，父类不实现，根据父类序列化规则，父类的字段数据将不被序列化，形成类图如图 2 所示。</p>
 
-<p><img src="media/15865876286788/%E6%A1%88%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%9B%BE.png" alt="案例程序图"/></p>
+<p><figure><img src="media/15865876286788/%E6%A1%88%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%9B%BE.png" alt="案例程序图"/><figcaption>案例程序图</figcaption></figure></p>
 
 <p>　　上图中可以看出，attr1、attr2、attr3、attr5都不会被序列化，放在父类中的好处在于当有另外一个Child类时，attr1、attr2、attr3依然不会被序列化，不用重复抒写transient，代码简洁。</p>
 
@@ -234,7 +234,7 @@ public class A implements Serializable {
 <li><strong>解决</strong>：在序列化过程中，虚拟机会试图调用对象类里的writeObject和readObject方法，进行用户自定义的序列化和反序列化，如果没有这样的方法，则默认调用是ObjectOutputStream的defaultWriteObject方法以及ObjectInputStream的defaultReadObject方法。用户自定义的writeObject和readObject方法可以允许用户控制序列化的过程，比如可以在序列化的过程中动态改变序列化的数值。基于这个原理，可以在实际应用中得到使用，用于敏感字段的加密工作，清单3展示了这个过程。</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">private static final long serialVersionUID = 1L;
+<pre><code class="language-text">private static final long serialVersionUID = 1L;
 private String password = &quot;pass&quot;;
 public String getPassword() {
     return password;
@@ -295,7 +295,7 @@ public static void main(String[] args) {
 password进行解密，只有拥有密钥的客户端，才可以正确的解析出密码，确保了数据的安全。执行清单<br/>
 3后控制台输出如图 3 所示:</p>
 
-<p><img src="/qsk/java/understand_java_serial/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"/><img src="media/15865876286788/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"/></p>
+<p><figure><img src="/qsk/java/understand_java_serial/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"/><figcaption>数据加密演示</figcaption></figure><figure><img src="media/15865876286788/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%BC%94%E7%A4%BA.png" alt="数据加密演示"/><figcaption>数据加密演示</figcaption></figure></p>
 
 <h3 id="toc_7">特性使用案例</h3>
 
@@ -303,7 +303,7 @@ password进行解密，只有拥有密钥的客户端，才可以正确的解析
 
 <h3 id="toc_8">序列化存储规则</h3>
 
-<pre class="line-numbers"><code class="language-text">ObjectOutputStream out = new ObjectOutputStream(
+<pre><code class="language-text">ObjectOutputStream out = new ObjectOutputStream(
                    new FileOutputStream(&quot;result.obj&quot;));
    Test test = new Test();
    //试图将对象两次写入文件
@@ -327,7 +327,7 @@ password进行解密，只有拥有密钥的客户端，才可以正确的解析
 
 <p>　　清单 3中对同一对象两次写入文件，打印出写入一次对象后的存储大小和写入两次后的存储大小，然后从文件中反序列化出两个对象，比较这两个对象是否为同一对象。一般的思维是，两次写入对象，文件大小会变为两倍的大小，反序列化时，由于从文件读取，生成了两个对象，判断相等时应该是输入false 才对，但是最后结果输出如图 4 所示。</p>
 
-<p><img src="/qsk/java/understand_java_serial/image.png" alt="image"/><img src="media/15865876286788/image.png" alt="image"/></p>
+<p><figure><img src="/qsk/java/understand_java_serial/image.png" alt="image"/><figcaption>image</figcaption></figure><figure><img src="media/15865876286788/image.png" alt="image"/><figcaption>image</figcaption></figure></p>
 
 <p>　　我们看到，第二次写入对象时文件只增加了 5 字节，并且两个对象是相等的，这是为什么呢？</p>
 
@@ -337,7 +337,7 @@ password进行解密，只有拥有密钥的客户端，才可以正确的解析
 
 <h3 id="toc_9">特性案例分析</h3>
 
-<pre class="line-numbers"><code class="language-text">
+<pre><code class="language-text">
 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(&quot;result.obj&quot;));
 Test test = new Test();
 test.i = 1;

@@ -121,7 +121,7 @@
 <p>CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工作后再执行操作。<br/>
 CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
 
-<pre class="line-numbers"><code class="language-java">public class MichaelShow {
+<pre><code class="language-java">public class MichaelShow {
     private static final AtomicInteger COUNT = new AtomicInteger(0);
     static class Customer extends Thread {
         private final CountDownLatch beQuiet;
@@ -167,7 +167,7 @@ CountDownLatch 是通过一个计数器来实现的，计数器的初始值为�
 <p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然 后当前线程被阻塞。<br/>
 CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
 
-<pre class="line-numbers"><code class="language-java">public class HomeWorkCyclicBarrier {
+<pre><code class="language-java">public class HomeWorkCyclicBarrier {
 
     private static CyclicBarrier barrier
             = new CyclicBarrier(4, new Treacher());
@@ -229,7 +229,7 @@ CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，
 
 <p>Semaphore可以用于做流量控制，特别公用资源有限的应用场景，比如数据库连接。假如有一个需求，要读取几万个文件的数据，因为都是IO密集型任务，我们可以启动几十个线程并发的读取，但是如果读到内存后，还需要存储到数据库中，而数据库的连接数只有10个，这时我们必须控制只有十个线程同时获取数据库连接保存数据，否则会报错无法获取数据库连接。这个时候，我们就可以使用Semaphore来做流控，代码如下：</p>
 
-<pre class="line-numbers"><code class="language-java">public class DBPoolSemaphore {
+<pre><code class="language-java">public class DBPoolSemaphore {
     
     private final static int POOL_SIZE = 10;
     //两个指示器，分别表示池子还有可用连接和已用连接

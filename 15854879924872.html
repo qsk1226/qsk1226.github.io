@@ -116,8 +116,8 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>Docker官方网址: <a href="https://docs.docker.com/">https://docs.docker.com/</a> 英文地址<br/>
-Docker中文网址: <a href="http://www.docker.org.cn/">http://www.docker.org.cn/</a> 中文地址</p>
+                    <p>Docker官方网址: <a href="https://docs.docker.com/">英文地址</a> <br/>
+Docker中文网址: <a href="http://www.docker.org.cn/">中文地址</a></p>
 
 <h2 id="toc_0">docker 架构</h2>
 
@@ -148,7 +148,7 @@ Docker利用容器来进行开发，运行应用。容器是镜像创建的实�
 
 <p>1、删除 Linux 机器上已存在的 docker 程序</p>
 
-<pre class="line-numbers"><code class="language-text">&gt; sudo yum list installed | grep docker
+<pre><code class="language-text">&gt; sudo yum list installed | grep docker
 &gt; sudo yum  -y remove docker \
                   docker-client \
                   docker-client-latest \
@@ -163,7 +163,7 @@ Docker利用容器来进行开发，运行应用。容器是镜像创建的实�
 
 <p>删除 docker 老的镜像</p>
 
-<pre class="line-numbers"><code class="language-text">&gt; rm -rf /var/lib/docker
+<pre><code class="language-text">&gt; rm -rf /var/lib/docker
 </code></pre>
 
 <p>2、安装 docker 程序</p>
@@ -178,7 +178,7 @@ yum list docker-ce --showduplicates | sort -r</p></li>
 <li><p>安装 docker</p></li>
 </ul>
 
-<pre class="line-numbers"><code class="language-text">sudo yum install docker-ce(最新版)
+<pre><code class="language-text">sudo yum install docker-ce(最新版)
 
 sudo yum install -y containerd.io-1.2.13-3.1.el7 docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7(指定版本)
 </code></pre>
@@ -201,20 +201,40 @@ sudo systemctl daemon-reload</p></li>
 <li><p>重启 docker<br/>
 systemctl restart docker</p></li>
 <li><p>验证 docker 是否完成安装<br/>
-执行 sudo docker verxion,完成安装如下图所示<br/>
-<img src="media/15854879924872/15855354770652.jpg" alt="" style="width:484px;"/></p></li>
+执行 sudo docker verxion,完成安装如下图所示</p></li>
 </ul>
+
+<pre><code class="language-shell">[godson@godson1 ~]$ sudo docker version
+Client:
+ Version:           18.09.9
+ API version:       1.39
+ Go version:        go1.11.13
+ Git commit:        039a7df9ba
+ Built:             Wed Sep  4 16:51:21 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          18.09.9
+  API version:      1.39 (minimum version 1.12)
+  Go version:       go1.11.13
+  Git commit:       039a7df
+  Built:            Wed Sep  4 16:22:32 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+</code></pre>
 
 <p>用非 root 账户安装完 docker 之后会,执行 docker 命令会遇到这样一个问题：</p>
 
-<pre class="line-numbers"><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+<pre><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
 </code></pre>
 
 <p>原因： docker进程使用Unix Socket而不是TCP端口。而默认情况下，Unix socket属于root用户，需要root权限才能访问。</p>
 
 <p>解决方法：</p>
 
-<pre class="line-numbers"><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
+<pre><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
 &gt; sudo gpasswd -a $USER docker     #将登陆用户加入到docker用户组中
 &gt; newgrp docker     #更新用户组
 &gt; docker ps    #测试docker命令是否可以使用sudo正常使用
