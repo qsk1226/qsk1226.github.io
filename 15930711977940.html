@@ -376,11 +376,11 @@ typedef struct zskiplist {
 <pre><code class="language-c">typedef struct dictEntry {     
     void *key;                        /*存储键*/     
     union {         
-        void *val;                        /*db.dict中的val*/         
+        void *val;                        /*redisDb.dict 中的val*/         
         uint64_t u64;         
-        int64_t s64;                /*db.expires中存储过期时间*/         
+        int64_t s64;                /*redisDb.expires 中存储过期时间*/         
         double d;     
-    } v;                                /*值，是个联合体*/     
+    } v;
     struct dictEntry *next;        /*当Hash冲突时，指向冲突的元素，形成单链表*/ 
 } dictEntry;
 </code></pre>

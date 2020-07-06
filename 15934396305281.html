@@ -120,7 +120,7 @@
 
 <h2 id="toc_0">1、基本知识</h2>
 
-<h3 id="toc_1">1.1、对象结构体 robj</h3>
+<h3 id="toc_1">1.1、Redis 对象</h3>
 
 <p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br/>
 robj结构体如下所示：</p>
@@ -231,7 +231,43 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 
 <hr/>
 
-<h3 id="toc_2">1.2、客户端结构体 client</h3>
+<h3 id="toc_2">1.2、服务端结构体redisServer</h3>
+
+<p>结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
+
+<p>一个redisDb就代表了一个数据库，而redisServer 中则保存了它所设计到的所有数据库的数组。</p>
+
+<pre><code class="language-c">struct redisServer {     
+    // 配置文件绝对路径
+    char *configfile;     
+    // 数据库的数目,默认16，可通过参数databases配置
+    int dbnum;     
+    // 数据库数组，数组的每个元素都是redisDb类型
+    redisDb *db;     
+    //命令字典，redis支持的所有命令都存储在这个字典中，value值为struct redisCommand对象
+    dict *commands;     
+    // redis的事件循环，类型为aeEventLoop
+    aeEventLoop *el;
+    // 服务器监听端口号，默认端口号 6379
+    int port;     
+    //绑定的所有IP地址，可以通过参数bind配置多个
+    char *bindaddr[CONFIG_BINDADDR_MAX];     
+    // 用户配置的IP地址数目
+    int bindaddr_count;     
+    //针对bindaddr字段的所有IP地址创建的socket文件描述符
+    int ipfd[CONFIG_BINDADDR_MAX];     
+    //创建的socket文件描述符数目
+    int ipfd_count;    
+    //当前连接到Redis服务器的所有客户端
+    list *clients;     
+    //最大空闲时间，可通过参数timeout配置
+    int maxidletime; 
+}
+</code></pre>
+
+<p>默认情况下，redis客户端的目标数据库为0号数据库，但客户端可以通过执行 select 命令来切换目标数据库。而客户端 client 结构中db属性则记录了它当前的目标数据库</p>
+
+<h3 id="toc_3">1.3、客户端结构体 client</h3>
 
 <p>Redis是典型的客户端服务器结构，客户端通过socket与服务端建立网络连接并发送命令请求，服务端处理命令请求并回复。Redis使用结构体client存储客户端连接的所有信息，包括但不限于客户端的名称、客户端连接的套接字描述符、客户端当前选择的数据库ID、客户端的输入缓冲区与输出缓冲区等。</p>
 
@@ -291,38 +327,6 @@ typedef struct redisDb {
 <li>buf：输出缓冲区，存储待返回给客户端的命令回复数据，bufpos表示输出缓冲区中数据的最大字节位置，sentlen~bufpos区间的数据都是需要返回给客户端的。</li>
 </ul>
 
-<h3 id="toc_3">1.3、服务端结构体redisServer</h3>
-
-<p>结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
-
-<pre><code class="language-c">struct redisServer {     
-    // 配置文件绝对路径
-    char *configfile;     
-    // 数据库的数目,默认16，可通过参数databases配置
-    int dbnum;     
-    // 数据库数组，数组的每个元素都是redisDb类型
-    redisDb *db;     
-    //命令字典，redis支持的所有命令都存储在这个字典中，value值为struct redisCommand对象
-    dict *commands;     
-    // redis的事件循环，类型为aeEventLoop
-    aeEventLoop *el;
-    // 服务器监听端口号，默认端口号 6379
-    int port;     
-    //绑定的所有IP地址，可以通过参数bind配置多个
-    char *bindaddr[CONFIG_BINDADDR_MAX];     
-    // 用户配置的IP地址数目
-    int bindaddr_count;     
-    //针对bindaddr字段的所有IP地址创建的socket文件描述符
-    int ipfd[CONFIG_BINDADDR_MAX];     
-    //创建的socket文件描述符数目
-    int ipfd_count;    
-    //当前连接到Redis服务器的所有客户端
-    list *clients;     
-    //最大空闲时间，可通过参数timeout配置
-    int maxidletime; 
-}
-</code></pre>
-
 <h3 id="toc_4">1.4、命令结构体 redisCommond</h3>
 
 <p>Redis支持的所有命令初始都存储在全局变量redisCommandTable，类型为redisCommand，结构体redisCommand相对简单，主要定义了命令的名称、命令处理函数以及命令标志等</p>
@@ -371,8 +375,6 @@ typedef struct redisDb {
 <p>Redis服务器需要阻塞等待文件事件的发生，进程阻塞之前会调用beforesleep函数，进程因为某种原因被唤醒之后会调用aftersleep函数。</p>
 
 <p>函数beforesleep会执行一些不是很费时的操作，如：集群相关操作、过期键删除操作（这里可称为快速过期键删除）、向客户端返回命令回复等。</p>
-
-<p>比如Redis过期键删除操作，它有两种策略：①访问数据库键时，校验该键是否过期，如果过期则删除；②周期性删除过期键，beforeSleep函数与serverCron函数都会执行</p>
 
 <p>事件驱动程序通常在server 启动过程的最后一步开启事件循环，之后只需等待事件发生处理文件事件和时间事件即可。</p>
 
@@ -451,8 +453,6 @@ typedef struct redisDb {
 }
 </code></pre>
 
-<p>Redis过期键删除有两种策略：①访问数据库键时，校验该键是否过期，如果过期则删除；②周期性删除过期键，beforeSleep函数与serverCron函数都会执行。</p>
-
 <p>TCP是基于字节流的可靠传输层协议，为了提升网络利用率，一般默认都会开启Nagle。当应用层调用write函数发送数据时，TCP并不一定会立刻将数据发送出去，根据Nagle算法，还必须满足一定条件才行。</p>
 
 <p>Nagle是这样规定的：如果数据包长度大于一定门限时，则立即发送；如果数据包中含有FIN（表示断开TCP链接）字段，则立即发送；如果当前设置了TCP_NODELAY选项，则立即发送；如果以上所有条件都不满足，则默认需要等待200毫秒超时后才会发送。</p>
@@ -494,11 +494,11 @@ typedef struct redisDb {
 <p>Redis的返回结果可以分为5类：</p>
 
 <ul>
-<li><code>状态回复，第一个字符是“+”；例如，SET命令执行完毕会向客户端返回“+OK\r\n”。</code></li>
-<li><code>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回“-ERR unknown command&#39;testcmd&#39;”。</code></li>
-<li><code>整数回复，第一个字符是“:”。例如，INCR命令执行完毕向客户端返回“:100\r\n”。</code></li>
-<li><code>批量回复，第一个字符是 &quot;$&quot;。例如，GET命令查找键向客户端返回结果&quot;$5\r\nhello\r\n&quot;，其中$5表示返回字符串长度</code></li>
-<li><code>多条批量回复，第一个字符是“*”。例如，LRANGE命令可能会返回多个值，格式为“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”，与命令请求协议格式相同，“*3”表示返回值数目，“$6”表示当前返回值字符串长度</code></li>
+<li>状态回复，第一个字符是<code>“+”</code>；例如，SET命令执行完毕会向客户端返回<code>“+OK\r\n”</code>。</li>
+<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
+<li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
+<li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
+<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度</li>
 </ul>
 
                   </article>

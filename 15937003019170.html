@@ -174,7 +174,7 @@
 <li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
 </ul>
 
-<h3 id="toc_1">Redis 中的 string 字符串</h3>
+<h2 id="toc_1">Redis 中的 string 字符串</h2>
 
 <p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
 
@@ -331,7 +331,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 
 <p>字符串追加会修改原字符串的值，所以必须保证字符串是非共享的。如果字符串是共享的，则需要解除共享，新创建一个值对象。</p>
 
-<h3 id="toc_2">Redis 中的 list 列表</h3>
+<h2 id="toc_2">Redis 中的 list 列表</h2>
 
 <p>在 Redis 引入 quicklist之前，Redis采用压缩链表（ziplist）以及双向链表（adlist）作为List的底层实现。当元素个数比较少并且元素长度比较小时，Redis 采用 ziplist 作为其底层存储；当任意一个条件不满足时，Redis采用adlist作为底层存储结构。这么做的主要原因是，当元素长度较小时，采用ziplist可以有效节省存储空间，但ziplist的存储空间是连续的，当元素个数比较多时，修改元素时，必须重新分配存储空间，这无疑会影响Redis的执行效率，故而采用一般的双向链表。</p>
 
@@ -443,7 +443,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<h4 id="toc_3">栈和队列命令列表</h4>
+<h3 id="toc_3">栈和队列命令列表</h3>
 
 <p>栈与队列是操作受限制的线性表</p>
 
@@ -486,7 +486,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<h3 id="toc_4">Redis 中的 set 集合</h3>
+<h2 id="toc_4">Redis 中的 set 集合</h2>
 
 <p>在Redis中，集合元素为字符串和数字，分别用dict和intset存储。对于单个集合，Redis 实现了元素的新增、删除、遍历等操作；对于多个集合，Redis实现了集合间求交集、并集和差集等操作。</p>
 
@@ -614,7 +614,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<h3 id="toc_5">Redis 中的 zset  有序集合</h3>
+<h2 id="toc_5">Redis 中的 zset  有序集合</h2>
 
 <p>有序集合中，用到的关键数据结构是ziplist以及dict和skiplist，当服务器属性server.zset_max_ziplist_entries的值大于0且元素的member 长度小于服务器属性server.zset_max_ziplist_value的值（默认为64）时，使用的是ziplist，否则使用的是dict和skiplist。</p>
 
@@ -784,7 +784,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<h3 id="toc_6">Redis 中的 hash 散列表</h3>
+<h2 id="toc_6">Redis 中的 hash 散列表</h2>
 
 <p>Redis散列存储有 ziplist 和 散列表(hashtable) 2种，有时我们需要从ziplist编码转换为散列表编码。值得注意的是，即使后期满足条件，也不会从散列表编码转换为ziplist编码。</p>
 
