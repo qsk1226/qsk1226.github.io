@@ -158,9 +158,7 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <li>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数，lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</li>
 </ul></li>
 <li><p>结构体 robj 的 encoding <br/>
-结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p></li>
-</ul>
-
+结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p>
 <table>
 <thead>
 <tr>
@@ -169,7 +167,6 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <th>可存储对象类型</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>OBJ_ENCODING_INT</td>
@@ -227,7 +224,8 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <td>未使用</td>
 </tr>
 </tbody>
-</table>
+</table></li>
+</ul>
 
 <h4 id="toc_2">对象内存回收</h4>
 
@@ -522,7 +520,7 @@ typedef struct redisDb {
 <li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
 <li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
 <li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
-<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度</li>
+<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
 </ul>
 
                   </article>

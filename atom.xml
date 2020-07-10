@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-10T00:46:29+08:00</updated>
+  <updated>2020-07-10T21:53:49+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,7 +13,76 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[Redis 持久化]]></title>
+    <title type="html"><![CDATA[软件设计上的基本知识]]></title>
+    <link href="http://www.throne4j.com/15943756601312.html"/>
+    <updated>2020-07-10T18:07:40+08:00</updated>
+    <id>http://www.throne4j.com/15943756601312.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">API与SPI分离</h2>
+
+<p>框架或组件通常有两类客户，一个是使用者，一个是扩展者，API(Application Programming Interface)是给使用者用的，而SPI(Service Provide Interface)是给扩展者用的，在设计时，尽量把它们隔离开，而不要混在一起，也就是说，使用者是看不到扩展者写的实现的，比如：一个Web框架，它有一个API接口叫Action，里面有个execute()方法，是给使用者用来写业务逻辑的，然后，Web框架有一个SPI接口给扩展者控制输出方式，比如用velocity模板输出还是用json输出等，如果这个Web框架使用一个都继承Action的VelocityAction和一个JsonAction做为扩展方式，要用velocity模板输出的就继承VelocityAction，要用json输出的就继承JsonAction，这就是API和SPI没有分离的反面例子，SPI接口混在了API接口中，合理的方式是，有一个单独的Renderer接口，有VelocityRenderer和JsonRenderer实现，Web框架将Action的输出转交给Renderer接口做渲染输出。</p>
+
+<pre><code class="language-text">![](media/15943756601312/15943757095695.jpg)
+
+![](media/15943756601312/15943757185485.jpg)
+</code></pre>
+
+<h2 id="toc_1">服务域/实体域/会话域分离</h2>
+
+<p>任何框架或组件，总会有核心领域模型，比如：<br/>
+Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
+这个核心领域模型及其组成部分称为实体域，它代表着我们要操作的目标本身，实体域通常是线程安全的，不管是通过不变类，同步状态，或复制的方式，服务域也就是行为域，它是组件的功能集，同时也负责实体域和会话域的生命周期管理，比如Spring的ApplicationContext，Dubbo的ServiceManager等，服务域的对象通常会比较重，而且是线程安全的，并以单一实例服务于所有调用，什么是会话？就是一次交互过程，会话中重要的概念是上下文，什么是上下文？</p>
+
+<p>比如我们说：“老地方见”，这里的“老地方”就是上下文信息，为什么说“老地方”对方会知道，因为我们前面定义了“老地方”的具体内容，所以说，上下文通常持有交互过程中的状态变量等，会话对象通常较轻，每次请求都重新创建实例，请求结束后销毁。</p>
+
+<p>简而言之：<br/>
+把元信息交由实体域持有，把一次请求中的临时状态由会话域持有，由服务域贯穿整个过程。</p>
+
+<p><figure><img src="media/15943756601312/15943757281530.jpg" alt=""/></figure>       <figure><img src="media/15943756601312/15943757329746.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">在重要的过程上设置拦截接口</h2>
+
+<p>如果你要写个远程调用框架，那远程调用的过程应该有一个统一的拦截接口，如果你要写一个ORM框架，那至少SQL的执行过程，Mapping过程要有拦截接口，如果你要写一个Web框架，那请求的执行过程应该要有拦截接口，等等，没有哪个公用的框架可以Cover住所有需求，允许外置行为，是框架的基本扩展方式，这样，如果有人想在远程调用前，验证下令牌，验证下黑白名单，统计下日志，如果有人想在SQL执行前加下分页包装，做下数据权限控制，统计下SQL执行时间，如果有人想在请求执行前检查下角色，包装下输入输出流，统计下请求量，等等，就可以自行完成，而不用侵入框架内部，拦截接口，通常是把过程本身用一个对象封装起来，传给拦截器链，</p>
+
+<p>比如：远程调用主过程为invoke()，那拦截器接口通常invoke(Invocation)，Invocation对象封装了本来要执行过程的上下文，并且Invocation里有一个invoke()方法，由拦截器决定什么时候执行，同时，Invocation也代表拦截器行为本身，这样上一拦截器的Invocation其实是包装的下一拦截器的过程，直到最后一个拦截器的Invocation是包装的最终的invoke()过程，同理，SQL主过程为execute()，那拦截器接口通常为execute(Execution)，原理一样，当然，实现方式可以任意，上面只是举例。</p>
+
+<p><figure><img src="media/15943756601312/15943757516458.jpg" alt=""/></figure></p>
+
+<h2 id="toc_3">重要的状态的变更发送事件并留出监听接口</h2>
+
+<p>这里先要讲一个事件和上面拦截器的区别，拦截器是干预过程的，它是过程的一部分，是基于过程行为的，而事件是基于状态数据的，任何行为改变的相同状态，对事件应该是一致的，事件通常是事后通知，是一个Callback接口，方法名通常是过去式的，比如onChanged()，比如远程调用框架，当网络断开或连上应该发出一个事件，当出现错误也可以考虑发出一个事件，这样外围应用就有可能观察到框架内部的变化，做相应适应。</p>
+
+<p><figure><img src="media/15943756601312/15943757591172.jpg" alt=""/></figure></p>
+
+<h2 id="toc_4">扩展接口职责尽可能单一，具有可组合性</h2>
+
+<p>比如，远程调用框架它的协议是可以替换的，如果只提供一个总的扩展接口，当然可以做到切换协议，但协议支持是可以细分为底层通讯，序列化，动态代理方式等等，如果将接口拆细，正交分解，会更便于扩展者复用已有逻辑，而只是替换某部分实现策略，当然这个分解的粒度需要把握好。</p>
+
+<h2 id="toc_5">微核插件式，平等对待第三方</h2>
+
+<p>大凡发展的比较好的框架，都遵守微核的理念，Eclipse的微核是OSGi， Spring的微核是BeanFactory，Maven的微核是Plexus，通常核心是不应该带有功能性的，而是一个生命周期和集成容器，这样各功能可以通过相同的方式交互及扩展，并且任何功能都可以被替换，如果做不到微核，至少要平等对待第三方，即原作者能实现的功能，扩展者应该可以通过扩展的方式全部做到，原作者要把自己也当作扩展者，这样才能保证框架的可持续性及由内向外的稳定性。</p>
+
+<h2 id="toc_6">不要控制外部对象的生命周期</h2>
+
+<p>比如上面说的Action使用接口和Renderer扩展接口，框架如果让使用者或扩展者把Action或Renderer实现类的类名或类元信息报上来，然后在内部通过反射newInstance()创建一个实例，这样框架就控制了Action或Renderer实现类的生命周期，Action或Renderer的生老病死，框架都自己做了，外部扩展或集成都无能为力，好的办法是让使用者或扩展者把Action或Renderer实现类的实例报上来，框架只是使用这些实例，这些对象是怎么创建的，怎么销毁的，都和框架无关，框架最多提供工具类辅助管理，而不是绝对控制。</p>
+
+<h2 id="toc_7">可配置一定可编程，并保持友好的CoC约定</h2>
+
+<p>因为使用环境的不确定因素很多，框架总会有一些配置，一般都会到classpath直扫某个指定名称的配置，或者启动时允许指定配置路径，做为一个通用框架，应该做到凡是能配置文件做的一定要能通过编程方式进行，否则当使用者需要将你的框架与另一个框架集成时就会带来很多不必要的麻烦，另外，尽可能做一个标准约定，如果用户按某种约定做事时，就不需要该配置项。</p>
+
+<p>比如：配置模板位置，你可以约定，如果放在templates目录下就不用配了，如果你想换个目录，就配置下。</p>
+
+<h2 id="toc_8">区分命令与查询，明确前置条件与后置条件</h2>
+
+<p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
+
+<p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[八、Redis 持久化]]></title>
     <link href="http://www.throne4j.com/15942163464303.html"/>
     <updated>2020-07-08T21:52:26+08:00</updated>
     <id>http://www.throne4j.com/15942163464303.html</id>
@@ -173,7 +242,35 @@ aof_last_cow_size:0                     //最后一次执行AOF重写任务消�
 </code></pre></li>
 <li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
 <figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
+<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p>
+<pre><code class="language-shell">➜  redis xxd dump.rdb
+00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis<br/>
+00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi<br/>
+00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.<br/>
+00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..<br/>
+00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl<br/>
+00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;<br/>
+➜  redis od -cx dump.rdb<br/>
+0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s<br/>
+             4552    4944    3053    3030    fa39    7209    6465    7369<br/>
+0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i<br/>
+             762d    7265    3505    302e    382e    0afa    6572    6964<br/>
+0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032<br/>
+             2d73    6962    7374    40c0    05fa    7463    6d69    c265<br/>
+0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020<br/>
+             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2<br/>
+0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l<br/>
+             1009    fa00    610c    666f    702d    6572    6d61    6c62<br/>
+0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;<br/>
+             c065    ff00    39fe    d9f4    3227    222a<br/>
+0000134
+</code></pre></li>
+<li><p>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</p></li>
+<li><p>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</p></li>
+<li><p>bgsave由紫禁城执行保存操作，不会阻塞服务器</p></li>
+<li><p>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</p></li>
+<li><p>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</p></li>
+<li><p>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</p></li>
 </ul>
 
 ]]></content>
@@ -1734,6 +1831,34 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
+<p>x</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>save</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bgsave</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ]]></content>
   </entry>
   
@@ -1787,9 +1912,7 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <li>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数，lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</li>
 </ul></li>
 <li><p>结构体 robj 的 encoding <br/>
-结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p></li>
-</ul>
-
+结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p>
 <table>
 <thead>
 <tr>
@@ -1798,7 +1921,6 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <th>可存储对象类型</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>OBJ_ENCODING_INT</td>
@@ -1856,7 +1978,8 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <td>未使用</td>
 </tr>
 </tbody>
-</table>
+</table></li>
+</ul>
 
 <h4 id="toc_2">对象内存回收</h4>
 
@@ -2151,7 +2274,7 @@ typedef struct redisDb {
 <li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
 <li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
 <li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
-<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度</li>
+<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
 </ul>
 
 ]]></content>
@@ -4298,39 +4421,6 @@ public R handle(@Validated(AddGroup.class) @RequestBody User user) {
     return R.success();
 }
 </code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[缓存一致性问题如何解决]]></title>
-    <link href="http://www.throne4j.com/15902913212619.html"/>
-    <updated>2020-05-24T11:35:21+08:00</updated>
-    <id>http://www.throne4j.com/15902913212619.html</id>
-    <content type="html"><![CDATA[
-<ul>
-<li><p>数据实时同步更新<br/>
-使用缓存工具或AOP，在更新数据库的同时更新缓存，这种方式数据一致性强，</p>
-<ul>
-<li>不会出现缓存雪崩的问题，</li>
-<li>但是代码耦合、运行期耦合、影响正常业务、增加一次网络开销，</li>
-<li>适用于写操作频繁的细粒度缓存数据，数据一致实时性要求比较高的场景，如银行业务、证券业务，对于写操作较少的粗粒度操作则不适合。</li>
-</ul></li>
-<li><p>数据准时更新</p>
-<ul>
-<li>准一致性，更新数据库后，异步更新缓存，使用AOP进行封装给予多线程或者mq实现</li>
-<li>数据同步有短暂延迟，与业务解耦，不影响正常业务运行，不会出现缓存雪崩问题</li>
-<li>有较短延迟，需要补偿机制</li>
-<li>不适合写操作频繁并且数据一致实时性要求严格的场景</li>
-</ul></li>
-<li><p>缓存失效机制</p>
-<ul>
-<li>弱一致性，给予缓存本身的失效机制</li>
-<li>实现简单，与业务完美解耦，不影响正常业务</li>
-<li>有一定延迟，不保证强一致性，但保证最终一致性，存在缓存雪崩的问题</li>
-<li>适合于读多写少的互联网场景，能接受一定的数据延时，比如电商业务、社交业务等</li>
-</ul></li>
-</ul>
 
 ]]></content>
   </entry>

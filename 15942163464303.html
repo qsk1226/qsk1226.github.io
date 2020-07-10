@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    Redis 持久化 - 大爷来玩儿啊~
+    八、Redis 持久化 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            Redis 持久化   
+                            八、Redis 持久化   
                       </h1>
                      
                     
@@ -269,7 +269,35 @@ aof_last_cow_size:0                     //最后一次执行AOF重写任务消�
 </code></pre></li>
 <li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
 <figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
+<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p>
+<pre><code class="language-shell">➜  redis xxd dump.rdb
+00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis<br/>
+00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi<br/>
+00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.<br/>
+00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..<br/>
+00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl<br/>
+00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;<br/>
+➜  redis od -cx dump.rdb<br/>
+0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s<br/>
+             4552    4944    3053    3030    fa39    7209    6465    7369<br/>
+0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i<br/>
+             762d    7265    3505    302e    382e    0afa    6572    6964<br/>
+0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032<br/>
+             2d73    6962    7374    40c0    05fa    7463    6d69    c265<br/>
+0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020<br/>
+             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2<br/>
+0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l<br/>
+             1009    fa00    610c    666f    702d    6572    6d61    6c62<br/>
+0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;<br/>
+             c065    ff00    39fe    d9f4    3227    222a<br/>
+0000134
+</code></pre></li>
+<li><p>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</p></li>
+<li><p>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</p></li>
+<li><p>bgsave由紫禁城执行保存操作，不会阻塞服务器</p></li>
+<li><p>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</p></li>
+<li><p>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</p></li>
+<li><p>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</p></li>
 </ul>
 
                   </article>
