@@ -496,7 +496,7 @@ typedef struct redisDb {
 *3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
 </code></pre>
 
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code> <code>“$9”</code>和 <code>“$6”</code> 等表示该参数字符串长度。</strong></p>
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
 
 <p>Redis服务器接收到的命令请求首先存储在客户端对象的querybuf 输入缓冲区，然后解析命令请求各个参数，并存储在客户端对象的argv（参数对象数组）和argc（参数数目）字段。</p>
 
@@ -505,23 +505,39 @@ typedef struct redisDb {
 
 <h3 id="toc_13">3.2、命令调用</h3>
 
-<p>在处理命令请求之前会进行很多的校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
+<p>解析完命令请求之后，会调用函数 processCommand 处理该命令请求，而处理命令请求之前还有很多校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
 
 <p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
 
-<h3 id="toc_14">3.3、返回结果</h3>
+<pre><code class="language-text">    int processCommand(client *c) {
+        ...
+            if (c-&gt;flags &amp; CLIENT_MULTI 
+                &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
+                &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
+                &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
+                &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
+                //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
+                queueMultiCommand(c);        //放入队列            
+                addReply(c,shared.queued);         
+            } else {                        
+                //否则调用call命令            
+                call(c,CMD_CALL_FULL);         
+                ...
+            } 
+     ...
+    }
+    ```
 
-<p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
+### 3.3、返回结果
+Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。
 
-<p>Redis的返回结果可以分为5类：</p>
-
-<ul>
-<li>状态回复，第一个字符是<code>“+”</code>；例如，SET命令执行完毕会向客户端返回<code>“+OK\r\n”</code>。</li>
-<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
-<li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
-<li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
-<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
-</ul>
+Redis的返回结果可以分为5类：
+- 状态回复，第一个字符是`“+”`；例如，SET命令执行完毕会向客户端返回`“+OK\r\n”`。
+- 错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回`“-ERR unknown command&#39;testcmd&#39;”`。
+- 整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 `“:100\r\n”`。
+- 批量回复，第一个字符是` &quot;$&quot;`。例如，GET命令查找键向客户端返回结果`&quot;$5\r\nhello\r\n&quot;`，其中`$5`表示返回字符串长度
+- 多条批量回复，第一个字符是`“*”`。例如，LRANGE命令可能会返回多个值，格式为`“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”`，与命令请求协议格式相同，`“*3”`表示返回值数目，`“$6”`表示当前返回值字符串长度。
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">

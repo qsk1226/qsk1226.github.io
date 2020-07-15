@@ -4,13 +4,450 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-10T21:53:49+08:00</updated>
+  <updated>2020-07-15T23:28:04+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[十、主从复制]]></title>
+    <link href="http://www.throne4j.com/15945438416733.html"/>
+    <updated>2020-07-12T16:50:41+08:00</updated>
+    <id>http://www.throne4j.com/15945438416733.html</id>
+    <content type="html"><![CDATA[
+<p>Redis 支持主从复制功能，用户可以通过执行slaveof 命令或者在配置文件中设置slaveof选项来开启复制功能。例如</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt;slaveof 127.0.0.1  7000
+OK
+</code></pre>
+
+<p>服务器127.0.0.1:6379 会成为服务器127.0.0.1:7000的从服务器(slaver)，127.0.0.1:7000 是主服务器(master),通过复制功能，从服务器127.0.0.1:6379的数据可以和主服务器127.0.0.1:7000的数据保持同步。</p>
+
+<p>用户可以通过执行 slaveof  no one取消复制功能，此时主从服务器之间会断开连接，从服务器成为普通的Redis实例。</p>
+
+<h2 id="toc_0">1、主从复制功能实现</h2>
+
+<p>主从复制功能主要有以下两点作用</p>
+
+<ul>
+<li>读写分离，单台服务器能支撑的QPS是有上限的，我们可以部署一台主服务器、多台从服务器，主服务器只处理写请求，从服务器通过复制功能同步主服务器数据，只处理读请求，以此提升Redis 服务能力；另外我们还可以通过复制功能来让主服务器免于执行持久化操作：只要关闭主服务器的持久化功能，然后由从服务器去执行持久化操作即可。</li>
+<li>数据容灾，任何服务器都有宕机的可能，我们同样可以通过主从复制功能提升Redis服务的可靠性；由于从服务器与主服务器数据保持同步，一旦主服务器宕机，可以立即将请求切换到从服务器，从而避免Redis服务中断。</li>
+</ul>
+
+<h3 id="toc_1">1.1、 老版Redis复制功能</h3>
+
+<p>在redis 2.8之前的版本中实现主从复制功能分为同步(sync)和命令传播(command propagate)两个操作</p>
+
+<ul>
+<li>同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态。</li>
+<li>命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态。</li>
+</ul>
+
+<p>slaveof命令流程如下图所示：<br/>
+<figure><img src="media/15945438416733/15947441756075.jpg" alt="" style="width:729px;"/></figure></p>
+
+<p>此版本的slavof复制功能缺陷：</p>
+
+<ul>
+<li>初次复制: 从服务器以前没有复制过任何主服务器, 或者从服务器当前要复制的主服务器和上一次复制的主服务器不同。</li>
+<li>断线后重复制: 处于命令传播阶段的主从服务器因为网络原因而中断了复制,但从服务器通过自动重连接重新连上了主服务器,并继续复制主服务器。<br/>
+对于中断后重复制，假如在断开连接之前从服务已经复制了主服务器大部分数据，但是由于中断，在从服务器重新连接上主服务器之后，会重新发送sync命令，生成并发送RDB文件（包含从服务器已经复制过的那部分数据），但是这种续传的方式并不是必须得这样，对于从服务器已经复制过的数据，完全没必要再传输一遍。因此这种方式是比较效率的复制方式。</li>
+</ul>
+
+<p><strong>每次执行SYNC命令的耗时操作</strong>：<br/>
+1)主服务器需要执行 BGSAVE命令来生成RDB文件,这个生成操作会耗费主服务器大量的CPU、内存和融盘IO资源。<br/>
+2)主服务器需要将自已生成的RDB文件发送给从服务器,这个发送操作会耗费主从服务器大量的网络资源(带宽和流量),并对主服务器响应命令请求的时间产生彩响。<br/>
+3)接收到RDB文件的从服务器需要載入主服务器发来的RDB文件,并且在載入期间,从服务器会因为阻塞而没办法处理命令请求。</p>
+
+<p>因为SYVC命令是一个如此耗费资源的操作,所以 Redis有必要保证在真正有需要时才执行SYNC命令。</p>
+
+<h3 id="toc_2">1.2、新版的复制功能</h3>
+
+<p>为了解决老版本的效率低下问题，新版复制功能使用PSYNC命令代替SYNC命令来执行复制时的同步操作。</p>
+
+<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步( partial resynchronization 两种模式:</p>
+
+<ul>
+<li>完整重同步用于处理初次复制情况: 完整重同步的执行步骤和SYNC命令的执行步骤基本一样, 它们都是通过让主服务器创建并发送RDB文件,以及向从服务器发送保存在缓冲区里面的写命令来进行同步。</li>
+<li>部分重同步则用于处理断线后重复制情况:  当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将主从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据库更新至主服务器当前所处的状态。</li>
+</ul>
+
+<p>新版slaveof命令流程如下图所示：<br/>
+<figure><img src="media/15945438416733/15947488155003.jpg" alt="" style="width:833px;"/></figure></p>
+
+<p>部分重同步功能由以下三个部分构成: </p>
+
+<ul>
+<li>主服务器的复制偏移量( replication offset)和从服务器的复制偏移量。</li>
+<li>主服务器的复制积压缓冲区( replication backlog) </li>
+<li>服务器的运行ID( run ID)。</li>
+</ul>
+
+<h4 id="toc_3">1.2.1、复制偏移量</h4>
+
+<p>执行复制的双方 主服务器和从服务器会分别维护一个复制偏移量:</p>
+
+<ul>
+<li>主服务器每次向从服务器传播N个字节的数据时,就将自己的复制偏移量的值加上N。</li>
+<li>从服务器每次收到主服务器传播来的N 个字节的数据时,就将自已的复制偏移量的值加上N。</li>
+</ul>
+
+<p>通过对比主从服务器的复制偏移量,程序可以很容易地知道主从服务器是否处于一致状态:</p>
+
+<ul>
+<li>如果主从服务器处于一致状态,那么主从服务器两者的偏移量总是相同的。</li>
+<li>相反,如果主从服务器两者的偏移量并不相同,那么说明主从服务器并未处于一致状态。</li>
+</ul>
+
+<p>问：如果主服务器向从服务器复制的时候，从服务器掉线后就立即重新连接主服务器,并且成功,那么接下来,从服务器将向主服务器发送 PSYNC命令,报告从服务器当前的复制偏移量为offset, 那么这时, 主服务器应该对从服务器执行完整重同步还是部分重同步呢? </p>
+
+<p>答： 和复制缓冲区有关。</p>
+
+<h4 id="toc_4">1.2.2、复制缓冲区</h4>
+
+<p>复制缓冲区是有主服务器维护的一个固定长度的先进先出的队列。当主服务器进行命令传播的时候，它不仅会将写命令发送给所有的从服务器，还会将写命令入队复制缓冲区。因此主服务器的复制缓冲区会保存一部分最近传播的写命令，并且复制缓冲区会为队列中的每个字节记录相应的复制偏移量。</p>
+
+<p>当从服务器重新连上主服务器时,从服务器会通过PSYC命令将自己的复制偏移量offset发送给主服务器,主服务器会根据这个复制偏移量来决定对从服务器执行何种同步操作:</p>
+
+<ul>
+<li>如果offset偏移量之后的数据(也即是偏移量。 offset+1开始的数据)仍然存在于复制积压缓冲区里面,那么主服务器将对从服务器执行部分重同步操作。</li>
+<li>相反,如果 offset偏移量之后的数据已经不存在于复制积压缓冲区,那么主服务器将对从服务器执行完整重同步操作。</li>
+</ul>
+
+<p><strong>注意：</strong> 正确估算和设置复制缓冲区的大小非常重要。如果主服务器需要执行大量写命令，或者主从服务器断线很长时间后重新连接，复制缓冲区的大小不合理的话，可能导致psync命令的复制重同步模式不能正常发挥作用。</p>
+
+<p>复制缓冲区的大小可根据 公式：断线到重连的平均时间秒数 * 主服务器每秒产生的写命令数据量，为了安全起见可以double 一下这个结果值。</p>
+
+<h4 id="toc_5">1.2.3、 服务器的运行ID</h4>
+
+<p>每台Redis服务器都有一个运行ID，从服务器每次发送psync请求同步数据时，会携带自己需要同步主服务器的运行ID。主服务器接收到psync命令时，需要判断命令参数运行ID与自己的运行ID是否相等，只有相等才有可能执行部分重同步。而当从服务器首次请求主服务器同步数据时，从服务器显然是不知道主服务器的运行ID，此时运行ID以“？”填充，同时复制偏移量初始化为-1。</p>
+
+<h3 id="toc_6">1.3、新版复制同步机制的生产问题</h3>
+
+<p>当在生产环境中，经常会发生如下情况</p>
+
+<ul>
+<li>从服务器重启，复制信息丢失</li>
+<li>主服务器故障导致主从切换(从多台 从服务器中选举出一台作为主服务器，此时，主服务器的运行ID发生变化)<br/>
+这时候显然是无法执行部分重同步的，而这两种情况又很常见，因此Redis 4.0针对主从复制又提出了psync2协议，使得主服务器故障导致主从切换后，依然有可能执行部分重同步。而这时候当主服务器接收到psync命令时，向客户端回复的是“+CONTINUE<new_repl_id>”。参数“psync2”表明从服务器支持psync2协议。。</li>
+</ul>
+
+<h4 id="toc_7">方案一： 持久化主从复制信息</h4>
+
+<p>Redis服务器关闭时，将主从复制信息（复制的主服务器RUN_ID 与复制偏移量）作为辅助字段存储在RDB文件中；Redis服务器启动加载RDB文件时，恢复主从复制信息，重新同步主服务器时携带。</p>
+
+<h4 id="toc_8">方案二： 存储上一个主服务器复制信息</h4>
+
+<p>当主服务器发生故障的时候，从服务器成为新的主服务器时，便使用前一个主服务器的运行ID和复制偏移量。</p>
+
+<p>代码如下所示:</p>
+
+<pre><code class="language-c">char replid2[CONFIG_RUN_ID_SIZE+1];
+long long second_replid_offset;
+</code></pre>
+
+<p>假设m为主服务器（运行ID为M_ID），A、B和C为三个从服务器；某一时刻主服务器m发生故障，从服务器A升级为主服务器（同时会记录replid2=M_ID），从服务器B和C重新向主服务器A发送“psync M_ID psync_offset”请求；显然根据上面条件，只要psync_offset满足条件，就可以执行部分重同步。</p>
+
+<h3 id="toc_9">主从复制的其它问题</h3>
+
+<p>主服务器和从服务器之间是通过TCP长连接交互数据的，就必然需要周期性地发送心跳包来检测连接有效性，该字段表示发送心跳包的周期，主服务器以此周期向所有从服务器发送心跳包。可通过配置参数repl-ping-replica-period或者repl-ping- slave-period设置，默认为10。</p>
+
+<p>发送心跳检测从服务器是否有效，那么每次检测多长时间内从服务器没响应则判定从服务器失效呢？</p>
+
+<p>主服务器会记录每个从服务器上次心跳检测成功的时间repl_ack_time，并且定时检测当前时间距离repl_ack_time是否超过一定超时门限，如果超过则认为从服务器处于失效状态。字段repl_min_slaves_max_lag存储的就是该超时门限，可通过配置参数min-slaves-max-lag或者min- replicas-max-lag设置该超时阈值，默认为10，单位秒。</p>
+
+<p>repl_min_slaves_to_write表示当有效从服务器的数目小于该值时，主服务器会拒绝执行写命令。</p>
+
+<p>当主服务器配置了“requirepass password”时，即表示从服务器必须通过密码认证才能同步主服务器数据。同样的需要在从服务器配置“masterauth<master-password>”，用于设置请求同步主服务器时的认证密码。</p>
+
+<p>当主从服务器断开连接时，通过配置参数slave-serve-stale-data 或者replica-serve-stale-data设置，默认为1，设置从服务器是否继续处理命令请求。</p>
+
+<p>可通过配置参数slave-read-only或者replica-read-only设置，默认为1，设置从服务器是否可以处理写命令请求，默认是从服务器是只读的，除非该命令是主服务器发送过来的。</p>
+
+<p>复制缓冲区，用于缓存主服务器已执行且待发送给从服务器的命令请求；缓冲区大小由字段repl_backlog_size指定，其可通过配置参数repl-backlog-size设置，默认为1MB。</p>
+
+<p>从服务器通过时间事件处理函数 serverCron，以一秒为周期执行主从复制操作。在时间事件处理是，从服务器想主服务器发起连接请求，成功连接之后，创建对应的文件事件。此外事件事件还用于检测主从连接是否超时，定时向服务器发送心跳包，定时报告自己的复制偏移量等。</p>
+
+<p>用户可通过参数repl-timeout 配置，默认为60，单位秒，超过此时间则认为主从服务器之间的连接出现故障，从服务器会主动断开连接。</p>
+
+<p>当从服务器接收到slaveof命令时，会主动连接主服务器请求同步数据，这并不是一蹴而就的，需要若干个步骤交互：<br/>
+1）连接Socket；<br/>
+2）发送PING请求包确认连接是否正确；<br/>
+3）发起密码认证（如果需要）；<br/>
+4）信息同步；<br/>
+5）发送PSYNC命令；<br/>
+6）接收RDB文件并载入；<br/>
+7）连接建立完成，等待主服务器同步命令请求。</p>
+
+<p>当从服务器支持eof 功能时 主服务器可以直接将数据库中数据以RDB协议格式通过socket发送给从服务器，免去了本地磁盘文件不必要的读写操作；</p>
+
+<p>通过配置参数repl-diskless-sync进行设置完整同步是生成RDB文件持久化到磁盘发送还是直接通过socket进行发送，默认为0；即默认情况下，主服务器都是先持久化数据到本地文件，再将该文件发送给从服务器。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[九、Redis 持久化--AOF（二）]]></title>
+    <link href="http://www.throne4j.com/15943917797824.html"/>
+    <updated>2020-07-10T22:36:19+08:00</updated>
+    <id>http://www.throne4j.com/15943917797824.html</id>
+    <content type="html"><![CDATA[
+<p>AOF是Redis的另外一种持久化方式。简单来说，AOF就是将Redis服务端执行过的每一条命令都保存到一个文件，这样当Redis重启时只要按顺序回放这些命令就会恢复到原始状态。</p>
+
+<hr/>
+
+<p><strong>问</strong>：既然已经有了RDB为什么还需要AOF呢？</p>
+
+<p>答：RDB保存的是一个时间点的快照，那么如果Redis出现了故障，丢失的就是从最后一次RDB执行的时间点到故障发生的时间间隔之内产生的数据。如果Redis数据量很大，QPS很高，那么执行一次RDB需要的时间会相应增加，发生故障时丢失的数据也会增多。</p>
+
+<p>而AOF保存的是一条条命令，理论上可以做到发生故障时只丢失一条命令。但由于操作系统中执行写文件操作代价很大，Redis提供了配置参数，通过对安全性和性能的折中，我们可以设置不同的策略。</p>
+
+<hr/>
+
+<p><strong>问</strong>：既然AOF数据安全性更高，是否可以只使用AOF呢？为什么Redis推荐RDB和AOF同时开启呢？</p>
+
+<p>答：RDB保存的是最终的数据，是一个最终状态，而AOF保存的是达到这个最终状态的过程。很明显，如果Redis有大量的修改操作，RDB中一个数据的最终态可能会需要大量的命令才能达到，这会造成AOF文件过大并且加载时速度过慢（Redis提供了一种AOF重写的策略来解决上述问题，后文会详细描述其实现原理）。</p>
+
+<p>再来考虑一下AOF和RDB文件的加载过程。RDB只需要把相应数据加载到内存并生成相应的数据结构（有些结构如intset、ziplist，保存时直接按字符串保存，所以加载时速度会更快），而AOF文件的加载需要先创建一个伪客户端，然后把命令一条条发送给Redis服务端，服务端再完整执行一遍相应的命令。根据Redis作者做的测试，RDB 10s～20s能加载1GB的文件，AOF的速度是RDB速度的一半（如果做了AOF重写会加快）。因为AOF和RDB各有优缺点，因此Redis一般会同时开启AOF和RDB。</p>
+
+<hr/>
+
+<p>但假设线上同时配置了RDB和AOF，那么会带来如下的两难选择：重启时如果优先加载RDB，加载速度更快，但是数据不是很全；如果优先加载AOF，加载速度会变慢，但是数据会比RDB中的要完整。</p>
+
+<p>能不能结合这两者的优点呢？答案是AOF和RDB的混合持久化方案，</p>
+
+<hr/>
+
+<h2 id="toc_0">1、AOF的执行流程</h2>
+
+<p>先介绍Redis服务端执行命令时如何同步到AOF文件以及AOF文件的格式，然后介绍Redis不同的配置对性能和安全性的影响。</p>
+
+<h3 id="toc_1">1.1、AOF命令同步</h3>
+
+<p>通过《<a href="15934396305281.html">三、redis命令处理生命周期</a> 》的执行流程，我们看到每一条命令的执行都会processCommand命令，processCommand命令的执行都会调用 call 函数，AOF命令的同步就是在 call命令中实现的。</p>
+
+<p><figure><img src="media/15943917797824/15943937599696.jpg" alt="AOF命令同步"/><figcaption>AOF命令同步</figcaption></figure></p>
+
+<p>如果开启了AOF，则每条命令执行完毕后都会同步写入aof_buf 中，aof_buf是个全局的SDS类型的缓冲区。</p>
+
+<p>那么命令是按什么格式写入缓冲区中的呢？</p>
+
+<p>Redis通过catAppendOnlyGenericCommand函数将命令转换为保存在缓冲区中的数据结构，</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; SET redis-key value1
+# 保存在缓冲区中的格式
+*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
+</code></pre>
+
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
+
+<p>那么命令写入缓冲区后何时同步到文件中呢？</p>
+
+<h3 id="toc_2">1.2、AOF文件写入</h3>
+
+<p>为了提高文件的写入效率,在现代操作系中,当用户调用 write函数,将一些数据写入到文件的时候,操作系统通常会将写入数据暂时保存在一个内存冲区里面, 等到缓冲区的空间被填满、或者超过了指定的时限之后,才真正地将缓冲区中的数据写入到磁盘里面。</p>
+
+<p>这种做法虽然提高了效率,但也为写入数据带来了安全问题,因为如果计算机发生停机,那么保存在内存缓冲区里面的写入数据将会丢失。<br/>
+为此,系统提供了 fsync和 fdatasync两个同步函数,它们可以强制让操作系统立即将缓冲区中的数据写入到项盘里面,从而确保写入数据的安全性。</p>
+
+<p>AOF持久化最终需要将缓冲区中的内容写入一个文件，写文件通过操作系统提供的write函数执行。但是write之后数据只是保存在kernel的缓冲区中，真正写入磁盘还需要调用 fsync 函数。fsync是一个阻塞并且缓慢的操作，所以Redis通过appendfsync配置控制执行fsync 的频次。具体有如下3种模式：</p>
+
+<ul>
+<li>no ：不执行fsync，将aof_buf 缓冲区中的所有内容写入到AOF文件，但不对AOF文件进行同步，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</li>
+<li>always：每执行一次写入就会执行一次fsync。数据安全性最高但会导致Redis性能降低。</li>
+<li>everysec： 每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡。</li>
+</ul>
+
+<p>生产环境一般配置为appendfsync everysec，即每秒执行一次fsync 操作。</p>
+
+<h3 id="toc_3">1.3、AOF 重写</h3>
+
+<p>随着Redis服务的运行，AOF文件会越来越大，并且当Redis服务有大量的修改操作时，对同一个键可能有成百上千条执行命令。AOF 重写通过fork出一个子进程来执行，重写不会对原有文件进行任何修改和读取，子进程对所有数据库中所有的键各自生成一条相应的执行命令，最后将重写开始后父进程继续执行的命令进行回放，生成一个新的AOF文件。</p>
+
+<p>示例如下：</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; rpush list 1 2 3         //list中增加1,2,3三个元素
+(integer)3 
+127.0.0.1:6379&gt; rpush list 4             //list中增加4 
+(integer)4 
+127.0.0.1:6379&gt; rpush list 5         //list中增加5
+(integer)5 
+127.0.0.1:6379&gt; lpop list            //弹出第一个元素
+&quot;1&quot;
+</code></pre>
+
+<p>AOF重写就是直接按当前list中的内容写为“rpush list 2345”。4条命令变为了一条命令，既可以减小文件大小，又可以提高加载速度。</p>
+
+<h3 id="toc_4">1.4、AOF重写触发方式</h3>
+
+<p>AOF重写有两种触发方式：一种为通过配置自动触发，一种为手动执行bgrewriteaof命令显式触发。</p>
+
+<ul>
+<li><p>看自动触发方式，做如下配置：</p>
+<pre><code class="language-text">auto-aof-rewrite-percentage 100 
+auto-aof-rewrite-min-size 64mb
+</code></pre>
+<p>当AOF文件大于64MB时，并且AOF文件当前大小比基准大小增长了100%时会触发一次AOF重写。那么基准大小如何确定呢？起始的基准大小为Redis重启并加载完AOF文件之后，aof_buf的大小。当执行完一次AOF重写之后，基准大小相应更新为重写之后AOF文件的大小。当做了如上配置之后， Redis服务器会根据配置自动触发AOF重写。</p></li>
+<li><p>手动触发AOF<br/>
+下面我们看下手动触发AOF重写，即通过AOF客户端输入 bgrewriteaof 之后的执行流程。 </p></li>
+</ul>
+
+<p><figure><img src="media/15943917797824/15945412157461.jpg" alt="" style="width:1273px;"/></figure></p>
+
+<p>子进程执行重写时可能会有成千上万条命令继续在父进程中执行，那么如何保证重写完成后的文件也包括这些命令呢？</p>
+
+<p>首先需要在父进程中将重写过程中执行的命令进行保存，其次需要将这些命令在重写后的文件中进行回放。</p>
+
+<p>Redis为了尽量减少主进程的阻塞时间，通过管道按批次将父进程累积的命令发送给子进程，由子进程重写完成后进行回放。</p>
+
+<p>那么如何通过管道同步给子进程呢？分析下下图<br/>
+<figure><img src="media/15943917797824/15945418134506.jpg" alt=""/></figure></p>
+
+<p>父进程在fork之前会建立3对管道：fd0/fd1、fd2/fd3、fd4/fd5，它们各自配对执行。父进程通过fd1将执行aof重写时累积的命令发送给子进程，子进程通过fd0进行接收并保存。当子进程执行完重写之后，向fd3写入一个“！”号通知父进程不需要继续通过管道发送累积命令，父进程通过fd2接收到“！”号之后向fd5也写入一个“！”号进行确认。子进程通过fd4同步阻塞接收到“！”号后才可进行后续的退出操作。退出时首先会将接收到的累积命令进行回放，然后执行fsync。</p>
+
+<h3 id="toc_5">1.5、混合持久化</h3>
+
+<p>混合持久化指进行AOF重写时子进程将当前时间点的数据快照保存为RDB文件格式，而后将父进程累积命令保存为AOF格式。最终形成 RDB file和 AOF file共存的保存形式。</p>
+
+<p>加载时，首先会识别AOF文件是否以REDIS字符串开头，如果是，就按RDB格式加载，加载完RDB后继续按AOF格式加载剩余部分。</p>
+
+<p>是否开启混合持久化由如下配置设置</p>
+
+<pre><code class="language-text">aof-use-rdb-preamble yes
+</code></pre>
+
+<h3 id="toc_6">总结</h3>
+
+<ul>
+<li>AOF文件通过保存所有修改数据库的写命令来记录服务器的数据库状态</li>
+<li>AOF文件中的所有命令都以Redis命令请求协议的格式保存</li>
+<li>命令请求会先保存到AOF缓冲区里面，之后再定期写入并同步到AOF文件</li>
+<li>appendfsync选项的不同值对AOF持久化功能的安全性以及 Redis服务器的性能有很大的影响</li>
+<li>服务器只要载入并重新执行保存在 AOF文件中的命令，就可以还原数据库本来的状态</li>
+<li>AOF重写可以产生一个新的 AOF文件，这个新的 AOF文件和原有的AOF文件保存的数据库状态一样，但体积更小</li>
+<li>AOF重写功能是通过读取数据库中的键值对来实现的，程序无需对现有的AOF文件进行任何读入、分析或者写入操作</li>
+<li>执行 bgrewriteaof命令的时候，redis 服务器会维护一个AOF重写缓冲区,该缓冲区会在子进程创建新的 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新AOF文件工作之后，服务器会将重写缓冲区中的所有内容追加到 新AOF文件的末尾，使新旧两个AOF文件所保存的数据库状态一致。最后，服务器使用新的 AOF 文件替换旧的AOF文件，来完成AOF文件的重写操作。</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_7">2、RDB 与 AOF 相关配置指令</h2>
+
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>可选值</th>
+<th>功能</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>save</td>
+<td><code>&lt;secondes&gt; &lt;changes&gt;</code> 默认：save 900 1、save 300 10、save 60 10000</td>
+<td>RDB</td>
+<td>自动触发配置</td>
+</tr>
+<tr>
+<td>stop-writes-on-bgsave-error</td>
+<td>yes/no(默认yes)</td>
+<td>RBD</td>
+<td>开启该参数后，如果开启了RDB 快照（即配置了save指令），并且最近一次快照执行失败，则Redis 将停止接收写相关的请求。</td>
+</tr>
+<tr>
+<td>rdbcompression</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>执行RDB快照时是否将 string类型的数据进行LZF压缩。</td>
+</tr>
+<tr>
+<td>rdbchecksum</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>是否开启RDB文件内容的校验</td>
+</tr>
+<tr>
+<td>dbfilename</td>
+<td>文件名称(默认 dump.rdb)</td>
+<td>RDB</td>
+<td>RDB文件名称</td>
+</tr>
+<tr>
+<td>dir</td>
+<td>文件路径(默认./)</td>
+<td>RDB</td>
+<td>RDB和AOF文件存放路径</td>
+</tr>
+<tr>
+<td>rdb-save-incremental-fsync</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>开启该参数后，生成RDB文件时每产生32MB数据就执行一次fsync。</td>
+</tr>
+<tr>
+<td>appendonly</td>
+<td>yes/no(默认no)</td>
+<td>AOF</td>
+<td>是否开启 AOF 功能</td>
+</tr>
+<tr>
+<td>appendfilename</td>
+<td>文件名称(默认 appendonly.aof)</td>
+<td>AOF</td>
+<td>AOF 文件名称</td>
+</tr>
+<tr>
+<td>appendfsync</td>
+<td>always/everysec/no (默认 everysec)</td>
+<td>AOF</td>
+<td>fsync执行频次,always：将aof_buf缓冲区中的所有内容写入并同步到AOF文件；everysec:每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡;no:  不执行fsync，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</td>
+</tr>
+<tr>
+<td>no-appendfsync-on-rewrite</td>
+<td>yes/no(默认no)</td>
+<td>AOF</td>
+<td>开启该参数后，如果后台正在执行一次RDB快照或者AOF重写，则主进程不再进行fsync操作（即使将appendfsync配置为always或者everysec）</td>
+</tr>
+<tr>
+<td>auto-aof-rewrite-percentage</td>
+<td>百分比(默认100)</td>
+<td>AOF</td>
+<td>自动重写配置项，当前AOF文件大于auto-aof-rewrite-min-size 配置的大小 并且比基准文件增长此百分比时触发AOF重写</td>
+</tr>
+<tr>
+<td>auto-aof-rewrite-min-size</td>
+<td>文件大小(默认64MB)</td>
+<td>AOF</td>
+<td>自动重写配置项，当前AOF文件大于此配置值，并且当前AOF文件 比基准文件增长auto-aof-rewrite-percentage配置的百分比时触发AOF重写</td>
+</tr>
+<tr>
+<td>aof-load-truncated</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>AOF文件以追加日志的方式生成，所以服务端发生故障时可能会有尾部命令不完整的情况。开启该参数后，在此种情况下，AOF文件会截断尾部不完整的命令然后继续加载，并且会在日志中进行提示。如果不开启该参数，则加载AOF文件时会打印错误日志，然后直接退出</td>
+</tr>
+<tr>
+<td>aof-use-rdb-preamble</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>是否开启混合持久化</td>
+</tr>
+<tr>
+<td>aof-rewrite-incremental-fsync</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>开启该参数后，AOF重写时没产生32MB数据执行一次fsync</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[软件设计上的基本知识]]></title>
@@ -82,7 +519,7 @@ Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[八、Redis 持久化]]></title>
+    <title type="html"><![CDATA[八、Redis 持久化--RDB（一）]]></title>
     <link href="http://www.throne4j.com/15942163464303.html"/>
     <updated>2020-07-08T21:52:26+08:00</updated>
     <id>http://www.throne4j.com/15942163464303.html</id>
@@ -112,6 +549,8 @@ aof_last_cow_size:0                     //最后一次执行AOF重写任务消�
 </code></pre>
 
 <h2 id="toc_0">RDB 持久化方式</h2>
+
+<p>RDB持久化方式是保存一个时间点的快照。</p>
 
 <p>RDB快照有两种触发方式</p>
 
@@ -242,35 +681,98 @@ aof_last_cow_size:0                     //最后一次执行AOF重写任务消�
 </code></pre></li>
 <li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
 <figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p>
-<pre><code class="language-shell">➜  redis xxd dump.rdb
-00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis<br/>
-00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi<br/>
-00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.<br/>
-00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..<br/>
-00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl<br/>
-00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;<br/>
-➜  redis od -cx dump.rdb<br/>
-0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s<br/>
-             4552    4944    3053    3030    fa39    7209    6465    7369<br/>
-0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i<br/>
-             762d    7265    3505    302e    382e    0afa    6572    6964<br/>
-0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032<br/>
-             2d73    6962    7374    40c0    05fa    7463    6d69    c265<br/>
-0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020<br/>
-             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2<br/>
-0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l<br/>
-             1009    fa00    610c    666f    702d    6572    6d61    6c62<br/>
-0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;<br/>
-             c065    ff00    39fe    d9f4    3227    222a<br/>
+<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
+</ul>
+
+<h3 id="toc_3">RDB 值保存形式</h3>
+
+<p>值类型有如下图所示：<br/>
+<figure><img src="media/15942163464303/15943894568628.jpg" alt=""/></figure></p>
+
+<p>其中字符串类型的保存于 上面的《键的保存形式》相同，其余几种值的保存形式各不相同</p>
+
+<h4 id="toc_4">列表类型的保存</h4>
+
+<p>列表在Redis中编码为 quicklist结构，从整体看是一个双向链表，但链表的每个节点在Redis中编码为zipList结构，ziplist结构在一块连续的内存中保存，并且保存时可以选择进行LZF压缩或者不压缩。据此，RDB 保存列表类型的结构如图所示：</p>
+
+<p>ziplist未压缩<br/>
+<figure><img src="media/15942163464303/15943897652665.jpg" alt=""/></figure></p>
+
+<p>ziplist压缩：</p>
+
+<p><figure><img src="media/15942163464303/15943898009527.jpg" alt=""/></figure></p>
+
+<p>如果ziplist未压缩，每个ziplist按照字符串保存，如果ziplist进行了压缩，则按照下图方式进行保存<br/>
+<figure><img src="media/15942163464303/15943899607716.jpg" alt="" style="width:544px;"/></figure></p>
+
+<h4 id="toc_5">集合类型的保存</h4>
+
+<p>集合类型在Redis中有两种编码方式：一种为intset，另一种为Hash。<br/>
+intset在Redis中也是一块连续的内存，所以intset的保存比较简单，直接将intset按字符串保存。</p>
+
+<p>如果编码为Hash，保存结构如下图所示：<br/>
+<figure><img src="media/15942163464303/15943908892309.jpg" alt=""/></figure><br/>
+第一个字段为字典的大小，接下来逐字段保存字典的键。为什么只保存键呢？其实集合类型使用散列表保存时只使用了键，所有的值都保存为NULL，所以此处只需要保存散列表的键。</p>
+
+<h4 id="toc_6">有序集合类型的保存</h4>
+
+<p>有序集合类型在Redis中也有两种编码方式：一种为ziplist，另一种为skiplist。如果编码为ziplist，即将ziplist整体作为一个字符串保存。所以我们重点看编码为skiplist的保存方式</p>
+
+<p><figure><img src="media/15942163464303/15943913158909.jpg" alt=""/></figure><br/>
+第一个字段为skiplist包含的元素个数，接着分别按元素和元素的分值依次保存。元素保存为字符串，元素分值保存为一个双精度浮点数类型（固定为8个字节）</p>
+
+<h4 id="toc_7">散列类型的保存</h4>
+
+<p>散列类型也有两种编码方式：一种为ziplist，一种为Hash。ziplist 编码方式的保存同有序集合。重点看散列类型按Hash编码时的保存方式。<br/>
+<figure><img src="media/15942163464303/15943913962043.jpg" alt=""/></figure><br/>
+第一个字段为散列表的大小，然后依次保存键值对，键值都保存为字符串类型。</p>
+
+<h4 id="toc_8">Stream类型的保存</h4>
+
+<p>Stream保存为RDB文件时整体格式如图所示：<br/>
+<figure><img src="media/15942163464303/15943914536802.jpg" alt=""/></figure><br/>
+其中具体的结构体介绍，如listpack，消费组等的介绍参考<a href="15938782048225.html">六、Redis 数据流 stream </a>。其中保存消费组的PEL时并没有保存相关消费者的信息，而是在加载完消费者之后，从消费者的PEL中查找并更新消费组PEL的相关信息。</p>
+
+<h3 id="toc_9">RDB 实例</h3>
+
+<p>我们查看一下空的 redis 库是怎样的</p>
+
+<pre><code class="language-text">127.0.0.1:6379&gt;flushall
+ok
+127.0.0.1:6379&gt;bgsave
+Background saving started
+</code></pre>
+
+<pre><code class="language-text">➜  redis xxd dump.rdb
+00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis
+00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi
+00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.
+00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..
+00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl
+00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;
+➜  redis od -cx dump.rdb
+0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s
+             4552    4944    3053    3030    fa39    7209    6465    7369
+0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i
+             762d    7265    3505    302e    382e    0afa    6572    6964
+0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032
+             2d73    6962    7374    40c0    05fa    7463    6d69    c265
+0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020
+             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2
+0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l
+             1009    fa00    610c    666f    702d    6572    6d61    6c62
+0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;
+             c065    ff00    39fe    d9f4    3227    222a
 0000134
-</code></pre></li>
-<li><p>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</p></li>
-<li><p>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</p></li>
-<li><p>bgsave由紫禁城执行保存操作，不会阻塞服务器</p></li>
-<li><p>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</p></li>
-<li><p>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</p></li>
-<li><p>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</p></li>
+</code></pre>
+
+<ul>
+<li>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</li>
+<li>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</li>
+<li>bgsave由紫禁城执行保存操作，不会阻塞服务器</li>
+<li>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</li>
+<li>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</li>
+<li>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</li>
 </ul>
 
 ]]></content>
@@ -286,9 +788,21 @@ aof_last_cow_size:0                     //最后一次执行AOF重写任务消�
 事务从开始到结束经历以下三个阶段：</p>
 
 <ul>
-<li>multi 开启事务<br/>
-Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。</li>
-<li>所有的命令会首先入队而不是直接执行
+<li><p>multi 开启事务<br/>
+Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。<br/>
+multi命令源码：</p>
+<pre><code class="language-redis">void multiCommand(client *c) {     
+    //如果已经执行过multi命令，则不能再次执行<br/>
+    if (c-&gt;flags &amp; CLIENT_MULTI) {        <br/>
+        addReplyError(c,&quot;MULTI calls can not be nested&quot;);         <br/>
+        return;     <br/>
+    }     <br/>
+    //client结构体置CLIENT_MULTI标志<br/>
+    c-&gt;flags |= CLIENT_MULTI;                            <br/>
+    addReply(c,shared.ok); <br/>
+}
+</code></pre></li>
+<li><p>所有的命令会首先入队而不是直接执行</p>
 <ul>
 <li>当一个客户端处于非事务状态时，这个客户端发送的命令会立即被服务器执行。</li>
 <li>当一个客户端处于事务状态后，服务器会根据客户端发来的不同命令执行不同的操作
@@ -296,8 +810,26 @@ Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用m
 <li>发送命令 exec、discard、watch、unwatch，服务器会立即执行此命令</li>
 <li>发送非exec、discard、watch、unwatch 命令，将这个命令放入一个事务队列里面，然后向客户端返回QUEUED回复。</li>
 </ul></li>
-</ul></li>
-<li>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</li>
+</ul>
+<pre><code class="language-text">int processCommand(client *c) {
+    ...<br/>
+        if (c-&gt;flags &amp; CLIENT_MULTI <br/>
+            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand <br/>
+            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand <br/>
+            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand <br/>
+            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {<br/>
+            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            <br/>
+            queueMultiCommand(c);        //放入队列            <br/>
+            addReply(c,shared.queued);         <br/>
+        } else {                        <br/>
+            //否则调用call命令            <br/>
+            call(c,CMD_CALL_FULL);         <br/>
+            ...<br/>
+        } <br/>
+ ...<br/>
+}
+</code></pre></li>
+<li><p>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</p></li>
 </ul>
 
 <p>watch命令提供了一种乐观锁机制。watch命令可以监听多个key，只有当被监听的key未修改时，事务才会执行。当一个事务发送exec或者discard命令后，所有watch的key会自动unwatch。</p>
@@ -1831,8 +2363,6 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<p>x</p>
-
 <table>
 <thead>
 <tr>
@@ -2250,7 +2780,7 @@ typedef struct redisDb {
 *3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
 </code></pre>
 
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code> <code>“$9”</code>和 <code>“$6”</code> 等表示该参数字符串长度。</strong></p>
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
 
 <p>Redis服务器接收到的命令请求首先存储在客户端对象的querybuf 输入缓冲区，然后解析命令请求各个参数，并存储在客户端对象的argv（参数对象数组）和argc（参数数目）字段。</p>
 
@@ -2259,23 +2789,39 @@ typedef struct redisDb {
 
 <h3 id="toc_13">3.2、命令调用</h3>
 
-<p>在处理命令请求之前会进行很多的校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
+<p>解析完命令请求之后，会调用函数 processCommand 处理该命令请求，而处理命令请求之前还有很多校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
 
 <p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
 
-<h3 id="toc_14">3.3、返回结果</h3>
+<pre><code class="language-text">    int processCommand(client *c) {
+        ...
+            if (c-&gt;flags &amp; CLIENT_MULTI 
+                &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
+                &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
+                &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
+                &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
+                //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
+                queueMultiCommand(c);        //放入队列            
+                addReply(c,shared.queued);         
+            } else {                        
+                //否则调用call命令            
+                call(c,CMD_CALL_FULL);         
+                ...
+            } 
+     ...
+    }
+    ```
 
-<p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
+### 3.3、返回结果
+Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。
 
-<p>Redis的返回结果可以分为5类：</p>
-
-<ul>
-<li>状态回复，第一个字符是<code>“+”</code>；例如，SET命令执行完毕会向客户端返回<code>“+OK\r\n”</code>。</li>
-<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
-<li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
-<li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
-<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
-</ul>
+Redis的返回结果可以分为5类：
+- 状态回复，第一个字符是`“+”`；例如，SET命令执行完毕会向客户端返回`“+OK\r\n”`。
+- 错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回`“-ERR unknown command&#39;testcmd&#39;”`。
+- 整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 `“:100\r\n”`。
+- 批量回复，第一个字符是` &quot;$&quot;`。例如，GET命令查找键向客户端返回结果`&quot;$5\r\nhello\r\n&quot;`，其中`$5`表示返回字符串长度
+- 多条批量回复，第一个字符是`“*”`。例如，LRANGE命令可能会返回多个值，格式为`“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”`，与命令请求协议格式相同，`“*3”`表示返回值数目，`“$6”`表示当前返回值字符串长度。
+</code></pre>
 
 ]]></content>
   </entry>
@@ -3454,973 +4000,6 @@ public class DecoratorClient {
 <p><figure><img src="media/15917825462034/15919493101153.jpg" alt=""/></figure><br/>
 <figure><img src="media/15917825462034/15919493357557.jpg" alt=""/></figure><br/>
 <figure><img src="media/15917825462034/15919493571997.jpg" alt=""/></figure></p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[责任链模式]]></title>
-    <link href="http://www.throne4j.com/15917825334671.html"/>
-    <updated>2020-06-10T17:48:53+08:00</updated>
-    <id>http://www.throne4j.com/15917825334671.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">责任链模式定义</h2>
-
-<p>责任链模式是一种<strong>行为设计模式</strong>，使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系</p>
-
-<p>允许你将请求沿着处理者链进行发送。 收到请求后， 每个处理者均可对请求进行处理， 或将其传递给链上的下个处理者。</p>
-
-<p>用图例来表示的话如下图所示：<br/>
-<figure><img src="media/15917825334671/15918442545791.jpg" alt=""/></figure></p>
-
-<h2 id="toc_1">责任链模式结构</h2>
-
-<ul>
-<li><p>Handler（抽象处理者）：它定义了一个处理请求的接口，一般设计为抽象类，由于不同的具体处理者处理请求的方式不同，因此在其中定义了抽象请求处理方法。因为每一个处理者的下家还是一个处理者，因此在抽象处理者中定义了一个抽象处理者类型的对象，作为其对下家的引用。通过该引用，处理者可以连成一条链。</p></li>
-<li><p>ConcreteHandler（具体处理者）：它是抽象处理者的子类，可以处理用户请求，在具体处理者类中实现了抽象处理者中定义的抽象请求处理方法，在处理请求之前需要进行判断，看是否有相应的处理权限，如果可以处理请求就处理它，否则将请求转发给后继者；在具体处理者中可以访问链中下一个对象，以便请求的转发。</p></li>
-</ul>
-
-<p><figure><img src="media/15917825334671/15918572263532.jpg" alt=""/></figure></p>
-
-<p>纯的责任链模式：</p>
-
-<ul>
-<li>一个具体处理者对象只能在两个行为中选择一个：要么承担全部责任，要么将责任推给下家，不允许出现某一个具体处理者对象在承担了一部分或全部责任后又将责任向下传递的情况</li>
-<li>一个请求必须被某一个处理者对象所接收，不能出现某个请求未被任何一个处理者对象处理的情况</li>
-</ul>
-
-<p>不纯的责任链模式：</p>
-
-<ul>
-<li>允许某个请求被一个具体处理者部分处理后再向下传递</li>
-<li>或者一个具体处理者处理完某请求后其后继处理者可以继续处理该请求</li>
-<li>而且一个请求可以最终不被任何处理者对象所接收</li>
-</ul>
-
-<h3 id="toc_2">优缺点</h3>
-
-<ul>
-<li><p>职责链模式的主要优点</p>
-<ul>
-<li>对象仅需知道该请求会被处理即可，且链中的对象不需要知道链的结构，由客户端负责链的创建，降低了系统的耦合度</li>
-<li>请求处理对象仅需维持一个指向其后继者的引用，而不需要维持它对所有的候选处理者的引用，可简化对象的相互连接</li>
-<li>在给对象分派职责时，职责链可以给我们更多的灵活性，可以在运行时对该链进行动态的增删改，改变处理一个请求的职责</li>
-<li>新增一个新的具体请求处理者时无须修改原有代码，只需要在客户端重新建链即可，符合 &quot;开闭原则&quot;</li>
-</ul></li>
-<li><p>职责链模式的主要缺点</p>
-<ul>
-<li>一个请求可能因职责链没有被正确配置而得不到处理</li>
-<li>对于比较长的职责链，请求的处理可能涉及到多个处理对象，系统性能将受到一定影响，且不方便调试</li>
-<li>可能因为职责链创建不当，造成循环调用，导致系统陷入死循环</li>
-</ul></li>
-</ul>
-
-<h2 id="toc_3">实例代码</h2>
-
-<pre><code class="language-java">
-/**
- * 抽象处理类
- **/
-@Data
-public abstract class Handler {
-    protected String name; // 处理者姓名
-    protected Handler nextHandler;  // 下一个处理者
-
-    public Handler(String name) {
-        this.name = name;
-    }
-
-    public Handler(String name, Handler nextHandler) {
-        this.name = name;
-        this.nextHandler = nextHandler;
-    }
-
-    public abstract boolean process(LeaveRequest leaveRequest); // 处理请假
-}
-</code></pre>
-
-<pre><code class="language-java">
-/**
- * 主管处理这
- **/
-public class DirectorHandler extends Handler {
-    public DirectorHandler(String name) {
-        super(name);
-    }
-
-    public DirectorHandler(String name, Handler nextHandler) {
-        super(name, nextHandler);
-    }
-
-    @Override
-    public boolean process(LeaveRequest leaveRequest) {
-        boolean result = (new Random().nextInt(10)) &gt; 3; // 随机数大于3则为批准，否则不批准
-        String log = &quot;主管&lt;%s&gt; 审批 &lt;%s&gt; 的请假申请，请假天数： &lt;%d&gt; ，审批结果：&lt;%s&gt; &quot;;
-        System.out.println(String.format(log, this.name, leaveRequest.getName(), leaveRequest.getNumOfDays(), result ? &quot;批准&quot; : &quot;不批准&quot;));
-
-        if (!result) {  // 不批准
-            return false;
-        } else if (leaveRequest.getNumOfDays() &lt; 3) { // 批准且天数小于3，返回true
-            return true;
-        }
-        return nextHandler.process(leaveRequest);   // 批准且天数大于等于3，提交给下一个处理者处理
-    }
-}
-
-</code></pre>
-
-<pre><code class="language-java">/**
- * 经理
- **/
-public class ManagerHandler extends Handler {
-    public ManagerHandler(String name) {
-        super(name);
-    }
-
-    public ManagerHandler(String name, Handler nextHandler) {
-        super(name, nextHandler);
-    }
-
-    @Override
-    public boolean process(LeaveRequest leaveRequest) {
-        boolean result = (new Random().nextInt(10)) &gt; 3; // 随机数大于3则为批准，否则不批准
-        String log = &quot;经理&lt;%s&gt; 审批 &lt;%s&gt; 的请假申请，请假天数： &lt;%d&gt; ，审批结果：&lt;%s&gt; &quot;;
-        System.out.println(String.format(log, this.name, leaveRequest.getName(), leaveRequest.getNumOfDays(), result ? &quot;批准&quot; : &quot;不批准&quot;));
-
-        if (!result) {  // 不批准
-            return false;
-        } else if (leaveRequest.getNumOfDays() &lt; 7) { // 批准且天数小于7
-            return true;
-        }
-        return nextHandler.process(leaveRequest);   // 批准且天数大于等于7，提交给下一个处理者处理
-    }
-}
-</code></pre>
-
-<pre><code class="language-java">
-/**
- * 总经理
- **/
-public class TopManagerHandler extends Handler {
-    public TopManagerHandler(String name) {
-        super(name);
-    }
-
-    public TopManagerHandler(String name, Handler nextHandler) {
-        super(name, nextHandler);
-    }
-
-    @Override
-    public boolean process(LeaveRequest leaveRequest) {
-        boolean result = (new Random().nextInt(10)) &gt; 3; // 随机数大于3则为批准，否则不批准
-        String log = &quot;总经理&lt;%s&gt; 审批 &lt;%s&gt; 的请假申请，请假天数： &lt;%d&gt; ，审批结果：&lt;%s&gt; &quot;;
-        System.out.println(String.format(log, this.name, leaveRequest.getName(), leaveRequest.getNumOfDays(), result ? &quot;批准&quot; : &quot;不批准&quot;));
-
-        // 总经理不批准
-        return result;// 总经理最后批准
-    }
-}
-</code></pre>
-
-<pre><code class="language-java">/**
- * 请求
- **/
-@Data
-@AllArgsConstructor
-public class LeaveRequest {
-    private String name;    // 请假人姓名
-    private int numOfDays;  // 请假天数
-}
-</code></pre>
-
-<pre><code class="language-java">public class ChainClient {
-    public static void main(String[] args) {
-        Handler topManagerHandler = new TopManagerHandler(&quot;狗蛋&quot;);
-        Handler managerHandler = new ManagerHandler(&quot;饭桶&quot;, topManagerHandler);
-        Handler directorHandler = new DirectorHandler(&quot;事妈&quot;, managerHandler);
-        directorHandler.process(new LeaveRequest(&quot;窦娥&quot;, 3));
-    }
-}
-</code></pre>
-
-<h2 id="toc_4">适用场景</h2>
-
-<ul>
-<li>有多个对象可以处理同一个请求，具体哪个对象处理该请求待运行时刻再确定，客户端只需将请求提交到链上，而无须关心请求的处理对象是谁以及它是如何处理的</li>
-<li>在不明确指定接收者的情况下，向多个对象中的一个提交一个请求</li>
-<li>可动态指定一组对象处理请求，客户端可以动态创建职责链来处理请求，还可以改变链中处理者之间的先后次序</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何优雅的做数据校验-Hibernate Validator详细使用说明]]></title>
-    <link href="http://www.throne4j.com/15910938991760.html"/>
-    <updated>2020-06-02T18:31:39+08:00</updated>
-    <id>http://www.throne4j.com/15910938991760.html</id>
-    <content type="html"><![CDATA[
-<p>数据校验是在平时的编码过程中常做的工作，在系统的各个层可能都要去实现一些校验逻辑，再去做业务处理。这些繁琐的校验与我们的业务代码在一块就会显得臃肿。而且这些校验通常是业务无关的。也是在工作中使用到Hibernate Validator，但却发现有人没有使用好它（竟然还能看到一些if else的校验代码...），所以在这里决定整理下关于Hibernate Validator的使用<br/>
-Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据模型和API，Hibernate Validator是目前最好的实现，这篇主要是说Hibernate Validator的使用</p>
-
-<h2 id="toc_0">Hibernate Validator的使用</h2>
-
-<p>依赖<br/>
-如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
-
-<pre><code class="language-markup">&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre>
-
-<p>如果是Spring Mvc，那可以直接添加hibernate-validator依赖</p>
-
-<pre><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
-    &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
-    &lt;version&gt;6.0.17.Final&lt;/version&gt;
-&lt;/dependency&gt;
-</code></pre>
-
-<h2 id="toc_1">bean约束声明和验证，Validator</h2>
-
-<p>先给我们的Java对象添加约束注解</p>
-
-<pre><code class="language-java">@Data
-@AllArgsConstructor
-public class User {
-
-    private String id;
-
-    @NotBlank
-    @Size(max = 20)
-    private String name;
-
-    @NotNull
-    @Pattern(regexp = &quot;[A-Z][a-z][0-9]&quot;)
-    private String password;
-    
-    @NotNull
-    private Integer age;
-
-    @Max(10)
-    @Min(1)
-    private Integer level;
-}
-</code></pre>
-
-<p>验证实体实例需要先获取Validator实例</p>
-
-<pre><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-validator = factory.getValidator();
-</code></pre>
-
-<p>Validator接口有三个方法，可用于验证整个实体或仅验证实体的单个属性</p>
-
-<ul>
-<li>Validator#validate()                   验证所有bean的所有约束</li>
-<li>Validator#validateProperty()   验证单个属性</li>
-<li>Validator#validateValue()         检查给定类的单个属性是否可以成功验证</li>
-</ul>
-
-<pre><code class="language-java">public class UserTest {
-    private static Validator validator;
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
-    @Test
-    public void validatorTest() {
-        User user = new User(null, &quot;&quot;, &quot;!@#$&quot;, null, 11);
-
-        // 验证所有bean的所有约束
-        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations = validator.validate(user);
-        // 验证单个属性
-        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations2 = validator.validateProperty(user, &quot;name&quot;);
-        // 检查给定类的单个属性是否可以成功验证
-        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations3 = validator.validateValue(User.class, &quot;password&quot;, &quot;sa!&quot;);
-
-        constraintViolations.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-        constraintViolations2.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-        constraintViolations3.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-    }
-}
-</code></pre>
-
-<p>测试结果</p>
-
-<pre><code class="language-text">不能为空
-最大不能超过10
-需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
-不能为null
-不能为空
-需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
-</code></pre>
-
-<h2 id="toc_2">方法约束声明和验证，ExecutableValidator</h2>
-
-<p>从Bean Validation 1.1开始，约束不仅可以应用于JavaBean及其属性，而且可以应用于任何Java类型的方法和构造函数的参数和返回值，这里简单看一个例子</p>
-
-<pre><code class="language-java">public class RentalStation {
-
-    public RentalStation(@NotNull String name) {
-        //...
-    }
-
-    public void rentCar(@NotNull @Future LocalDate startDate, @Min(1) int durationInDays) {
-        //...
-    }
-
-    @NotNull
-    @Size(min = 1)
-    public List&lt;@NotNull String&gt; getCustomers() {
-        //...
-        return null;
-    }
-}
-</code></pre>
-
-<p>ExecutableValidator接口可以完成方法约束的验证</p>
-
-<pre><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-executableValidator = factory.getValidator().forExecutables();
-</code></pre>
-
-<p>该ExecutableValidator界面共有四种方法：</p>
-
-<ul>
-<li>validateParameters()和validateReturnValue()用于方法验证</li>
-<li>validateConstructorParameters()和validateConstructorReturnValue()用于构造函数验证</li>
-</ul>
-
-<pre><code class="language-java">public class RentalStationTest {
-
-    private static ExecutableValidator executableValidator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        executableValidator = factory.getValidator().forExecutables();
-    }
-
-    @Test
-    public void validatorTest() throws NoSuchMethodException {
-        RentalStation rentalStation = new RentalStation(&quot;z&quot;);
-
-        Method method = RentalStation.class.getMethod(&quot;rentCar&quot;, LocalDate.class, int.class);
-        Object[] parameterValues = {LocalDate.now().minusDays(1), 0};
-        Set&lt;ConstraintViolation&lt;RentalStation&gt;&gt; violations = executableValidator.validateParameters(
-                rentalStation, method, parameterValues);
-
-        violations.forEach(violation -&gt; System.out.println(violation.getMessage()));
-    }
-}
-</code></pre>
-
-<p>测试结果</p>
-
-<pre><code class="language-text">需要是一个将来的时间
-最小不能小于1
-</code></pre>
-
-<p>约束注解<br/>
-validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
-
-<p><strong>空与非空检查</strong></p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@Null</td>
-<td>Object</td>
-<td>为null</td>
-</tr>
-<tr>
-<td>@NotNull</td>
-<td>Object</td>
-<td>不为null</td>
-</tr>
-<tr>
-<td>@NotBlank</td>
-<td>CharSequence</td>
-<td>不为null，且必须有一个非空格字符</td>
-</tr>
-<tr>
-<td>@NotEmpty</td>
-<td>CharSequence、Collection、Map、Array</td>
-<td>不为null，且不为空（length/size&gt;0）</td>
-</tr>
-</tbody>
-</table>
-
-<p>Boolean值检查</p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@AssertTrue</td>
-<td>boolean、Boolean</td>
-<td>为true</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@AssertFalse</td>
-<td>boolean、Boolean</td>
-<td>为false</td>
-<td>为null有效</td>
-</tr>
-</tbody>
-</table>
-
-<p>日期检查</p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@Future</td>
-<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
-<td>验证日期为当前时间之后</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@FutureOrPresent</td>
-<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
-<td>验证日期为当前时间或之后</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Past</td>
-<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
-<td>验证日期为当前时间之前</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@PastOrPresent</td>
-<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
-<td>验证日期为当前时间或之前</td>
-<td>为null有效</td>
-</tr>
-</tbody>
-</table>
-
-<p>数值检查</p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@Max</td>
-<td>BigDecimal、BigInteger，byte、short、int、long以及包装类</td>
-<td>小于或等于</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Min</td>
-<td>BigDecimal、BigInteger，byte、short、int、long以及包装类</td>
-<td>大于或等于</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@DecimalMax</td>
-<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
-<td>小于或等于</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@DecimalMin</td>
-<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
-<td>大于或等于</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Negative</td>
-<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
-<td>负数</td>
-<td>为null有效，0无效</td>
-</tr>
-<tr>
-<td>@NegativeOrZero</td>
-<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
-<td>负数或零</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Positive</td>
-<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
-<td>正数</td>
-<td>为null有效，0无效</td>
-</tr>
-<tr>
-<td>@PositiveOrZero</td>
-<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
-<td>正数或零</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Digits(integer = 3, fraction = 2)</td>
-<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
-<td>整数位数和小数位数上限</td>
-<td>为null有效</td>
-</tr>
-</tbody>
-</table>
-
-<p>其他</p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@Pattern</td>
-<td>CharSequence</td>
-<td>匹配指定的正则表达式</td>
-<td>为null有效</td>
-</tr>
-<tr>
-<td>@Email</td>
-<td>CharSequence</td>
-<td>邮箱地址</td>
-<td>为null有效，默认正则 &#39;.*&#39;</td>
-</tr>
-<tr>
-<td>@Size</td>
-<td>CharSequence、Collection、Map、Array</td>
-<td>大小范围（length/size&gt;0）</td>
-<td>为null有效</td>
-</tr>
-</tbody>
-</table>
-
-<p>hibernate-validator扩展约束（部分）</p>
-
-<table>
-<thead>
-<tr>
-<th>注解</th>
-<th>支持Java类型</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>@LengthString</td>
-<td>字符串长度范围</td>
-<td></td>
-</tr>
-<tr>
-<td>@Range</td>
-<td>数值类型和String</td>
-<td>指定范围</td>
-</tr>
-<tr>
-<td>@URL</td>
-<td>URL</td>
-<td>地址验证</td>
-</tr>
-</tbody>
-</table>
-
-<p>自定义约束注解<br/>
-除了以上提供的约束注解（大部分情况都是能够满足的），我们还可以根据自己的需求自定义自己的约束注解<br/>
-定义自定义约束，有三个步骤</p>
-
-<ul>
-<li>创建约束注解</li>
-<li>实现一个验证器</li>
-<li>定义默认的错误信息<br/>
-那么下面就直接来定义一个简单的验证手机号码的注解</li>
-</ul>
-
-<pre><code class="language-java">@Documented
-@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
-@Constraint(validatedBy = {MobileValidator.class})
-@Retention(RUNTIME)
-@Repeatable(Mobile.List.class)
-public @interface Mobile {
-
-    /**
-     * 错误提示信息，可以写死,也可以填写国际化的key
-     */
-    String message() default &quot;手机号码不正确&quot;;
-
-    Class&lt;?&gt;[] groups() default {};
-    
-    Class&lt;? extends Payload&gt;[] payload() default {};
-
-    String regexp() default &quot;^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\\d{8}$&quot;;
-
-    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
-    @Retention(RUNTIME)
-    @Documented
-    @interface List {
-        Mobile[] value();
-    }
-}
-</code></pre>
-
-<p>关于注解的配置这里不说了，自定义约束需要下面3个属性</p>
-
-<ul>
-<li>message 错误提示信息，可以写死,也可以填写国际化的key</li>
-<li>groups 分组信息，允许指定此约束所属的验证组（下面会说到分组约束）</li>
-<li>payload 有效负载，可以通过payload来标记一些需要特殊处理的操作<br/>
-@Repeatable注解和List定义可以让该注解在同一个位置重复多次，通常是不同的配置（比如不同的分组和消息）<br/>
-@Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</li>
-</ul>
-
-<pre><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
-
-    /**
-     * 手机验证规则
-     */
-    private Pattern pattern;
-
-    @Override
-    public void initialize(Mobile mobile) {
-        pattern = Pattern.compile(mobile.regexp());
-    }
-
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-
-        return pattern.matcher(value).matches();
-    }
-}
-</code></pre>
-
-<p>ConstraintValidator接口定义了在实现中设置的两个类型参数。第一个指定要验证的注解类（如Mobile），第二个指定验证器可以处理的元素类型（如String）；initialize()方法可以访问约束注解的属性值；isValid()方法用于验证，返回true表示验证通过<br/>
-Bean验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释<br/>
-到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
-
-<pre><code class="language-java">public class MobileTest {
-
-    public void setMobile(@Mobile String mobile){
-        // to do
-    }
-
-    private static ExecutableValidator executableValidator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        executableValidator = factory.getValidator().forExecutables();
-    }
-
-    @Test
-    public void manufacturerIsNull() throws NoSuchMethodException {
-        MobileTest mobileTest = new MobileTest();
-
-        Method method = MobileTest.class.getMethod(&quot;setMobile&quot;, String.class);
-        Object[] parameterValues = {&quot;1111111&quot;};
-        Set&lt;ConstraintViolation&lt;MobileTest&gt;&gt; violations = executableValidator.validateParameters(
-                mobileTest, method, parameterValues);
-
-        violations.forEach(violation -&gt; System.out.println(violation.getMessage()));
-    }
-}
-</code></pre>
-
-<p>分组约束<br/>
-在上面的自定义约束中，有个groups属性是用来指定验证约束的分组，我们在为属性加上注解的时候，如果没有配置分组信息，那么默认会采用默认分组 javax.validation.groups.Default<br/>
-分组是用接口定义的，用做标识，这里创建两个标识AddGroup和UpdateGroup，分别标识新增和修改<br/>
-public interface AddGroup {<br/>
-}</p>
-
-<p>public interface UpdateGroup {<br/>
-}<br/>
-复制代码<br/>
-然后对我们的User对象的id属性做分组标识</p>
-
-<pre><code class="language-java">@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
-
-    @Null(groups = AddGroup.class)
-    @NotBlank(groups = UpdateGroup.class)
-    private String id;
-    
-    // ... 省略了其他属性
-}    
-
-我们看下如何使用
-@Test
-public void validatorGroupTest() {
-    User user = new User();
-
-    // 检查给定类的单个属性是否可以成功验证
-    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;, UpdateGroup.class);
-    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations2 = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;);
-    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations3 = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;, AddGroup.class);
-
-    constraintViolations.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-    constraintViolations2.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-    constraintViolations3.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
-}
-</code></pre>
-
-<p>上面的测试只有加了UpdateGroug分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
-
-<pre><code class="language-java">public interface AddGroup extends Default {
-}
-</code></pre>
-
-<p>在Spring中使用Hibernate Validator<br/>
-上面介绍了Validator的一些使用，还有注解的介绍，那么在Spring中我们怎么去使用Hibernate Validator做验证呢？或者说再Web项目中怎么使用Hibernate Validator？<br/>
-spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的<br/>
-配置Validator</p>
-
-<pre><code class="language-java">@Configuration
-public class ValidatorConfig {
-
-    /**
-     * 配置验证器
-     *
-     * @return validator
-     */
-    @Bean
-    public Validator validator() {
-        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
-                .configure()
-                // 快速失败模式
-                .failFast(true)
-                // .addProperty( &quot;hibernate.validator.fail_fast&quot;, &quot;true&quot; )
-                .buildValidatorFactory();
-        return validatorFactory.getValidator();
-    }
-}
-</code></pre>
-
-<p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息<br/>
-如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
-
-<pre><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
-
-&lt;!-- validator基本配置 --&gt;
-&lt;bean id=&quot;validator&quot; class=&quot;org.springframework.validation.beanvalidation.LocalValidatorFactoryBean&quot;&gt;
-    &lt;property name=&quot;providerClass&quot; value=&quot;org.hibernate.validator.HibernateValidator&quot;/&gt;
-    &lt;!-- 映射资源文件 --&gt;
-    &lt;property name=&quot;validationMessageSource&quot; ref=&quot;messageSource&quot;/&gt;
-&lt;/bean&gt;
-
-&lt;bean id=&quot;messageSource&quot; class=&quot;org.springframework.context.support.ReloadableResourceBundleMessageSource&quot; name=&quot;messageSource&quot;&gt;
-    &lt;!--&lt;property name=&quot;basenames&quot;&gt;
-                &lt;list&gt;
-                    &lt;value&gt;classpath:messages/messages&lt;/value&gt;
-                    &lt;value&gt;classpath:messages/ValidationMessages&lt;/value&gt;
-                &lt;/list&gt;
-            &lt;/property&gt;--&gt;
-    &lt;property name=&quot;useCodeAsDefaultMessage&quot; value=&quot;false&quot; /&gt;
-    &lt;property name=&quot;defaultEncoding&quot; value=&quot;UTF-8&quot; /&gt;
-    &lt;property name=&quot;cacheSeconds&quot; value=&quot;60&quot; /&gt;
-&lt;/bean&gt;
-</code></pre>
-
-<p>请求参数bean验证<br/>
-接口上的Bean验证，需要在参数前加上@Valid或Spring的 @Validated注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出BindException异常，并变成400（BAD_REQUEST）响应；或者可以通过Errors或BindingResult参数在控制器内本地处理验证错误。另外，如果参数前有@RequestBody注解，验证错误会抛出MethodArgumentNotValidException异常。</p>
-
-<pre><code class="language-java">
-@RestController
-public class UserController {
-
-    @PostMapping(&quot;/user&quot;)
-    public R handle(@Valid @RequestBody User user, BindingResult result) {
-        // 在控制器内本地处理验证错误
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(s -&gt; System.out.println(s.getDefaultMessage()));
-             return R.fail(result.getAllErrors().get(0).getDefaultMessage());
-        }
-        // ...
-        return R.success();
-    }
-
-    @PostMapping(&quot;/user2&quot;)
-    public R handle2(@Valid User user, BindingResult result) {
-        // 在控制器内本地处理验证错误
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(s -&gt; System.out.println(s.getDefaultMessage()));
-             return R.fail(result.getAllErrors().get(0).getDefaultMessage());
-        }
-        // ...
-        return R.success();
-    }
-
-    /**
-     * 验证不通过抛出 `MethodArgumentNotValidException`
-     */
-    @PostMapping(&quot;/user3&quot;)
-    public R handle3(@Valid @RequestBody User user) {
-        // ...
-        return R.success();
-    }
-
-    /**
-     * 验证不通过抛出 `BindException`
-     */
-    @PostMapping(&quot;/user4&quot;)
-    public R handle4(@Valid User user) {
-        // ...
-        return R.success();
-    }
-}
-</code></pre>
-
-<p>配合Spring的BindingResult参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
-
-<pre><code class="language-java">@Slf4j
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    /**
-     * hibernate validator 数据绑定验证异常拦截
-     *
-     * @param e 绑定验证异常
-     * @return 错误返回消息
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BindException.class)
-    public R validateErrorHandler(BindException e) {
-        ObjectError error = e.getAllErrors().get(0);
-        log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
-        return R.fail(error.getDefaultMessage());
-    }
-
-    /**
-     * hibernate validator 数据绑定验证异常拦截
-     *
-     * @param e 绑定验证异常
-     * @return 错误返回消息
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public R validateErrorHandler(MethodArgumentNotValidException e) {
-        ObjectError error = e.getBindingResult().getAllErrors().get(0);
-        log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
-        return R.fail(error.getDefaultMessage());
-    }
-}    
-</code></pre>
-
-<p>方法参数验证<br/>
-配置</p>
-
-<p>Hibernate Validator是可以在方法级验证参数的，Spring中当然也是有实现的。<br/>
-我们在Validator的配置中，添加MethodValidationPostProcessorBean，在上面的ValidatorConfig.java中添加一下配置</p>
-
-<pre><code class="language-java">/**
- * 设置方法参数验证器
- */
-@Bean
-public MethodValidationPostProcessor methodValidationPostProcessor() {
-    MethodValidationPostProcessor postProcessor = new MethodValidationPostProcessor();
-    // 设置validator模式为快速失败返回
-    postProcessor.setValidator(validator());
-    return postProcessor;
-}
-</code></pre>
-
-<p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller里面是无效的</p>
-
-<pre><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
-&lt;bean id=&quot;methodValidationPostProcessor&quot; class=&quot;org.springframework.validation.beanvalidation.MethodValidationPostProcessor&quot;&gt;
-    &lt;property name=&quot;validator&quot; ref=&quot;validator&quot;/&gt;
-&lt;/bean&gt;
-</code></pre>
-
-<p>使用</p>
-
-<p>配置了上面的MethodValidationPostProcessor，我们就可以在方法参数或返回值使用约束注解了，要注意的是，在要使用参数验证的类上一定要加上@Validated注解，否则无效</p>
-
-<pre><code class="language-java">/**
- * 一定要加上 `@Validated` 注解
- */
-@Validated
-@RestController
-public class UserController {
-
-    @GetMapping(&quot;/user&quot;)
-    public R handle(@Mobile String mobile) {
-        // ...
-        return R.success();
-    }
-}
-</code></pre>
-
-<p>如果验证不通过，会抛出ConstraintViolationException异常，同样的，我们可以在全局的异常处理器里面处理验证错误，在GlobalExceptionHandler中添加一下代码</p>
-
-<pre><code class="language-java">/**
- * spring validator 方法参数验证异常拦截
- *
- * @param e 绑定验证异常
- * @return 错误返回消息
- */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-@ExceptionHandler(ConstraintViolationException.class)
-public R defaultErrorHandler(ConstraintViolationException e) {
-    Set&lt;ConstraintViolation&lt;?&gt;&gt; violations = e.getConstraintViolations();
-    ConstraintViolation&lt;?&gt; violation = violations.iterator().next();
-    log.info(&quot;数据验证异常：{}&quot;, violation.getMessage());
-    return R.fail(violation.getMessage());
-}
-</code></pre>
-
-<p>分组<br/>
-Spring的@Validate注解是可以支持分组验证的</p>
-
-<pre><code class="language-java">@PostMapping(&quot;/user&quot;)
-public R handle(@Validated(AddGroup.class) @RequestBody User user) {
-    // ...
-    return R.success();
-}
-</code></pre>
 
 ]]></content>
   </entry>

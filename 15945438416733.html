@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    十、主从复制 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            十、主从复制   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/07/12</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>Redis 支持主从复制功能，用户可以通过执行slaveof 命令或者在配置文件中设置slaveof选项来开启复制功能。例如</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt;slaveof 127.0.0.1  7000
+OK
+</code></pre>
+
+<p>服务器127.0.0.1:6379 会成为服务器127.0.0.1:7000的从服务器(slaver)，127.0.0.1:7000 是主服务器(master),通过复制功能，从服务器127.0.0.1:6379的数据可以和主服务器127.0.0.1:7000的数据保持同步。</p>
+
+<p>用户可以通过执行 slaveof  no one取消复制功能，此时主从服务器之间会断开连接，从服务器成为普通的Redis实例。</p>
+
+<h2 id="toc_0">1、主从复制功能实现</h2>
+
+<p>主从复制功能主要有以下两点作用</p>
+
+<ul>
+<li>读写分离，单台服务器能支撑的QPS是有上限的，我们可以部署一台主服务器、多台从服务器，主服务器只处理写请求，从服务器通过复制功能同步主服务器数据，只处理读请求，以此提升Redis 服务能力；另外我们还可以通过复制功能来让主服务器免于执行持久化操作：只要关闭主服务器的持久化功能，然后由从服务器去执行持久化操作即可。</li>
+<li>数据容灾，任何服务器都有宕机的可能，我们同样可以通过主从复制功能提升Redis服务的可靠性；由于从服务器与主服务器数据保持同步，一旦主服务器宕机，可以立即将请求切换到从服务器，从而避免Redis服务中断。</li>
+</ul>
+
+<h3 id="toc_1">1.1、 老版Redis复制功能</h3>
+
+<p>在redis 2.8之前的版本中实现主从复制功能分为同步(sync)和命令传播(command propagate)两个操作</p>
+
+<ul>
+<li>同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态。</li>
+<li>命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态。</li>
+</ul>
+
+<p>slaveof命令流程如下图所示：<br/>
+<figure><img src="media/15945438416733/15947441756075.jpg" alt="" style="width:729px;"/></figure></p>
+
+<p>此版本的slavof复制功能缺陷：</p>
+
+<ul>
+<li>初次复制: 从服务器以前没有复制过任何主服务器, 或者从服务器当前要复制的主服务器和上一次复制的主服务器不同。</li>
+<li>断线后重复制: 处于命令传播阶段的主从服务器因为网络原因而中断了复制,但从服务器通过自动重连接重新连上了主服务器,并继续复制主服务器。<br/>
+对于中断后重复制，假如在断开连接之前从服务已经复制了主服务器大部分数据，但是由于中断，在从服务器重新连接上主服务器之后，会重新发送sync命令，生成并发送RDB文件（包含从服务器已经复制过的那部分数据），但是这种续传的方式并不是必须得这样，对于从服务器已经复制过的数据，完全没必要再传输一遍。因此这种方式是比较效率的复制方式。</li>
+</ul>
+
+<p><strong>每次执行SYNC命令的耗时操作</strong>：<br/>
+1)主服务器需要执行 BGSAVE命令来生成RDB文件,这个生成操作会耗费主服务器大量的CPU、内存和融盘IO资源。<br/>
+2)主服务器需要将自已生成的RDB文件发送给从服务器,这个发送操作会耗费主从服务器大量的网络资源(带宽和流量),并对主服务器响应命令请求的时间产生彩响。<br/>
+3)接收到RDB文件的从服务器需要載入主服务器发来的RDB文件,并且在載入期间,从服务器会因为阻塞而没办法处理命令请求。</p>
+
+<p>因为SYVC命令是一个如此耗费资源的操作,所以 Redis有必要保证在真正有需要时才执行SYNC命令。</p>
+
+<h3 id="toc_2">1.2、新版的复制功能</h3>
+
+<p>为了解决老版本的效率低下问题，新版复制功能使用PSYNC命令代替SYNC命令来执行复制时的同步操作。</p>
+
+<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步( partial resynchronization 两种模式:</p>
+
+<ul>
+<li>完整重同步用于处理初次复制情况: 完整重同步的执行步骤和SYNC命令的执行步骤基本一样, 它们都是通过让主服务器创建并发送RDB文件,以及向从服务器发送保存在缓冲区里面的写命令来进行同步。</li>
+<li>部分重同步则用于处理断线后重复制情况:  当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将主从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据库更新至主服务器当前所处的状态。</li>
+</ul>
+
+<p>新版slaveof命令流程如下图所示：<br/>
+<figure><img src="media/15945438416733/15947488155003.jpg" alt="" style="width:833px;"/></figure></p>
+
+<p>部分重同步功能由以下三个部分构成: </p>
+
+<ul>
+<li>主服务器的复制偏移量( replication offset)和从服务器的复制偏移量。</li>
+<li>主服务器的复制积压缓冲区( replication backlog) </li>
+<li>服务器的运行ID( run ID)。</li>
+</ul>
+
+<h4 id="toc_3">1.2.1、复制偏移量</h4>
+
+<p>执行复制的双方 主服务器和从服务器会分别维护一个复制偏移量:</p>
+
+<ul>
+<li>主服务器每次向从服务器传播N个字节的数据时,就将自己的复制偏移量的值加上N。</li>
+<li>从服务器每次收到主服务器传播来的N 个字节的数据时,就将自已的复制偏移量的值加上N。</li>
+</ul>
+
+<p>通过对比主从服务器的复制偏移量,程序可以很容易地知道主从服务器是否处于一致状态:</p>
+
+<ul>
+<li>如果主从服务器处于一致状态,那么主从服务器两者的偏移量总是相同的。</li>
+<li>相反,如果主从服务器两者的偏移量并不相同,那么说明主从服务器并未处于一致状态。</li>
+</ul>
+
+<p>问：如果主服务器向从服务器复制的时候，从服务器掉线后就立即重新连接主服务器,并且成功,那么接下来,从服务器将向主服务器发送 PSYNC命令,报告从服务器当前的复制偏移量为offset, 那么这时, 主服务器应该对从服务器执行完整重同步还是部分重同步呢? </p>
+
+<p>答： 和复制缓冲区有关。</p>
+
+<h4 id="toc_4">1.2.2、复制缓冲区</h4>
+
+<p>复制缓冲区是有主服务器维护的一个固定长度的先进先出的队列。当主服务器进行命令传播的时候，它不仅会将写命令发送给所有的从服务器，还会将写命令入队复制缓冲区。因此主服务器的复制缓冲区会保存一部分最近传播的写命令，并且复制缓冲区会为队列中的每个字节记录相应的复制偏移量。</p>
+
+<p>当从服务器重新连上主服务器时,从服务器会通过PSYC命令将自己的复制偏移量offset发送给主服务器,主服务器会根据这个复制偏移量来决定对从服务器执行何种同步操作:</p>
+
+<ul>
+<li>如果offset偏移量之后的数据(也即是偏移量。 offset+1开始的数据)仍然存在于复制积压缓冲区里面,那么主服务器将对从服务器执行部分重同步操作。</li>
+<li>相反,如果 offset偏移量之后的数据已经不存在于复制积压缓冲区,那么主服务器将对从服务器执行完整重同步操作。</li>
+</ul>
+
+<p><strong>注意：</strong> 正确估算和设置复制缓冲区的大小非常重要。如果主服务器需要执行大量写命令，或者主从服务器断线很长时间后重新连接，复制缓冲区的大小不合理的话，可能导致psync命令的复制重同步模式不能正常发挥作用。</p>
+
+<p>复制缓冲区的大小可根据 公式：断线到重连的平均时间秒数 * 主服务器每秒产生的写命令数据量，为了安全起见可以double 一下这个结果值。</p>
+
+<h4 id="toc_5">1.2.3、 服务器的运行ID</h4>
+
+<p>每台Redis服务器都有一个运行ID，从服务器每次发送psync请求同步数据时，会携带自己需要同步主服务器的运行ID。主服务器接收到psync命令时，需要判断命令参数运行ID与自己的运行ID是否相等，只有相等才有可能执行部分重同步。而当从服务器首次请求主服务器同步数据时，从服务器显然是不知道主服务器的运行ID，此时运行ID以“？”填充，同时复制偏移量初始化为-1。</p>
+
+<h3 id="toc_6">1.3、新版复制同步机制的生产问题</h3>
+
+<p>当在生产环境中，经常会发生如下情况</p>
+
+<ul>
+<li>从服务器重启，复制信息丢失</li>
+<li>主服务器故障导致主从切换(从多台 从服务器中选举出一台作为主服务器，此时，主服务器的运行ID发生变化)<br/>
+这时候显然是无法执行部分重同步的，而这两种情况又很常见，因此Redis 4.0针对主从复制又提出了psync2协议，使得主服务器故障导致主从切换后，依然有可能执行部分重同步。而这时候当主服务器接收到psync命令时，向客户端回复的是“+CONTINUE<new_repl_id>”。参数“psync2”表明从服务器支持psync2协议。。</li>
+</ul>
+
+<h4 id="toc_7">方案一： 持久化主从复制信息</h4>
+
+<p>Redis服务器关闭时，将主从复制信息（复制的主服务器RUN_ID 与复制偏移量）作为辅助字段存储在RDB文件中；Redis服务器启动加载RDB文件时，恢复主从复制信息，重新同步主服务器时携带。</p>
+
+<h4 id="toc_8">方案二： 存储上一个主服务器复制信息</h4>
+
+<p>当主服务器发生故障的时候，从服务器成为新的主服务器时，便使用前一个主服务器的运行ID和复制偏移量。</p>
+
+<p>代码如下所示:</p>
+
+<pre><code class="language-c">char replid2[CONFIG_RUN_ID_SIZE+1];
+long long second_replid_offset;
+</code></pre>
+
+<p>假设m为主服务器（运行ID为M_ID），A、B和C为三个从服务器；某一时刻主服务器m发生故障，从服务器A升级为主服务器（同时会记录replid2=M_ID），从服务器B和C重新向主服务器A发送“psync M_ID psync_offset”请求；显然根据上面条件，只要psync_offset满足条件，就可以执行部分重同步。</p>
+
+<h3 id="toc_9">主从复制的其它问题</h3>
+
+<p>主服务器和从服务器之间是通过TCP长连接交互数据的，就必然需要周期性地发送心跳包来检测连接有效性，该字段表示发送心跳包的周期，主服务器以此周期向所有从服务器发送心跳包。可通过配置参数repl-ping-replica-period或者repl-ping- slave-period设置，默认为10。</p>
+
+<p>发送心跳检测从服务器是否有效，那么每次检测多长时间内从服务器没响应则判定从服务器失效呢？</p>
+
+<p>主服务器会记录每个从服务器上次心跳检测成功的时间repl_ack_time，并且定时检测当前时间距离repl_ack_time是否超过一定超时门限，如果超过则认为从服务器处于失效状态。字段repl_min_slaves_max_lag存储的就是该超时门限，可通过配置参数min-slaves-max-lag或者min- replicas-max-lag设置该超时阈值，默认为10，单位秒。</p>
+
+<p>repl_min_slaves_to_write表示当有效从服务器的数目小于该值时，主服务器会拒绝执行写命令。</p>
+
+<p>当主服务器配置了“requirepass password”时，即表示从服务器必须通过密码认证才能同步主服务器数据。同样的需要在从服务器配置“masterauth<master-password>”，用于设置请求同步主服务器时的认证密码。</p>
+
+<p>当主从服务器断开连接时，通过配置参数slave-serve-stale-data 或者replica-serve-stale-data设置，默认为1，设置从服务器是否继续处理命令请求。</p>
+
+<p>可通过配置参数slave-read-only或者replica-read-only设置，默认为1，设置从服务器是否可以处理写命令请求，默认是从服务器是只读的，除非该命令是主服务器发送过来的。</p>
+
+<p>复制缓冲区，用于缓存主服务器已执行且待发送给从服务器的命令请求；缓冲区大小由字段repl_backlog_size指定，其可通过配置参数repl-backlog-size设置，默认为1MB。</p>
+
+<p>从服务器通过时间事件处理函数 serverCron，以一秒为周期执行主从复制操作。在时间事件处理是，从服务器想主服务器发起连接请求，成功连接之后，创建对应的文件事件。此外事件事件还用于检测主从连接是否超时，定时向服务器发送心跳包，定时报告自己的复制偏移量等。</p>
+
+<p>用户可通过参数repl-timeout 配置，默认为60，单位秒，超过此时间则认为主从服务器之间的连接出现故障，从服务器会主动断开连接。</p>
+
+<p>当从服务器接收到slaveof命令时，会主动连接主服务器请求同步数据，这并不是一蹴而就的，需要若干个步骤交互：<br/>
+1）连接Socket；<br/>
+2）发送PING请求包确认连接是否正确；<br/>
+3）发起密码认证（如果需要）；<br/>
+4）信息同步；<br/>
+5）发送PSYNC命令；<br/>
+6）接收RDB文件并载入；<br/>
+7）连接建立完成，等待主服务器同步命令请求。</p>
+
+<p>当从服务器支持eof 功能时 主服务器可以直接将数据库中数据以RDB协议格式通过socket发送给从服务器，免去了本地磁盘文件不必要的读写操作；</p>
+
+<p>通过配置参数repl-diskless-sync进行设置完整同步是生成RDB文件持久化到磁盘发送还是直接通过socket进行发送，默认为0；即默认情况下，主服务器都是先持久化数据到本地文件，再将该文件发送给从服务器。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>
