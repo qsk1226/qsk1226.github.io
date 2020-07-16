@@ -1,964 +1,382 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    大爷来玩儿啊~
     
-  大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15949034079714.html">
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>虚拟机栈</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>线程栈大小 -Xss 默认1M </p>
-
-<p>jdk 提供 javap 解析class文件 </p>
-
-<p>不考虑cpu轮转与多线程，最古老的单核cpu也必须去取指令才知道下一步进行什么操作，程序计数器就是告诉cpu下一步执行什么指令，感觉跟多核多线程没关系，是基于计算机最基本的运作原理</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/16</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15948275035029.html">
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
                 
-                  <h1>十一、哨兵与集群</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>哨兵是Redis的高可用方案，可以在Redis Master发生故障时自动选择一个Redis Slave切换为Master，继续对外提供服务。</p>
-
-<p>集群提供数据自动分片到不同节点的功能，并且当部分节点失效后仍然可以使用。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/15</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15945438416733.html">
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
                 
-                  <h1>十、主从复制</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Redis 支持主从复制功能，用户可以通过执行slaveof 命令或者在配置文件中设置slaveof选项来开启复制功能。例如</p>
 
-<pre><code class="language-shell">127.0.0.1:6379&gt;slaveof 127.0.0.1  7000
-OK
-</code></pre>
-
-<p>服务器127.0.0.1:6379 会成为服务器127.0.0.1:7000的从服务器(slaver)，127.0.0.1:7000 是主服务器(master),通过复制功能，从服务器127.0.0.1:6379的数据可以和主服务器127.0.0.1:7000的数据保持同步。</p>
-
-<p>用户可以通过执行 slaveof  no one取消复制功能，此时主从服务器之间会断开连接，从服务器成为普通的Redis实例。</p>
-
-<h2 id="toc_0">1、主从复制功能实现</h2>
-
-<p>主从复制功能主要有以下两点作用</p>
-
-<ul>
-<li>读写分离，单台服务器能支撑的QPS是有上限的，我们可以部署一台主服务器、多台从服务器，主服务器只处理写请求，从服务器通过复制功能同步主服务器数据，只处理读请求，以此提升Redis 服务能力；另外我们还可以通过复制功能来让主服务器免于执行持久化操作：只要关闭主服务器的持久化功能，然后由从服务器去执行持久化操作即可。</li>
-<li>数据容灾，任何服务器都有宕机的可能，我们同样可以通过主从复制功能提升Redis服务的可靠性；由于从服务器与主服务器数据保持同步，一旦主服务器宕机，可以立即将请求切换到从服务器，从而避免Redis服务中断。</li>
-</ul>
-
-<h3 id="toc_1">1.1、 老版Redis复制功能</h3>
-
-<p>在redis 2.8之前的版本中实现主从复制功能分为同步(sync)和命令传播(command propagate)两个操作</p>
-
-<ul>
-<li>同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态。</li>
-<li>命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态。</li>
-</ul>
-
-<p>slaveof命令流程如下图所示：<br/>
-<figure><img src="media/15945438416733/15947441756075.jpg" alt="" style="width:729px;"/></figure></p>
-
-<p>此版本的slavof复制功能缺陷：</p>
-
-<ul>
-<li>初次复制: 从服务器以前没有复制过任何主服务器, 或者从服务器当前要复制的主服务器和上一次复制的主服务器不同。</li>
-<li>断线后重复制: 处于命令传播阶段的主从服务器因为网络原因而中断了复制,但从服务器通过自动重连接重新连上了主服务器,并继续复制主服务器。<br/>
-对于中断后重复制，假如在断开连接之前从服务已经复制了主服务器大部分数据，但是由于中断，在从服务器重新连接上主服务器之后，会重新发送sync命令，生成并发送RDB文件（包含从服务器已经复制过的那部分数据），但是这种续传的方式并不是必须得这样，对于从服务器已经复制过的数据，完全没必要再传输一遍。因此这种方式是比较效率的复制方式。</li>
-</ul>
-
-<p><strong>每次执行SYNC命令的耗时操作</strong>：<br/>
-1)主服务器需要执行 BGSAVE命令来生成RDB文件,这个生成操作会耗费主服务器大量的CPU、内存和融盘IO资源。<br/>
-2)主服务器需要将自已生成的RDB文件发送给从服务器,这个发送操作会耗费主从服务器大量的网络资源(带宽和流量),并对主服务器响应命令请求的时间产生彩响。<br/>
-3)接收到RDB文件的从服务器需要載入主服务器发来的RDB文件,并且在載入期间,从服务器会因为阻塞而没办法处理命令请求。</p>
-
-<p>因为SYVC命令是一个如此耗费资源的操作,所以 Redis有必要保证在真正有需要时才执行SYNC命令。</p>
-
-<h3 id="toc_2">1.2、新版的复制功能</h3>
-
-<p>为了解决老版本的效率低下问题，新版复制功能使用PSYNC命令代替SYNC命令来执行复制时的同步操作。</p>
-
-<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步( partial resynchronization 两种模式:</p>
-
-<ul>
-<li>完整重同步用于处理初次复制情况: 完整重同步的执行步骤和SYNC命令的执行步骤基本一样, 它们都是通过让主服务器创建并发送RDB文件,以及向从服务器发送保存在缓冲区里面的写命令来进行同步。</li>
-<li>部分重同步则用于处理断线后重复制情况:  当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将主从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据库更新至主服务器当前所处的状态。</li>
-</ul>
-
-<p>新版slaveof命令流程如下图所示：<br/>
-<figure><img src="media/15945438416733/15947488155003.jpg" alt="" style="width:833px;"/></figure></p>
-
-<p>部分重同步功能由以下三个部分构成: </p>
-
-<ul>
-<li>主服务器的复制偏移量( replication offset)和从服务器的复制偏移量。</li>
-<li>主服务器的复制积压缓冲区( replication backlog) </li>
-<li>服务器的运行ID( run ID)。</li>
-</ul>
-
-<h4 id="toc_3">1.2.1、复制偏移量</h4>
-
-<p>执行复制的双方 主服务器和从服务器会分别维护一个复制偏移量:</p>
-
-<ul>
-<li>主服务器每次向从服务器传播N个字节的数据时,就将自己的复制偏移量的值加上N。</li>
-<li>从服务器每次收到主服务器传播来的N 个字节的数据时,就将自已的复制偏移量的值加上N。</li>
-</ul>
-
-<p>通过对比主从服务器的复制偏移量,程序可以很容易地知道主从服务器是否处于一致状态:</p>
-
-<ul>
-<li>如果主从服务器处于一致状态,那么主从服务器两者的偏移量总是相同的。</li>
-<li>相反,如果主从服务器两者的偏移量并不相同,那么说明主从服务器并未处于一致状态。</li>
-</ul>
-
-<p>问：如果主服务器向从服务器复制的时候，从服务器掉线后就立即重新连接主服务器,并且成功,那么接下来,从服务器将向主服务器发送 PSYNC命令,报告从服务器当前的复制偏移量为offset, 那么这时, 主服务器应该对从服务器执行完整重同步还是部分重同步呢? </p>
-
-<p>答： 和复制缓冲区有关。</p>
-
-<h4 id="toc_4">1.2.2、复制缓冲区</h4>
-
-<p>复制缓冲区是有主服务器维护的一个固定长度的先进先出的队列。当主服务器进行命令传播的时候，它不仅会将写命令发送给所有的从服务器，还会将写命令入队复制缓冲区。因此主服务器的复制缓冲区会保存一部分最近传播的写命令，并且复制缓冲区会为队列中的每个字节记录相应的复制偏移量。</p>
-
-<p>当从服务器重新连上主服务器时,从服务器会通过PSYC命令将自己的复制偏移量offset发送给主服务器,主服务器会根据这个复制偏移量来决定对从服务器执行何种同步操作:</p>
-
-<ul>
-<li>如果offset偏移量之后的数据(也即是偏移量。 offset+1开始的数据)仍然存在于复制积压缓冲区里面,那么主服务器将对从服务器执行部分重同步操作。</li>
-<li>相反,如果 offset偏移量之后的数据已经不存在于复制积压缓冲区,那么主服务器将对从服务器执行完整重同步操作。</li>
-</ul>
-
-<p><strong>注意：</strong> 正确估算和设置复制缓冲区的大小非常重要。如果主服务器需要执行大量写命令，或者主从服务器断线很长时间后重新连接，复制缓冲区的大小不合理的话，可能导致psync命令的复制重同步模式不能正常发挥作用。</p>
-
-<p>复制缓冲区的大小可根据 公式：断线到重连的平均时间秒数 * 主服务器每秒产生的写命令数据量，为了安全起见可以double 一下这个结果值。</p>
-
-<h4 id="toc_5">1.2.3、 服务器的运行ID</h4>
-
-<p>每台Redis服务器都有一个运行ID，从服务器每次发送psync请求同步数据时，会携带自己需要同步主服务器的运行ID。主服务器接收到psync命令时，需要判断命令参数运行ID与自己的运行ID是否相等，只有相等才有可能执行部分重同步。而当从服务器首次请求主服务器同步数据时，从服务器显然是不知道主服务器的运行ID，此时运行ID以“？”填充，同时复制偏移量初始化为-1。</p>
-
-<h3 id="toc_6">1.3、新版复制同步机制的生产问题</h3>
-
-<p>当在生产环境中，经常会发生如下情况</p>
-
-<ul>
-<li>从服务器重启，复制信息丢失</li>
-<li>主服务器故障导致主从切换(从多台 从服务器中选举出一台作为主服务器，此时，主服务器的运行ID发生变化)<br/>
-这时候显然是无法执行部分重同步的，而这两种情况又很常见，因此Redis 4.0针对主从复制又提出了psync2协议，使得主服务器故障导致主从切换后，依然有可能执行部分重同步。而这时候当主服务器接收到psync命令时，向客户端回复的是“+CONTINUE<new_repl_id>”。参数“psync2”表明从服务器支持psync2协议。。</li>
-</ul>
-
-<h4 id="toc_7">方案一： 持久化主从复制信息</h4>
-
-<p>Redis服务器关闭时，将主从复制信息（复制的主服务器RUN_ID 与复制偏移量）作为辅助字段存储在RDB文件中；Redis服务器启动加载RDB文件时，恢复主从复制信息，重新同步主服务器时携带。</p>
-
-<h4 id="toc_8">方案二： 存储上一个主服务器复制信息</h4>
-
-<p>当主服务器发生故障的时候，从服务器成为新的主服务器时，便使用前一个主服务器的运行ID和复制偏移量。</p>
-
-<p>代码如下所示:</p>
-
-<pre><code class="language-c">char replid2[CONFIG_RUN_ID_SIZE+1];
-long long second_replid_offset;
-</code></pre>
-
-<p>假设m为主服务器（运行ID为M_ID），A、B和C为三个从服务器；某一时刻主服务器m发生故障，从服务器A升级为主服务器（同时会记录replid2=M_ID），从服务器B和C重新向主服务器A发送“psync M_ID psync_offset”请求；显然根据上面条件，只要psync_offset满足条件，就可以执行部分重同步。</p>
-
-<h3 id="toc_9">主从复制的其它问题</h3>
-
-<ul>
-<li>心跳检测<br/>
-主服务器和从服务器之间是通过TCP长连接交互数据的，就必然需要周期性地发送心跳包来检测连接有效性，该字段表示发送心跳包的周期，主服务器以此周期向所有从服务器发送心跳包。可通过配置参数repl-ping-replica-period或者repl-ping- slave-period设置，默认为10。</li>
-</ul>
-
-<p>发送心跳检测从服务器是否有效，那么每次检测多长时间后判定从服务器失效呢？</p>
-
-<p>主服务器会记录每个从服务器上次心跳检测成功的时间repl_ack_time，并且定时检测当前时间距离repl_ack_time是否超过一定超时门限，如果超过则认为从服务器处于失效状态。字段repl_min_slaves_max_lag存储的就是该超时门限，可通过配置参数min-slaves-max-lag或者min- replicas-max-lag设置该超时阈值，默认为10，单位秒。</p>
-
-<p>repl_min_slaves_to_write表示当有效从服务器的数目小于该值时，主服务器会拒绝执行写命令。</p>
-
-<p>当主服务器配置了“requirepass password”时，即表示从服务器必须通过密码认证才能同步主服务器数据。同样的需要在从服务器配置“masterauth<master-password>”，用于设置请求同步主服务器时的认证密码。</p>
-
-<p>当主从服务器断开连接时，通过配置参数slave-serve-stale-data 或者replica-serve-stale-data设置，默认为1，设置从服务器是否继续处理命令请求。</p>
-
-<p>可通过配置参数slave-read-only或者replica-read-only设置，默认为1，设置从服务器是否可以处理写命令请求，默认是从服务器是只读的，除非该命令是主服务器发送过来的。</p>
-
-<p>复制缓冲区，用于缓存主服务器已执行且待发送给从服务器的命令请求；缓冲区大小由字段repl_backlog_size指定，其可通过配置参数repl-backlog-size设置，默认为1MB。</p>
-
-<p>从服务器通过时间事件处理函数 serverCron，以一秒为周期执行主从复制操作。在时间事件处理是，从服务器想主服务器发起连接请求，成功连接之后，创建对应的文件事件。此外事件事件还用于检测主从连接是否超时，定时向服务器发送心跳包，定时报告自己的复制偏移量等。</p>
-
-<p>用户可通过参数repl-timeout 配置，默认为60，单位秒，超过此时间则认为主从服务器之间的连接出现故障，从服务器会主动断开连接。</p>
-
-<p>当从服务器接收到slaveof命令时，会主动连接主服务器请求同步数据，这并不是一蹴而就的，需要若干个步骤交互：</p>
-
-<ul>
-<li>设置主服务器的地址和端口号</li>
-<li>连接Socket；</li>
-<li>发送PING请求包确认连接是否正确；</li>
-<li>发起密码认证（如果需要，通过 masterauth  <master-pwd>进行验证）；</li>
-<li>信息同步；</li>
-<li>发送PSYNC命令；</li>
-<li>接收RDB文件并载入；</li>
-<li>连接建立完成，等待主服务器同步命令请求。</li>
-</ul>
-
-<p>当从服务器支持eof 功能时 主服务器可以直接将数据库中数据以RDB协议格式通过socket发送给从服务器，免去了本地磁盘文件不必要的读写操作；</p>
-
-<p>通过配置参数repl-diskless-sync进行设置完整同步是生成RDB文件持久化到磁盘发送还是直接通过socket进行发送，默认为0；即默认情况下，主服务器都是先持久化数据到本地文件，再将该文件发送给从服务器。</p>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/12</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15943917797824.html">
-                
-                  <h1>九、Redis 持久化--AOF（二）</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>AOF是Redis的另外一种持久化方式。简单来说，AOF就是将Redis服务端执行过的每一条命令都保存到一个文件，这样当Redis重启时只要按顺序回放这些命令就会恢复到原始状态。</p>
-
-<hr/>
-
-<p><strong>问</strong>：既然已经有了RDB为什么还需要AOF呢？</p>
-
-<p>答：RDB保存的是一个时间点的快照，那么如果Redis出现了故障，丢失的就是从最后一次RDB执行的时间点到故障发生的时间间隔之内产生的数据。如果Redis数据量很大，QPS很高，那么执行一次RDB需要的时间会相应增加，发生故障时丢失的数据也会增多。</p>
-
-<p>而AOF保存的是一条条命令，理论上可以做到发生故障时只丢失一条命令。但由于操作系统中执行写文件操作代价很大，Redis提供了配置参数，通过对安全性和性能的折中，我们可以设置不同的策略。</p>
-
-<hr/>
-
-<p><strong>问</strong>：既然AOF数据安全性更高，是否可以只使用AOF呢？为什么Redis推荐RDB和AOF同时开启呢？</p>
-
-<p>答：RDB保存的是最终的数据，是一个最终状态，而AOF保存的是达到这个最终状态的过程。很明显，如果Redis有大量的修改操作，RDB中一个数据的最终态可能会需要大量的命令才能达到，这会造成AOF文件过大并且加载时速度过慢（Redis提供了一种AOF重写的策略来解决上述问题，后文会详细描述其实现原理）。</p>
-
-<p>再来考虑一下AOF和RDB文件的加载过程。RDB只需要把相应数据加载到内存并生成相应的数据结构（有些结构如intset、ziplist，保存时直接按字符串保存，所以加载时速度会更快），而AOF文件的加载需要先创建一个伪客户端，然后把命令一条条发送给Redis服务端，服务端再完整执行一遍相应的命令。根据Redis作者做的测试，RDB 10s～20s能加载1GB的文件，AOF的速度是RDB速度的一半（如果做了AOF重写会加快）。因为AOF和RDB各有优缺点，因此Redis一般会同时开启AOF和RDB。</p>
-
-<hr/>
-
-<p>但假设线上同时配置了RDB和AOF，那么会带来如下的两难选择：重启时如果优先加载RDB，加载速度更快，但是数据不是很全；如果优先加载AOF，加载速度会变慢，但是数据会比RDB中的要完整。</p>
-
-<p>能不能结合这两者的优点呢？答案是AOF和RDB的混合持久化方案，</p>
-
-<hr/>
-
-<h2 id="toc_0">1、AOF的执行流程</h2>
-
-<p>先介绍Redis服务端执行命令时如何同步到AOF文件以及AOF文件的格式，然后介绍Redis不同的配置对性能和安全性的影响。</p>
-
-<h3 id="toc_1">1.1、AOF命令同步</h3>
-
-<p>通过《<a href="15934396305281.html">三、redis命令处理生命周期</a> 》的执行流程，我们看到每一条命令的执行都会processCommand命令，processCommand命令的执行都会调用 call 函数，AOF命令的同步就是在 call命令中实现的。</p>
-
-<p><figure><img src="media/15943917797824/15943937599696.jpg" alt="AOF命令同步"/><figcaption>AOF命令同步</figcaption></figure></p>
-
-<p>如果开启了AOF，则每条命令执行完毕后都会同步写入aof_buf 中，aof_buf是个全局的SDS类型的缓冲区。</p>
-
-<p>那么命令是按什么格式写入缓冲区中的呢？</p>
-
-<p>Redis通过catAppendOnlyGenericCommand函数将命令转换为保存在缓冲区中的数据结构，</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; SET redis-key value1
-# 保存在缓冲区中的格式
-*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
-</code></pre>
-
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
-
-<p>那么命令写入缓冲区后何时同步到文件中呢？</p>
-
-<h3 id="toc_2">1.2、AOF文件写入</h3>
-
-<p>为了提高文件的写入效率,在现代操作系中,当用户调用 write函数,将一些数据写入到文件的时候,操作系统通常会将写入数据暂时保存在一个内存冲区里面, 等到缓冲区的空间被填满、或者超过了指定的时限之后,才真正地将缓冲区中的数据写入到磁盘里面。</p>
-
-<p>这种做法虽然提高了效率,但也为写入数据带来了安全问题,因为如果计算机发生停机,那么保存在内存缓冲区里面的写入数据将会丢失。<br/>
-为此,系统提供了 fsync和 fdatasync两个同步函数,它们可以强制让操作系统立即将缓冲区中的数据写入到项盘里面,从而确保写入数据的安全性。</p>
-
-<p>AOF持久化最终需要将缓冲区中的内容写入一个文件，写文件通过操作系统提供的write函数执行。但是write之后数据只是保存在kernel的缓冲区中，真正写入磁盘还需要调用 fsync 函数。fsync是一个阻塞并且缓慢的操作，所以Redis通过appendfsync配置控制执行fsync 的频次。具体有如下3种模式：</p>
-
-<ul>
-<li>no ：不执行fsync，将aof_buf 缓冲区中的所有内容写入到AOF文件，但不对AOF文件进行同步，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</li>
-<li>always：每执行一次写入就会执行一次fsync。数据安全性最高但会导致Redis性能降低。</li>
-<li>everysec： 每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡。</li>
-</ul>
-
-<p>生产环境一般配置为appendfsync everysec，即每秒执行一次fsync 操作。</p>
-
-<h3 id="toc_3">1.3、AOF 重写</h3>
-
-<p>随着Redis服务的运行，AOF文件会越来越大，并且当Redis服务有大量的修改操作时，对同一个键可能有成百上千条执行命令。AOF 重写通过fork出一个子进程来执行，重写不会对原有文件进行任何修改和读取，子进程对所有数据库中所有的键各自生成一条相应的执行命令，最后将重写开始后父进程继续执行的命令进行回放，生成一个新的AOF文件。</p>
-
-<p>示例如下：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; rpush list 1 2 3         //list中增加1,2,3三个元素
-(integer)3 
-127.0.0.1:6379&gt; rpush list 4             //list中增加4 
-(integer)4 
-127.0.0.1:6379&gt; rpush list 5         //list中增加5
-(integer)5 
-127.0.0.1:6379&gt; lpop list            //弹出第一个元素
-&quot;1&quot;
-</code></pre>
-
-<p>AOF重写就是直接按当前list中的内容写为“rpush list 2345”。4条命令变为了一条命令，既可以减小文件大小，又可以提高加载速度。</p>
-
-<h3 id="toc_4">1.4、AOF重写触发方式</h3>
-
-<p>AOF重写有两种触发方式：一种为通过配置自动触发，一种为手动执行bgrewriteaof命令显式触发。</p>
-
-<ul>
-<li><p>看自动触发方式，做如下配置：</p>
-<pre><code class="language-text">auto-aof-rewrite-percentage 100 
-auto-aof-rewrite-min-size 64mb
-</code></pre>
-<p>当AOF文件大于64MB时，并且AOF文件当前大小比基准大小增长了100%时会触发一次AOF重写。那么基准大小如何确定呢？起始的基准大小为Redis重启并加载完AOF文件之后，aof_buf的大小。当执行完一次AOF重写之后，基准大小相应更新为重写之后AOF文件的大小。当做了如上配置之后， Redis服务器会根据配置自动触发AOF重写。</p></li>
-<li><p>手动触发AOF<br/>
-下面我们看下手动触发AOF重写，即通过AOF客户端输入 bgrewriteaof 之后的执行流程。 </p></li>
-</ul>
-
-<p><figure><img src="media/15943917797824/15945412157461.jpg" alt="" style="width:1273px;"/></figure></p>
-
-<p>子进程执行重写时可能会有成千上万条命令继续在父进程中执行，那么如何保证重写完成后的文件也包括这些命令呢？</p>
-
-<p>首先需要在父进程中将重写过程中执行的命令进行保存，其次需要将这些命令在重写后的文件中进行回放。</p>
-
-<p>Redis为了尽量减少主进程的阻塞时间，通过管道按批次将父进程累积的命令发送给子进程，由子进程重写完成后进行回放。</p>
-
-<p>那么如何通过管道同步给子进程呢？分析下下图<br/>
-<figure><img src="media/15943917797824/15945418134506.jpg" alt=""/></figure></p>
-
-<p>父进程在fork之前会建立3对管道：fd0/fd1、fd2/fd3、fd4/fd5，它们各自配对执行。父进程通过fd1将执行aof重写时累积的命令发送给子进程，子进程通过fd0进行接收并保存。当子进程执行完重写之后，向fd3写入一个“！”号通知父进程不需要继续通过管道发送累积命令，父进程通过fd2接收到“！”号之后向fd5也写入一个“！”号进行确认。子进程通过fd4同步阻塞接收到“！”号后才可进行后续的退出操作。退出时首先会将接收到的累积命令进行回放，然后执行fsync。</p>
-
-<h3 id="toc_5">1.5、混合持久化</h3>
-
-<p>混合持久化指进行AOF重写时子进程将当前时间点的数据快照保存为RDB文件格式，而后将父进程累积命令保存为AOF格式。最终形成 RDB file和 AOF file共存的保存形式。</p>
-
-<p>加载时，首先会识别AOF文件是否以REDIS字符串开头，如果是，就按RDB格式加载，加载完RDB后继续按AOF格式加载剩余部分。</p>
-
-<p>是否开启混合持久化由如下配置设置</p>
-
-<pre><code class="language-text">aof-use-rdb-preamble yes
-</code></pre>
-
-<h3 id="toc_6">总结</h3>
-
-<ul>
-<li>AOF文件通过保存所有修改数据库的写命令来记录服务器的数据库状态</li>
-<li>AOF文件中的所有命令都以Redis命令请求协议的格式保存</li>
-<li>命令请求会先保存到AOF缓冲区里面，之后再定期写入并同步到AOF文件</li>
-<li>appendfsync选项的不同值对AOF持久化功能的安全性以及 Redis服务器的性能有很大的影响</li>
-<li>服务器只要载入并重新执行保存在 AOF文件中的命令，就可以还原数据库本来的状态</li>
-<li>AOF重写可以产生一个新的 AOF文件，这个新的 AOF文件和原有的AOF文件保存的数据库状态一样，但体积更小</li>
-<li>AOF重写功能是通过读取数据库中的键值对来实现的，程序无需对现有的AOF文件进行任何读入、分析或者写入操作</li>
-<li>执行 bgrewriteaof命令的时候，redis 服务器会维护一个AOF重写缓冲区,该缓冲区会在子进程创建新的 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新AOF文件工作之后，服务器会将重写缓冲区中的所有内容追加到 新AOF文件的末尾，使新旧两个AOF文件所保存的数据库状态一致。最后，服务器使用新的 AOF 文件替换旧的AOF文件，来完成AOF文件的重写操作。</li>
-</ul>
-
-<hr/>
-
-<h2 id="toc_7">2、RDB 与 AOF 相关配置指令</h2>
-
-<table>
-<thead>
-<tr>
-<th>配置项</th>
-<th>可选值</th>
-<th>功能</th>
-<th>作用</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>save</td>
-<td><code>&lt;secondes&gt; &lt;changes&gt;</code> 默认：save 900 1、save 300 10、save 60 10000</td>
-<td>RDB</td>
-<td>自动触发配置</td>
-</tr>
-<tr>
-<td>stop-writes-on-bgsave-error</td>
-<td>yes/no(默认yes)</td>
-<td>RBD</td>
-<td>开启该参数后，如果开启了RDB 快照（即配置了save指令），并且最近一次快照执行失败，则Redis 将停止接收写相关的请求。</td>
-</tr>
-<tr>
-<td>rdbcompression</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>执行RDB快照时是否将 string类型的数据进行LZF压缩。</td>
-</tr>
-<tr>
-<td>rdbchecksum</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>是否开启RDB文件内容的校验</td>
-</tr>
-<tr>
-<td>dbfilename</td>
-<td>文件名称(默认 dump.rdb)</td>
-<td>RDB</td>
-<td>RDB文件名称</td>
-</tr>
-<tr>
-<td>dir</td>
-<td>文件路径(默认./)</td>
-<td>RDB</td>
-<td>RDB和AOF文件存放路径</td>
-</tr>
-<tr>
-<td>rdb-save-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>开启该参数后，生成RDB文件时每产生32MB数据就执行一次fsync。</td>
-</tr>
-<tr>
-<td>appendonly</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>是否开启 AOF 功能</td>
-</tr>
-<tr>
-<td>appendfilename</td>
-<td>文件名称(默认 appendonly.aof)</td>
-<td>AOF</td>
-<td>AOF 文件名称</td>
-</tr>
-<tr>
-<td>appendfsync</td>
-<td>always/everysec/no (默认 everysec)</td>
-<td>AOF</td>
-<td>fsync执行频次,always：将aof_buf缓冲区中的所有内容写入并同步到AOF文件；everysec:每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡;no:  不执行fsync，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</td>
-</tr>
-<tr>
-<td>no-appendfsync-on-rewrite</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>开启该参数后，如果后台正在执行一次RDB快照或者AOF重写，则主进程不再进行fsync操作（即使将appendfsync配置为always或者everysec）</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-percentage</td>
-<td>百分比(默认100)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于auto-aof-rewrite-min-size 配置的大小 并且比基准文件增长此百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-min-size</td>
-<td>文件大小(默认64MB)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于此配置值，并且当前AOF文件 比基准文件增长auto-aof-rewrite-percentage配置的百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>aof-load-truncated</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>AOF文件以追加日志的方式生成，所以服务端发生故障时可能会有尾部命令不完整的情况。开启该参数后，在此种情况下，AOF文件会截断尾部不完整的命令然后继续加载，并且会在日志中进行提示。如果不开启该参数，则加载AOF文件时会打印错误日志，然后直接退出</td>
-</tr>
-<tr>
-<td>aof-use-rdb-preamble</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>是否开启混合持久化</td>
-</tr>
-<tr>
-<td>aof-rewrite-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>开启该参数后，AOF重写时没产生32MB数据执行一次fsync</td>
-</tr>
-</tbody>
-</table>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/10</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15943756601312.html">
-                
-                  <h1>软件设计上的基本知识</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<h2 id="toc_0">API与SPI分离</h2>
-
-<p>框架或组件通常有两类客户，一个是使用者，一个是扩展者，API(Application Programming Interface)是给使用者用的，而SPI(Service Provide Interface)是给扩展者用的，在设计时，尽量把它们隔离开，而不要混在一起，也就是说，使用者是看不到扩展者写的实现的，比如：一个Web框架，它有一个API接口叫Action，里面有个execute()方法，是给使用者用来写业务逻辑的，然后，Web框架有一个SPI接口给扩展者控制输出方式，比如用velocity模板输出还是用json输出等，如果这个Web框架使用一个都继承Action的VelocityAction和一个JsonAction做为扩展方式，要用velocity模板输出的就继承VelocityAction，要用json输出的就继承JsonAction，这就是API和SPI没有分离的反面例子，SPI接口混在了API接口中，合理的方式是，有一个单独的Renderer接口，有VelocityRenderer和JsonRenderer实现，Web框架将Action的输出转交给Renderer接口做渲染输出。</p>
-
-<pre><code class="language-text">![](media/15943756601312/15943757095695.jpg)
-
-![](media/15943756601312/15943757185485.jpg)
-</code></pre>
-
-<h2 id="toc_1">服务域/实体域/会话域分离</h2>
-
-<p>任何框架或组件，总会有核心领域模型，比如：<br/>
-Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
-这个核心领域模型及其组成部分称为实体域，它代表着我们要操作的目标本身，实体域通常是线程安全的，不管是通过不变类，同步状态，或复制的方式，服务域也就是行为域，它是组件的功能集，同时也负责实体域和会话域的生命周期管理，比如Spring的ApplicationContext，Dubbo的ServiceManager等，服务域的对象通常会比较重，而且是线程安全的，并以单一实例服务于所有调用，什么是会话？就是一次交互过程，会话中重要的概念是上下文，什么是上下文？</p>
-
-<p>比如我们说：“老地方见”，这里的“老地方”就是上下文信息，为什么说“老地方”对方会知道，因为我们前面定义了“老地方”的具体内容，所以说，上下文通常持有交互过程中的状态变量等，会话对象通常较轻，每次请求都重新创建实例，请求结束后销毁。</p>
-
-<p>简而言之：<br/>
-把元信息交由实体域持有，把一次请求中的临时状态由会话域持有，由服务域贯穿整个过程。</p>
-
-<p><figure><img src="media/15943756601312/15943757281530.jpg" alt=""/></figure>       <figure><img src="media/15943756601312/15943757329746.jpg" alt=""/></figure></p>
-
-<h2 id="toc_2">在重要的过程上设置拦截接口</h2>
-
-<p>如果你要写个远程调用框架，那远程调用的过程应该有一个统一的拦截接口，如果你要写一个ORM框架，那至少SQL的执行过程，Mapping过程要有拦截接口，如果你要写一个Web框架，那请求的执行过程应该要有拦截接口，等等，没有哪个公用的框架可以Cover住所有需求，允许外置行为，是框架的基本扩展方式，这样，如果有人想在远程调用前，验证下令牌，验证下黑白名单，统计下日志，如果有人想在SQL执行前加下分页包装，做下数据权限控制，统计下SQL执行时间，如果有人想在请求执行前检查下角色，包装下输入输出流，统计下请求量，等等，就可以自行完成，而不用侵入框架内部，拦截接口，通常是把过程本身用一个对象封装起来，传给拦截器链，</p>
-
-<p>比如：远程调用主过程为invoke()，那拦截器接口通常invoke(Invocation)，Invocation对象封装了本来要执行过程的上下文，并且Invocation里有一个invoke()方法，由拦截器决定什么时候执行，同时，Invocation也代表拦截器行为本身，这样上一拦截器的Invocation其实是包装的下一拦截器的过程，直到最后一个拦截器的Invocation是包装的最终的invoke()过程，同理，SQL主过程为execute()，那拦截器接口通常为execute(Execution)，原理一样，当然，实现方式可以任意，上面只是举例。</p>
-
-<p><figure><img src="media/15943756601312/15943757516458.jpg" alt=""/></figure></p>
-
-<h2 id="toc_3">重要的状态的变更发送事件并留出监听接口</h2>
-
-<p>这里先要讲一个事件和上面拦截器的区别，拦截器是干预过程的，它是过程的一部分，是基于过程行为的，而事件是基于状态数据的，任何行为改变的相同状态，对事件应该是一致的，事件通常是事后通知，是一个Callback接口，方法名通常是过去式的，比如onChanged()，比如远程调用框架，当网络断开或连上应该发出一个事件，当出现错误也可以考虑发出一个事件，这样外围应用就有可能观察到框架内部的变化，做相应适应。</p>
-
-<p><figure><img src="media/15943756601312/15943757591172.jpg" alt=""/></figure></p>
-
-<h2 id="toc_4">扩展接口职责尽可能单一，具有可组合性</h2>
-
-<p>比如，远程调用框架它的协议是可以替换的，如果只提供一个总的扩展接口，当然可以做到切换协议，但协议支持是可以细分为底层通讯，序列化，动态代理方式等等，如果将接口拆细，正交分解，会更便于扩展者复用已有逻辑，而只是替换某部分实现策略，当然这个分解的粒度需要把握好。</p>
-
-<h2 id="toc_5">微核插件式，平等对待第三方</h2>
-
-<p>大凡发展的比较好的框架，都遵守微核的理念，Eclipse的微核是OSGi， Spring的微核是BeanFactory，Maven的微核是Plexus，通常核心是不应该带有功能性的，而是一个生命周期和集成容器，这样各功能可以通过相同的方式交互及扩展，并且任何功能都可以被替换，如果做不到微核，至少要平等对待第三方，即原作者能实现的功能，扩展者应该可以通过扩展的方式全部做到，原作者要把自己也当作扩展者，这样才能保证框架的可持续性及由内向外的稳定性。</p>
-
-<h2 id="toc_6">不要控制外部对象的生命周期</h2>
-
-<p>比如上面说的Action使用接口和Renderer扩展接口，框架如果让使用者或扩展者把Action或Renderer实现类的类名或类元信息报上来，然后在内部通过反射newInstance()创建一个实例，这样框架就控制了Action或Renderer实现类的生命周期，Action或Renderer的生老病死，框架都自己做了，外部扩展或集成都无能为力，好的办法是让使用者或扩展者把Action或Renderer实现类的实例报上来，框架只是使用这些实例，这些对象是怎么创建的，怎么销毁的，都和框架无关，框架最多提供工具类辅助管理，而不是绝对控制。</p>
-
-<h2 id="toc_7">可配置一定可编程，并保持友好的CoC约定</h2>
-
-<p>因为使用环境的不确定因素很多，框架总会有一些配置，一般都会到classpath直扫某个指定名称的配置，或者启动时允许指定配置路径，做为一个通用框架，应该做到凡是能配置文件做的一定要能通过编程方式进行，否则当使用者需要将你的框架与另一个框架集成时就会带来很多不必要的麻烦，另外，尽可能做一个标准约定，如果用户按某种约定做事时，就不需要该配置项。</p>
-
-<p>比如：配置模板位置，你可以约定，如果放在templates目录下就不用配了，如果你想换个目录，就配置下。</p>
-
-<h2 id="toc_8">区分命令与查询，明确前置条件与后置条件</h2>
-
-<p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
-
-<p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/10</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html'>解决方案</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			 <a href="all_1.html">&raquo; Next Page</a> 
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
+              </div>
             
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
                 </div>
-                <div class="side-content">
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
+                  </div>
+                </div>
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15949034079714.html"> 
+                            <h2 class="title">虚拟机栈</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15949034079714.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/16</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15948275035029.html"> 
+                            <h2 class="title">十一、哨兵与集群</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15948275035029.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/15</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15945438416733.html"> 
+                            <h2 class="title">十、主从复制</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15945438416733.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/12</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15943917797824.html"> 
+                            <h2 class="title">九、Redis 持久化--AOF（二）</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15943917797824.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/10</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15943756601312.html"> 
+                            <h2 class="title">软件设计上的基本知识</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15943756601312.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/10</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html'>解决方案</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"  disabled="disabled" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"   href="all_1.html" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -977,215 +395,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 

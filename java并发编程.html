@@ -1,1636 +1,382 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    java并发编程 - 大爷来玩儿啊~
     
-  java并发编程 - 大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15896322618729.html">
-                
-                  <h1>线程等待/通知机制</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，<br/>
-而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，<br/>
-线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。</p>
-
-<p>上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
-<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
-<p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
-3）条件满足则执行对应的逻辑。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    while(obj.isOk()) {
-        obj.wait();
-    }
-}
-</code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
-3）通知所有等待在对象上的线程。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    obj.notifyAll();
-}
-</code></pre>
-
-<p>在调用 wait()、notify()系列方法之前，线程必须要获得该对象的对象级别锁，<br/>
-即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。</p>
-
-<p>Question: 调用 yield() 、sleep()、wait()、notify()等方法对锁有何影响？ </p>
-
-<p>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。 </p>
-
-<p>调用 wait()方法后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行 wait 方法后面的代码。 </p>
-
-<p>调用 notify()系列方法后，对锁无影响，线程只有在 syn 同步代码执行完后才 会自然而然的释放锁，所以 notify()系列方法一般都是 syn 同步代码的最后一行</p>
-
-<p>使用wait、和notify实现一个连接池的实例如下：</p>
-
-<pre><code class="language-java">public class DBPool {
-
-    /*容器，存放连接*/
-    private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
-
-    /*限制了池的大小=20*/
-    public DBPool(int initialSize) {
-        if (initialSize &gt; 0) {
-            for (int i = 0; i &lt; initialSize; i++) {
-                pool.addLast(createConnection());
-            }
-        }
-    }
-
-    /*释放连接,通知其他的等待连接的线程*/
-    public void releaseConnection(Connection connection) {
-        if (connection != null) {
-            synchronized (pool){
-                pool.addLast(connection);
-                //通知其他等待连接的线程
-                pool.notifyAll();
-            }
-        }
-    }
-
-    /*获取*/
-    // 在mills内无法获取到连接，将会返回null 1S
-    public Connection fetchConnection(long mills)
-            throws InterruptedException {
-        synchronized (pool){
-            //永不超时
-            if(mills&lt;=0){
-                while(pool.isEmpty()){
-                    pool.wait();
-                }
-                return pool.removeFirst();
-            }else{
-                /*超时时刻*/
-                long future = System.currentTimeMillis()+mills;
-                /*等待时长*/
-                long remaining = mills;
-                while(pool.isEmpty()&amp;&amp;remaining&gt;0){
-                    pool.wait(remaining);
-                    /*唤醒一次，重新计算等待时长*/
-                    remaining = future-System.currentTimeMillis();
-                }
-                Connection connection = null;
-                if(!pool.isEmpty()){
-                    connection = pool.removeFirst();
-                }
-                return connection;
-            }
-        }
-
-    }
-}
-</code></pre>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/16</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15882235745444.html">
-                
-                  <h1>CompletableFuture</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<ul>
-<li>
-<a href="#toc_0">概览</a>
-</li>
-<li>
-<a href="#toc_1">创建CompletableFuture对象</a>
-</li>
-<li>
-<a href="#toc_2">CompletableFuture 其它操作</a>
-<ul>
-<li>
-<a href="#toc_3">whenComplete* 和 exceptionally 方法</a>
-</li>
-<li>
-<a href="#toc_4">handle* 方法</a>
-</li>
-<li>
-<a href="#toc_5">thenApply* 方法：连接</a>
-</li>
-<li>
-<a href="#toc_6">thenAccept* 方法：纯消费一个CompletableFuture对象的结果</a>
-</li>
-<li>
-<a href="#toc_7">thenAcceptBoth* 方法：在两个CompletableFuture对象的执行完后执行。</a>
-</li>
-<li>
-<a href="#toc_8">thenRun* 方法：不消费CompletableFuture对象的结果，执行一个新任务。</a>
-</li>
-<li>
-<a href="#toc_9">acceptEither* ：当任意一个CompletableFuture计算完成的时候就会执行，它没有返回值。</a>
-</li>
-<li>
-<a href="#toc_10">applyToEither* ：当任意一个CompletableFuture计算完成的时候就会执行，它有返回值。</a>
-</li>
-<li>
-<a href="#toc_11">辅助方法 ：allOf 和 anyOf</a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#toc_12">更进一步</a>
-</li>
-</ul>
-
-
-<h2 id="toc_0">概览</h2>
-
-<p>1、CompletableFuture是java8引入的新类，该类实现了 Future 接口和 CompletionStage 接口，封装了future、forkjoin相关类来执行异步，所以你还是可以像以前一样通过阻塞(get)或者轮询的方式获得结果，尽管这种方式不推荐使用。</p>
-
-<p>2、CompletionStage 接口代表异步计算中的 不同阶段，以及如何 组合 这些计算阶段。</p>
-
-<p>3、CompletableStage 接口中有 50 多个方法，可以对 CompletableStage 进行组合、计算，方法看似很多，但可以按功能对其分类，大多数方法都有 3 种变体：</p>
-
-<ul>
-<li>不带 Async 方法：同步方法</li>
-<li>带 Async，只有一个参数：异步方法，使用默认的 ForkJoinPool.commonPool() 获取线程池</li>
-<li>带 Async，有两个参数：异步方法，且使用第二个参数指定的 ExecutorService 线程池</li>
-</ul>
-
-<h2 id="toc_1">创建CompletableFuture对象</h2>
-
-<pre><code class="language-text">//比较特殊，他入参就是返回值，也就是说他可以用来执行需要其他返回值的异步任务。
-public static &lt;U&gt; CompletableFuture&lt;U&gt; completedFuture(U value)
-
-//无返回值，使用默认线程池
-public static CompletableFuture&lt;Void&gt;   runAsync(Runnable runnable)
-
-//无返回值，使用自定义线程池
-public static CompletableFuture&lt;Void&gt;   runAsync(Runnable runnable, Executor executor)
-
-//有返回值，使用默认线程池
-public static &lt;U&gt; CompletableFuture&lt;U&gt;  supplyAsync(Supplier&lt;U&gt; supplier)
-
-//有返回值，使用自定义线程池
-public static &lt;U&gt; CompletableFuture&lt;U&gt;  supplyAsync(Supplier&lt;U&gt; supplier, Executor executor)
-
-//
-public static CompletableFuture&lt;Void&gt; allOf(CompletableFuture&lt;?&gt;... cfs)
-</code></pre>
-
-<p>举例：</p>
-
-<pre><code class="language-text">//supplyAsync方法无入参，但是返回一个String对象。此方法使用了默认的线程池执行异步任务
-CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; {
-    //长时间的计算任务
-    return &quot;·00&quot;;
-});
-</code></pre>
-
-<h2 id="toc_2">CompletableFuture 其它操作</h2>
-
-<p>下面将通过具体例子来展示各个方法的使用。</p>
-
-<h3 id="toc_3">whenComplete* 和 exceptionally 方法</h3>
-
-<p>当原始的CompletableFuture任务执行完后，不管是否成功计算出结果，还是抛出异常，都会会执行 whenComplete* 或 exceptionally 的方法中的任务。<br/>
-该操作执行完毕后：</p>
-
-<ul>
-<li>会返回一个新的CompletableFuture对象！！！</li>
-<li>使用whenComplete*方法时，返回的新的CompletableFuture对象的返回结果和原始的CompletableFuture对象计算结果相同</li>
-<li>使用 exceptionally方法时，如果原始计算逻辑抛出异常，那么返回的 新的CompletableFuture对象 的返回结果由该方法的return值决定；如果原始计算逻辑没有抛出异常，那么返回的 新的CompletableFuture对象 的返回结果和原始计算逻辑返回的结果一致。有点绕，先不明白没关系，下面会有四个exceptionally实例解释这段话。</li>
-</ul>
-
-<pre><code class="language-text">BiConsumer&lt;T,U&gt; 函数接口有两个参数，无返回值。
-Function&lt;T,R&gt; 函数接口有一个输入参数，返回一个结果。
-
-//无Async，同步处理正常计算结果或异常，使用执行任务的那个线程来执行该方法，所以这个方法是同步的。
-public CompletableFuture&lt;T&gt; whenComplete(BiConsumer&lt;? super T,? super Throwable&gt; action)
-//有Async，异步处理正常计算结果或异常，使用执行任务的那个线程池中的线程来执行该方法！所以这个方法是异步的。
-public CompletableFuture&lt;T&gt; whenCompleteAsync(BiConsumer&lt;? super T,? super Throwable&gt; action)
-//有Async，异步处理正常计算结果或异常，使用自定义线程池来执行该方法，所以这个方法是异步的。
-public CompletableFuture&lt;T&gt; whenCompleteAsync(BiConsumer&lt;? super T,? superThrowable&gt; action, Executor executor)
-//处理异常。
-public CompletableFuture&lt;T&gt; exceptionally(Function&lt;Throwable,? extends T&gt; fn)
-</code></pre>
-
-<p>注意：当没有异常抛出来的时候，上面的Throwable参数为空！举例：</p>
-
-<pre><code class="language-text">    private static Random random = new Random();
-    private static long time = System.currentTimeMillis();
-
-    public static int getMoreData(){
-        System.out.println(&quot;begin to start compute&quot;);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(&quot;end to compute, passed:&quot; + System.currentTimeMillis());
-        return random.nextInt(1000);
-    }
-
-    public static int throwException(){
-        System.out.println(&quot;准备抛出异常&quot;);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(&quot;抛了&quot;);
-        throw new RuntimeException(&quot;主动抛出异常&quot;);
-    }
-</code></pre>
-
-<p>whenComplete：</p>
-
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
-    public static void main(String[] args) throws Exception{
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
-
-        CompletableFuture&lt;Integer&gt; future2 = future.whenComplete((result, excetion) -&gt; {
-            System.out.println(&quot;执行到whenComplete了，result:&quot; + result);
-            System.out.println(&quot;执行到whenComplete了，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
-        });
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-    }
-
-&gt; 打印执行结果：  
-begin to start compute  
-end to compute, passed:1551182552193  
-执行到whenComplete了，result:625  
-执行到whenComplete了，exception:无异常  
-执行到最后一段代码了，future result：625  
-执行到最后一段代码了，future2 result：625  
-
-&gt;从打印结果可知，whenComplete使用原始的执行的任务的线程，所以可以看成是同步执行的，并且新的CompletableFuture对象的结果和原始的一致
-</code></pre>
-
-<p>whenCompleteAsync：</p>
-
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
-    public static void main(String[] args) throws Exception{
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
-
-        future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
-        });
-        System.out.println(&quot;执行到最后一段代码了，result：&quot; + future.get());
-    }
-
-&gt; 打印执行结果：  
-begin to start compute  
-end to compute, passed:1551180611064  
-执行到最后一段代码了，result：323  
-执行到whenComplete了，result:323  
-执行到whenComplete了，exception:无异常  
-
-&gt;从打印结果可知，whenCompleteAsync是异步执行的
-</code></pre>
-
-<p>exceptionally比较复杂，需要通过4个实例才能真正明白：<br/>
-exceptionally实例1：</p>
-
-<pre><code class="language-text">    //这段代码，由于会抛出异常，会先走whenCompleteAsync，然后再走exceptionally，而且是无法获取到返回值的。
-    public static void main(String[] args) throws Exception{
-
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
-
-        future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        }).exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            return 0;
-        });
-
-       System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-    }
-
-&gt; 打印执行结果：  
-准备抛出异常
-抛了
-计算已执行完毕，result:null
-计算已执行完毕，result:null
-计算已执行完毕，exception:class java.util.concurrent.CompletionException
-计算已执行完毕，exception:class java.util.concurrent.CompletionException
-计算执行过程中发生了异常，exception:class java.util.concurrent.CompletionException
-计算执行过程中发生了异常，exception:class java.util.concurrent.CompletionException
-Exception in thread &quot;main&quot; java.util.concurrent.ExecutionException: java.lang.RuntimeException: 主动抛出异常
-    at java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:357)
-    at java.util.concurrent.CompletableFuture.get(CompletableFuture.java:1895)
-    at me.ele.ecs.eapp.service.impl.Main.main(Main.java:69)
-Caused by: java.lang.RuntimeException: 主动抛出异常
-    at me.ele.ecs.eapp.service.impl.Main.throwException(Main.java:37)
-    at me.ele.ecs.eapp.service.impl.Main.lambda$main$0(Main.java:44)
-</code></pre>
-
-<p>exceptionally实例2：</p>
-
-<pre><code class="language-text">    //这里的打印结果是和上面类似的，可是为什么这次要获取新的CompletableFuture对象呢？看下面的exceptionally实例3后，再回来对比吧
-    public static void main(String[] args) throws Exception{
-
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
-
-        CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        });
-
-        CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            return 0;
-        });
-
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-       //因为上面的执行过程中，已经抛出了异常了，那么下面的这两段代码是无法执行到的，
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-        System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
-    }
-
-&gt; 打印执行结果：  
-准备抛出异常
-抛了
-计算已执行完毕，result:null
-计算已执行完毕，exception:class java.util.concurrent.CompletionException
-计算执行过程中发生了异常，exception:class java.util.concurrent.CompletionException
-Exception in thread &quot;main&quot; java.util.concurrent.ExecutionException: java.lang.RuntimeException: 主动抛出异常
-    at java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:357)
-    at java.util.concurrent.CompletableFuture.get(CompletableFuture.java:1895)
-    at me.ele.ecs.eapp.service.impl.Main.main(Main.java:69)
-Caused by: java.lang.RuntimeException: 主动抛出异常
-    at me.ele.ecs.eapp.service.impl.Main.throwException(Main.java:37)
-    at me.ele.ecs.eapp.service.impl.Main.lambda$main$0(Main.java:44)
-</code></pre>
-
-<p>exceptionally实例3：</p>
-
-<pre><code class="language-text">    //
-    public static void main(String[] args) throws Exception{
-
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
-
-        CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        });
-
-        CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            //这里的返回值实际其是没有用处的。因为如果抛出了异常，future的get方法是执行不到的；而如果没有抛出异常的话，还是会返回原始的CompletableFuture的值的
-            //所以这个exceptionally就是仅仅用来处理异常的。
-            return 0;
-        });
-
-        //System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        //System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-        //和上面实例2唯一的区别就是注释掉了上面两段代码，但是执行结果却不一样了，而且整个main方法都没有抛出来异常，原因就在于future和future2是异步执行的，所以是在别的线程抛了异常，而main方法是不会抛出来的。而且在获取future3的结果时，可以发现，返回了future3对象自定义的返回值
-        System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
-    }
-
-&gt; 打印执行结果：  
-准备抛出异常
-抛了
-计算已执行完毕，result:null
-计算已执行完毕，exception:class java.util.concurrent.CompletionException
-计算执行过程中发生了异常，exception:class java.util.concurrent.CompletionException
-执行到最后一段代码了，future3 result：0
-</code></pre>
-
-<p>exceptionally实例4：</p>
-
-<pre><code class="language-text">public static void main(String[] args) throws Exception{
-
-    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
-
-    CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
-        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-        System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-    });
-
-    CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
-        System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-        return 0;
-    });
-
-    System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-    System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-    //原始的计算逻辑不变，exceptionally返回的新的CompletableFuture对象的结果和原始计算逻辑返回的结果一致。
-    System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
-}
-</code></pre>
-
-<blockquote>
-<p>打印执行结果：<br/><br/>
-begin to start compute<br/>
-end to compute, passed:1551239497158<br/>
-getMoreData: 679<br/>
-执行到最后一段代码了，future result：679<br/>
-计算已执行完毕，result:679<br/>
-计算已执行完毕，exception:无异常<br/>
-执行到最后一段代码了，future2 result：679<br/>
-执行到最后一段代码了，future3 result：679</p>
-
-<pre><code class="language-text"></code></pre>
-</blockquote>
-
-<h3 id="toc_4">handle* 方法</h3>
-
-<p>和 whenComplete* 方法一样，都是在任务执行完后，执行该方法的逻辑，但是和 whenComplete* 不同的是：<br/>
-该操作执行完毕后，它返回的新CompletableFuture对象的计算结果是handle*方法的返回值，并不是原始计算逻辑的返回值</p>
-
-<pre><code class="language-java">//同步
-public &lt;U&gt; CompletableFuture&lt;U&gt;     handle(BiFunction&lt;? super T,Throwable,? extends U&gt; fn)
-//异步，使用原始CompletableFuture的线程
-public &lt;U&gt; CompletableFuture&lt;U&gt;     handleAsync(BiFunction&lt;? super T,Throwable,? extends U&gt; fn)
-//异步，使用自定义线程池的线程
-public &lt;U&gt; CompletableFuture&lt;U&gt;     handleAsync(BiFunction&lt;? super T,Throwable,? extends U&gt; fn, Executor executor)
-</code></pre>
-
-<p>代码实例：</p>
-
-<pre><code class="language-java">    public static void main(String[] args) throws Exception{
-
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
-
-        CompletableFuture&lt;Integer&gt; future2 = future.handleAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-            return result + 1;
-        });
-
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-    }
-
-&gt; 打印执行结果：  
-begin to start compute
-end to compute, passed:1551243326193
-getMoreData: 395
-执行到最后一段代码了，future result：395
-计算已执行完毕，result:395
-计算已执行完毕，exception:无异常
-执行到最后一段代码了，future2 result：396
-</code></pre>
-
-<h3 id="toc_5">thenApply* 方法：连接</h3>
-
-<p>thenApply* 可以连接多个CompletableFuture对象，相当于将一个一个的CompletableFuture串联起来了，第一个CompletableFuture对象的结果会传递到下一个对象中，并且下一个CompletableFuture对象的结算结果会作为上一个对象的CompletableFuture结果，依次类推，也就是说会改变原始CompletableFuture对象的结果。<br/>
-注：它和 handle 方法有点类似，都会拿到上一个CompletableFuture对象的结果进行计算，但是区别就是thenApply 会改变原始对象的计算结果，而 handle* 并不会**。</p>
-
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApply(Function&lt;? super T,? extends U&gt; fn)
-public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApplyAsync(Function&lt;? super T,? extends U&gt; fn)
-public &lt;U&gt; CompletableFuture&lt;U&gt;     thenApplyAsync(Function&lt;? super T,? extends U&gt; fn, Executor executor)
-复制代码public static void main(String[] args) throws ExecutionException, InterruptedException {
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; {
-        return 100;
-        });
-       //由于这里同时连接了多个thenApplyAsync，第一个是异步的，第二个是同步的，并且都没有处理异常，所以异常会直接在执行计算的线程上抛出来。
-       CompletableFuture&lt;String&gt; f =  future.thenApplyAsync(i -&gt; i * 10).thenApply(i -&gt; i.toString());
-       System.out.println(f.get()); //&quot;1000&quot;
-}
-</code></pre>
-
-<h3 id="toc_6">thenAccept* 方法：纯消费一个CompletableFuture对象的结果</h3>
-
-<p>thenAccept* 返回的新的CompletableFuture对象不返回结果，如果使用get方法，会返回一个null。</p>
-
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  thenAccept(Consumer&lt;? super T&gt; action)
-public CompletableFuture&lt;Void&gt;  thenAcceptAsync(Consumer&lt;? super T&gt; action)
-public CompletableFuture&lt;Void&gt;  thenAcceptAsync(Consumer&lt;? super T&gt; action, Executor executor)
-</code></pre>
-
-<pre><code class="language-text">public static void main(String[] args) throws ExecutionException, InterruptedException {
-         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
-
-        CompletableFuture&lt;Void&gt; future2 = future.thenAccept(result -&gt; {
-            System.out.println(&quot;执行到thenAccept了, result：&quot; + result);
-        });
-
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result: &quot; + future2.get());
-}
-&gt; 打印执行结果：
-begin to start compute
-end to compute, passed:1551341977684
-getMoreData: 171
-执行到thenAccept了, result：171
-执行到最后一段代码了，future result：171
-执行到最后一段代码了，future2 result: null
-</code></pre>
-
-<h3 id="toc_7">thenAcceptBoth* 方法：在两个CompletableFuture对象的执行完后执行。</h3>
-
-<p>它和 thenAccept 一样，都是纯消费，但是thenAccept<em>只能消费一个CompletableFuture对象，而thenAcceptBoth</em> 能在两个不同的CompletableFuture对象执行完成后，消费他们两个的计算结果。<br/>
-而且他仅仅在原始的两个CompletableFuture对象都计算成功之后，才开始执行。</p>
-
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBoth(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action)
-public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBothAsync(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action)
-public &lt;U&gt; CompletableFuture&lt;Void&gt;  thenAcceptBothAsync(CompletionStage&lt;? extends U&gt; other, BiConsumer&lt;? super T,? super U&gt; action, Executor executor)
-
-//runAfterBoth和上面三个的区别就是它不消费原始的CompletableFuture结果
-public     CompletableFuture&lt;Void&gt;  runAfterBoth(CompletionStage&lt;?&gt; other,  Runnable action)
-</code></pre>
-
-<pre><code class="language-java">
-public static void main(String[] args) throws ExecutionException, InterruptedException {
-         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
-
-        CompletableFuture&lt;Integer&gt; future2 = CompletableFuture.supplyAsync(Main::getMoreData);
-
-        future.thenAcceptBothAsync(future2, (x, y) -&gt; {
-            System.out.println(&quot;future1 和 future都执行完成了，结果分别是：&quot; + x + &quot;,&quot; + y);
-        });
-
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result: &quot; + future2.get());
-}
-&gt; 打印执行结果：
-begin to start compute
-begin to start compute
-end to compute, passed:1551342475808
-getMoreData: 920
-执行到最后一段代码了，future result：920
-end to compute, passed:1551342475811
-getMoreData: 747
-执行到最后一段代码了，future2 result: 747
-future1 和 future都执行完成了，结果分别是：920,747
-</code></pre>
-
-<h3 id="toc_8">thenRun* 方法：不消费CompletableFuture对象的结果，执行一个新任务。</h3>
-
-<p>在原始CompletableFuture执行任务结束后，而且执行指定的任务，不消费，也不产生结果。</p>
-
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  thenRun(Runnable action)
-public CompletableFuture&lt;Void&gt;  thenRunAsync(Runnable action)
-public CompletableFuture&lt;Void&gt;  thenRunAsync(Runnable action, Executor executor)
-复制代码public static void main(String[] args) throws ExecutionException, InterruptedException {
-         CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
-
-        CompletableFuture&lt;Void&gt; future2 = future.thenRunAsync(() -&gt; {
-            System.out.println(&quot;future执行完成了&quot;);
-        });
-
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-}
-&gt; 打印执行结果：
-begin to start compute
-end to compute, passed:1551344347162
-getMoreData: 688
-执行到最后一段代码了，future result：688
-future执行完成了
-执行到最后一段代码了，future2 result：null
-</code></pre>
-
-<h3 id="toc_9">acceptEither* ：当任意一个CompletableFuture计算完成的时候就会执行，它没有返回值。</h3>
-
-<p>runAfterBoth是当两个CompletableFuture都计算完成后才执行。</p>
-
-<pre><code class="language-java">public CompletableFuture&lt;Void&gt;  acceptEither(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action)
-public CompletableFuture&lt;Void&gt;  acceptEitherAsync(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action)
-public CompletableFuture&lt;Void&gt;  acceptEitherAsync(CompletionStage&lt;? extends T&gt; other, Consumer&lt;? super T&gt; action, Executor executor)
-</code></pre>
-
-<h3 id="toc_10">applyToEither* ：当任意一个CompletableFuture计算完成的时候就会执行，它有返回值。</h3>
-
-<p>runAfterBoth是当两个CompletableFuture都计算完成后才执行。而 acceptEither* 没有返回值。</p>
-
-<pre><code class="language-java">public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEither(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn)
-public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEitherAsync(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn)
-public &lt;U&gt; CompletableFuture&lt;U&gt;     applyToEitherAsync(CompletionStage&lt;? extends T&gt; other, Function&lt;? super T,U&gt; fn, Executor executor)
-</code></pre>
-
-<h3 id="toc_11">辅助方法 ：allOf 和 anyOf</h3>
-
-<pre><code class="language-java">// allOf方法是当所有的CompletableFuture都执行完后执行计算。
-public static CompletableFuture&lt;Void&gt;       allOf(CompletableFuture&lt;?&gt;... cfs)
-//anyOf方法是当任意一个CompletableFuture执行完后就会执行计算，计算的结果相同。
-public static CompletableFuture&lt;Object&gt;     anyOf(CompletableFuture&lt;?&gt;... cfs)
-</code></pre>
-
-<p>示例：</p>
-
-<pre><code class="language-java">Random rand = new Random();
-CompletableFuture&lt;Integer&gt; future1 = CompletableFuture.supplyAsync(() -&gt; {
-    try {
-        Thread.sleep(10000 + rand.nextInt(1000));
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    return 100;
-});
-CompletableFuture&lt;String&gt; future2 = CompletableFuture.supplyAsync(() -&gt; {
-    try {
-        Thread.sleep(10000 + rand.nextInt(1000));
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    return &quot;abc&quot;;
-});
-//CompletableFuture&lt;Void&gt; f =  CompletableFuture.allOf(future1,future2);
-CompletableFuture&lt;Object&gt; f =  CompletableFuture.anyOf(future1,future2);
-System.out.println(f.get());
-</code></pre>
-
-<h2 id="toc_12">更进一步</h2>
-
-<p>如果你用过Guava的Future类，你就会知道它的Futures辅助类提供了很多便利方法，用来处理多个Future，而不像Java的CompletableFuture，只提供了allOf、anyOf两个方法。 比如有这样一个需求，将多个CompletableFuture组合成一个CompletableFuture，这个组合后的CompletableFuture的计算结果是个List,它包含前面所有的CompletableFuture的计算结果，guava的Futures.allAsList可以实现这样的功能，但是对于java CompletableFuture，我们需要一些辅助方法：</p>
-
-<pre><code class="language-java">   public static &lt;T&gt; CompletableFuture&lt;List&lt;T&gt;&gt; sequence(List&lt;CompletableFuture&lt;T&gt;&gt; futures) {
-       CompletableFuture&lt;Void&gt; allDoneFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
-       return allDoneFuture.thenApply(v -&gt; futures.stream().map(CompletableFuture::join).collect(Collectors.&lt;T&gt;toList()));
-   }
-public static &lt;T&gt; CompletableFuture&lt;Stream&lt;T&gt;&gt; sequence(Stream&lt;CompletableFuture&lt;T&gt;&gt; futures) {
-       List&lt;CompletableFuture&lt;T&gt;&gt; futureList = futures.filter(f -&gt; f != null).collect(Collectors.toList());
-       return sequence(futureList);
-   }
-</code></pre>
-
-<p>Java Future转CompletableFuture:</p>
-
-<pre><code class="language-java">public static &lt;T&gt; CompletableFuture&lt;T&gt; toCompletable(Future&lt;T&gt; future, Executor executor) {
-    return CompletableFuture.supplyAsync(() -&gt; {
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }, executor);
-}
-</code></pre>
-
-<p>转载掘金文章: <a href="https://juejin.im/post/5c77b3ade51d456a045898c8">java8 CompletableFuture入门 使用教程 详解所有方法 附实例</a></p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/04/30</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15878284668401.html">
-                
-                  <h1>线程池</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>为什么要用线程池?<br/>
-Java 中的线程池是运用场景最多的并发框架，几乎所有需要异步或并发执行 任务的程序都可以使用线程池。在开发过程中，合理地使用线程池能够带来 3 个好处。</p>
-
-<ul>
-<li>第一:降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
-<li>第二:提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立 即执行。</li>
-<li>第三:提高线程的可管理性。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</li>
-</ul>
-
-<h2 id="toc_0">线程池的简单实现</h2>
-
-<pre><code class="language-java">public class MyThreadPool {
-    // 任务队列
-    private static BlockingQueue&lt;Runnable&gt; taskBlockingQueue;
-
-    private Worker[] workers;
-
-    public MyThreadPool(int taskCount, int workerCount) {
-        if (taskCount &lt;=0 || workerCount &lt;=0)
-            throw new IllegalArgumentException();
-        taskBlockingQueue = new ArrayBlockingQueue&lt;&gt;(taskCount);
-        initWorker(workerCount);
-    }
     
-    /*初始化线程池*/
-    private void initWorker(int workerCount) {
-        this.workers = new Worker[workerCount];
-        for (int i = 0; i &lt; workerCount; i++) {
-            Worker worker = new Worker();
-            workers[i] = worker;
-            workers[i].start();
-        }
-    }
-
-    public void execute(Runnable task) {
-        try {
-            taskBlockingQueue.put(task);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void destroy() {
-        for (Worker worker : workers) {
-            worker.shutdown();
-        }
-        workers = null;
-    }
-
-    // 工作线程
-    private final class Worker extends Thread {
-        @Override
-        public void run() {
-            Runnable task = null;
-            while (!isInterrupted()) {
-                try {
-                    task = taskBlockingQueue.take();
-                } catch (InterruptedException e) {
-                    // something
-                }
-                if (task != null) {
-                    task.run();
-                }
-            }
-        }
-
-        public void shutdown() {
-            interrupt();
-        }
-    }
-
-}
-</code></pre>
-
-<h2 id="toc_1">jdk的线程池</h2>
-
-<pre><code class="language-text">Executor
-|----ThreadPerTaskExecutor in CompletableFuture
-|----ExecutorService 
-|--------AbstractExecutorService
-|------------ThreadPoolExecutor
-|----------------ScheduledThreadPoolExecutor
-|------------ForkJoinPool (java.util.concurrent)
-|------------DelegatedExecutorService in Executors 
-|----------------FinalizableDelegatedExecutorService in Executors 
-|----------------DelegatedScheduledExecutorService in Executors 
-|--------ScheduledExecutorService
-|------------ScheduledThreadPoolExecutor
-|------------DelegatedScheduledExecutorService in Executors 
-</code></pre>
-
-<p>Executor 是一个接口，它是 Executor 框架的基础，它将任务的提交与任务的<br/>
-执行分离开来。</p>
-
-<p>ExecutorService 接口继承了 Executor，在其上做了一些 shutdown()、submit() 的扩展，可以说是真正的线程池接口;</p>
-
-<p>AbstractExecutorService 抽象类实现了 ExecutorService 接口中的大部分方法;</p>
-
-<p>ThreadPoolExecutor 是线程池的核心实现类，用来执行被提交的任务。</p>
-
-<p>ScheduledExecutorService 接口继承了 ExecutorService 接口，提供了带&quot;周期 执行&quot;功能 ExecutorService;</p>
-
-<p>ScheduledThreadPoolExecutor 是一个实现类，可以在给定的延迟后运行命令， 或者定期执行命令。ScheduledThreadPoolExecutor 比 Timer 更灵活，功能更强大</p>
-
-<hr/>
-
-<h3 id="toc_2">ThreadPoolExecutor类的构造函数</h3>
-
-<pre><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
-                              int maximumPoolSize,
-                              long keepAliveTime,
-                              TimeUnit unit,
-                              BlockingQueue&lt;Runnable&gt; workQueue,
-                              ThreadFactory threadFactory,
-                              RejectedExecutionHandler handler)
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li><p>corePoolSize<br/>
-线程池中的核心线程数，当提交一个任务时，线程池创建一个新线程执行任务，直到当前线程数等于 corePoolSize;<br/>
-如果当前线程数为 corePoolSize，继续提交的任务被保存到阻塞队列中，等待被执行;<br/>
-如果执行了线程池的 prestartAllCoreThreads()方法，线程池会提前创建并启动所有核心线程。</p></li>
-<li><p>maximumPoolSize<br/>
-线程池中允许的最大线程数。如果当前阻塞队列满了，且继续提交任务，则 创建新的线程执行任务，前提是当前线程数小于 maximumPoolSize</p></li>
-<li><p>keepAliveTime<br/>
-线程空闲时的存活时间，即当线程没有任务执行时，继续存活的时间。默认情况下，该参数只在线程数大于 corePoolSize 时才有用</p></li>
-<li><p>TimeUnit<br/>
-keepAliveTime 的时间单位 workQueue</p></li>
-<li><p>workQueue<br/>
-workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超过它的corePoolSize 的时候，线程会进入阻塞队列进行阻塞等待。通过 workQueue，线程池实现了阻塞功能。</p></li>
-</ul>
-
-<p>用于保存等待执行的任务的阻塞队列，一般来说，我们应该尽量使用有界队列，因为使用无界队列作为工作队列会对线程池带来如下影响：<br/>
-    - 当线程池中的线程数达到 corePoolSize 后，新任务将在无界队列中等待， 因此线程池中的线程数不会超过 corePoolSize。<br/>
-    - 使用无界队列时 maximumPoolSize 将是一个无效参数。<br/>
-    - 使用无界队列时 keepAliveTime 将是一个无效参数。<br/>
-    - 更重要的，使用无界 queue 可能会耗尽系统资源，有界队列则有助于防 止资源耗尽，同时即使使用有界队列，也要尽量控制队列的大小在一个合适的范围。<br/>
-所以我们一般会使用，ArrayBlockingQueue、LinkedBlockingQueue、 SynchronousQueue、PriorityBlockingQueue。</p>
-
-<ul>
-<li><p>ThreadFactory<br/>
-新线程使用ThreadFactory创建。如果没有另外指定，则使用Executors.defaultThreadFactory()。通过提供不同的ThreadFactory，您可以更改线程的名称，线程组，优先级，守护进程状态等。</p></li>
-<li><p>RejectedExecutionHandler<br/>
-提供了四个预定义的处理程序策略：</p>
-<ul>
-<li>在默认ThreadPoolExecutor.AbortPolicy ，处理程序会引发运行RejectedExecutionException后排斥反应。</li>
-<li>在ThreadPoolExecutor.CallerRunsPolicy中，调用execute本身的线程运行任务。 这提供了一个简单的反馈控制机制，将降低新任务提交的速度。</li>
-<li>ThreadPoolExecutor.DiscardPolicy中 ，直接丢弃任务。</li>
-<li>ThreadPoolExecutor.DiscardOldestPolicy中   丢弃阻塞队列中靠最前的任务，并执行当前任务。<br/>
-可以定义和使用其他类型的RejectedExecutionHandler类。 这样做需要特别注意，特别是当策略被设计为仅在特定容量或排队策略下工作时。</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<h3 id="toc_3">扩展ThreadPoolExecutor</h3>
-
-<p>该类提供了在每个任务执行之前和之后调用的protected可悲子类覆写的beforeExecute(Thread, Runnable)和afterExecute(Runnable, Throwable)方法。 这些可以用来操纵执行环境; 例如，重新初始化ThreadLocals，收集统计信息或添加日志条目。 另外，方法terminated()可以被覆盖，以执行执行程序完全终止后需要执行的任何特殊处理。</p>
-
-<pre><code class="language-java">public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
-    private boolean isPaused;
-    private ReentrantLock pauseLock = new ReentrantLock();
-
-    private Condition unpaused = pauseLock.newCondition();
-
-    public PausableThreadPoolExecutor(int corePoolSize,
-                                      int maximumPoolSize,
-                                      long keepAliveTime,
-                                      TimeUnit unit,
-                                      BlockingQueue&lt;Runnable&gt; workQueue,
-                                      ThreadFactory threadFactory,
-                                      RejectedExecutionHandler handler) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
-    }
-
-    @Override
-    protected void beforeExecute(Thread t, Runnable r) {
-        super.beforeExecute(t, r);
-        pauseLock.lock();
-        try {
-            while (isPaused) unpaused.await();
-        } catch (InterruptedException ie) {
-            t.interrupt();
-        } finally {
-            pauseLock.unlock();
-        }
-    }
-
-    @Override
-    protected void afterExecute(Runnable r, Throwable t) {
-        super.afterExecute(r, t);
-        if (t != null) System.out.println(t);
-    }
-
-
-    public void pause() {
-        pauseLock.lock();
-        try {
-            isPaused = true;
-        } finally {
-            pauseLock.unlock();
-        }
-    }
-
-    public void resume() {
-        pauseLock.lock();
-        try {
-            isPaused = false;
-            unpaused.signalAll();
-        } finally {
-            pauseLock.unlock();
-        }
-    }
-
-}
-</code></pre>
-
-<hr/>
-
-<h2 id="toc_4">线程池的工作机制</h2>
-
-<ol>
-<li>如果当前运行的线程少于 corePoolSize，则创建新线程来执行任务(注意， 执行这一步骤需要获取全局锁)。</li>
-<li>如果运行的线程等于或多于 corePoolSize，则将任务加入 BlockingQueue。 </li>
-<li>如果无法将任务加入 BlockingQueue(队列已满)，则创建新的线程来处理任务。</li>
-<li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
-</ol>
-
-<h3 id="toc_5">提交任务</h3>
-
-<p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程 池执行成功。</p>
-
-<p>submit()方法用于提交需要返回值的任务。线程池会返回一个 future 类型的对象，通过这个 future 对象可以判断任务是否执行成功，并且可以通过 future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get (long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。</p>
-
-<h3 id="toc_6">关闭线程池</h3>
-
-<p>可以通过调用线程池的 shutdown 或 shutdownNow 方法来关闭线程池。它们 的原理是遍历线程池中的工作线程，然后逐个调用线程的 interrupt 方法来中断 线程，所以无法响应中断的任务可能永远无法终止。</p>
-
-<p>但是它们存在一定的区别， shutdownNow 首先将线程池的状态设置成 STOP，然后尝试停止所有的正在执行 或暂停任务的线程，并返回等待执行任务的列表，而 shutdown 只是将线程池的 状态设置成 SHUTDOWN 状态，然后中断所有没有正在执行任务的线程</p>
-
-<h2 id="toc_7">如何合理使用线程池</h2>
-
-<p>要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。</p>
-
-<ul>
-<li>任务的性质:CPU 密集型任务、IO 密集型任务和混合型任务。 •任务的优先级:高、中和低。</li>
-<li>任务的执行时间:长、中和短。 </li>
-<li>任务的依赖性:是否依赖其他系统资源，如数据库连接。 性质不同的任务可以用不同规模的线程池分开处理。</li>
-</ul>
-
-<p>CPU 密集型任务应配置尽可能小的线程，如配置 Ncpu+1 个线程的线程池。 </p>
-
-<p>由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如 2*Ncpu。</p>
-
-<p>混合型的任务，如果可以拆分，将其拆分成一个 CPU 密集型任务和一个 IO 密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行 分解。</p>
-
-<p>可以通过 Runtime.getRuntime().availableProcessors()方法获得当前设备的 CPU 个数。</p>
-
-<p>对于 IO 型的任务的最佳线程数，有个公式可以计算 ：<br/>
-Nthreads = NCPU * UCPU * (1 + W/C)</p>
-
-<p>其中:<br/>
-NCPU 是处理器的核的数目<br/>
-UCPU 是期望的 CPU 利用率(该值应该介于 0 和 1 之间)<br/>
-W/C 是等待时间与计算时间的比率</p>
-
-<p>等待时间与计算时间我们在 Linux 下使用相关的 vmstat 命令或者 top 命令查看。</p>
-
-<p>优先级不同的任务可以使用优先级队列 PriorityBlockingQueue 来处理。它可以让优先级高的任务先执行。</p>
-
-<p>依赖数据库连接池的任务，因为线程提交 SQL 后需要等待数据库返回结果， 等待的时间越长，则 CPU 空闲时间就越长，那么线程数应该设置得越大，这样才能更好地利用 CPU。</p>
-
-<p>建议使用有界队列。有界队列能增加系统的稳定性和预警能力，可以根据需要设的大一点儿。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/04/25</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15878230274351.html">
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>阻塞队列</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端(front)进行删除操作，而在表的后端(rear)进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。</p>
-
-<p>在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。 因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能 最先从队列中删除，故队列又称为先进先出(FIFO—first in first out)线性表。</p>
-
-<h2 id="toc_0">什么是阻塞队列</h2>
-
-<p>1)支持阻塞的插入方法: 意思是当队列满时，队列会阻塞插入元素的线程， 直到队列不满。<br/>
-2)支持阻塞的移除方法: 意思是在队列为空时，获取元素的线程会等待队 列变为非空。</p>
-
-<p>BlockingQueue不接受null元素, 其实现被设计为主要用于生产者 - 消费者队列。消费者是从队列里取元素的线程。阻塞队列就是生产者用来存放元素、消费者用 来获取元素的容器。</p>
-
-<p>在并发编程中使用生产者和消费者模式能够解决绝大多数并发问题。该模式通过平衡生产线程和消费线程的工作能力来提高程序整体处理数据的速度。</p>
-
-<p>如下生产者消费模式：</p>
-
-<pre><code class="language-java">class Producer implements Runnable {
-    private final BlockingQueue queue;
-
-    Producer(BlockingQueue q) {
-        queue = q;
-    }
-
-    public void run() {
-        try {
-            while (true) {
-                queue.put(produce());
-            }
-        } catch (InterruptedException ex) { 
-            //...handle ...
-        }
-    }
-
-    Object produce() { 
-        // 生产...
-    }
-}
-
-class Consumer implements Runnable {
-    private final BlockingQueue queue;
-
-    Consumer(BlockingQueue q) {
-        queue = q;
-    }
-
-    public void run() {
-        try {
-            while (true) {
-                consume(queue.take());
-            }
-        } catch (InterruptedException ex) { ...handle ...}
-    }
-
-    void consume(Object x) { 
-        // do something...
-    }
-}
-</code></pre>
-
-<hr/>
-
-<h2 id="toc_1">阻塞队列的操作</h2>
-
-<p>BlockingQueue 方法有四种形式，具有不同的操作方式，不能立即满足，但可能在将来的某个时间点满足的方法:</p>
-
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>抛出异常</th>
-<th>返回特殊值</th>
-<th>一直阻塞</th>
-<th>超时退出</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>插入方法</td>
-<td>add(e)</td>
-<td>offer(e)</td>
-<td>put(e)</td>
-<td>offer(e,time,unit)</td>
-</tr>
-<tr>
-<td>移除方法</td>
-<td>remove()</td>
-<td>poll()</td>
-<td>take()</td>
-<td>pull(time,unit)</td>
-</tr>
-<tr>
-<td>检索方法</td>
-<td>element()</td>
-<td>peek()</td>
-<td>无</td>
-<td>无</td>
-</tr>
-</tbody>
-</table>
-
-<ul>
-<li><p>抛出异常<br/>
-IllegalStateException - 如果由于容量限制，此时无法添加该元素<br/>
-ClassCastException - 由于类型转换异常，无法添加元素<br/>
-NullPointerException - 如果指定的元素为null<br/>
-IllegalArgumentException - 如果指定元素的某些属性阻止将其添加到此队列中</p></li>
-<li><p>返回特殊值:当往队列插入元素时，会返回元素是否插入成功，成功返回 true。如果是移除方法，则是从队列里取出一个元素，如果没有则返回 null。</p></li>
-<li><p>一直阻塞:当阻塞队列满时，如果生产者线程往队列里 put 元素，队列会 一直阻塞生产者线程，直到队列可用或者响应中断退出。当队列空时，如果消费 者线程从队列里 take 元素，队列会阻塞住消费者线程，直到队列不为空。</p></li>
-<li><p>超时退出:当阻塞队列满时，如果生产者线程往队列里插入元素，队列会 阻塞生产者线程一段时间，如果超过了指定的时间，生产者线程就会退出。</p></li>
-</ul>
-
-<hr/>
-
-<p>BlockingQueue实现是线程安全的。 所有排队方法使用内部锁或其他形式的并发控制在原子上实现其效果.</p>
-
-<h2 id="toc_2">常用阻塞队列</h2>
-
-<ul>
-<li>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列。 </li>
-<li>LinkedBlockingQueue:一个由链表结构组成的有界阻塞队列。 </li>
-<li>PriorityBlockingQueue:一个支持优先级排序的无界阻塞队列。 </li>
-<li>DelayQueue:一个使用优先级队列实现的无界阻塞队列。 </li>
-<li>SynchronousQueue:一个不存储元素的阻塞队列。 </li>
-<li>LinkedTransferQueue:一个由链表结构组成的无界阻塞队列。 </li>
-<li>LinkedBlockingDeque:一个由链表结构组成的双向阻塞队列。 <br/>
-以上的阻塞队列都实现了 BlockingQueue 接口，也都是线程安全的。</li>
-</ul>
-
-<h3 id="toc_3">Array 实现和 Linked 实现的区别</h3>
-
-<ol>
-<li>队列中锁的实现不同<br/>
-ArrayBlockingQueue 实现的队列中的锁是没有分离的，即生产和消费用的是 同一个锁;<br/>
-LinkedBlockingQueue 实现的队列中的锁是分离的，即生产用的是 putLock， 消费是 takeLock</li>
-<li>在生产或消费时操作不同<br/>
-ArrayBlockingQueue 实现的队列中在生产和消费的时候，是直接将枚举对象插入或移除的;<br/>
-LinkedBlockingQueue 实现的队列中在生产和消费的时候，需要把枚举对象转换为 Node<E>进行插入或移除，会影响性能 </li>
-<li>队列大小初始化方式不同<br/>
-ArrayBlockingQueue 实现的队列中必须指定队列的大小; LinkedBlockingQueue 实现的队列中可以不指定队列的大小，但是默认是Integer.MAX_VALUE<br/>
-### DelayQueue<br/>
-是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。</li>
-</ol>
-
-<p>可以将 DelayQueue 运用在以下应用场景:<br/>
-缓存系统的设计:可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了。还有订单到期，限时支付等等</p>
-
-<h3 id="toc_4">SynchronousQueue</h3>
-
-<p>本身不存储任何元素，每一个put操作必须等待一个take操作，将消息从生产者直接传递到消费者。</p>
-
-<h3 id="toc_5">LinkedBlockingDeque</h3>
-
-<p>LinkedBlockingDeque 是一个由链表结构组成的双向阻塞队列。所谓双向队列 指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入 口，在多线程同时入队时，也就减少了一半的竞争。多了 addFirst、addLast、offerFirst、offerLast、peekFirst 和 peekLast 等方法。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/04/25</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15874857577712.html">
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
                 
-                  <h1>原子操作CAS 无锁操作</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p><figure><img src="media/15874857577712/15879543805684.jpg" alt=""/></figure></p>
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
 
-<h2 id="toc_0">什么是原子操作?如何实现原子操作?</h2>
-
-<p>假定有两个操作 A 和 B，如果从执行 A 的线程来看，当另一个线程执行 B 时， 要么将 B 全部执行完，要么B完全不执行，那么 A 和 B 对彼此来说是原子的。</p>
-
-<p>实现原子操作可以使用锁，锁机制，满足基本的需求是没有问题的了，但是 有的时候我们的需求并非这么简单，我们需要更有效，更加灵活的机制， synchronized 关键字是基于阻塞的锁机制，也就是说当一个线程拥有锁的时候， 访问同一资源的其它线程需要等待，直到该线程释放锁，</p>
-
-<p>这里会有些问题: 首先，如果被阻塞的线程优先级很高很重要怎么办?其次， 如果获得锁的线程一直不释放锁怎么办?(这种情况是非常糟糕的)。还有一种 情况，如果有大量的线程来竞争资源，那 CPU 将会花费大量的时间和资源来处 理这些竞争，同时，还有可能出现一些例如死锁之类的情况，最后，其实锁机制是一种比较粗糙，粒度比较大的机制，相对于像计数器这样的需求有点儿过于笨重。</p>
-
-<p>实现原子操作还可以使用当前的处理器基本都支持 CAS()的指令，只不过每个厂家所实现的算法并不一样，每一个 CAS 操作过程都包含三个运算符:一个内 存地址 V，一个期望的值 A 和一个新值 B，操作的时候如果这个地址上存放的值 等于这个期望的值 A，则将地址上的值赋为新值 B，否则不做任何操作。</p>
-
-<p>CAS 的基本思路就是，如果这个地址上的值和期望的值相等，则给其赋予新值，否则不做任何事儿，但是要返回原值是多少。循环 CAS 就是在一个循环里不断的做 cas 操作，直到成功为止。</p>
-
-<p>CAS 是怎么实现线程的安全呢?语言层面不做处理，我们将其交给硬件— CPU 和内存，利用 CPU 的多处理能力，实现硬件层面的阻塞，再加上 volatile 变 量的特性即可实现基于原子操作的线程安全。</p>
-
-<hr/>
-
-<h2 id="toc_1">CAS 实现原子操作的三大问题</h2>
-
-<ul>
-<li>ABA问题</li>
-</ul>
-
-<p>因为 CAS 需要在操作值的时候，检查值有没有发生变化，如果没有发生变化 则更新，但是如果一个值原来是 A，变成了 B，又变成了 A，那么使用 CAS 进行 检查时会发现它的值没有发生变化，但是实际上却变化了。<br/>
-ABA 问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量 更新的时候把版本号加 1，那么 A→B→A 就会变成 1A→2B→3A。举个通俗点的 例子，你倒了一杯水放桌子上，干了点别的事，然后同事把你水喝了又给你重新 倒了一杯水，你回来看水还在，拿起来就喝，如果你不管水中间被人喝过，只关 心水还在，这就是 ABA 问题。<br/>
-如果你是一个讲卫生讲文明的小伙子，不但关心水在不在，还要在你离开的 时候水被人动过没有，因为你是程序员，所以就想起了放了张纸在旁边，写上初 始值 0，别人喝水前麻烦先做个累加才能喝水。</p>
-
-<ul>
-<li>循环时间长开销大。</li>
-</ul>
-
-<p>自旋 CAS 如果长时间不成功，会给 CPU 带来非常大的执行开销。</p>
-
-<ul>
-<li>只能保证一个共享变量的原子操作。</li>
-</ul>
-
-<p>当对一个共享变量执行操作时，我们可以使用循环 CAS 的方式来保证原子操 作，但是对多个共享变量操作时，循环 CAS 就无法保证操作的原子性，这个时候 就可以用锁。<br/>
-还有一个取巧的办法，就是把多个共享变量合并成一个共享变量来操作。比 如，有两个共享变量 i=2，j=a，合并一下 ij=2a，然后用 CAS 来操作 ij。从 Java 1.5 开始，JDK 提供了 AtomicReference 类来保证引用对象之间的原子性，就可以把 多个变量放在一个对象里来进行 CAS 操作。</p>
-
-<h2 id="toc_2">JDK中 java.util.concurrent.atomic 报下包装有原子操作类。</h2>
-
-<ul>
-<li><p>AtomicInteger</p>
-<ul>
-<li>int addAndGet(int delta):以原子方式将输入的数值与实例中的值(AtomicInteger 里的 value)相加，并返回结果。</li>
-<li>boolean compareAndSet(int expect，int update):如果输入的数值等于预 期值，则以原子方式将该值设置为输入的值。</li>
-<li>int getAndIncrement():以原子方式将当前值加 1，注意，这里返回的是自 增前的值。</li>
-<li>int getAndSet(int newValue):以原子方式设置为 newValue 的值，并返回 旧值。</li>
-</ul></li>
-<li><p>原子更新基本类型的 AtomicInteger，只能更新一个变量，如果要原子更新多个变量，就需要使用这个原子更新引用类型提供的类。Atomic 包提供了以下 3 个类。</p>
-<ul>
-<li>AtomicReference 原子更新引用类型。</li>
-<li>AtomicStampedReference <br/>
-利用版本戳的形式记录了每次改变以后的版本号，这样的话就不会存在 ABA 问题了。AtomicStampedReference 是使用 pair 的 int stamp 作为计数器使用。</li>
-<li>AtomicMarkableReference<br/>
-AtomicMarkableReference 跟 AtomicStampedReference 差不多， AtomicMarkableReference 的 pair 使用的是 boolean mark。</li>
-</ul></li>
-</ul>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/04/22</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			 <a href="java并发编程_1.html">&raquo; Next Page</a> 
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
+              </div>
             
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
                 </div>
-                <div class="side-content">
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
+                  </div>
+                </div>
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15896322618729.html"> 
+                            <h2 class="title">线程等待/通知机制</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15896322618729.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/16</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15882235745444.html"> 
+                            <h2 class="title">CompletableFuture</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15882235745444.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/04/30</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15878284668401.html"> 
+                            <h2 class="title">线程池</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15878284668401.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/04/25</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15878230274351.html"> 
+                            <h2 class="title">阻塞队列</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15878230274351.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/04/25</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15874857577712.html"> 
+                            <h2 class="title">原子操作CAS 无锁操作</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15874857577712.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/04/22</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"  disabled="disabled" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"   href="java并发编程_1.html" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -1649,215 +395,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 

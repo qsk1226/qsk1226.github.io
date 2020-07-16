@@ -1,1236 +1,382 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    redis - 大爷来玩儿啊~
     
-  redis - 大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15948275035029.html">
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>十一、哨兵与集群</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>哨兵是Redis的高可用方案，可以在Redis Master发生故障时自动选择一个Redis Slave切换为Master，继续对外提供服务。</p>
-
-<p>集群提供数据自动分片到不同节点的功能，并且当部分节点失效后仍然可以使用。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/15</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15945438416733.html">
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
                 
-                  <h1>十、主从复制</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Redis 支持主从复制功能，用户可以通过执行slaveof 命令或者在配置文件中设置slaveof选项来开启复制功能。例如</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt;slaveof 127.0.0.1  7000
-OK
-</code></pre>
-
-<p>服务器127.0.0.1:6379 会成为服务器127.0.0.1:7000的从服务器(slaver)，127.0.0.1:7000 是主服务器(master),通过复制功能，从服务器127.0.0.1:6379的数据可以和主服务器127.0.0.1:7000的数据保持同步。</p>
-
-<p>用户可以通过执行 slaveof  no one取消复制功能，此时主从服务器之间会断开连接，从服务器成为普通的Redis实例。</p>
-
-<h2 id="toc_0">1、主从复制功能实现</h2>
-
-<p>主从复制功能主要有以下两点作用</p>
-
-<ul>
-<li>读写分离，单台服务器能支撑的QPS是有上限的，我们可以部署一台主服务器、多台从服务器，主服务器只处理写请求，从服务器通过复制功能同步主服务器数据，只处理读请求，以此提升Redis 服务能力；另外我们还可以通过复制功能来让主服务器免于执行持久化操作：只要关闭主服务器的持久化功能，然后由从服务器去执行持久化操作即可。</li>
-<li>数据容灾，任何服务器都有宕机的可能，我们同样可以通过主从复制功能提升Redis服务的可靠性；由于从服务器与主服务器数据保持同步，一旦主服务器宕机，可以立即将请求切换到从服务器，从而避免Redis服务中断。</li>
-</ul>
-
-<h3 id="toc_1">1.1、 老版Redis复制功能</h3>
-
-<p>在redis 2.8之前的版本中实现主从复制功能分为同步(sync)和命令传播(command propagate)两个操作</p>
-
-<ul>
-<li>同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态。</li>
-<li>命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态。</li>
-</ul>
-
-<p>slaveof命令流程如下图所示：<br/>
-<figure><img src="media/15945438416733/15947441756075.jpg" alt="" style="width:729px;"/></figure></p>
-
-<p>此版本的slavof复制功能缺陷：</p>
-
-<ul>
-<li>初次复制: 从服务器以前没有复制过任何主服务器, 或者从服务器当前要复制的主服务器和上一次复制的主服务器不同。</li>
-<li>断线后重复制: 处于命令传播阶段的主从服务器因为网络原因而中断了复制,但从服务器通过自动重连接重新连上了主服务器,并继续复制主服务器。<br/>
-对于中断后重复制，假如在断开连接之前从服务已经复制了主服务器大部分数据，但是由于中断，在从服务器重新连接上主服务器之后，会重新发送sync命令，生成并发送RDB文件（包含从服务器已经复制过的那部分数据），但是这种续传的方式并不是必须得这样，对于从服务器已经复制过的数据，完全没必要再传输一遍。因此这种方式是比较效率的复制方式。</li>
-</ul>
-
-<p><strong>每次执行SYNC命令的耗时操作</strong>：<br/>
-1)主服务器需要执行 BGSAVE命令来生成RDB文件,这个生成操作会耗费主服务器大量的CPU、内存和融盘IO资源。<br/>
-2)主服务器需要将自已生成的RDB文件发送给从服务器,这个发送操作会耗费主从服务器大量的网络资源(带宽和流量),并对主服务器响应命令请求的时间产生彩响。<br/>
-3)接收到RDB文件的从服务器需要載入主服务器发来的RDB文件,并且在載入期间,从服务器会因为阻塞而没办法处理命令请求。</p>
-
-<p>因为SYVC命令是一个如此耗费资源的操作,所以 Redis有必要保证在真正有需要时才执行SYNC命令。</p>
-
-<h3 id="toc_2">1.2、新版的复制功能</h3>
-
-<p>为了解决老版本的效率低下问题，新版复制功能使用PSYNC命令代替SYNC命令来执行复制时的同步操作。</p>
-
-<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步( partial resynchronization 两种模式:</p>
-
-<ul>
-<li>完整重同步用于处理初次复制情况: 完整重同步的执行步骤和SYNC命令的执行步骤基本一样, 它们都是通过让主服务器创建并发送RDB文件,以及向从服务器发送保存在缓冲区里面的写命令来进行同步。</li>
-<li>部分重同步则用于处理断线后重复制情况:  当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将主从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据库更新至主服务器当前所处的状态。</li>
-</ul>
-
-<p>新版slaveof命令流程如下图所示：<br/>
-<figure><img src="media/15945438416733/15947488155003.jpg" alt="" style="width:833px;"/></figure></p>
-
-<p>部分重同步功能由以下三个部分构成: </p>
-
-<ul>
-<li>主服务器的复制偏移量( replication offset)和从服务器的复制偏移量。</li>
-<li>主服务器的复制积压缓冲区( replication backlog) </li>
-<li>服务器的运行ID( run ID)。</li>
-</ul>
-
-<h4 id="toc_3">1.2.1、复制偏移量</h4>
-
-<p>执行复制的双方 主服务器和从服务器会分别维护一个复制偏移量:</p>
-
-<ul>
-<li>主服务器每次向从服务器传播N个字节的数据时,就将自己的复制偏移量的值加上N。</li>
-<li>从服务器每次收到主服务器传播来的N 个字节的数据时,就将自已的复制偏移量的值加上N。</li>
-</ul>
-
-<p>通过对比主从服务器的复制偏移量,程序可以很容易地知道主从服务器是否处于一致状态:</p>
-
-<ul>
-<li>如果主从服务器处于一致状态,那么主从服务器两者的偏移量总是相同的。</li>
-<li>相反,如果主从服务器两者的偏移量并不相同,那么说明主从服务器并未处于一致状态。</li>
-</ul>
-
-<p>问：如果主服务器向从服务器复制的时候，从服务器掉线后就立即重新连接主服务器,并且成功,那么接下来,从服务器将向主服务器发送 PSYNC命令,报告从服务器当前的复制偏移量为offset, 那么这时, 主服务器应该对从服务器执行完整重同步还是部分重同步呢? </p>
-
-<p>答： 和复制缓冲区有关。</p>
-
-<h4 id="toc_4">1.2.2、复制缓冲区</h4>
-
-<p>复制缓冲区是有主服务器维护的一个固定长度的先进先出的队列。当主服务器进行命令传播的时候，它不仅会将写命令发送给所有的从服务器，还会将写命令入队复制缓冲区。因此主服务器的复制缓冲区会保存一部分最近传播的写命令，并且复制缓冲区会为队列中的每个字节记录相应的复制偏移量。</p>
-
-<p>当从服务器重新连上主服务器时,从服务器会通过PSYC命令将自己的复制偏移量offset发送给主服务器,主服务器会根据这个复制偏移量来决定对从服务器执行何种同步操作:</p>
-
-<ul>
-<li>如果offset偏移量之后的数据(也即是偏移量。 offset+1开始的数据)仍然存在于复制积压缓冲区里面,那么主服务器将对从服务器执行部分重同步操作。</li>
-<li>相反,如果 offset偏移量之后的数据已经不存在于复制积压缓冲区,那么主服务器将对从服务器执行完整重同步操作。</li>
-</ul>
-
-<p><strong>注意：</strong> 正确估算和设置复制缓冲区的大小非常重要。如果主服务器需要执行大量写命令，或者主从服务器断线很长时间后重新连接，复制缓冲区的大小不合理的话，可能导致psync命令的复制重同步模式不能正常发挥作用。</p>
-
-<p>复制缓冲区的大小可根据 公式：断线到重连的平均时间秒数 * 主服务器每秒产生的写命令数据量，为了安全起见可以double 一下这个结果值。</p>
-
-<h4 id="toc_5">1.2.3、 服务器的运行ID</h4>
-
-<p>每台Redis服务器都有一个运行ID，从服务器每次发送psync请求同步数据时，会携带自己需要同步主服务器的运行ID。主服务器接收到psync命令时，需要判断命令参数运行ID与自己的运行ID是否相等，只有相等才有可能执行部分重同步。而当从服务器首次请求主服务器同步数据时，从服务器显然是不知道主服务器的运行ID，此时运行ID以“？”填充，同时复制偏移量初始化为-1。</p>
-
-<h3 id="toc_6">1.3、新版复制同步机制的生产问题</h3>
-
-<p>当在生产环境中，经常会发生如下情况</p>
-
-<ul>
-<li>从服务器重启，复制信息丢失</li>
-<li>主服务器故障导致主从切换(从多台 从服务器中选举出一台作为主服务器，此时，主服务器的运行ID发生变化)<br/>
-这时候显然是无法执行部分重同步的，而这两种情况又很常见，因此Redis 4.0针对主从复制又提出了psync2协议，使得主服务器故障导致主从切换后，依然有可能执行部分重同步。而这时候当主服务器接收到psync命令时，向客户端回复的是“+CONTINUE<new_repl_id>”。参数“psync2”表明从服务器支持psync2协议。。</li>
-</ul>
-
-<h4 id="toc_7">方案一： 持久化主从复制信息</h4>
-
-<p>Redis服务器关闭时，将主从复制信息（复制的主服务器RUN_ID 与复制偏移量）作为辅助字段存储在RDB文件中；Redis服务器启动加载RDB文件时，恢复主从复制信息，重新同步主服务器时携带。</p>
-
-<h4 id="toc_8">方案二： 存储上一个主服务器复制信息</h4>
-
-<p>当主服务器发生故障的时候，从服务器成为新的主服务器时，便使用前一个主服务器的运行ID和复制偏移量。</p>
-
-<p>代码如下所示:</p>
-
-<pre><code class="language-c">char replid2[CONFIG_RUN_ID_SIZE+1];
-long long second_replid_offset;
-</code></pre>
-
-<p>假设m为主服务器（运行ID为M_ID），A、B和C为三个从服务器；某一时刻主服务器m发生故障，从服务器A升级为主服务器（同时会记录replid2=M_ID），从服务器B和C重新向主服务器A发送“psync M_ID psync_offset”请求；显然根据上面条件，只要psync_offset满足条件，就可以执行部分重同步。</p>
-
-<h3 id="toc_9">主从复制的其它问题</h3>
-
-<ul>
-<li>心跳检测<br/>
-主服务器和从服务器之间是通过TCP长连接交互数据的，就必然需要周期性地发送心跳包来检测连接有效性，该字段表示发送心跳包的周期，主服务器以此周期向所有从服务器发送心跳包。可通过配置参数repl-ping-replica-period或者repl-ping- slave-period设置，默认为10。</li>
-</ul>
-
-<p>发送心跳检测从服务器是否有效，那么每次检测多长时间后判定从服务器失效呢？</p>
-
-<p>主服务器会记录每个从服务器上次心跳检测成功的时间repl_ack_time，并且定时检测当前时间距离repl_ack_time是否超过一定超时门限，如果超过则认为从服务器处于失效状态。字段repl_min_slaves_max_lag存储的就是该超时门限，可通过配置参数min-slaves-max-lag或者min- replicas-max-lag设置该超时阈值，默认为10，单位秒。</p>
-
-<p>repl_min_slaves_to_write表示当有效从服务器的数目小于该值时，主服务器会拒绝执行写命令。</p>
-
-<p>当主服务器配置了“requirepass password”时，即表示从服务器必须通过密码认证才能同步主服务器数据。同样的需要在从服务器配置“masterauth<master-password>”，用于设置请求同步主服务器时的认证密码。</p>
-
-<p>当主从服务器断开连接时，通过配置参数slave-serve-stale-data 或者replica-serve-stale-data设置，默认为1，设置从服务器是否继续处理命令请求。</p>
-
-<p>可通过配置参数slave-read-only或者replica-read-only设置，默认为1，设置从服务器是否可以处理写命令请求，默认是从服务器是只读的，除非该命令是主服务器发送过来的。</p>
-
-<p>复制缓冲区，用于缓存主服务器已执行且待发送给从服务器的命令请求；缓冲区大小由字段repl_backlog_size指定，其可通过配置参数repl-backlog-size设置，默认为1MB。</p>
-
-<p>从服务器通过时间事件处理函数 serverCron，以一秒为周期执行主从复制操作。在时间事件处理是，从服务器想主服务器发起连接请求，成功连接之后，创建对应的文件事件。此外事件事件还用于检测主从连接是否超时，定时向服务器发送心跳包，定时报告自己的复制偏移量等。</p>
-
-<p>用户可通过参数repl-timeout 配置，默认为60，单位秒，超过此时间则认为主从服务器之间的连接出现故障，从服务器会主动断开连接。</p>
-
-<p>当从服务器接收到slaveof命令时，会主动连接主服务器请求同步数据，这并不是一蹴而就的，需要若干个步骤交互：</p>
-
-<ul>
-<li>设置主服务器的地址和端口号</li>
-<li>连接Socket；</li>
-<li>发送PING请求包确认连接是否正确；</li>
-<li>发起密码认证（如果需要，通过 masterauth  <master-pwd>进行验证）；</li>
-<li>信息同步；</li>
-<li>发送PSYNC命令；</li>
-<li>接收RDB文件并载入；</li>
-<li>连接建立完成，等待主服务器同步命令请求。</li>
-</ul>
-
-<p>当从服务器支持eof 功能时 主服务器可以直接将数据库中数据以RDB协议格式通过socket发送给从服务器，免去了本地磁盘文件不必要的读写操作；</p>
-
-<p>通过配置参数repl-diskless-sync进行设置完整同步是生成RDB文件持久化到磁盘发送还是直接通过socket进行发送，默认为0；即默认情况下，主服务器都是先持久化数据到本地文件，再将该文件发送给从服务器。</p>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/12</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15943917797824.html">
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
                 
-                  <h1>九、Redis 持久化--AOF（二）</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>AOF是Redis的另外一种持久化方式。简单来说，AOF就是将Redis服务端执行过的每一条命令都保存到一个文件，这样当Redis重启时只要按顺序回放这些命令就会恢复到原始状态。</p>
 
-<hr/>
-
-<p><strong>问</strong>：既然已经有了RDB为什么还需要AOF呢？</p>
-
-<p>答：RDB保存的是一个时间点的快照，那么如果Redis出现了故障，丢失的就是从最后一次RDB执行的时间点到故障发生的时间间隔之内产生的数据。如果Redis数据量很大，QPS很高，那么执行一次RDB需要的时间会相应增加，发生故障时丢失的数据也会增多。</p>
-
-<p>而AOF保存的是一条条命令，理论上可以做到发生故障时只丢失一条命令。但由于操作系统中执行写文件操作代价很大，Redis提供了配置参数，通过对安全性和性能的折中，我们可以设置不同的策略。</p>
-
-<hr/>
-
-<p><strong>问</strong>：既然AOF数据安全性更高，是否可以只使用AOF呢？为什么Redis推荐RDB和AOF同时开启呢？</p>
-
-<p>答：RDB保存的是最终的数据，是一个最终状态，而AOF保存的是达到这个最终状态的过程。很明显，如果Redis有大量的修改操作，RDB中一个数据的最终态可能会需要大量的命令才能达到，这会造成AOF文件过大并且加载时速度过慢（Redis提供了一种AOF重写的策略来解决上述问题，后文会详细描述其实现原理）。</p>
-
-<p>再来考虑一下AOF和RDB文件的加载过程。RDB只需要把相应数据加载到内存并生成相应的数据结构（有些结构如intset、ziplist，保存时直接按字符串保存，所以加载时速度会更快），而AOF文件的加载需要先创建一个伪客户端，然后把命令一条条发送给Redis服务端，服务端再完整执行一遍相应的命令。根据Redis作者做的测试，RDB 10s～20s能加载1GB的文件，AOF的速度是RDB速度的一半（如果做了AOF重写会加快）。因为AOF和RDB各有优缺点，因此Redis一般会同时开启AOF和RDB。</p>
-
-<hr/>
-
-<p>但假设线上同时配置了RDB和AOF，那么会带来如下的两难选择：重启时如果优先加载RDB，加载速度更快，但是数据不是很全；如果优先加载AOF，加载速度会变慢，但是数据会比RDB中的要完整。</p>
-
-<p>能不能结合这两者的优点呢？答案是AOF和RDB的混合持久化方案，</p>
-
-<hr/>
-
-<h2 id="toc_0">1、AOF的执行流程</h2>
-
-<p>先介绍Redis服务端执行命令时如何同步到AOF文件以及AOF文件的格式，然后介绍Redis不同的配置对性能和安全性的影响。</p>
-
-<h3 id="toc_1">1.1、AOF命令同步</h3>
-
-<p>通过《<a href="15934396305281.html">三、redis命令处理生命周期</a> 》的执行流程，我们看到每一条命令的执行都会processCommand命令，processCommand命令的执行都会调用 call 函数，AOF命令的同步就是在 call命令中实现的。</p>
-
-<p><figure><img src="media/15943917797824/15943937599696.jpg" alt="AOF命令同步"/><figcaption>AOF命令同步</figcaption></figure></p>
-
-<p>如果开启了AOF，则每条命令执行完毕后都会同步写入aof_buf 中，aof_buf是个全局的SDS类型的缓冲区。</p>
-
-<p>那么命令是按什么格式写入缓冲区中的呢？</p>
-
-<p>Redis通过catAppendOnlyGenericCommand函数将命令转换为保存在缓冲区中的数据结构，</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; SET redis-key value1
-# 保存在缓冲区中的格式
-*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
-</code></pre>
-
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
-
-<p>那么命令写入缓冲区后何时同步到文件中呢？</p>
-
-<h3 id="toc_2">1.2、AOF文件写入</h3>
-
-<p>为了提高文件的写入效率,在现代操作系中,当用户调用 write函数,将一些数据写入到文件的时候,操作系统通常会将写入数据暂时保存在一个内存冲区里面, 等到缓冲区的空间被填满、或者超过了指定的时限之后,才真正地将缓冲区中的数据写入到磁盘里面。</p>
-
-<p>这种做法虽然提高了效率,但也为写入数据带来了安全问题,因为如果计算机发生停机,那么保存在内存缓冲区里面的写入数据将会丢失。<br/>
-为此,系统提供了 fsync和 fdatasync两个同步函数,它们可以强制让操作系统立即将缓冲区中的数据写入到项盘里面,从而确保写入数据的安全性。</p>
-
-<p>AOF持久化最终需要将缓冲区中的内容写入一个文件，写文件通过操作系统提供的write函数执行。但是write之后数据只是保存在kernel的缓冲区中，真正写入磁盘还需要调用 fsync 函数。fsync是一个阻塞并且缓慢的操作，所以Redis通过appendfsync配置控制执行fsync 的频次。具体有如下3种模式：</p>
-
-<ul>
-<li>no ：不执行fsync，将aof_buf 缓冲区中的所有内容写入到AOF文件，但不对AOF文件进行同步，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</li>
-<li>always：每执行一次写入就会执行一次fsync。数据安全性最高但会导致Redis性能降低。</li>
-<li>everysec： 每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡。</li>
-</ul>
-
-<p>生产环境一般配置为appendfsync everysec，即每秒执行一次fsync 操作。</p>
-
-<h3 id="toc_3">1.3、AOF 重写</h3>
-
-<p>随着Redis服务的运行，AOF文件会越来越大，并且当Redis服务有大量的修改操作时，对同一个键可能有成百上千条执行命令。AOF 重写通过fork出一个子进程来执行，重写不会对原有文件进行任何修改和读取，子进程对所有数据库中所有的键各自生成一条相应的执行命令，最后将重写开始后父进程继续执行的命令进行回放，生成一个新的AOF文件。</p>
-
-<p>示例如下：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; rpush list 1 2 3         //list中增加1,2,3三个元素
-(integer)3 
-127.0.0.1:6379&gt; rpush list 4             //list中增加4 
-(integer)4 
-127.0.0.1:6379&gt; rpush list 5         //list中增加5
-(integer)5 
-127.0.0.1:6379&gt; lpop list            //弹出第一个元素
-&quot;1&quot;
-</code></pre>
-
-<p>AOF重写就是直接按当前list中的内容写为“rpush list 2345”。4条命令变为了一条命令，既可以减小文件大小，又可以提高加载速度。</p>
-
-<h3 id="toc_4">1.4、AOF重写触发方式</h3>
-
-<p>AOF重写有两种触发方式：一种为通过配置自动触发，一种为手动执行bgrewriteaof命令显式触发。</p>
-
-<ul>
-<li><p>看自动触发方式，做如下配置：</p>
-<pre><code class="language-text">auto-aof-rewrite-percentage 100 
-auto-aof-rewrite-min-size 64mb
-</code></pre>
-<p>当AOF文件大于64MB时，并且AOF文件当前大小比基准大小增长了100%时会触发一次AOF重写。那么基准大小如何确定呢？起始的基准大小为Redis重启并加载完AOF文件之后，aof_buf的大小。当执行完一次AOF重写之后，基准大小相应更新为重写之后AOF文件的大小。当做了如上配置之后， Redis服务器会根据配置自动触发AOF重写。</p></li>
-<li><p>手动触发AOF<br/>
-下面我们看下手动触发AOF重写，即通过AOF客户端输入 bgrewriteaof 之后的执行流程。 </p></li>
-</ul>
-
-<p><figure><img src="media/15943917797824/15945412157461.jpg" alt="" style="width:1273px;"/></figure></p>
-
-<p>子进程执行重写时可能会有成千上万条命令继续在父进程中执行，那么如何保证重写完成后的文件也包括这些命令呢？</p>
-
-<p>首先需要在父进程中将重写过程中执行的命令进行保存，其次需要将这些命令在重写后的文件中进行回放。</p>
-
-<p>Redis为了尽量减少主进程的阻塞时间，通过管道按批次将父进程累积的命令发送给子进程，由子进程重写完成后进行回放。</p>
-
-<p>那么如何通过管道同步给子进程呢？分析下下图<br/>
-<figure><img src="media/15943917797824/15945418134506.jpg" alt=""/></figure></p>
-
-<p>父进程在fork之前会建立3对管道：fd0/fd1、fd2/fd3、fd4/fd5，它们各自配对执行。父进程通过fd1将执行aof重写时累积的命令发送给子进程，子进程通过fd0进行接收并保存。当子进程执行完重写之后，向fd3写入一个“！”号通知父进程不需要继续通过管道发送累积命令，父进程通过fd2接收到“！”号之后向fd5也写入一个“！”号进行确认。子进程通过fd4同步阻塞接收到“！”号后才可进行后续的退出操作。退出时首先会将接收到的累积命令进行回放，然后执行fsync。</p>
-
-<h3 id="toc_5">1.5、混合持久化</h3>
-
-<p>混合持久化指进行AOF重写时子进程将当前时间点的数据快照保存为RDB文件格式，而后将父进程累积命令保存为AOF格式。最终形成 RDB file和 AOF file共存的保存形式。</p>
-
-<p>加载时，首先会识别AOF文件是否以REDIS字符串开头，如果是，就按RDB格式加载，加载完RDB后继续按AOF格式加载剩余部分。</p>
-
-<p>是否开启混合持久化由如下配置设置</p>
-
-<pre><code class="language-text">aof-use-rdb-preamble yes
-</code></pre>
-
-<h3 id="toc_6">总结</h3>
-
-<ul>
-<li>AOF文件通过保存所有修改数据库的写命令来记录服务器的数据库状态</li>
-<li>AOF文件中的所有命令都以Redis命令请求协议的格式保存</li>
-<li>命令请求会先保存到AOF缓冲区里面，之后再定期写入并同步到AOF文件</li>
-<li>appendfsync选项的不同值对AOF持久化功能的安全性以及 Redis服务器的性能有很大的影响</li>
-<li>服务器只要载入并重新执行保存在 AOF文件中的命令，就可以还原数据库本来的状态</li>
-<li>AOF重写可以产生一个新的 AOF文件，这个新的 AOF文件和原有的AOF文件保存的数据库状态一样，但体积更小</li>
-<li>AOF重写功能是通过读取数据库中的键值对来实现的，程序无需对现有的AOF文件进行任何读入、分析或者写入操作</li>
-<li>执行 bgrewriteaof命令的时候，redis 服务器会维护一个AOF重写缓冲区,该缓冲区会在子进程创建新的 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新AOF文件工作之后，服务器会将重写缓冲区中的所有内容追加到 新AOF文件的末尾，使新旧两个AOF文件所保存的数据库状态一致。最后，服务器使用新的 AOF 文件替换旧的AOF文件，来完成AOF文件的重写操作。</li>
-</ul>
-
-<hr/>
-
-<h2 id="toc_7">2、RDB 与 AOF 相关配置指令</h2>
-
-<table>
-<thead>
-<tr>
-<th>配置项</th>
-<th>可选值</th>
-<th>功能</th>
-<th>作用</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>save</td>
-<td><code>&lt;secondes&gt; &lt;changes&gt;</code> 默认：save 900 1、save 300 10、save 60 10000</td>
-<td>RDB</td>
-<td>自动触发配置</td>
-</tr>
-<tr>
-<td>stop-writes-on-bgsave-error</td>
-<td>yes/no(默认yes)</td>
-<td>RBD</td>
-<td>开启该参数后，如果开启了RDB 快照（即配置了save指令），并且最近一次快照执行失败，则Redis 将停止接收写相关的请求。</td>
-</tr>
-<tr>
-<td>rdbcompression</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>执行RDB快照时是否将 string类型的数据进行LZF压缩。</td>
-</tr>
-<tr>
-<td>rdbchecksum</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>是否开启RDB文件内容的校验</td>
-</tr>
-<tr>
-<td>dbfilename</td>
-<td>文件名称(默认 dump.rdb)</td>
-<td>RDB</td>
-<td>RDB文件名称</td>
-</tr>
-<tr>
-<td>dir</td>
-<td>文件路径(默认./)</td>
-<td>RDB</td>
-<td>RDB和AOF文件存放路径</td>
-</tr>
-<tr>
-<td>rdb-save-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>开启该参数后，生成RDB文件时每产生32MB数据就执行一次fsync。</td>
-</tr>
-<tr>
-<td>appendonly</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>是否开启 AOF 功能</td>
-</tr>
-<tr>
-<td>appendfilename</td>
-<td>文件名称(默认 appendonly.aof)</td>
-<td>AOF</td>
-<td>AOF 文件名称</td>
-</tr>
-<tr>
-<td>appendfsync</td>
-<td>always/everysec/no (默认 everysec)</td>
-<td>AOF</td>
-<td>fsync执行频次,always：将aof_buf缓冲区中的所有内容写入并同步到AOF文件；everysec:每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡;no:  不执行fsync，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</td>
-</tr>
-<tr>
-<td>no-appendfsync-on-rewrite</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>开启该参数后，如果后台正在执行一次RDB快照或者AOF重写，则主进程不再进行fsync操作（即使将appendfsync配置为always或者everysec）</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-percentage</td>
-<td>百分比(默认100)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于auto-aof-rewrite-min-size 配置的大小 并且比基准文件增长此百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-min-size</td>
-<td>文件大小(默认64MB)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于此配置值，并且当前AOF文件 比基准文件增长auto-aof-rewrite-percentage配置的百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>aof-load-truncated</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>AOF文件以追加日志的方式生成，所以服务端发生故障时可能会有尾部命令不完整的情况。开启该参数后，在此种情况下，AOF文件会截断尾部不完整的命令然后继续加载，并且会在日志中进行提示。如果不开启该参数，则加载AOF文件时会打印错误日志，然后直接退出</td>
-</tr>
-<tr>
-<td>aof-use-rdb-preamble</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>是否开启混合持久化</td>
-</tr>
-<tr>
-<td>aof-rewrite-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>开启该参数后，AOF重写时没产生32MB数据执行一次fsync</td>
-</tr>
-</tbody>
-</table>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/10</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15942163464303.html">
-                
-                  <h1>八、Redis 持久化--RDB（一）</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Redis 是一个内存数据库，为了保证数据不丢失，持久化就显得尤为重要了。Redis 有两种持久化方法:RDB方式，RDB保存某一个时间点之前的数据；另一种为AOF方式，AOF保存的是Redis服务器端执行的每一条命令。</p>
-
-<p>通过info命令查看 redis服务端记录的相关持久化状态信息：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt;info
-# Persistence 
-loading:0                               //是否正在加载RDB文件内容
-rdb_changes_since_last_save:2           //最后一次保存之后改变的键的个数
-rdb_bgsave_in_progress:0                //是否正在后台执行RDB保存任务
-rdb_last_save_time:1540371552           //最后一次执行RDB保存任务的时间
-rdb_last_bgsave_status:ok               //最后一次执行RDB保存任务的状态
-rdb_last_bgsave_time_sec:0              //最后一次执行RDB保存任务消耗的时间
-rdb_current_bgsave_time_sec:-1          //如果正在执行RDB保存任务，则为当前RDB任务已经消耗的时间，否则为-1 
-rdb_last_cow_size:6631424               //最后一次执行RDB保存任务消耗的内存
-aof_enabled:0                           //是否开启了AOF功能aof_rewrite_in_progress:0               //是否正在后台执行AOF重写任务
-aof_rewrite_scheduled:0                 //是否等待调度一次AOF重写任务。如果触发了一次AOF重写，                                          但是后台正在执行RDB保存任务时会将该状态置为1 
-aof_last_rewrite_time_sec:-1            //最后一次执行AOF重写任务消耗的时间
-aof_current_rewrite_time_sec:-1         //如果正在执行AOF重写任务，则为当前该任务已经消耗的时间，否则为-1 
-aof_last_bgrewrite_status:ok            //最后一次执行AOF重写任务的状态
-aof_last_write_status:ok                //最后一次执行AOF缓冲区写入的状态（服务端执行命令时会开辟一段内存空间将命令放入其中，然后从该缓冲区中同步到文件。该状态标记最后一次同步到文件的状态
-aof_last_cow_size:0                     //最后一次执行AOF重写任务消耗的内存
-
-</code></pre>
-
-<h2 id="toc_0">RDB 持久化方式</h2>
-
-<p>RDB持久化方式是保存一个时间点的快照。</p>
-
-<p>RDB快照有两种触发方式</p>
-
-<ul>
-<li>配置参数，在配置文件中写入 <code>save 60 1000</code>，则在60秒内如果有1000个key发生变化，就出发一次RDB快照执行。</li>
-<li>通过客户端执行 bgsave 命令显式的触发一次RDB快照的执行。</li>
-</ul>
-
-<p>bgsave执行流程如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942173127342.jpg" alt="bgsave 执行流程"/><figcaption>bgsave 执行流程</figcaption></figure></p>
-
-<p>在客户端输入 bgsave 命令后，Redis调用 bgsaveCommand 函数，该函数fork一个子进程执行 rdbSave 函数进行实际的快照存储工作，而父进程可以继续处理客户端请求。当子进程退出后，父进程调用相关回调函数进行后续处理。</p>
-
-<h3 id="toc_1">RDB文件结构</h3>
-
-<p>RDB 整体文件结构如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942232766455.jpg" alt=""/></figure></p>
-
-<ul>
-<li>头部5字节固定为“REDIS”字符串</li>
-<li>4字节的RDB版本号（RDB_VERSION，注意不是Redis的版本号），当前RDB版本号为9，填充为4字节之后为0008。</li>
-<li><p>辅助字段AUX_FIELD_KEY_VALUE_PAIRS，辅助字段可以标明以下信息</p>
-<table>
-<thead>
-<tr>
-<th>字段名称</th>
-<th>字段值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>redis-ver</td>
-<td>5.0.04</td>
-</tr>
-<tr>
-<td>redis-bits</td>
-<td>64/32</td>
-</tr>
-<tr>
-<td>ctime</td>
-<td>当前时间戳</td>
-</tr>
-<tr>
-<td>used-mem</td>
-<td>redis占用内存</td>
-</tr>
-<tr>
-<td>aof-preamble</td>
-<td>是否开启aof/rdb混合持久化</td>
-</tr>
-<tr>
-<td>repl-stream-db</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-id</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-offset</td>
-<td>主从复制相关</td>
-</tr>
-</tbody>
-</table></li>
-<li><p>数据库序号：指明数据需要存放到哪个数据库</p></li>
-<li><p>当前数据库键值对散列表的大小，这样在加载时可以直接将散列表扩展到指定大小，提升加载速度。</p></li>
-<li><p>当前数据库过期时间散列表的大小</p></li>
-<li><p>Redis中具体键值对的存储</p></li>
-<li><p>RDB文件结束标志</p></li>
-<li><p>8字节校验码</p></li>
-</ul>
-
-<p>加载RDB文件的时候怎么区分加载的是辅助字段还是数据库序号或者是其他类型呢？其实在RDB每一部分之前都有一个类型字节，在Redis中称为opcodes，opcodes如下所示：</p>
-
-<pre><code class="language-c">#define RDB_OPCODE_MODULE_AUX    247        //module相关辅助字段
-#define RDB_OPCODE_IDLE          248        //lru空闲时间
-#define RDB_OPCODE_FREQ          249        //lfu频率
-#define RDB_OPCODE_AUX           250        //辅助字段类型
-#define RDB_OPCODE_RESIZEDB      251        //RESIZEDB，即上文中介绍的5和6两项
-#define RDB_OPCODE_EXPIRETIME_MS 252        //毫秒级别过期时间
-#define RDB_OPCODE_EXPIRETIME    253        //秒级别过期时间
-#define RDB_OPCODE_SELECTDB      254        //数据库序号，即第4项
-#define RDB_OPCODE_EOF           255        //结束标志，即第8项
-</code></pre>
-
-<p>带opcodes 的RDB 结构表显形式</p>
-
-<p><figure><img src="media/15942163464303/15942254144953.jpg" alt=""/></figure></p>
-
-<p>下面我们看下 键值对的结构，如下图所示<br/>
-<figure><img src="media/15942163464303/15942257282611.jpg" alt=""/></figure></p>
-
-<ul>
-<li>EXPIRE_TIME: 可选。根据具体的键是否有过期时间决定，该字段固定为8个字节。</li>
-<li>LRU或者LFU：可选。根据配置的内存淘汰算法决定。LRU算法保存秒级别的时间戳，LFU算法只保存counter的计数（0～255，1 字节）</li>
-<li><p>VALUE_TYPE：值类型。Redis数据类型和底层编码结构<br/>
-<figure><img src="media/15942163464303/15942258850154.jpg" alt=""/></figure></p></li>
-<li><p>KEY：键。键保存为字符串，下文会详细介绍字符串的保存形式。</p></li>
-<li><p>VALUE：值。值根据数据类型和编码结构保存为不同的形式</p></li>
-</ul>
-
-<h3 id="toc_2">RDB键的保存形式</h3>
-
-<p>redis中键都是字符串，比较常见的保存方法如下图所示：<br/>
-<figure><img src="media/15942163464303/15943123637192.jpg" alt=""/></figure></p>
-
-<p>前边LENGTH字段表示字符串长度，后边STRING即具体的字符串内容。</p>
-
-<p>Redis中的LENGTH是个变长字段，通过首字节能够知道LENGTH字段有多长，然后读取LENGTH字段可以知道具体的STRING长度。LENGTH字段类型如下:</p>
-
-<pre><code class="language-shell">00xxxxxx   #表示LENGTH字段占用1个字节，STRING的长度保存在后6个比特中，最长为63。
-01xxxxxx xxxxxxxx  #表示LENGTH字段占用2个字节，而STRING的长度保存在后14个字节中，最长为16383 
-10000000 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  表示LENGTH字段共占用5个字节，正好是一个无符号整型，STRING的长度最长为UINT32_MAX。 
-10000001 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx #如果STRING长度大于UINT32_MAX，则首字节表示为10000001，LENGTH字段共占用9个字节。后8字节表示实际长度，为一个LONG类型。
-</code></pre>
-
-<p>RDB中对字符串的保存还有两种优化形式：</p>
-
-<ul>
-<li><p>一种是尝试将字符串按整型保存<br/>
-<figure><img src="media/15942163464303/15943127989186.jpg" alt="字符串按整型保存"/><figcaption>字符串按整型保存</figcaption></figure> </p>
-<p>TYPE字段其实类似图20-5中的LENGTH字段，LENGTH字段首字节头两个比特取值为00、01、10这种类型，TYPE字段首字节头两个比特取值为11，后6个比特表明存储的整型类型，如下所示：</p>
-<pre><code class="language-text">11000000 xxxxxxxx  INT8   取值范围[-128,127] 
-11000001 xxxxxxxx xxxxxxxx INT16 取值范围[-32768,32767] <br/>
-11000010 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  INT32 取值范围[-2147483648 ,  2147483647] 
-</code></pre></li>
-<li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
-<figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
-</ul>
-
-<h3 id="toc_3">RDB 值保存形式</h3>
-
-<p>值类型有如下图所示：<br/>
-<figure><img src="media/15942163464303/15943894568628.jpg" alt=""/></figure></p>
-
-<p>其中字符串类型的保存于 上面的《键的保存形式》相同，其余几种值的保存形式各不相同</p>
-
-<h4 id="toc_4">列表类型的保存</h4>
-
-<p>列表在Redis中编码为 quicklist结构，从整体看是一个双向链表，但链表的每个节点在Redis中编码为zipList结构，ziplist结构在一块连续的内存中保存，并且保存时可以选择进行LZF压缩或者不压缩。据此，RDB 保存列表类型的结构如图所示：</p>
-
-<p>ziplist未压缩<br/>
-<figure><img src="media/15942163464303/15943897652665.jpg" alt=""/></figure></p>
-
-<p>ziplist压缩：</p>
-
-<p><figure><img src="media/15942163464303/15943898009527.jpg" alt=""/></figure></p>
-
-<p>如果ziplist未压缩，每个ziplist按照字符串保存，如果ziplist进行了压缩，则按照下图方式进行保存<br/>
-<figure><img src="media/15942163464303/15943899607716.jpg" alt="" style="width:544px;"/></figure></p>
-
-<h4 id="toc_5">集合类型的保存</h4>
-
-<p>集合类型在Redis中有两种编码方式：一种为intset，另一种为Hash。<br/>
-intset在Redis中也是一块连续的内存，所以intset的保存比较简单，直接将intset按字符串保存。</p>
-
-<p>如果编码为Hash，保存结构如下图所示：<br/>
-<figure><img src="media/15942163464303/15943908892309.jpg" alt=""/></figure><br/>
-第一个字段为字典的大小，接下来逐字段保存字典的键。为什么只保存键呢？其实集合类型使用散列表保存时只使用了键，所有的值都保存为NULL，所以此处只需要保存散列表的键。</p>
-
-<h4 id="toc_6">有序集合类型的保存</h4>
-
-<p>有序集合类型在Redis中也有两种编码方式：一种为ziplist，另一种为skiplist。如果编码为ziplist，即将ziplist整体作为一个字符串保存。所以我们重点看编码为skiplist的保存方式</p>
-
-<p><figure><img src="media/15942163464303/15943913158909.jpg" alt=""/></figure><br/>
-第一个字段为skiplist包含的元素个数，接着分别按元素和元素的分值依次保存。元素保存为字符串，元素分值保存为一个双精度浮点数类型（固定为8个字节）</p>
-
-<h4 id="toc_7">散列类型的保存</h4>
-
-<p>散列类型也有两种编码方式：一种为ziplist，一种为Hash。ziplist 编码方式的保存同有序集合。重点看散列类型按Hash编码时的保存方式。<br/>
-<figure><img src="media/15942163464303/15943913962043.jpg" alt=""/></figure><br/>
-第一个字段为散列表的大小，然后依次保存键值对，键值都保存为字符串类型。</p>
-
-<h4 id="toc_8">Stream类型的保存</h4>
-
-<p>Stream保存为RDB文件时整体格式如图所示：<br/>
-<figure><img src="media/15942163464303/15943914536802.jpg" alt=""/></figure><br/>
-其中具体的结构体介绍，如listpack，消费组等的介绍参考<a href="15938782048225.html">六、Redis 数据流 stream </a>。其中保存消费组的PEL时并没有保存相关消费者的信息，而是在加载完消费者之后，从消费者的PEL中查找并更新消费组PEL的相关信息。</p>
-
-<h3 id="toc_9">RDB 实例</h3>
-
-<p>我们查看一下空的 redis 库是怎样的</p>
-
-<pre><code class="language-text">127.0.0.1:6379&gt;flushall
-ok
-127.0.0.1:6379&gt;bgsave
-Background saving started
-</code></pre>
-
-<pre><code class="language-text">➜  redis xxd dump.rdb
-00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis
-00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi
-00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.
-00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..
-00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl
-00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;
-➜  redis od -cx dump.rdb
-0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s
-             4552    4944    3053    3030    fa39    7209    6465    7369
-0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i
-             762d    7265    3505    302e    382e    0afa    6572    6964
-0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032
-             2d73    6962    7374    40c0    05fa    7463    6d69    c265
-0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020
-             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2
-0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l
-             1009    fa00    610c    666f    702d    6572    6d61    6c62
-0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;
-             c065    ff00    39fe    d9f4    3227    222a
-0000134
-</code></pre>
-
-<ul>
-<li>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</li>
-<li>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</li>
-<li>bgsave由紫禁城执行保存操作，不会阻塞服务器</li>
-<li>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</li>
-<li>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</li>
-<li>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</li>
-</ul>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/08</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15940318259166.html">
-                
-                  <h1>七、Redis 事务</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Redis 中的事务能够保证一批命令的原子性操作，redis提供了 事务的命令有 watch、unwatch、multi、exec、discard 。<br/>
-事务从开始到结束经历以下三个阶段：</p>
-
-<ul>
-<li><p>multi 开启事务<br/>
-Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。<br/>
-multi命令源码：</p>
-<pre><code class="language-redis">void multiCommand(client *c) {     
-    //如果已经执行过multi命令，则不能再次执行<br/>
-    if (c-&gt;flags &amp; CLIENT_MULTI) {        <br/>
-        addReplyError(c,&quot;MULTI calls can not be nested&quot;);         <br/>
-        return;     <br/>
-    }     <br/>
-    //client结构体置CLIENT_MULTI标志<br/>
-    c-&gt;flags |= CLIENT_MULTI;                            <br/>
-    addReply(c,shared.ok); <br/>
-}
-</code></pre></li>
-<li><p>所有的命令会首先入队而不是直接执行</p>
-<ul>
-<li>当一个客户端处于非事务状态时，这个客户端发送的命令会立即被服务器执行。</li>
-<li>当一个客户端处于事务状态后，服务器会根据客户端发来的不同命令执行不同的操作
-<ul>
-<li>发送命令 exec、discard、watch、unwatch，服务器会立即执行此命令</li>
-<li>发送非exec、discard、watch、unwatch 命令，将这个命令放入一个事务队列里面，然后向客户端返回QUEUED回复。</li>
-</ul></li>
-</ul>
-<pre><code class="language-text">int processCommand(client *c) {
-    ...<br/>
-        if (c-&gt;flags &amp; CLIENT_MULTI <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand <br/>
-            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {<br/>
-            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            <br/>
-            queueMultiCommand(c);        //放入队列            <br/>
-            addReply(c,shared.queued);         <br/>
-        } else {                        <br/>
-            //否则调用call命令            <br/>
-            call(c,CMD_CALL_FULL);         <br/>
-            ...<br/>
-        } <br/>
- ...<br/>
-}
-</code></pre></li>
-<li><p>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</p></li>
-</ul>
-
-<p>watch命令提供了一种乐观锁机制。watch命令可以监听多个key，只有当被监听的key未修改时，事务才会执行。当一个事务发送exec或者discard命令后，所有watch的key会自动unwatch。</p>
-
-<p>unwatch 命令其实就是删除相应client端和server端的监听状态。首先从client端的链表中取出key和对应的db，然后删除server端相应的监听信息，删除成功后再将client端的对应链表节点删除。执行完毕后，该连接所有被监听的key都会恢复到未监听状态。</p>
-
-<p>discard命令放弃事务。放弃一个事务时首先会将所有入队命令清空，然后将client上事务相关的flags清空，最后将所有监听的keys取消监听。</p>
-
-<p><strong><em>Redis 事务不支持事务回滚机制</em></strong>，即使事务队列中的某个命令在执行期间发生错误，整个事务也会继续执行下去，直到将事务队列中的所有命令都执行完毕为止。</p>
-
-<h2 id="toc_0">事务队列</h2>
-
-<p>每个redis 客户端都有自己的事务状态，这个事务状态保存在客户端状态的mstate属性中</p>
-
-<pre><code class="language-c">typedef struct client {
-    multiState mstate;   //命令队列，会将所有的命令按照顺序排列好并保存
-} client;
-
-typedef struct multiState {
-    multiCmd *commands;//命令队列，FIFO顺序
-    int count;// 已入队命令计数
-}
-
-typedef struct multiCmd {
-
-    robj **argv;//参数
-    int argc;//参数数量
-    struct redisCommand *cmd;//命令指针
-</code></pre>
-
-<p>事务队列以先进先出(FIFO)的方式保存入队命令。</p>
-
-<h2 id="toc_1">判断事务是否安全</h2>
-
-<p>当客户端 执行 exec 提交事务的时候，服务器会根据这个客户端是否打开了 REDIS_DIRTY_CAS 标识来决定是否执行事务。</p>
-
-<ul>
-<li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识已经被打开，那么说明客户端所监视的键当中，至少有一个键已经被修改过，这种情况，客户端提交的事务已经不再安全，这是服务器拒绝执行客户端提交的事务。</li>
-<li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识没有被打开，说明客户端监视的所有键都没有被修改过，事务仍然安全，服务器将执行客户端提交的事务。</li>
-</ul>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/06</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			 <a href="redis_1.html">&raquo; Next Page</a> 
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
+              </div>
             
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
                 </div>
-                <div class="side-content">
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
+                  </div>
+                </div>
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15948275035029.html"> 
+                            <h2 class="title">十一、哨兵与集群</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15948275035029.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/15</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15945438416733.html"> 
+                            <h2 class="title">十、主从复制</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15945438416733.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/12</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15943917797824.html"> 
+                            <h2 class="title">九、Redis 持久化--AOF（二）</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15943917797824.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/10</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15942163464303.html"> 
+                            <h2 class="title">八、Redis 持久化--RDB（一）</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15942163464303.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/08</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15940318259166.html"> 
+                            <h2 class="title">七、Redis 事务</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15940318259166.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/06</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"  disabled="disabled" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"   href="redis_1.html" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -1249,215 +395,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 

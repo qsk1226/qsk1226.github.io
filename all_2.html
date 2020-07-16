@@ -1,1747 +1,382 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    大爷来玩儿啊~
     
-  大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15936158582613.html">
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>四、Redis  通用命令</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>redis 是一个键值对数据库服务器，服务器中的每个数据库都有 redisDB 结构表示( 在<a href="15934396305281.html">redis命令处理生命周期</a> 文章中查找)， redisDb 结构的dict字典保存了数据库中的所有的键值对。</p>
-
-<p>所有针对数据库的操作，比如本章节的键相关命令还是基本数据类型相关的命令，实际上都是通过对键空间字典进行操作来实现的。</p>
-
-<p>在读写键空间的时候，redis会进行一些维护操作</p>
-
-<ul>
-<li>读写一个键之后，服务器会根据键是否存在来更新服务器的键空间命中 (hit) 次数或键空间未命中(miss)次数，这两个值可以在 info stats 命令的keyspace_hits和keyspace_misses 属性中查看</li>
-<li>在读取一个键之后，服务器会更新键的 LRU （最后一次使用）时间，这个值可以用于计算键的空闲时间，以方便对象内存的释放与回收</li>
-<li>如果服务器在读取一个键时发现该键已经过期，那么服务器会先删除这个过期键，然后才执行余下的其它操作</li>
-<li>如果游客户端使用watch 命令见识了某个键，那么服务器在对被监视的键进行更新之后，会将这个件标记为 dirty ，从而让食物程序注意到这个件已经被修改过</li>
-<li>服务器每次修改一个键之后，会对dirty键计数器的值 增 1，这个计数器会触发服务器的持久化以及复制操作</li>
-<li>服务器开启了数据库通知功能，那么在对键进行修改之后，服务器将按照配置发送相应的数据库通知，用于Redis的发布订阅功能。</li>
-</ul>
-
-<h2 id="toc_0">1、Redis 键相关命令</h2>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>del key [key ...]</td>
-<td>同步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>exists key</td>
-<td>查看key是否存在</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>expire key seconds</td>
-<td>设置键的过期时间</td>
-<td>expire mykey 10</td>
-<td>mykey键值对 10秒后过期</td>
-</tr>
-<tr>
-<td>pexpire key milliseconds</td>
-<td>设置key的过期时间，时间单位是毫秒</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>expireat key timestamp</td>
-<td>设置key的生存时间，接收的时间参数以秒为单位的unix时间戳</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>pexpireat key milliseconds-timestamp</td>
-<td>设置key的生存时间，接收的时间参数为毫秒为单位时间戳</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>keys parttern</td>
-<td>查看所有键</td>
-<td>keys *</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>hscan</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>migrate host post key destination-db timeout [COPY] [REPLACE]</td>
-<td>将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功， key 保证会出现在目标实例上，而当前实例上的 key 会被删除。</td>
-<td></td>
-<td>这个命令是一个原子操作，它在执行的时候会阻塞进行迁移的两个实例，直到以下任意结果发生：迁移成功，迁移失败，等到超时。</td>
-</tr>
-<tr>
-<td>dump key</td>
-<td>序列化key并返回序列化后的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>restore key ttl serialized-value [replace]</td>
-<td>反序列化serialized-value，并与key关联</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>move key dbIndex</td>
-<td>将key移动到另一个数据库</td>
-<td>move mykey 3</td>
-<td>移动mykey到3号数据库</td>
-</tr>
-<tr>
-<td>OBJECT  help/refcount/encoding/idletime/freq key</td>
-<td>查看数据库的值对象编码</td>
-<td>object e</td>
-<td>help ：帮助命令，object命令使用手册。refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。当maxmemory-policy设置为LFU策略时，此子命令可用。</td>
-</tr>
-<tr>
-<td>persist key</td>
-<td>删除key的过期时间，使key长期有效</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>ttl [key]</td>
-<td>查看键所剩的过期时间(时间单位：秒)</td>
-<td>ttl mykey</td>
-<td>查看设置过期时间的键所剩过期时间还有几秒</td>
-</tr>
-<tr>
-<td>pttl [key]</td>
-<td>查看键所剩的过期时间(时间单位：毫秒)</td>
-<td>pttl mykey</td>
-<td>查看设置过期时间的键所剩过期时间还有几毫秒</td>
-</tr>
-<tr>
-<td>randomkey</td>
-<td>从当前数据库随机返回一个key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>rename key newkey</td>
-<td>将key重命名为newkey，如果newkey已存在，则值将被覆盖</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>renamenx key newkey</td>
-<td>重命名后的key不存在时才能执行成功</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>scan cursor [MATCH parttern] [COUNT count]</td>
-<td></td>
-<td></td>
-<td>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</td>
-</tr>
-<tr>
-<td>sort key key [BY pattern] [LIMIT offset count] [GET pattern] [ASC/DESC] [ALPHA] destination</td>
-<td>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</td>
-<td></td>
-<td>·BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。·LIMIT： 限定排序返回的元素。·GET： 跟BY作用相反，将排序结果作为权重来排序匹配的其他键，可多次使用。·ASC/DESC： 正序/倒序排序。·ALPHA： 对字符串进行排序，默认使用数字排序。·STORE： 将排序后的结果保存到指定的键。</td>
-</tr>
-<tr>
-<td>touch key [key]</td>
-<td>修改指定key(s) 最后访问时间 若key不存在，不做操作</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>type [key]</td>
-<td>查看键的数据结构类型</td>
-<td>type mykey</td>
-<td>键不存在返回 nil</td>
-</tr>
-<tr>
-<td>unlink key [key ...]</td>
-<td>根据删除的工作量决定使用同步方式还是异步方式删除键 key</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>wait numslaves timeout</td>
-<td>阻塞当前客户端，直到所有以前的写命令都成功的传输和指定的slaves确认。如果指定以毫秒为单位，请求超时，即使指定的slaves还没有到达，命令任然返回。</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_1">过期键的删除策略</h3>
-
-<p>过期键的删除策略</p>
-
-<ul>
-<li><p>惰性删除策略，访问数据库键时，校验该键是否过期，如果过期则删除<br/>
-对于cpu时间来说最友好，程序只会在取出键时才对键进行过期检查，可以保证删除过期键的操作只会在费做不可的情况下进行，并且删除的木啊比偶仅限当前处理的键，但是此种策略又非常占用内存，已过期的键不会立马删除，占着内存直到下次访问时才会释放内存空间</p></li>
-<li><p>定时删除策略，设置键过期时间的同时，创建定时器，让定时器在键的过期时间来临时，立即执行对键的删除操作<br/>
-可以保证过期键会尽可能快的被删除，并释放过期键所占用的内存，但是会占用一定的cpu时间，影响服务器的响应时间和吞吐量，除此之外，创建定时器需要用到 redis 服务器的时间事件，而当前时间事件的实现方式是无序链表，查找一个时间的时间复杂度为 O(N)，并不能高效的处理大量的时间事件。</p></li>
-<li><p>定期删除策略，周期性删除过期键，redisServer启动过程最后一步(开启事件循环，会触发Redis的定时任务的时间事件，查看 <a href="15934396305281.html">三、redis命令处理生命周期</a>) </p>
-<ul>
-<li>每个一段时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少删除操作对cpu时间的影响</li>
-<li>通过定期删除过期键，有效的减少了过期键带来的内存损耗。</li>
-</ul></li>
-</ul>
-
-<h3 id="toc_2">redis过期键删除策略</h3>
-
-<p>Redis 服务器采用惰性删除策略和定期删除两种策略，通过分配使用这两种删除策略，redis服务器可以很好的利用cpu时间和避免内存浪费之间取得一个较好的平衡</p>
-
-<h2 id="toc_3">2、Redis服务器相关命令</h2>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>dbsize</td>
-<td>查看当前数据库里面的 keys 总数</td>
-<td>dbsize</td>
-<td>Redis存在大量键时，禁止使用此命令</td>
-</tr>
-<tr>
-<td>flushall</td>
-<td>清除所有库的数据</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>flushdb dbIndex</td>
-<td>清除指定index的库</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>save</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>bgsave</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/07/01</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15934396305281.html">
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
                 
-                  <h1>三、redis命令处理生命周期</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>服务器处理客户端命令请求的整个流程，包括服务器启动监听，接收命令请求并解析，执行命令请求，返回命令回复等。</p>
-
-<p>Redis服务器是典型的事件驱动程序，因此事件处理显得尤为重要，而Redis将事件分为两大类：文件事件与时间事件。文件事件即socket的读写事件，时间事件用于处理一些需要周期性执行的定时任务。</p>
-
-<h2 id="toc_0">1、基本知识</h2>
-
-<h3 id="toc_1">1.1、Redis 对象</h3>
-
-<p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br/>
-robj结构体如下所示：</p>
-
-<pre><code class="language-c">typedef struct redisObject {     
-    unsigned type:4;    // 对象类型
-    unsigned encoding:4;    // 对象编码
-    unsigned lru:LRU_BITS;  //缓存淘汰使用, 占24比特
-    int refcount;   //存储当前对象的引用次数，用于实现对象的共享    
-    void *ptr;  //指向实际存储的某一种数据结构
-} robj;
-</code></pre>
-
-<ul>
-<li>结构体robj的type字段表示对象类型，由 encoding 字段决定。</li>
-</ul>
-
-<pre><code class="language-c">#define OBJ_STRING 0
-#define OBJ_LIST 1
-#define OBJ_SET 2
-#define OBJ_ZSET 3
-#define OBJ_HASH 4
-</code></pre>
-
-<ul>
-<li><p>结构体 robj 的ptr<br/>
-ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
-<li><p>结构体 robj 的 refcount <br/>
-refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
-只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
-<li><p>结构体 robj 的 lru<br/>
-用于实现缓存淘汰策略，可以在配置文件中使用maxmemory-policy配置已用内存达到最大内存限制时的缓存淘汰策略。lru根据用户配置的缓存淘汰策略存储不同数据，常用的策略就是LRU与LFU。</p>
-<ul>
-<li>LRU的核心思想是，如果数据最近被访问过，那么将来被访问的几率也更高，此时lru字段存储的是对象访问时间；</li>
-<li>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数，lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</li>
-</ul></li>
-<li><p>结构体 robj 的 encoding <br/>
-结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p>
-<table>
-<thead>
-<tr>
-<th>编码常量</th>
-<th>编码所对应的底层数据结构</th>
-<th>可存储对象类型</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OBJ_ENCODING_INT</td>
-<td>long类型的整数</td>
-<td>字符串</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_EMBSTR</td>
-<td>embstr编码的简单动态字符串</td>
-<td>字符串</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_RAW</td>
-<td>简单动态字符串</td>
-<td>字符串</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_Quicklist</td>
-<td>快速列表</td>
-<td>列表</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_HT</td>
-<td>字典</td>
-<td>集合、散列表、有序集合</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_ZIPLIST</td>
-<td>压缩列表</td>
-<td>散列表、有序集合</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_INTSET</td>
-<td>整数集合</td>
-<td>集合</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_SKIPLIST</td>
-<td>跳跃表和字典</td>
-<td>有序集合</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_STREAM</td>
-<td>stream</td>
-<td>stream</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_LINKEDLIST</td>
-<td>双端链表(不再使用)</td>
-<td>不再使用</td>
-</tr>
-<tr>
-<td>OBJ_ENCODING_ZIPMAP</td>
-<td>未使用</td>
-<td>未使用</td>
-</tr>
-</tbody>
-</table></li>
-</ul>
-
-<h4 id="toc_2">对象内存回收</h4>
-
-<p>由于C语言不具备自动回收内存的功能，所以Redis在自己的对象系统中构建了一个引用计数技术实现的内存回收机制。程序可以通过跟踪对象的引用计数信息，在适当的时候自动释放对象并进行内存回收。</p>
-
-<p>redisObject 结构中的引用计数器refcount会随着对象的使用状态而不断变化：</p>
-
-<ul>
-<li>在创建一个新对象是，引用计数的值会被初始化为 1</li>
-<li>当对象被一个新程序使用的时候，它的引用计数值会被增加 1</li>
-<li>当对象不再被一个新程序使用的时候，它的引用计数值会被减少 1</li>
-<li>当对象的引用计数值变为0的时候，对象所占用的内存会被释放</li>
-</ul>
-
-<p>对象的整个生命周期可以划分为创建对象、操作对象、释放对象三个阶段。</p>
-
-<p>为了节约内存空间，Redis 会共享 值为 0 ~ 9999 的字符串对象，但是为啥只是共享 0 ~ 9999的整数字符串呢？</p>
-
-<p>当服务器考虑讲一个共享对象设置为键的值对象时，程序需要先检查给定的共享对象和键想创建的目标对象是否完全相同，只有在共享对象和目标对象完全相同的情况下，程序才会将共享对象用作键的值对象，而共享一个对象保存的值越复杂，验证共享对象和目标对象是否相同所需的复杂度就会越高，消耗cpu时间也会越多。</p>
-
-<h4 id="toc_3">对象的空闲时长</h4>
-
-<p>redisObject 对象结构的最后一个属性 lru记录了对象最后一次被命令程序访问的时间。<br/>
-命令 object idletime 可以打印出给定键的空闲时间，这一空闲时长是通过将当前时间减去键的值对象 lru 时间计算得出的。</p>
-
-<p>键的空闲时间有一项作用：如果服务器打开了maxmemory选项，并且服务器用于回收内存的算法为 volatile-lru或者 allkeys-lru，那么当服务器占用的内存数超过了maxmemory现象所设置的上限值，空闲时长较高的那部分键优先被服务器释放，从而回收内存。</p>
-
-<h3 id="toc_4">1.2、服务端结构体redisServer</h3>
-
-<p>结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
-
-<p>一个redisDb就代表了一个数据库，而redisServer 中则保存了它所设计到的所有数据库的数组。</p>
-
-<pre><code class="language-c">struct redisServer {     
-    // 配置文件绝对路径
-    char *configfile;     
-    // 数据库的数目,默认16，可通过参数databases配置
-    int dbnum;     
-    // 数据库数组，数组的每个元素都是redisDb类型
-    redisDb *db;     
-    //命令字典，redis支持的所有命令都存储在这个字典中，value值为struct redisCommand对象
-    dict *commands;     
-    // redis的事件循环，类型为aeEventLoop
-    aeEventLoop *el;
-    // 服务器监听端口号，默认端口号 6379
-    int port;     
-    //绑定的所有IP地址，可以通过参数bind配置多个
-    char *bindaddr[CONFIG_BINDADDR_MAX];     
-    // 用户配置的IP地址数目
-    int bindaddr_count;     
-    //针对bindaddr字段的所有IP地址创建的socket文件描述符
-    int ipfd[CONFIG_BINDADDR_MAX];     
-    //创建的socket文件描述符数目
-    int ipfd_count;    
-    //当前连接到Redis服务器的所有客户端
-    list *clients;     
-    //最大空闲时间，可通过参数timeout配置
-    int maxidletime; 
-}
-</code></pre>
-
-<p>默认情况下，redis客户端的目标数据库为0号数据库，但客户端可以通过执行 select 命令来切换目标数据库。而客户端 client 结构中db属性则记录了它当前的目标数据库</p>
-
-<h3 id="toc_5">1.3、客户端结构体 client</h3>
-
-<p>Redis是典型的客户端服务器结构，客户端通过socket与服务端建立网络连接并发送命令请求，服务端处理命令请求并回复。Redis使用结构体client存储客户端连接的所有信息，包括但不限于客户端的名称、客户端连接的套接字描述符、客户端当前选择的数据库ID、客户端的输入缓冲区与输出缓冲区等。</p>
-
-<pre><code class="language-c">typedef struct client {     
-    uint64_t id;     
-    int fd;     
-    redisDb *db;     
-    robj *name;      
-    time_t lastinteraction                   
-    sds querybuf;     
-    int argc;     
-    robj **argv;     
-    struct redisCommand *cmd;          
-    list *reply;     
-    unsigned long long reply_bytes;     
-    size_t sentlen;     
-    char buf[PROTO_REPLY_CHUNK_BYTES];     
-    int bufpos; 
-} client;
-
-// 用来管理数据库相关数据和实现相关操作
-typedef struct redisDb {     
-    int id;     // id为数据库序号，默认情况下Redis有16个数据库，id序号为0～15。
-    long long avg_ttl;         //avg_ttl存储数据库对象的平均TTL，用于统计
-    dict *dict;     //键空间散列表，存储数据库所有键值对。
-    dict *expires;     //过期时间散列表，存放键的过期时间，注意dict和expires中的键都指向同一个键的sds。
-    dict *blocking_keys;     // 处于阻塞状态的键和对应的client，比如blpop命令阻塞键和对应客户端，而解除客户端的阻塞状态有两种 1：进行push操作；2：阻塞超时
-    dict *ready_keys;     //解除阻塞状态的键和对应的client
-    list *defrag_later;         // 逐渐尝试逐个碎片整理的key列表
-    dict *watched_keys;     //watch的键和对应的client，主要用于事务
-} redisDb;
-</code></pre>
-
-<p>各字段含义如下:</p>
-
-<ul>
-<li>id为客户端唯一ID，通过全局变量server.next_client_id实现</li>
-<li>fd为客户端socket的文件描述符</li>
-<li>db为客户端使用select命令选择的数据库对象</li>
-<li>name 客户端名称，可以使用命令 client setname 设置</li>
-<li>lastinteraction 客户端上次与服务器交互的时间，以次实现客户端的超时处理。</li>
-<li>querybuf：输入缓冲区，recv函数接收到的客户端命令请求会暂时缓存在此缓冲区</li>
-<li>argc：输入缓冲区的命令请求时按照Redis协议格式编码字符串，需要解析出命令请求的所有参数，参数个数存储在argc字段，参数内容被解析为robj对象，存储在argv数组</li>
-<li>cmd：待执行的客户端命令</li>
-<li>reply：输出链表，存储待返回给客户端的命令回复数据。链表节点存储的值类型为 clientReplyBlock，定义为如下：</li>
-</ul>
-
-<pre><code class="language-c">typedef struct clientReplyBlock {     
-    size_t size, used;     
-    char buf[]; 
-} clientReplyBlock;
-</code></pre>
-
-<ul>
-<li>reply_bytes：表示输出链表中所有节点的存储空间的总和</li>
-<li>sentlen：表示已返回给客户端的字节数</li>
-<li>buf：输出缓冲区，存储待返回给客户端的命令回复数据，bufpos表示输出缓冲区中数据的最大字节位置，sentlen~bufpos区间的数据都是需要返回给客户端的。</li>
-</ul>
-
-<h3 id="toc_6">1.4、命令结构体 redisCommond</h3>
-
-<p>Redis支持的所有命令初始都存储在全局变量redisCommandTable，类型为redisCommand，结构体redisCommand相对简单，主要定义了命令的名称、命令处理函数以及命令标志等</p>
-
-<pre><code class="language-c">struct redisCommand {     
-    //命令名称
-    char *name;     
-    //命令处理函数
-    redisCommandProc *proc;    
-    //命令参数数目,用于校验命令请求格式是否正确
-    int arity;     
-    //命令标志，例如标识命令时读命令还是写命令
-    char *sflags;     
-    //命令的二进制标志，服务器启动时解析sflags字段生成。
-    int flags;            
-    // calls :从服务器启动至今命令执行的次数，用于统计。
-    // 从服务器启动至今命令总的执行时间，microseconds/calls即可计算出该命令的平均处理时间，用于统计
-    long long microseconds, calls; 
-};
-</code></pre>
-
-<h3 id="toc_7">1.5、事件处理</h3>
-
-<p>Redis服务器是典型的事件驱动程序，而事件又分为 <strong><em>文件事件（socket的可读可写事件）</em></strong> 与 <strong><em>时间事件（定时任务）</em></strong> 两大类。无论是文件事件还是时间事件都封装在结构体aeEventLoop中：</p>
-
-<pre><code class="language-c">typedef struct aeEventLoop {     
-    //事件循环是否结束
-    int stop;         
-    //为文件事件数组，存储已经注册的文件事件
-    aeFileEvent *events;     
-    //存储被触发的文件事件
-    aeFiredEvent *fired;     
-    //多个时间事件形成链表，timeEventHead即为时间事件链表头节点
-    aeTimeEvent *timeEventHead;
-    // Redis底层可以使用4种 I/O 多路复用模型（kqueue、epoll等），apidata是对这4种模型的进一步封装。             
-    void *apidata     
-    //Redis服务器需要阻塞等待文件事件的发生，进程阻塞之前会调用beforesleep函数，
-    //进程因为某种原因被唤醒之后会调用aftersleep函数
-    aeBeforeSleepProc *beforesleep;     
-    aeBeforeSleepProc *aftersleep; 
-} aeEventLoop;
-</code></pre>
-
-<p>Redis有多个定时任务，因此理论上应该有多个时间事件，多个时间事件形成链表，timeEventHead即为时间事件链表头节点；</p>
-
-<p>Redis服务器需要阻塞等待文件事件的发生，进程阻塞之前会调用beforesleep函数，进程因为某种原因被唤醒之后会调用aftersleep函数。</p>
-
-<p>函数beforesleep会执行一些不是很费时的操作，如：集群相关操作、过期键删除操作（这里可称为快速过期键删除）、向客户端返回命令回复等。</p>
-
-<p>事件驱动程序通常在server 启动过程的最后一步开启事件循环，之后只需等待事件发生处理文件事件和时间事件即可。</p>
-
-<h4 id="toc_8">1.5.1、文件事件</h4>
-
-<p>Redis客户端通过TCP socket与服务端交互，文件事件指的就是socket的可读可写事件。socket读写操作有阻塞与非阻塞之分。</p>
-
-<p>采用阻塞模式时，一个进程只能处理一条网络连接的读写事件，为了同时处理多条网络连接，通常会采用多线程或者多进程，效率低下；非阻塞模式下，可以使用目前比较成熟的I/O多路复用模型，如select/epoll/kqueue等，视不同操作系统而定。</p>
-
-<p>epoll是Linux内核为处理大量并发网络连接而提出的解决方案，能显著提升系统CPU利用率。</p>
-
-<p>Redis并没有直接使用epoll提供的API，而是同时支持4种I/O多路复用模型，并将这些模型的API进一步统一封装。</p>
-
-<p>Redis在编译阶段，会检查操作系统支持的I/O多路复用模型，并按照一定规则决定使用哪种模型。</p>
-
-<h4 id="toc_9">1.5.2、时间事件</h4>
-
-<p>通过文件事件一节可以知道，事件循环执行函数aeProcessEvents的主要逻辑：①查找最早会发生的时间事件，计算超时时间；②阻塞等待文件事件的产生；③处理文件事件；④处理时间事件。时间事件的执行函数为processTimeEvents。</p>
-
-<p>Redis服务器内部有很多定时任务需要执行，定时任务被封装为时间事件aeTimeEvent对象，多个时间事件形成链表，存储在aeEventLoop结构体的timeEventHead字段，它指向链表首节点。</p>
-
-<pre><code class="language-c">typedef struct aeTimeEvent {     
-    //时间事件唯一ID，通过字段eventLoop-&gt;timeEventNextId实现
-    long long id;     
-    //时间事件触发的秒数与毫秒数
-    long when_sec;     
-    long when_ms;    
-    //函数指针，指向时间事件处理函数 
-    aeTimeProc *timeProc;
-    //函数指针，删除时间事件节点之前会调用此函数     
-    aeEventFinalizerProc *finalizerProc;     
-    //指向对应的客户端对象
-    void *clientData;     
-    //指向下一个时间事件节点
-    struct aeTimeEvent *next; 
-} aeTimeEvent;
-</code></pre>
-
-<p>函数serverCron实现了Redis服务器所有定时任务的周期执行。serverCron函数的执行时间不能过长，否则会导致服务器不能及时响应客户端的命令请求。</p>
-
-<h2 id="toc_10">2、server启动过程</h2>
-
-<p>Redis服务器的启动过程，主要分为server初始化，监听端口以及等待命令3节。</p>
-
-<p>服务器初始化主流程可以简要分为7个步骤：<br/>
-①初始化配置，给配置参数赋初始值，包括用户可配置的参数，以及命令表的初始化；<br/>
-②加载并解析配置文件；<br/>
-③初始化服务端内部变量，比如客户端链表、数据库、全局变量和共享对象等；<br/>
-④创建事件循环eventLoop，即分配结构体所需内存，并初始化结构体各字段；epoll就是在此时创建的；<br/>
-⑤创建socket并启动监听，所有创建的socket都会设置为非阻塞模式，原因在于Redis 使用了IO多路复用模式，其要求socket读写必须是非阻塞的，用户可通过指令port配置socket绑定端口号，指令bind配置socket 绑定IP地址；；<br/>
-⑥创建文件事件与时间事件；<br/>
-⑦开启事件循环，等待文件时间和时间事件发生即可。</p>
-
-<pre><code class="language-c">void aeMain(aeEventLoop *eventLoop) {     
-    eventLoop-&gt;stop = 0;     //开始事件循环    
-    while (!eventLoop-&gt;stop) {         
-        if (eventLoop-&gt;beforesleep != NULL)             
-            eventLoop-&gt;beforesleep(eventLoop);         //事件处理主函数  
-        aeProcessEvents(eventLoop, AE_ALL_EVENTS|AE_CALL_AFTER_SLEEP);     
-    }
-}
-</code></pre>
-
-<pre><code class="language-c">int aeProcessEvents(aeEventLoop *eventLoop, int flags) {
-    shortest = aeSearchNearestTimer(eventLoop);     
-    long long ms = shortest-&gt;when_sec - now_sec)*1000 + shortest-&gt;when_ms - now_ms;     
-    …………    
-    //阻塞等待文件事件发生
-    numevents = aeApiPoll(eventLoop, tvp);     
-    for (j = 0; j &lt; numevents; j++) {         
-        aeFileEvent *fe = &amp;eventLoop-&gt;events[eventLoop-&gt;fired[j].fd];         
-        //处理文件事件，即根据类型执行rfileProc或wfileProc     
-    }     
-    //处理时间事件    
-    processed += processTimeEvents(eventLoop); 
-}
-</code></pre>
-
-<p>TCP是基于字节流的可靠传输层协议，为了提升网络利用率，一般默认都会开启Nagle。当应用层调用write函数发送数据时，TCP并不一定会立刻将数据发送出去，根据Nagle算法，还必须满足一定条件才行。</p>
-
-<p>Nagle是这样规定的：如果数据包长度大于一定门限时，则立即发送；如果数据包中含有FIN（表示断开TCP链接）字段，则立即发送；如果当前设置了TCP_NODELAY选项，则立即发送；如果以上所有条件都不满足，则默认需要等待200毫秒超时后才会发送。</p>
-
-<p>TCP是可靠的传输层协议，但每次都需要经历“三次握手”与“四次挥手”，为了提升效率，可以设置SO_KEEPALIVE，即TCP长连接，这样TCP传输层会定时发送心跳包确认该连接的可靠性。</p>
-
-<h2 id="toc_11">3、命令处理过程</h2>
-
-<p>命令的处理过程，此过程分为3个阶段：解析命令请求、调用命令和返回结果给客户端。</p>
-
-<h3 id="toc_12">3.1、命令解析</h3>
-
-<p>TCP是一种基于字节流的传输层通信协议，因此接收到的TCP数据不一定是一个完整的数据包，其有可能是多个数据包的组合，也有可能是某一个数据包的部分，这种现象被称为半包与粘包。</p>
-
-<p>为了区分一个完整的数据包，通常有如下3种方法：①数据包长度固定；②通过特定的分隔符区分，比如HTTP协议就是通过换行符区分的；③通过在数据包头部设置长度字段区分数据包长度，比如FastCGI协议。</p>
-
-<pre><code class="language-text">SET redis-key value1
-被翻译为如下结构
-*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
-</code></pre>
-
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
-
-<p>Redis服务器接收到的命令请求首先存储在客户端对象的querybuf 输入缓冲区，然后解析命令请求各个参数，并存储在客户端对象的argv（参数对象数组）和argc（参数数目）字段。</p>
-
-<p>客户端命令请求的入口函数为readQueryFromClient，会读取socket数据存储到客户端对象的输入缓冲区，并调用函数processInputBuffer解析命令请求。<br/>
-<figure><img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程"/><figcaption>processInputBuffer解析流程</figcaption></figure></p>
-
-<h3 id="toc_13">3.2、命令调用</h3>
-
-<p>解析完命令请求之后，会调用函数 processCommand 处理该命令请求，而处理命令请求之前还有很多校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
-
-<p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
-
-<pre><code class="language-text">    int processCommand(client *c) {
-        ...
-            if (c-&gt;flags &amp; CLIENT_MULTI 
-                &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
-                &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
-                &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
-                &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
-                //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
-                queueMultiCommand(c);        //放入队列            
-                addReply(c,shared.queued);         
-            } else {                        
-                //否则调用call命令            
-                call(c,CMD_CALL_FULL);         
-                ...
-            } 
-     ...
-    }
-    ```
-
-### 3.3、返回结果
-Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。
-
-Redis的返回结果可以分为5类：
-- 状态回复，第一个字符是`“+”`；例如，SET命令执行完毕会向客户端返回`“+OK\r\n”`。
-- 错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回`“-ERR unknown command&#39;testcmd&#39;”`。
-- 整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 `“:100\r\n”`。
-- 批量回复，第一个字符是` &quot;$&quot;`。例如，GET命令查找键向客户端返回结果`&quot;$5\r\nhello\r\n&quot;`，其中`$5`表示返回字符串长度
-- 多条批量回复，第一个字符是`“*”`。例如，LRANGE命令可能会返回多个值，格式为`“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”`，与命令请求协议格式相同，`“*3”`表示返回值数目，`“$6”`表示当前返回值字符串长度。
-</code></pre>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/06/29</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15930711977940.html">
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
                 
-                  <h1>二、Redis 底层基本数据结构</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Redis  自己实现了底层的数据结构，简单动态字符串、跳跃表、压缩列表、字典、整数集合、quicklist、stream</p>
 
-<table>
-<thead>
-<tr>
-<th>底层数据结构</th>
-<th>可存储对象类型</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>简单动态字符串</td>
-<td>字符串</td>
-</tr>
-<tr>
-<td>quickList</td>
-<td>列表</td>
-</tr>
-<tr>
-<td>字典</td>
-<td>集合、散列表、有序集合</td>
-</tr>
-<tr>
-<td>压缩列表</td>
-<td>列表、散列表、有序集合</td>
-</tr>
-<tr>
-<td>整数集合</td>
-<td>集合</td>
-</tr>
-<tr>
-<td>跳跃表</td>
-<td>有序集合</td>
-</tr>
-<tr>
-<td>stream</td>
-<td>stream</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_0">简单动态字符串 SDS</h3>
-
-<p>简单动态字符串（Simple Dynamic Strings，SDS）是Redis的基本数据结构之一，用于存储字符串和整型数据。SDS兼容C语言标准字符串处理函数，且在此基础上保证了二进制安全。</p>
-
-<pre><code class="language-c">struct __attribute__ ((__packed__))sdshdr5 {     
-    unsigned char flags; /* 低3位存储类型, 高5位存储长度 */
-    char buf[];/*柔性数组，存放实际内容*/ 
-};
-struct __attribute__((__packed__))sdshdr8 {     
-    uint8_t len; /* 已使用长度，用1字节存储 */    
-     uint8_t alloc; /* 总长度，用1字节存储*/     
-     unsigned char flags; /* 低3位存储类型, 高5位预留 */    
-      char buf[];/*柔性数组，存放实际内容*/ 
-};
- struct __attribute__((__packed__))sdshdr16 {    
-    uint16_t len; /*已使用长度，用2字节存储*/     
-    uint16_t alloc; /* 总长度，用2字节存储*/     
-    unsigned char flags; /* 低3位存储类型, 高5位预留 */     
-    char buf[];/*柔性数组，存放实际内容*/ 
-}; 
-struct __attribute__((__packed__))sdshdr32 {     
-    uint32_t len; /*已使用长度，用4字节存储*/     
-    uint32_t alloc; /* 总长度，用4字节存储*/    
-    unsigned char flags;/* 低3位存储类型, 高5位预留 */     
-    char buf[];/*柔性数组，存放实际内容*/ 
-};
-struct __attribute__((__packed__))sdshdr64 {     
-    uint64_t len; /*已使用长度，用8字节存储*/     
-    uint64_t alloc; /* 总长度，用8字节存储*/     
-    unsigned char flags; /* 低3位存储类型, 高5位预留 */     
-    char buf[];/*柔性数组，存放实际内容*/ 
-};
-</code></pre>
-
-<p>(1) SDS如何兼容C语言字符串？如何保证二进制安全？SDS对象中的buf是一个柔性数组，上层调用时，SDS直接返回了buf。由于buf是直接指向内容的指针，故兼容C语言函数。而当真正读取内容时，SDS会通过len来限制读取长度，而非“\0”，保证了二进制安全。<br/>
-(2) sdshdr5的特殊之处是什么？sdshdr5只负责存储小于32字节的字符串。一般情况下，小字符串的存储更普遍，故Redis进一步压缩了sdshdr5的数据结构，将sdshdr5的类型和长度放入了同一个属性中，用flags的低3位存储类型，高5位存储长度。创建空字符串时，sdshdr5会被sdshdr8替代。<br/>
-(3) SDS是如何扩容的？SDS在涉及字符串修改处会调用sdsMakeroomFor函数进行检查，根据不同情况动态扩容，该操作对上层透明。</p>
-
-<h3 id="toc_1">跳跃表 zskiplist</h3>
-
-<p>通过将有序集合的部分节点分层，由最上层开始依次向后查找，如果本层的next节点大于要查找的值或next节点为NULL，则从本节点开始，降低一层继续向后查找，依次类推，如果找到则返回节点；否则返回NULL。采用该原理查找节点，在节点数量比较多时，可以跳过一些节点，查询效率大大提升，这就是跳跃表的基本思想。</p>
-
-<p>跳跃表存储结构如下图所示：<br/>
-<figure><img src="media/15930711977940/15932648695005.jpg" alt="跳跃表存储结构"/><figcaption>跳跃表存储结构</figcaption></figure></p>
-
-<p>接下来看下跳跃表的数据结构 </p>
-
-<pre><code class="language-c">// 定义了skiplist的节点结构
-typedef struct zskiplistNode {    
-    sds ele;    //用于存储字符串类型的数据
-    double score;   //用于存储排序的分支
-    struct zskiplistNode *backward;     //后退指针，只能执行当前节点最底层的前一个节点，头节点和第一个节点的backward指向NULL，从后向前遍历跳跃表时使用
-    struct zskiplistLevel {
-        struct zskiplistNode *forward;      //指向本层下一个节点，尾结点的forward指向null
-        unsigned int span;      //forward 指向的节点与本节点之间的元素个数，span越大，跳过的节点个数越多。
-    } level[];      // 柔性数组，每个节点的数组长度不一样，在生成跳跃表节点时，随机生成一个 1~64 的值，值越大出现的概率越低
-} zskiplistNode;
-
-// 定义了真正的skiplist结构
-typedef struct zskiplist {     
-    struct zskiplistNode *header, *tail;    // 头指针header和尾指针tail
-    unsigned long length;   // 链表长度length，即链表包含的节点总数。创建的skiplist包含一个空的头指针，这个头指针不包含在length计数中
-    int level;  //skiplist的总层数，即所有节点层数的最大值
-} zskiplist;
-</code></pre>
-
-<p>所有节点是按照分值 score 从小到大的方式排序的，当有序集合的 score 相同时，节点会按照 ele 的字典序进行排序。</p>
-
-<h3 id="toc_2">压缩列表 ziplist</h3>
-
-<p>压缩列表ziplist本质上就是一个字节数组(一块连续的内存空间)，是Redis为了节约内存而设计的一种线性数据结构，可以包含多个元素，每个元素可以是一个字节数组或一个整数。ziplist 的存储顺序与插入顺序一致，而散列表的存储则不一致。</p>
-
-<h4 id="toc_3">压缩列表 ziplist 存储结构</h4>
-
-<p>压缩列表 结构示意图如下：<br/>
-<figure><img src="media/15930711977940/15932748544287.jpg" alt="" style="width:856px;"/></figure></p>
-
-<ul>
-<li>zlbytes： 占4个字节，压缩列表的字节长度，因此压缩列表最多有232 -1个字节。</li>
-<li>zltail： 占4个字节,压缩列表尾元素相对于压缩列表起始地址的偏移量。</li>
-<li>zllen： 占2个字节,压缩列表的元素个数。zllen无法存储元素个数超过65535（216 -1）的压缩列表，必须遍历整个压缩列表才能获取到元素个数。</li>
-<li>entryX： 压缩列表存储的元素，可以是字节数组或者整数，长度不限。</li>
-<li>zlend： 占1个字节，压缩列表的结尾，恒为0xFF。</li>
-</ul>
-
-<p>查看一个压缩列表示例：</p>
-
-<p><figure><img src="media/15930711977940/15932741442146.jpg" alt="" style="width:888px;"/></figure></p>
-
-<p>了解了压缩列表的基本结构，我们可以很容易地获得压缩列表的字节长度、元素个数等，那么如何遍历压缩列表呢？对于任意一个元素，我们如何判断其存储的是什么类型呢？我们又如何获取字节数组的长度呢？</p>
-
-<p><strong>压缩列表元素</strong>的结构示意图如下所示：<br/>
-<figure><img src="media/15930711977940/15932749731815.jpg" alt="" style="width:900px;"/></figure></p>
-
-<p>previous_entry_length 字段表示前一个元素的字节长度，占1个或者5个字节，</p>
-
-<ul>
-<li>当前一个元素的长度小于254字节时，用1个字节表示；</li>
-<li>当前一个元素的长度大于或等于254字节时，用5个字节来表示。而此时previous_entry_length字段的第1个字节是固定的0xFE，后面4个字节才真正表示前一个元素的长度。<br/>
-假设已知当前元素的首地址为p，那么p - previous_entry_length就是前一个元素的首地址，从而实现压缩列表从尾到头的遍历。</li>
-</ul>
-
-<p>encoding字段表示当前元素的编码，即content字段存储的数据类型（整数或者字节数组），数据内容存储在content字段。为了节约内存，encoding字段同样长度可变。</p>
-
-<p>压缩列表元素的编码如下表所示：</p>
-
-<table>
-<thead>
-<tr>
-<th>encoding编码</th>
-<th>encoding 长度</th>
-<th>content类型</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>00 bbbbbb (6 比特表示content长度)</td>
-<td>1字节</td>
-<td>最大长度为63的字节数组</td>
-</tr>
-<tr>
-<td>01 bbbbbb xxxxxxxx (14比特表示content 长度)</td>
-<td>2字节</td>
-<td>最大长度为2<sup>14</sup> -1 的字节数组</td>
-</tr>
-<tr>
-<td>10 aaaaaaaa bbbbbbbb cccccccc dddddddd (32比特表示 content长度)</td>
-<td>5字节</td>
-<td>最大长度为2<sup>32</sup> -1 的字节数组</td>
-</tr>
-<tr>
-<td>11 00 0000</td>
-<td>1字节</td>
-<td>int 16整数</td>
-</tr>
-<tr>
-<td>11 01 0000</td>
-<td>1字节</td>
-<td>int 32整数</td>
-</tr>
-<tr>
-<td>11 10 0000</td>
-<td>1字节</td>
-<td>int 64整数</td>
-</tr>
-<tr>
-<td>11 11 0000</td>
-<td>1字节</td>
-<td>24位整数</td>
-</tr>
-<tr>
-<td>11 11 1110</td>
-<td>1字节</td>
-<td>8位 整数</td>
-</tr>
-<tr>
-<td>11 11 xxxx</td>
-<td>1字节</td>
-<td>没有 content 字段 xxxx 表示 0~12的整数，数据直接存储在encoding字段的最后4位</td>
-</tr>
-</tbody>
-</table>
-
-<p>Redis 定义的 encoding 字段的各个编码类型：</p>
-
-<pre><code class="language-c">#define ZIP_STR_06B (0 &lt;&lt; 6) 
-#define ZIP_STR_14B (1 &lt;&lt; 6) 
-#define ZIP_STR_32B (2 &lt;&lt; 6) 
-#define ZIP_INT_16B (0xc0 | 0&lt;&lt;4) 
-#define ZIP_INT_32B (0xc0 | 1&lt;&lt;4) 
-#define ZIP_INT_64B (0xc0 | 2&lt;&lt;4) 
-#define ZIP_INT_24B (0xc0 | 3&lt;&lt;4) 
-#define ZIP_INT_8B 0xfe
-</code></pre>
-
-<p>由于previous_entry_length存储前一个元素的字节长度，长度占1个或5个字节，为了能存储前一个元素的字节长度，在更新压缩列表过程中可能会出现一种被称为“连锁更新”的现象，Redis 在删除和插入元素操作的末尾检查是需要更新后续元素的 previous_entry_length字段，不过其造成性能问题的几率很低</p>
-
-<h4 id="toc_4">压缩列表 ziplist 的结构体</h4>
-
-<p>我们发现对于压缩列表的任意元素，获取前一个元素的长度、判断存储的数据类型、获取数据内容都需要经过复杂的解码运算。解码后的结果应该被缓存起来，为此定义了结构体zlentry，用于表示解码后的压缩列表元素。</p>
-
-<pre><code class="language-c">typedef struct zlentry {
-    unsigned int prevrawlensize;    //previous_entry_length 字段的长度
-    unsigned int prevrawlen;    //previous_entry_length 字段存储的内容
-    unsigned int lensize;   //encoding 字段的长度
-    unsigned int len;   //encoding 元素数据内容的长度
-    unsigned char encoding;     //encoding中 数据类型
-    unsigned int headersize;    // 表示当前元素的首部长度，即previous_entry_lengh字段长度与encoding字段长度之和
-    unsigned char *p;   //当前元素首地址
-} zlentry;
-</code></pre>
-
-<h3 id="toc_5">字典 Dict</h3>
-
-<p>字典又称为散列表，是用来存储键值 (key-value) 对的一种数据结构，Redis 是K-V 型数据库，任何的增删改查操作实际上都是对字典中的数据进行增删改查操作。</p>
-
-<p>Redis 字典实现依赖的数据结构主要包含了三部分：字典、Hash表、Hash表节点。字典中嵌入了两个 Hash 表，Hash 表中的table字段存放 Hash 表节点，Hash 表节点对应存储的是键值对。</p>
-
-<ul>
-<li>Hash表的数据结构如下：</li>
-</ul>
-
-<pre><code class="language-c">typedef struct dictht {     
-    dictEntry **table;                /* 指针数组，用于存储键值对*/     
-    unsigned long size;                /* table数组的总大小*/     
-    unsigned long sizemask;        /* 掩码 = size - 1 ，用来计算键的索引值*/     
-    unsigned long used;                /* table数组已存元素个数，包含next单链表的数据*/ 
-} dictht;
-</code></pre>
-
-<ul>
-<li>Hash 表节点的数据结构如下：</li>
-</ul>
-
-<pre><code class="language-c">typedef struct dictEntry {     
-    void *key;                        /*存储键*/     
-    union {         
-        void *val;                        /*redisDb.dict 中的val*/         
-        uint64_t u64;         
-        int64_t s64;                /*redisDb.expires 中存储过期时间*/         
-        double d;     
-    } v;
-    struct dictEntry *next;        /*当Hash冲突时，指向冲突的元素，形成单链表*/ 
-} dictEntry;
-</code></pre>
-
-<ul>
-<li>最外层的 字典 Dict 数据结构 如下：</li>
-</ul>
-
-<pre><code class="language-c">typedef struct dict {     
-    dictType *type;           /*该字典对应的一组特定操作抽象函数*/     
-    void *privdata;           /*该字典依赖的数据，配合type字段指向的函数一起使用*/     
-    dictht ht[2];               /*  Hash 表的数组，键值对存储在这里，一般情况下只会使用ht[0]，只有当盖子点扩容、缩容需要进行rehash ，才会使用到ht[1]*/     
-    long rehashidx;            /*rehash标识。默认值为-1，代表没进行rehash操作；不为-1时，代表正进行rehash操作，存储的值表示Hash表ht[0]的rehash操作进行到了哪个索引值*/     
-    unsigned long iterators; /* 当前运行的迭代器数*/ 
-} dict;
-</code></pre>
-
-<p>Redis字典这个数据结构，除了主数据库的K-V数据存储外，还有很多其他地方会用到。例如，Redis的哨兵模式，就用字典存储管理所有的Master节点及Slave节点；再如，数据库中键值对的值为Hash类型时，存储这个Hash类型的值也是用的字典。在不同的应用中，字典中的键值对形态都可能不同，而dictType结构体，则是为了实现各种形态的字典而抽象出来的一组操作函数。</p>
-
-<p>Redis 字典结构的完整版<br/>
-<figure><img src="media/15930711977940/15933377033789.jpg" alt=""/></figure></p>
-
-<p><strong><em>在Hash 表扩容或者收缩的时候，程序需要将现有的哈希表中的所有键值对rehash 到新的 Hash表里面，此rehash 过程不是一次性完成的，而是渐进式的完成。</em></strong></p>
-
-<h3 id="toc_6">整数集合</h3>
-
-<p>整数集合 intset 的底层实现为数组， 是一个有序的、无重复数据的、存储整形数据的结构。</p>
-
-<p>在两种情况下，set 集合 底层编码会发生转换：</p>
-
-<ul>
-<li>当元素个数超过一定数量(默认值512)之后，即使元素类型仍然是整型，也会将编码转换为 hashtable。由配置项 set-max-intset-entries 512 决定。</li>
-<li>当增加非整型变量是，例如集合中增加元素 &#39;a&#39; ，集合编码从 intset 转换为 hashtable。</li>
-</ul>
-
-<p>整数集合在Redis 中可以保存 int16_t、int32_t、int64_t类型的整型数据，并且可以保证集合中<strong>不会出现重复数据</strong>。每个整数集合使用一个 intset 类型的数据结构表示。<br/>
-intset 数据结构如下：<br/>
-<figure><img src="media/15930711977940/15934343810923.jpg" alt=""/></figure></p>
-
-<pre><code class="language-c">typedef struct intset {     
-    uint32_t encoding;//编码类型    
-    uint32_t length;//元素个数    
-    int8_t contents[];//柔性数组,根据encoding字段决定几个字节表示一个元素
-} intset
-</code></pre>
-
-<ul>
-<li>encoding<br/>
-编码类型，决定每个元素占用几个字节
-<ul>
-<li>INTSET_ENC_INT16：当元素值都位于INT16_MIN和INT16_MAX之间时使用。该编码方式为每个元素占用2个字节。</li>
-<li>INTSET_ENC_INT32：当元素值位于INT16_MAX到INT32_MAX或者INT32_MIN到INT16_MIN之间时使用。该编码方式为每个元素占用4个字节。</li>
-<li>INTSET_ENC_INT64：当元素值位于INT32_MAX到INT64_MAX或者INT64_MIN到INT32_MIN之间时使用。该编码方式为每个元素占用8个字节。</li>
-</ul></li>
-</ul>
-
-<p>当 存放新元素到 整数集合中的时候，如果新元素的类型比整数集合现有所有元素的类型都要长时，整数集合需要先进性升级，然后才能将新元素添加到整数集合里面。</p>
-
-<p>整数集合的升级操作提升了它的灵活性又尽可能的节约了内存空间。</p>
-
-<h3 id="toc_7">quicklist</h3>
-
-<h4 id="toc_8">quicklist 存储数据结构</h4>
-
-<p>quicklist是Redis底层最重要的数据结构之一，它是Redis对外提供的6种基本数据结构中List的底层实现。</p>
-
-<ul>
-<li><p>list<br/>
-链表是这样一种数据结构，其中的各对象按线性顺序排列。<br/>
-链表与数组的不同点在于，数组的顺序由下标决定，链表的顺序由对象中的指针决定。<br/>
-List是链型数据存储常用的数据结构，可以是单向链表、双向链表，可以是排序链表、无序链表，可以是循环链表、非循环链表。<br/>
-链表具有可快速插入、删除的优点。<br/>
-由于List查找复杂度为O(n)，n为元素个数，所以不适用于快速查找的场合。<br/>
-双向非循环链表结构图：<br/>
-<figure><img src="media/15930711977940/15937659545835.jpg" alt=""/></figure></p></li>
-<li><p>quicklist<br/>
-quicklist是Redis 3.2中新引入的数据结构，能够在时间效率和空间效率间实现较好的折中。<br/>
-<strong>quicklist是一个由 ziplist 充当节点的双向链表</strong>。quicklist是一个双向链表，链表中的每个节点是一个 ziplist 结构。<br/>
-quicklist可以看成是用双向链表将若干小型的ziplist连接到一起组成的一种数据结构。<br/>
-当ziplist节点个数过多，quicklist退化为双向链表，一个极端的情况就是每个ziplist节点只包含一个entry，即只有一个元素。当ziplist元素个数过少时，quicklist可退化为ziplist，一种极端的情况就是quicklist中只有一个ziplist节点。</p></li>
-</ul>
-
-<p><figure><img src="media/15930711977940/15934465912385.jpg" alt=""/></figure></p>
-
-<p>quicklist核心结构如下：</p>
-
-<pre><code class="language-c">typedef struct quicklist {     
-    quicklistNode *head;     // 头节点
-    quicklistNode *tail;     // 尾节点
-    unsigned long count;        //quicklist中元素总数 
-    unsigned long len;          // quicklistNode节点个数   
-    //指明每个quickListNade 中ziplist长度
-    //当fill为正数时，表明每个ziplist最多含有的数据项数。
-    //当fill为负数时，fill == -1 ：ziplist节点最大为 4KB；
-    //fill == -2 ：ziplist节点最大为8KB； 
-    //fill == -3 ：ziplist节点最大为16KB；
-    //fill == -4 ：ziplist节点最大为32KB；
-    //fill == -5 ：ziplist节点最大为64KB
-    int fill : 16;        
-     //Redis允许对中间的quicklistNode节点进行压缩，
-     //通过修改参数list-compress-depth进行配置，即设置compress参数
-     //该项的具体含义是两端各有compress个节点不压缩 ,  
-     //通过修改参数list-compress-depth进行配置，0=off          
-    unsigned int compress : 16; 
-} quicklist;
-
-typedef struct quicklistNode {     
-    struct quicklistNode *prev;     // 指向该节点的前节点
-    struct quicklistNode *next;     // 指向该节点的后节点
-    unsigned char *zl;      //指向该节点对应的 ziplist 结构
-    unsigned int sz;        //代表整个 ziplist 结构的大小
-    unsigned int count : 16;        // ziplist 中元素个数
-    unsigned int encoding : 2;      //代表采用的编码，1：原生结构；2：使用 LZF 进行压缩    
-    unsigned int container : 2;     //为quicklistNode节点 zl 指向的容器类型，1: none；2: 使用 ziplist 存储数据    
-    unsigned int recompress : 1;    // 这个节点之前是否是压缩节点，若是，则在使用压缩节点前新进行解压缩，使用后需要重新压缩；1的时候代表是压缩节点。
-    unsigned int attempted_compress : 1;        // 测试时使用，   
-    unsigned int extra : 10;     //预留字段 
-} quicklistNode;
-
-/* 当对 ziplist 利用 LZF 算法进行压缩时，quicklistNode 节点指向的结构为 quicklistLZF*/
-typedef struct quicklistLZF {     
-    unsigned int sz;    // compressed 所占用的 字节大小     
-    char compressed[]; 
-} quicklistLZF;
-
-/* 当使用quicklistNode中ziplist中的一个节点时，Redis提供了quicklistEntry结构以便于使用 */
-typedef struct quicklistEntry {     
-    const quicklist *quicklist;     // 指向当前元素所在的quicklist
-    quicklistNode *node;     // 指向当前元素所在的quicklistNode结构
-    unsigned char *zi;     // 指向当前元素所在的ziplist
-    unsigned char *value;    // 指向该节点的字符串内容
-    long long longval;     // longval为该节点的整型值
-    unsigned int sz;     // sz代表该节点的大小，与value配合使用
-    int offset;     // 表明该节点相对于整个ziplist的偏移量，即该节点是ziplist第多少个entry
-} quicklistEntry;
-
-// quicklistIter是quicklist中用于遍历的迭代器
-typedef struct quicklistIter {     
-    const quicklist *quicklist;     //指向当前元素所处的quicklist
-    quicklistNode *current;     // 指向元素所在quicklistNode
-    unsigned char *zi;     // 指向元素所在的ziplist
-    long offset;    // 表明节点在所在的ziplist中的偏移量     
-    int direction;  //direction表明迭代器的方向
-} quicklistIter;
-</code></pre>
-
-<h4 id="toc_9">数据压缩</h4>
-
-<p>quicklist每个节点的实际数据存储结构为ziplist，这种结构的主要优势在于节省存储空间。</p>
-
-<p>为了进一步降低ziplist所占用的空间，Redis 允许对ziplist进一步压缩，Redis采用的压缩算法是LZF，压缩过后的数据可以分成多个片段，每个片段有2部分：一部分是解释字段，另一部分是存放具体的数据字段。解释字段可以占用1～3个字节，数据字段可能不存在。</p>
-
-<p>LZF压缩后的数据结构图如下所示：<br/>
-<figure><img src="media/15930711977940/15935992099183.jpg" alt="LZF压缩后的数据结构"/><figcaption>LZF压缩后的数据结构</figcaption></figure></p>
-
-<p>LZF压缩的数据格式有3种，即解释字段有3种：</p>
-
-<ul>
-<li><p>字面型，解释字段占用1个字节，数据字段长度由解释字段后5位决定。<br/>
-<figure><img src="media/15930711977940/15937674478317.jpg" alt=""/></figure></p></li>
-<li><p>简短重复型，解释字段占用2个字节，没有数据字段，数据内容与前面数据内容重复，重复长度小于8，图中L 是长度字段，数据长度为长度字段的字面值加2，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
-<figure><img src="media/15930711977940/15937678687562.jpg" alt=""/></figure></p></li>
-<li><p>批量重复型，解释字段占3个字节，没有数据字段，数据内容与前面内容重复。图中L是长度字段，数据长度为长度字段的字面值加9，o是偏移量字段，位置偏移量是偏移字段组成的字面值加1。<br/>
-<figure><img src="media/15930711977940/15937679218472.jpg" alt=""/></figure></p></li>
-</ul>
-
-<h4 id="toc_10">压缩</h4>
-
-<p>LZF数据压缩的基本思想是：数据与前面重复的，记录重复位置以及重复长度，否则直接记录原始数据内容。</p>
-
-<p>压缩算法的流程如下：遍历输入字符串，对当前字符及其后面2个字符进行散列运算，如果在Hash表中找到曾经出现的记录，则计算重复字节的长度以及位置，反之直接输出数据。</p>
-
-<h4 id="toc_11">解压缩</h4>
-
-<p>根据LZF压缩后的数据格式，我们可以较为容易地实现LZF的解压缩。值得注意的是，可能存在重复数据与当前位置重叠的情况，此时需要按位逐个进行复制。</p>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/06/25</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15929223279523.html">
-                
-                  <h1>一、Redis快速入门</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>此 Redis服务 采用 5.0+版本</p>
-
-<h2 id="toc_0">redis简介</h2>
-
-<p>redis是一个使用ANSI C语言编写的开源的基于内存的key-value高性能非关系型缓存数据库，它可以用作数据库、缓存和消息中间件。 它支持多种类型的数据结构，如 字符串（strings）， 散列（hashes）， 列表（lists）， 集合（sets）， 有序集合（sorted sets） 与范围查询， bitmaps， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream。 Redis 内置了 复制（replication），LUA脚本（Lua scripting）， LRU驱动事件（LRU eviction），事务（transactions） 和不同级别的 磁盘持久化（persistence）， 并通过 Redis哨兵（Sentinel）和自动 分区（Cluster）提供高可用性（high availability）。</p>
-
-<h3 id="toc_1">Redis5.0版本新特性</h3>
-
-<ul>
-<li>新增Streams数据类型，可以把 Streams 当做消息队列</li>
-<li>新的模块 API 、定时器、集群集资点</li>
-<li>RDB 中持久化存储 LFU 和 LRU 的信息</li>
-<li>将集群管理功能完全用C语言集成到 redis-cli 中</li>
-<li> 有序集合新增命令 zpopmin/zpopmax</li>
-<li> 改进HyperLogLogs实现</li>
-<li> 新增 client unblock 和 client id</li>
-<li> 新增 lolwut 命令</li>
-<li> Redis主从复制中的从 不在成为Slaves，改称 Replicas</li>
-<li>引入动态哈希，一平衡 CPU 的利用率和相应性能，可以通过配置文件进行配置</li>
-<li>Redis 核心代码新型了部分重构和优化</li>
-</ul>
-
-<h2 id="toc_2">Redis 可执行文件介绍</h2>
-
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>redis-server</td>
-<td>启动redis</td>
-</tr>
-<tr>
-<td>redis-cli</td>
-<td>redis命令行客户端</td>
-</tr>
-<tr>
-<td>redis-benchmark</td>
-<td>基准测试工具</td>
-</tr>
-<tr>
-<td>redis-check-aof</td>
-<td>AOF持久化文件检测和修复工具</td>
-</tr>
-<tr>
-<td>redis-check-rdb</td>
-<td>RDB持久化文件检测和修复工具</td>
-</tr>
-<tr>
-<td>redis-sentinel</td>
-<td>启动哨兵</td>
-</tr>
-<tr>
-<td>redis-trib</td>
-<td>cluster集群构建工具</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_3">为什么使用 Redis</h2>
-
-<ul>
-<li>读写速度快<br/>
-数据存放在内存中，官方给出的读写性能可达到 10w/s
-<ul>
-<li>数据存放在内存中是速度快的主要原因</li>
-<li>C语言实现，与操作系统的距离近</li>
-<li>Redis 数据结构是专门设计的，增删改查等操作相对简单</li>
-<li>使用了单线程架构
-<ul>
-<li>避免多线程可能产生的线程切换和竞争产生的资源消耗；</li>
-<li>采用多路复用IO模型（select、poll、epoll）可以高效的处理大量并发连接；<br/>
-Redis 命令的执行过程： 发送指令 --&gt; 执行指令 --&gt; 返回结果；<br/>
-执行指令： 单线程执行，所有的指令进入队列，按顺序执行，使用I/O多路复用技术解决一个线程处理多个连接的问题。</li>
-</ul></li>
-</ul></li>
-<li>键值对的value不仅可以是字符串，还可以是复杂的数据类型，如链表、集合、散列表等<br/></li>
-<li>丰富的功能  发布订阅、主从复制、持久化、脚本、事务等功能</li>
-<li>支持数据持久化，可以采用RDB、AOF、RDB&amp;AOF三种方案。计算机重启后可以在磁盘中进行数据恢复。 <br/>
-发生断电或机器故障，数据可能会丢失，持久化到磁盘</li>
-<li> 支持主从结构，可以利用从库进行数据备份<br/>
-实现了多个相同数据的Redis副本，提高了系统的健壮性</li>
-<li>高可用和分布式<br/>
-哨兵机制实现高可用，保证redis节点故障发现和自动转移</li>
-<li>有多种语言的客户端</li>
-</ul>
-
-<h2 id="toc_4">Redis与其他数据库之间的比较</h2>
-
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>类型</th>
-<th>存储数据类型</th>
-<th>查询类型</th>
-<th>附加功能</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>redis</td>
-<td>使用内存存储的非关系型数据库</td>
-<td>字符串、列表、散列表、集合、有序集合</td>
-<td>每种数据类型都有自己专属命令，另外还有批量操作和不完全的事务支持</td>
-<td>发布订阅、主从复制、持久化、脚本(存储过程)</td>
-</tr>
-<tr>
-<td>memcached</td>
-<td>使用内存存储的键值缓存</td>
-<td>键值之间的映射</td>
-<td>创建、读取、更新、删除以及其他几个命令</td>
-<td>为提升性能而设计的多线程服务器</td>
-</tr>
-<tr>
-<td>MySql</td>
-<td>关系型数据库</td>
-<td>每个数据库可以包含多个表，每个表可以包含多行，可以处理多表视图，支持空间和第三方支持</td>
-<td>insert、select、update、delete、函数、存储过程</td>
-<td>支持ACID性质、主从复制、多主复制</td>
-</tr>
-<tr>
-<td>MongoDB</td>
-<td>使用硬盘存储的非关系的文档存储</td>
-<td>每个数据库可以包含多个表，每个表可以包含无schema的BSON文档</td>
-<td>创建、读取、更新、删除、条件查询命令</td>
-<td>支持map-reduce操作、主从复制、分片、空间索引</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_5">Redis的使用场景</h2>
-
-<p>redis的应用场景可以肆意的发挥想象力，以下是Redis 较为适用的一些场景</p>
-
-<ul>
-<li>缓存<br/>
-例如session缓存、全页缓存、合理使用缓存加快数据访问速度，降低后端数据源压力</li>
-<li>排行榜<br/>
-按照热度、发布时间排行，主要用到列表和有序集合</li>
-<li>计数器  网站的浏览数等</li>
-<li>社交网络</li>
-<li>消息队列  发布订阅</li>
-</ul>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/06/23</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='redis.html'>redis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15929200774650.html">
-                
-                  <h1></h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/06/23</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='mysql.html'>mysql</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   <a href="all_1.html">&laquo; Prev Page</a>  
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			 <a href="all_3.html">&raquo; Next Page</a> 
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
+              </div>
             
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
                 </div>
-                <div class="side-content">
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
+                  </div>
+                </div>
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15936158582613.html"> 
+                            <h2 class="title">四、Redis  通用命令</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15936158582613.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/07/01</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15934396305281.html"> 
+                            <h2 class="title">三、redis命令处理生命周期</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15934396305281.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/06/29</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15930711977940.html"> 
+                            <h2 class="title">二、Redis 底层基本数据结构</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15930711977940.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/06/25</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15929223279523.html"> 
+                            <h2 class="title">一、Redis快速入门</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15929223279523.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/06/23</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15929200774650.html"> 
+                            <h2 class="title"></h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15929200774650.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/06/23</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='mysql.html'>mysql</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"   href="all_1.html" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"   href="all_3.html" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -1760,215 +395,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 

@@ -1,389 +1,302 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    构建工具 - 大爷来玩儿啊~
     
-  构建工具 - 大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15882588104882.html">
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>Maven内置变量说明：</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>\({basedir} 项目根目录(即pom.xml文件所在目录)<br/>
-\){project.build.directory} 构建目录，缺省为target目录<br/>
-\({project.build.outputDirectory} 构建过程输出目录，缺省为target/classes<br/>
-\){project.build.finalName} 产出物名称，缺省为\({project.artifactId}-\){project.version}<br/>
-\({project.packaging} 打包类型，缺省为jar<br/>
-\){project.xxx} 当前pom文件的任意节点的内容<br/>
-\({env.xxx} 获取系统环境变量。例如,&quot;env.PATH&quot;指代了\)path环境变量（在Windows上是%PATH%）。<br/>
-\({settings.xxx} 指代了settings.xml中对应元素的值。例如：&lt;settings&gt;&lt;offline&gt;false&lt;/offline&gt;&lt;/settings&gt;通过 \){settings.offline}获得offline的值。<br/>
-Java System Properties: 所有可通过java.lang.System.getProperties()访问的属性都能在POM中使用，例如 ${JAVA_HOME}。</p>
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
 
-<p>Maven总共有6类属性，内置属性、POM属性、自定义属性、Settings属性、java系统属性和环境变量属性；</p>
-
-<p>1.内置属性</p>
-
-<p>两个常用内置属性 \({basedir} 或者 \){project.basedir} 表示项目跟目录，即包含pom.xml文件的目录；${version} 表示项目版本</p>
-
-<p>2.POM属性<br/>
-用户可以使用该类属性引用POM文件中对应元素的值。如${project.artifactId}就对应了<project> <artifactId>元素的值，常用的POM属性包括：</p>
-
-<pre><code class="language-text">${project.build.sourceDirectory}:项目的主源码目录，默认为src/main/java/ 。
-
-${project.build.testSourceDirectory}:项目的测试源码目录，默认为src/test/java/ 。
-
-${project.build.directory} ： 项目构建输出目录，默认为target/ 。
-
-${project.outputDirectory} : 项目主代码编译输出目录，默认为target/classes/ 。
-
-${project.testOutputDirectory}：项目测试主代码输出目录，默认为target/testclasses/ 。
-
-${project.groupId}:项目的groupId。
-
-${project.artifactId}：项目的artifactId。
-　　　　
-${project.version}:项目的version, 与 ${version} 等价。
-
-${project.build.finalName}：项目打包输出文件的名称，默认为${project.artifactId}-${project.version}。
-</code></pre>
-
-<p>3.自定义属性</p>
-
-<p>如下account-aggregator的pom.xml，那么继承了此pom.xml的子模块也可以用此自定义属性</p>
-
-<p>4.Settings属性</p>
-
-<p>与POM属性同理，用户使用以settings. 开头的属性引用settings.xml文件中的XML元素的值。 </p>
-
-<p>5.Java系统属性</p>
-
-<p>所有java系统属性都可以用Maven属性引用，如${user.home}指向了用户目录。</p>
-
-<p>6.环境变量属性<br/>
-所有环境变量属性都可以使用以env. 开头的Maven属性引用，如${env.JAVA_HOME}指代了JAVA_HOME环境变量的的值。</p>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
                   
-                    <span class="date">2020/04/30</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html'>构建工具</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
                       
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-                       
-                  </span>
                   </div>
                 </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
-            
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
-                </div>
-                <div class="side-content">
-
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15882588104882.html"> 
+                            <h2 class="title">Maven内置变量说明：</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15882588104882.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/04/30</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html'>构建工具</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"  disabled="disabled" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"  disabled="disabled" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -402,215 +315,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 

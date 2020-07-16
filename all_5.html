@@ -1,1418 +1,382 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="zh">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
+      
+    大爷来玩儿啊~
     
-  大爷来玩儿啊~
-  
-  </title>
-  
-  
-  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
- 
-<script type="text/javascript">
-  function before_search(){
-    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
-    document.getElementById('search_q').value = searchVal;
-    return true;
-  }
-</script>
-  </head>
-  <body class="antialiased hide-extras">
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
     
-    <div class="marketing off-canvas-wrap" data-offcanvas>
-      <div class="inner-wrap">
-
-
-<nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-
-  <section class="top-bar-section">
-  <div class="row">
-      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
-        <ul id="main-menu" class="left">
-        
-        <li id=""><a target="_self" href="index.html">博客</a></li>
-        
-        <li id=""><a target="_self" href="archives.html">归档</a></li>
-        
-        </ul>
-
-        <ul class="right" id="search-wrap">
-          <li>
-<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
-    <input type="hidden" id="search_q" name="q" value="" />
-    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
-</form>
-</li>
-          </ul>
-      </div></div>
-  </div>
-  </section>
-
-</nav>
-
-        <nav class="tab-bar show-for-small">
-  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
-    <span> &nbsp; 大爷来玩儿啊~</span>
-  </a>
-</nav>
-
-<aside class="left-off-canvas-menu">
-      <ul class="off-canvas-list">
-        
-        <li><a target="_self" href="index.html">博客</a></li>
-        
-        <li><a target="_self" href="archives.html">归档</a></li>
-        
-
-    <li><label>Categories</label></li>
-
-        
-            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
-        
-            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
-        
-            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
-        
-            <li><a href="mybatis.html">mybatis</a></li>
-        
-            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
-        
-            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
-        
-            <li><a href="redis.html">redis</a></li>
-        
-            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
-        
-            <li><a href="other.html">other</a></li>
-        
-            <li><a href="java.html">java</a></li>
-        
-            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
-        
-            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
-        
-            <li><a href="mysql.html">mysql</a></li>
-        
-            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
-         
-
-      </ul>
-    </aside>
-
-<a class="exit-off-canvas" href="#"></a>
-
-
-        <section id="main-content" role="main" class="scroll-container">
-        
-       
-
- <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
-</script>
-<div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="15902453905639.html">
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
                 
-                  <h1>MyBatis面试</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<ul>
-<li><p>MyBatis 的好处是什么？</p>
-<ul>
-<li>MyBatis 把 sql 语句从 Java 源程序中独立出来，放在单独的 XML 文件中编写， 给程序的维护带来了很大便利。 </li>
-<li>MyBatis 封装了底层 JDBC API 的调用细节，并能自动将结果集转换成 Java Bean 对象，大大简化了 Java 数据库编程的重复工作。 </li>
-<li>因为 MyBatis 需要程序员自己去编写 sql 语句，程序员可以结合数据库自身的 特点灵活控制 sql 语句，因此能够实现比 Hibernate 等全自动 orm 框架更高的查 询效率，能够完成复杂查询</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>为什么说 Mybatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？<br/>
-答：Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集 合对象时，可以根据对象关系模型直接获取，所以它是全自动的。而 Mybatis 在查询 关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映<br/>
-射工具。</li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>接口绑定有几种实现方式,分别是怎么实现的?<br/>
-答：接口绑定有两种实现方式,一种是通过注解绑定,就是在接口的方法上面加上 @Select@Update 等注解里面包含 Sql 语句来绑定,另外一种就是通过 xml 里面写 SQL 来绑定,在这种情况下,要指定 xml 映射文件里面的 namespace 必须为接口的全 路径名。</li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>resultType 和 resultMap 的区别？<br/>
-答：resultType 和 resultMap 都是表示数据库表与 pojo 之间的映射规则的。类的名字和数据 库相同时，可以直接设置 resultType 参数为 Pojo 类。若不同或者有关联查询，需要设置 resultMap 将结果名字和 Pojo 名字进行转换；从编程的最佳实践来讲，强制使用resultMap, 不要用 resultClass 当返回参数，即使所有类属性名与数据库字段一一对应，也需要定义； </li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>在 MyBatis 中如何在 mapper 接口中传入多个参数？<br/>
-答：MyBatis 的接口默认只支持一个入参，如果要传递多个参数有三种方式：
-<ul>
-<li>使用 map 传递参数  可读性差，导致可维护性和可扩展性差，杜绝使用</li>
-<li>使用注解传递参数 直观明了，当参数较少一般小于 5 个的时候，建议使用</li>
-<li>使用 Java Bean 的方 式传递参数</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li><p><code>问${}和#{}的区别是什么？</code><br/>
-答：向 sql 语句中传递的可变参数,分为预编译#{}和传值${}两种 </p>
-<ul>
-<li>预编译 #{}：将传入的数据都当成一个字符串，会对自动传入的数据加一个单引号，能 够很大程度防止 sql 注入； </li>
-<li> 传值\({}：传入的数据直接显示生成在 sql 中，无法防止 sql 注入；适用场景：动态报表， 表名、选取的列是动态的，orderby 和 in 操作， 可以考虑使用\)</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>通过 Mybatis 怎么样进行批量插入操作<br/>
-答：有两种方式：
-<ul>
-<li>通过 foreach 动态拼装 SQL 语句 </li>
-<li> 使用 BATCH 类型的 excutor； 而且这两种方式都能返回数据库主键字段；</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li><p>Mybatis 怎么样实现关联查询<br/>
-答：有两种方式：</p>
-<ul>
-<li><p>嵌套结果:使用嵌套结果映射来处理重复的联合结果的子集。使用 join 查询，一部分<br/>
-列是 A 对象的属性值，另外一部分列是关联对象 B 的属性值，好处是只发一个 sql 查询，就可以把主对象和其关联对象查出来。 </p></li>
-<li><p>嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型，在关联标签中配 置 select、fetchType 这样的属性实现，是通过发送多段 SQL 实现的；</p></li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>什么是 N+1 问题，怎么解决？<br/>
-答：嵌套查询会导致“N+1 查询问题” ，导致该问题产生的原因: 
-<ul>
-<li>你执行了一个单独的 SQL 语句来获取结果列表(就是“+1”)。 </li>
-<li>对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是“N”)。 这个问题会导致成百上千的 SQL 语句被执行。这通常不是期望的。 <br/>
-解决“N+1 查询问题”的办法就是开启懒加载、按需加载数据，开启懒加载配置： 在select 节点上配置“fetchType=lazy”，在 MyBatis 核心配置文件中加入如下配置：</li>
-</ul></li>
-</ul>
-
-<pre><code class="language-text">&lt;!-- 开启懒加载 ，当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每 种属性将会按需要加载。默认：true --&gt; 
-&lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
-</code></pre>
-
-<hr/>
-
-<ul>
-<li>什么是一级缓存？怎么理解二级缓存？<br/>
-答：一级缓存存在于 SqlSession 的生命周期中，在同一个 SqlSession 中查询时使用。二级缓存 也叫应用缓存，存在于 SqlSessionFactory 的生命周期中，可以理解为跨 sqlSession；二级缓存是 以 namespace 为单位的，不同 namespace 下的操作互不影响。在项目中为了避免脏读的问题， 建议不适用二级缓存。</li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>Mybatis 是如何进行分页的？分页插件的原理是什么？<br/>
-答： 
-<ul>
-<li>Mybatis 使用 RowBounds 对象进行分页，也可以直接编写 sql 实现分页，也可以使用 Mybatis 的分页插件。 </li>
-<li>分页插件的原理：实现 Mybatis 提供的接口，实现自定义插件，在插件的拦截方法内拦 截待执行的 sql，然后重写 sql。 举例： select <em>from student，拦截 sql 后重写为： select t.</em> from（select * from student） t limit 0，10</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>简述 Mybatis 的插件运行原理，以及如何编写一个插件？<br/>
-答： 
-<ul>
-<li>Mybatis 仅可以编写针对 ParameterHandler、 ResultSetHandler、 StatementHandler、 Executor 这 4 种接口的插件，Mybatis 通过动态代理，为需要拦截的接口生成代理 对象以实现接口方法拦截功能，每当执行这 4 种接口对象的方法时，就会进入拦 截方法，具体就是 InvocationHandler 的 invoke()方法，当然，只会拦截那些你指定需要拦截的方法。</li>
-<li>实现 Mybatis 的 Interceptor 接口并复写 intercept()方法，然后在给插件编写 注解，指定要拦截哪一个接口的哪些方法即可，记住，别忘了在配置文件中配置你 编写的插件。</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>Mybatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？<br/>
-答：不同的 Xml 映射文件，如果配置了 namespace，那么 id 可以重复；如果没有配置 namespace， 那么 id 不能重复；毕竟 namespace 不是必须的，只是最佳实践而已。原因就是 namespace+id 是作为 Map<String, MappedStatement>的 key 使用的，如果没有 namespace，就剩下 id， 那么，id 重复会导致数据互相覆盖。有了 namespace，自然 id 就可以重复，namespace 不同， namespace+id 自然也就不同。</li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>Mybatis 都有哪些 Executor 执行器？它们之间的区别是什么？<br/>
-答：Mybatis 有三种基本的 Executor 执行器，SimpleExecutor、ReuseExecutor、BatchExecutor。
-<ul>
-<li>SimpleExecutor：Mybatis 的默认执行器，每执行一次 update 或 select，就开启一个 Statement 对 象，用完立刻关闭 Statement 对象。</li>
-<li>ReuseExecutor：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放 置于 Map3）BatchExecutor：完成批处理。</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>使用 MyBatis 的 mapper 接口调用时有哪些要求？<br/>
-答： 
-<ul>
-<li>Mapper 接口方法名和 mapper.xml 中定义的每个 sql 的 id 相同； </li>
-<li> Mapper 接口方法的输入参数类型和 mapper.xml 中定义的每个 sql 的 parameterType 的 类型相同； </li>
-<li>  Mapper 接口方法的输出参数类型和 mapper.xml 中定义的每个 sql 的 resultType 的类型 相同； </li>
-<li>  Mapper.xml 文件中的 namespace 即是 mapper 接口的类路径。</li>
-</ul></li>
-</ul>
-
-<hr/>
-
-<ul>
-<li>为什么使用 mapper 接口就能对数据库进行访问？<br/>
-答：表面上我们在使用 mapper 接口访问数据库，实际 MyBatis 通过动态代理生成了 mapper 接 口的实现类，通过这个动态生成的实现类，将数据库的访问请求转发给 SqlSession。转发过程中 需要实现三个翻译： 
-<ul>
-<li>通过 sql 语句的类型和接口方法的返回参数确定调用 SqlSession 的哪个方法； </li>
-<li>将 sql 语句在 MyBatis 中的两维坐标作为第一个参数，传入 SqlSession 的方法；</li>
-<li> 将接口传入的参数封装成 map 后作为第二个参数，传入 SqlSession 的方法； 请求转发给 SqlSession 后实现对数据库的访问操作；</li>
-</ul></li>
-</ul>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/23</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15902453903846.html">
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
                 
-                  <h1>MyBatis 插件开发</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>插件是用来改变或者扩展 mybatis 的原有的功能，mybaits 的插件就是通过继承 Interceptor 拦截器实现的；注意：在没有完全理解插件之前禁止使用插件对 mybaits 进行扩 展，又可能会导致严重的问题；MyBatis 中能使用插件进行拦截的接口和方法如下： </p>
-
-<ul>
-<li>Executor（update、 query、 flushStatment、 commit、 rollback、 getTransaction、 close、 isClose）</li>
-<li>StatementHandler（prepare、paramterize、batch、update 、query） </li>
-<li>ParameterHandler（getParameterObject 、setParameters） </li>
-<li>ResultSetHandler（handleResultSets、handleCursorResultSets 、handleOutputParameters）</li>
-</ul>
-
-<h2 id="toc_0">插件开发如何实现</h2>
-
-<h3 id="toc_1">实现Interceptor接口</h3>
-
-<p>MyBatis插件的实现必须实现Interceptor接口，该接口有3个方法</p>
-
-<pre><code class="language-java">public interface Interceptor {
-  // 插件对业务进行增强的核心方法
-  Object intercept(Invocation invocation) throws Throwable;
-  // target是配拦截的对象，它的作用就是给被拦截的对象生成一个代理对象
-  default Object plugin(Object target) {
-    return Plugin.wrap(target, this);
-  }
-  // 读取在plugin中设置的参数
-  default void setProperties(Properties properties) {
-    // NOP
-  }
-
-}
-
-</code></pre>
-
-<h3 id="toc_2">确定拦截的签名</h3>
-
-<p>注解 @Intercepts 和 @Signature就是用于表示插件拦截的位置，@Intercepts 其值是一个 @Signature 数组。 @Intercepts 用于表明当前的对象是一个Interceptor， 而@Signature 则表明要拦截的接口、方法以及对应的参数类型。<br/>
-如下所示：</p>
-
-<pre><code class="language-java">@Intercepts(
-        {
-                @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
-                @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
-        }
-)
-public class PageInterceptor implements Interceptor {
-
-}
-</code></pre>
-
-<h3 id="toc_3">插件模块源码分析</h3>
-
-<p>插件模块的源码分析主要搞清楚初始化、插件加载以及插件如何调用三个问题；</p>
-
-<h4 id="toc_4">插件初始化</h4>
-
-<p>在MyBatis配置初始化的时候，对标签plugins进行解析的时候，对插件进行了初始化</p>
-
-<pre><code class="language-java">private void pluginElement(XNode parent) throws Exception {
-    if (parent != null) {
-      for (XNode child : parent.getChildren()) {
-        String interceptor = child.getStringAttribute(&quot;interceptor&quot;);
-        Properties properties = child.getChildrenAsProperties();
-        Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).getDeclaredConstructor().newInstance();
-        interceptorInstance.setProperties(properties);
-        configuration.addInterceptor(interceptorInstance);
-      }
-    }
-}
-</code></pre>
-
-<p>在 configuration 对象中，使用 interceptorChain 类属性保存所有的插件， interceptorChain 类中有个 List 用于顺序保存所有的插件；</p>
-
-<h4 id="toc_5">插件加载</h4>
-
-<p>为什么插件可以拦截 Executor、StatementHandler、ParameterHandler、ResultSetHandler 四个接口指定的方法呢？那是因为通过 configuration 对象创建这四大对象时，通过责任 链模式按插件的顺序对四大对象进行了增强</p>
-
-<ul>
-<li>Executor的添加拦截功能</li>
-</ul>
-
-<pre><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
-    executorType = executorType == null ? defaultExecutorType : executorType;
-    executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
-    Executor executor;
-    if (ExecutorType.BATCH == executorType) {
-      executor = new BatchExecutor(this, transaction);
-    } else if (ExecutorType.REUSE == executorType) {
-      executor = new ReuseExecutor(this, transaction);
-    } else {
-      executor = new SimpleExecutor(this, transaction);
-    }
-    if (cacheEnabled) {
-      executor = new CachingExecutor(executor);
-    }
-    // 通过interceptorChain遍历所有的插件为executor增强插件功能
-    executor = (Executor) interceptorChain.pluginAll(executor);
-    return executor;
-}
-</code></pre>
-
-<ul>
-<li>为StatementHandler添加拦截功能</li>
-</ul>
-
-<pre><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-    StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
-    statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
-    return statementHandler;
-}
-</code></pre>
-
-<ul>
-<li>为ParameterHandler添加拦截功能</li>
-</ul>
-
-<pre><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
-    ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
-    parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
-    return parameterHandler;
-}
-</code></pre>
-
-<ul>
-<li>为ResultSetHandler添加拦截功能</li>
-</ul>
-
-<pre><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
-      ResultHandler resultHandler, BoundSql boundSql) {
-    ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
-    resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
-    return resultSetHandler;
-}
-</code></pre>
-
-<h4 id="toc_6">插件调用</h4>
-
-<p>插件加载是通过 ExamplePlugin.plugin(Object)来增强的，plugin 方法内部一般使用 Plugin.wrap(target,this)来对四大对象进行增强</p>
-
-<pre><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
-    Map&lt;Class&lt;?&gt;, Set&lt;Method&gt;&gt; signatureMap = getSignatureMap(interceptor);
-    Class&lt;?&gt; type = target.getClass();
-    Class&lt;?&gt;[] interfaces = getAllInterfaces(type, signatureMap);
-    if (interfaces.length &gt; 0) {
-      return Proxy.newProxyInstance(
-          type.getClassLoader(),
-          interfaces,
-          new Plugin(target, interceptor, signatureMap));
-    }
-    return target;
-  }
-
-  @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    try {
-      Set&lt;Method&gt; methods = signatureMap.get(method.getDeclaringClass());
-      if (methods != null &amp;&amp; methods.contains(method)) {
-        return interceptor.intercept(new Invocation(target, method, args));
-      }
-      return method.invoke(target, args);
-    } catch (Exception e) {
-      throw ExceptionUtil.unwrapThrowable(e);
-    }
-}
-</code></pre>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/23</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15902065220428.html">
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
                 
-                  <h1>MyBatis 与 Spring整合</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>Mybatis-Spring 用于帮助你将 MyBatis 代码无缝地整合到 Spring 中，集成过程中的增强主 要体现在如下四个方面：</p>
 
-<ul>
-<li>Spring 将会加载必要的 MyBatis 工厂类和 session 类 </li>
-<li>提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean<br/>
-中</li>
-<li>方便集成 spring 事务</li>
-<li>翻译 MyBatis 的异常到 Spring 的 DataAccessException 异常(数据访问异常)中</li>
-</ul>
-
-<h2 id="toc_0">MyBatis-Spring 集成配置最佳实践</h2>
-
-<ul>
-<li>准备Mybatis-spring的maven项目</li>
-<li>pom文件中添加mybatis-spring依赖</li>
-<li>配置 SqlSessionFactoryBean，在 MyBatis-Spring 中， SqlSessionFactoryBean 用于创建 SqlSessionFactory，几个关键配置选项如下所示：
-<ul>
-<li>dataSource ：用于配置数据源，该属性为必选项，必须通过这个属性配置数 据源 ，这里使用了上一节中配置好的 dataSource 数据库连接池 。</li>
-<li> mapper Locations ： 配置 SqlSessionFactoryBean 扫描 XML 映射文件的路径， 可以使用 Ant 风格的路径进行配置。</li>
-<li> configLocation ： 用于配置mybatis config XML的路径，除了数据源外，对MyBatis 的各种配直仍然可以通过这种方式进行，并且配置 MyBatis settings 时只能使 用这种方式。但配置文件中任意环境,数据源 和 MyBatis 的事务管理器都会被 忽略；</li>
-<li> typeAliasesPackage ： 配置包中类的别名，配置后，包中的类在 XML 映射文 件中使用时可以省略包名部分 ，直接使用类名。这个配置不支持 Ant 风格的 路径，当需要配置多个包路径时可以使用分号或逗号进行分隔 ；</li>
-</ul></li>
-<li>配置 MapperScannerConfigurer，通过 MapperScannerConfigurer 类自动扫描所有的 Mapper 接口，使用时可以直接注入接口。MapperScannerConfigurer 中常配置以下两个 属性 ：
-<ul>
-<li>basePackage ： 用于配置基本的包路径。可以使用分号或逗号作为分隔符设 置多于一个的包路径，每个映射器将会在指定的包路径中递归地被搜索到 。</li>
-<li>annotationClass ： 用于过滤被扫描的接口，如果设置了该属性，那么 MyBatis 的接口只有包含该注解才会被扫描进去</li>
-</ul></li>
-<li>配置事务，让 Mybatis 集成 spring 的事务；</li>
-</ul>
-
-<p>项目GitHub地址： <a href="https://github.com/qsk1226/mybatis-spring-study">mybatis-spring-study</a></p>
-
-<h2 id="toc_1">mybatis-spring 集成原理分析</h2>
-
-<h3 id="toc_2">SqlSessionFactoryBean 源码分析</h3>
-
-<p>它创建一个MyBatis SqlSessionFactory。这是在Spring应用程序上下文中设置共享MyBatis SqlSessionFactory的常用方法;然后，SqlSessionFactory可以通过依赖注入传递到基于mybatiso的dao。DataSourceTransactionManager或JtaTransactionManager都可以与SqlSessionFactory一起用于事务界定。JTA应该用于跨多个数据库的事务或正在使用容器管理事务(container managed transactions, CMT)的事务。</p>
-
-<p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
-
-<pre><code class="language-java">public class SqlSessionFactoryBean
-    implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SqlSessionFactoryBean.class);
-
-  private static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
-  private static final MetadataReaderFactory METADATA_READER_FACTORY = new CachingMetadataReaderFactory();
-
-  private Resource configLocation;
-
-  private Configuration configuration;
-
-  private Resource[] mapperLocations;
-
-  private DataSource dataSource;
-
-  private TransactionFactory transactionFactory;
-
-  private Properties configurationProperties;
-
-  private SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-
-  private SqlSessionFactory sqlSessionFactory;
-
-  // EnvironmentAware requires spring 3.1
-  private String environment = SqlSessionFactoryBean.class.getSimpleName();
-
-  private boolean failFast;
-
-  private Interceptor[] plugins;
-
-  private TypeHandler&lt;?&gt;[] typeHandlers;
-
-  private String typeHandlersPackage;
-
-  private Class&lt;?&gt;[] typeAliases;
-
-  private String typeAliasesPackage;
-
-  private Class&lt;?&gt; typeAliasesSuperType;
-
-  private LanguageDriver[] scriptingLanguageDrivers;
-
-  private Class&lt;? extends LanguageDriver&gt; defaultScriptingLanguageDriver;
-
-  // issue #19. No default provider.
-  private DatabaseIdProvider databaseIdProvider;
-
-  private Class&lt;? extends VFS&gt; vfs;
-
-  private Cache cache;
-
-  private ObjectFactory objectFactory;
-
-  private ObjectWrapperFactory objectWrapperFactory;
-
-}
-</code></pre>
-
-<h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
-
-<pre><code class="language-java"> @Override
-  public void afterPropertiesSet() throws Exception {
-notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
-notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
-state((configuration == null &amp;&amp; configLocation == null) || !(configuration != null &amp;&amp; configLocation != null),
-    &quot;Property &#39;configuration&#39; and &#39;configLocation&#39; can not specified with together&quot;);
-// 封装者MyBatis的配置初始化阶段
-this.sqlSessionFactory = buildSqlSessionFactory();
-}
-</code></pre>
-
-<h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
-
-<pre><code class="language-java">/**
- * 将sqlSessionFactory对象注入spring容器
- */
-public SqlSessionFactory getObject() throws Exception {
-if (this.sqlSessionFactory == null) {
-  afterPropertiesSet();
-}
-
-return this.sqlSessionFactory;
-}
-</code></pre>
-
-<p>SqlSessionFactoryBean 就是将 sqlSessionFactory 注入容器， IOC 容器中的其他类型能拿到 SqlSession 实例了，就可以进行相关的 SQL 执行任务了；</p>
-
-<h3 id="toc_5">MapperFactoryBean 源码分析</h3>
-
-<p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
-
-<pre><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
-
-  private Class&lt;T&gt; mapperInterface;
-
-  private boolean addToConfig = true;
-
-  /**
-   * 方法实际是封装了 MyBatis 的第二阶段,获取 Mapper 接口
-   * getSqlSession():用户应该使用这个方法来获取一个SqlSession来调用它的语句方法，这个SqlSession是由spring管理的。用户不应该提交/回滚/关闭它，因为它将自动完成。
-   * 
-   * getMapper(this.mapperInterface)获取mapper接口
-   */
-  @Override
-  public T getObject() throws Exception {
-    return getSqlSession().getMapper(this.mapperInterface);
-  }
-}
-</code></pre>
-
-<p>MapperFactoryBean 实现了 FactoryBean 接口，getObject 方法实际是封装了 MyBatis 的第二阶段，注入容器的是 SqlSession 实例化的 Mapper 接口的实现类。</p>
-
-<p>它是支持注入MyBatis映射器接口的BeanFactory，可以使用SqlSessionFactory或预先配置的SqlSessionTemplate进行设置，这个工厂只能注入接口，而不能注入具体的类。</p>
-
-<h3 id="toc_6">MapperScannerConfigurer 源码分析</h3>
-
-<p>MapperFactoryBean 用于帮助 Spring 生成 Mapper 接口，但我们很少直接配置 MapperFactoryBean 而是配置 MapperScannerConfigurer。</p>
-
-<p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
-
-<pre><code class="language-java">/**
- * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
- * 
- */
-public class MapperScannerConfigurer
-    implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
-
-  private String basePackage;
-
-  private boolean addToConfig = true;
-
-  private String lazyInitialization;
-
-  private SqlSessionFactory sqlSessionFactory;
-
-  private SqlSessionTemplate sqlSessionTemplate;
-
-  private String sqlSessionFactoryBeanName;
-
-  private String sqlSessionTemplateBeanName;
-
-  private Class&lt;? extends Annotation&gt; annotationClass;
-
-  private Class&lt;?&gt; markerInterface;
-
-  private Class&lt;? extends MapperFactoryBean&gt; mapperFactoryBeanClass;
-
-  private ApplicationContext applicationContext;
-
-  private String beanName;
-
-  private boolean processPropertyPlaceHolders;
-
-  private BeanNameGenerator nameGenerator;
- 
- 
-  @Override
-  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
-    if (this.processPropertyPlaceHolders) {
-      processPropertyPlaceHolders();
-    }
-
-    ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
-    scanner.setAddToConfig(this.addToConfig);
-    scanner.setAnnotationClass(this.annotationClass);
-    scanner.setMarkerInterface(this.markerInterface);
-    scanner.setSqlSessionFactory(this.sqlSessionFactory);
-    scanner.setSqlSessionTemplate(this.sqlSessionTemplate);
-    scanner.setSqlSessionFactoryBeanName(this.sqlSessionFactoryBeanName);
-    scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
-    scanner.setResourceLoader(this.applicationContext);
-    scanner.setBeanNameGenerator(this.nameGenerator);
-    scanner.setMapperFactoryBeanClass(this.mapperFactoryBeanClass);
-    if (StringUtils.hasText(lazyInitialization)) {
-      scanner.setLazyInitialization(Boolean.valueOf(lazyInitialization));
-    }
-    scanner.registerFilters();
-    scanner.scan(
-        StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
-  }
-  
-  // 省略一大堆代码
-}
-</code></pre>
-
-<p>MapperScannerConfigurer 实现了 BeanDefinitionRegistryPostProcessor 接口， 因此可以对 Bean 的结构调整之后再注入容器。那 MapperScannerConfigurer 在扫描完这些 mapper 接口之后，主要是通过ClassPathMapperScanner将 Mapper 接口一个个的转换成 MapperFactoryBean 之后注入容器。</p>
-
-<p>至此就完成了 MyBatis 与 Spring框架的整合。</p>
-
-                        
-                      </div>
-                  </div>
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
                 </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/23</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15896322618729.html">
-                
-                  <h1>线程等待/通知机制</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<p>是指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，<br/>
-而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，<br/>
-线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。</p>
-
-<p>上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
-<p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
-<p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
-3）条件满足则执行对应的逻辑。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    while(obj.isOk()) {
-        obj.wait();
-    }
-}
-</code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
-3）通知所有等待在对象上的线程。</p>
-
-<pre><code class="language-text">synchronized(obj) {
-    obj.notifyAll();
-}
-</code></pre>
-
-<p>在调用 wait()、notify()系列方法之前，线程必须要获得该对象的对象级别锁，<br/>
-即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。</p>
-
-<p>Question: 调用 yield() 、sleep()、wait()、notify()等方法对锁有何影响？ </p>
-
-<p>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。 </p>
-
-<p>调用 wait()方法后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行 wait 方法后面的代码。 </p>
-
-<p>调用 notify()系列方法后，对锁无影响，线程只有在 syn 同步代码执行完后才 会自然而然的释放锁，所以 notify()系列方法一般都是 syn 同步代码的最后一行</p>
-
-<p>使用wait、和notify实现一个连接池的实例如下：</p>
-
-<pre><code class="language-java">public class DBPool {
-
-    /*容器，存放连接*/
-    private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
-
-    /*限制了池的大小=20*/
-    public DBPool(int initialSize) {
-        if (initialSize &gt; 0) {
-            for (int i = 0; i &lt; initialSize; i++) {
-                pool.addLast(createConnection());
-            }
-        }
-    }
-
-    /*释放连接,通知其他的等待连接的线程*/
-    public void releaseConnection(Connection connection) {
-        if (connection != null) {
-            synchronized (pool){
-                pool.addLast(connection);
-                //通知其他等待连接的线程
-                pool.notifyAll();
-            }
-        }
-    }
-
-    /*获取*/
-    // 在mills内无法获取到连接，将会返回null 1S
-    public Connection fetchConnection(long mills)
-            throws InterruptedException {
-        synchronized (pool){
-            //永不超时
-            if(mills&lt;=0){
-                while(pool.isEmpty()){
-                    pool.wait();
-                }
-                return pool.removeFirst();
-            }else{
-                /*超时时刻*/
-                long future = System.currentTimeMillis()+mills;
-                /*等待时长*/
-                long remaining = mills;
-                while(pool.isEmpty()&amp;&amp;remaining&gt;0){
-                    pool.wait(remaining);
-                    /*唤醒一次，重新计算等待时长*/
-                    remaining = future-System.currentTimeMillis();
-                }
-                Connection connection = null;
-                if(!pool.isEmpty()){
-                    connection = pool.removeFirst();
-                }
-                return connection;
-            }
-        }
-
-    }
-}
-</code></pre>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/16</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="15896298256850.html">
-                
-                  <h1>MyBatis逆向工程</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	<h2 id="toc_0">配置文件</h2>
-
-<p>generator.properties</p>
-
-<pre><code class="language-properties">jdbc.driverClass=com.mysql.jdbc.Driver
-jdbc.connectionURL=jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
-jdbc.user=root
-jdbc.password=12345678
-java.target.package=com.shengke.sbd.entity
-example.target.package=com.shengke.sbd.entity.example
-mapper.target.package=com.shengke.sbd.mapper
-sql.mapper.target.package=mapper
-
-</code></pre>
-
-<p>generatorConfig.xml</p>
-
-<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;!DOCTYPE generatorConfiguration
-        PUBLIC &quot;-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN&quot;
-        &quot;http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd&quot;&gt;
-&lt;!-- 配置生成器 --&gt;
-&lt;generatorConfiguration&gt;
-    &lt;properties resource=&quot;generator/generator.properties&quot;/&gt;
-
-    &lt;!--MyBatis3、 Mybatis3Simple（没有example这些个东西），defaultModelType推荐 flat， 可选值flat、conditional、hierarchical--&gt;
-    &lt;context id=&quot;mysql&quot; targetRuntime=&quot;Mybatis3Simple&quot; defaultModelType=&quot;flat&quot;&gt;
-        &lt;!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
-                   一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖
-                --&gt;
-        &lt;property name=&quot;autoDelimitKeywords&quot; value=&quot;false&quot;/&gt;
-        &lt;!-- 生成的Java文件的编码 --&gt;
-        &lt;property name=&quot;javaFileEncoding&quot; value=&quot;UTF-8&quot;/&gt;
-        &lt;!-- 格式化java代码 --&gt;
-        &lt;property name=&quot;javaFormatter&quot; value=&quot;org.mybatis.generator.api.dom.DefaultJavaFormatter&quot;/&gt;
-        &lt;!-- 格式化XML代码 --&gt;
-        &lt;property name=&quot;xmlFormatter&quot; value=&quot;org.mybatis.generator.api.dom.DefaultXmlFormatter&quot;/&gt;
-
-
-        &lt;!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； --&gt;
-        &lt;property name=&quot;beginningDelimiter&quot; value=&quot;`&quot;/&gt;
-        &lt;property name=&quot;endingDelimiter&quot; value=&quot;`&quot;/&gt;
-
-
-        &lt;plugin type=&quot;org.mybatis.generator.plugins.SerializablePlugin&quot;/&gt;
-        &lt;!--重新生成覆盖原mapper.XML文件--&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.OverIsMergeablePlugin&quot;/&gt;
-        &lt;!-- Example和mapper类中文注释 --&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.CommentPlugin&quot;/&gt;
-        &lt;!-- .Lombok插件 默认在实体类里增加@Data 不生成Get、Set方法 --&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.LombokPlugin&quot;&gt;
-            &lt;property name=&quot;lombokAnnotations&quot; value=&quot;@Data&quot;/&gt;
-        &lt;/plugin&gt;
-
-        &lt;!-- 修改生成的Example类的类名和Mapper类中的方法名或参数名--&gt;
-        &lt;plugin type=&quot;com.mybatis.generator.plugin.ExampleConfigPlugin&quot;&gt;
-            &lt;!-- example包名 --&gt;
-            &lt;property name=&quot;targetPackage&quot; value=&quot;${example.target.package}&quot;/&gt;
-            &lt;property name=&quot;classMethodSearchString&quot; value=&quot;Example&quot;/&gt;
-            &lt;property name=&quot;classMethodReplaceString&quot; value=&quot;Condition&quot;/&gt;
-            &lt;property name=&quot;parameterSearchString&quot; value=&quot;example&quot;/&gt;
-            &lt;property name=&quot;parameterReplaceString&quot; value=&quot;condition&quot;/&gt;
-        &lt;/plugin&gt;
-        &lt;!--生成中文注释--&gt;
-        &lt;commentGenerator type=&quot;com.mybatis.generator.comment.MyCommentGenerator&quot;&gt;
-            &lt;!-- 是否禁止显示日期 true：是 ： false:否 --&gt;
-            &lt;property name=&quot;suppressDate&quot; value=&quot;false&quot;/&gt;
-            &lt;!-- 是否去除自动生成的所有注释 true：是 ： false:否 --&gt;
-            &lt;property name=&quot;suppressAllComments&quot; value=&quot;false&quot;/&gt;
-            &lt;!--注释是否包含数据库表的注释--&gt;
-            &lt;property name=&quot;addRemarkComments&quot; value=&quot;true&quot;/&gt;
-        &lt;/commentGenerator&gt;
-
-        &lt;!--数据库链接URL，用户名、密码 --&gt;
-        &lt;jdbcConnection driverClass=&quot;${jdbc.driverClass}&quot; connectionURL=&quot;${jdbc.connectionURL}&quot; userId=&quot;${jdbc.user}&quot;
-                        password=&quot;${jdbc.password}&quot;&gt;
-            &lt;property name=&quot;useInformationSchema&quot; value=&quot;true&quot;/&gt;
-        &lt;/jdbcConnection&gt;
-
-        &lt;!-- java类型处理器
-            用于处理DB中的类型到Java中的类型，默认使用JavaTypeResolverDefaultImpl；
-            注意一点，默认会先尝试使用Integer，Long，Short等来对应DECIMAL和 NUMERIC数据类型；
-        --&gt;
-        &lt;javaTypeResolver type=&quot;org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl&quot;&gt;
-            &lt;property name=&quot;forceBigDecimals&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;useJava8Time&quot; value=&quot;${jdk.use_jdk8_time}&quot;/&gt;
-        &lt;/javaTypeResolver&gt;
-
-        &lt;!-- 配置生成实体类的包名和位置 --&gt;
-        &lt;javaModelGenerator targetPackage=&quot;${java.target.package}&quot; targetProject=&quot;src/main/java&quot;&gt;
-            &lt;!--  for MyBatis3/MyBatis3Simple
-                自动为每一个生成的类创建一个构造方法，构造方法包含了所有的field；而不是使用setter；
-             --&gt;
-            &lt;property name=&quot;constructorBased&quot; value=&quot;false&quot;/&gt;
-
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-
-            &lt;!-- for MyBatis3 / MyBatis3Simple
-                是否创建一个不可变的类，如果为true，
-                那么MBG会创建一个没有setter方法的类，取而代之的是类似constructorBased的类
-             --&gt;
-            &lt;property name=&quot;immutable&quot; value=&quot;false&quot;/&gt;
-
-            &lt;!-- 设置一个根对象，
-                如果设置了这个根对象，那么生成的keyClass或者recordClass会继承这个类；在Table的rootClass属性中可以覆盖该选项
-                注意：如果在key class或者record class中有root class相同的属性，MBG就不会重新生成这些属性了，包括：
-                    1，属性名相同，类型相同，有相同的getter/setter方法；
-                比如BaseEntity中定义的createdTime、createUserId、createUserName等
-             --&gt;
-            &lt;!--&lt;property name=&quot;rootClass&quot; value=&quot;com.indexes.server.domain.BaseDomain&quot;/&gt;--&gt;
-
-            &lt;!-- 设置是否在getter方法中，对String类型字段调用trim()方法 --&gt;
-            &lt;property name=&quot;trimStrings&quot; value=&quot;true&quot;/&gt;
-        &lt;/javaModelGenerator&gt;
-
-
-        &lt;!-- 生成SQL map的XML文件生成器，
-            注意，在Mybatis3之后，我们可以使用mapper.xml文件+Mapper接口（或者不用mapper接口），
-                或者只使用Mapper接口+Annotation，所以，如果 javaClientGenerator配置中配置了需要生成XML的话，这个元素就必须配置
-            targetPackage/targetProject:同javaModelGenerator
-         --&gt;
-        &lt;sqlMapGenerator targetPackage=&quot;${sql.mapper.target.package}&quot; targetProject=&quot;src/main/resources&quot;&gt;
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-        &lt;/sqlMapGenerator&gt;
-
-
-        &lt;!-- 对于mybatis来说，即生成Mapper接口，注意，如果没有配置该元素，那么默认不会生成Mapper接口
-            targetPackage/targetProject:同javaModelGenerator
-            type：选择怎么生成mapper接口（在MyBatis3/MyBatis3Simple下）：
-                1，ANNOTATEDMAPPER：会生成使用Mapper接口+Annotation的方式创建（SQL生成在annotation中），不会生成对应的XML；
-                2，MIXEDMAPPER：使用混合配置，会生成Mapper接口，并适当添加合适的Annotation，但是XML会生成在XML中；
-                3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
-            注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER
-        --&gt;
-        &lt;javaClientGenerator targetPackage=&quot;${mapper.target.package}&quot; type=&quot;XMLMAPPER&quot;
-                             targetProject=&quot;src/main/java&quot;&gt;
-            &lt;!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false --&gt;
-            &lt;property name=&quot;enableSubPackages&quot; value=&quot;true&quot;/&gt;
-
-            &lt;!--可以为所有生成的接口添加一个父接口，但是MBG只负责生成，不负责检查--&gt;
-            &lt;property name=&quot;rootInterface&quot; value=&quot;com.shengke.sbd.mapper.BaseMapper&quot;/&gt;
-
-        &lt;/javaClientGenerator&gt;
-
-
-        &lt;!-- 选择一个table来生成相关文件，可以有一个或多个table，必须要有table元素
-            选择的table会生成一下文件：
-            1，SQL map文件
-            2，生成一个主键类；
-            3，除了BLOB和主键的其他字段的类；
-            4，包含BLOB的类；
-            5，一个用户生成动态查询的条件类（selectByExample, deleteByExample），可选；
-            6，Mapper接口（可选）
-
-            tableName（必要）：要生成对象的表名；
-            注意：大小写敏感问题。正常情况下，MBG会自动的去识别数据库标识符的大小写敏感度，在一般情况下，MBG会
-                根据设置的schema，catalog或tablename去查询数据表，按照下面的流程：
-                1，如果schema，catalog或tablename中有空格，那么设置的是什么格式，就精确的使用指定的大小写格式去查询；
-                2，否则，如果数据库的标识符使用大写的，那么MBG自动把表名变成大写再查找；
-                3，否则，如果数据库的标识符使用小写的，那么MBG自动把表名变成小写再查找；
-                4，否则，使用指定的大小写格式查询；
-            另外的，如果在创建表的时候，使用的&quot;&quot;把数据库对象规定大小写，就算数据库标识符是使用的大写，在这种情况下也会使用给定的大小写来创建表名；
-            这个时候，请设置delimitIdentifiers=&quot;true&quot;即可保留大小写格式；
-
-            可选：
-            1，schema：数据库的schema；
-            2，catalog：数据库的catalog；
-            3，alias：为数据表设置的别名，如果设置了alias，那么生成的所有的SELECT SQL语句中，列名会变成：alias_actualColumnName
-            4，domainObjectName：生成的domain类的名字，如果不设置，直接使用表名作为domain类的名字；可以设置为somepck.domainName，那么会自动把domainName类再放到somepck包里面；
-            5，enableInsert（默认true）：指定是否生成insert语句；
-            6，enableSelectByPrimaryKey（默认true）：指定是否生成按照主键查询对象的语句（就是getById或get）；
-            7，enableSelectByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询语句；
-            8，enableUpdateByPrimaryKey（默认true）：指定是否生成按照主键修改对象的语句（即update)；
-            9，enableDeleteByPrimaryKey（默认true）：指定是否生成按照主键删除对象的语句（即delete）；
-            10，enableDeleteByExample（默认true）：MyBatis3Simple为false，指定是否生成动态删除语句；
-            11，enableCountByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询总条数语句（用于分页的总条数查询）；
-            12，enableUpdateByExample（默认true）：MyBatis3Simple为false，指定是否生成动态修改语句（只修改对象中不为空的属性）；
-            13，modelType：参考context元素的defaultModelType，相当于覆盖；
-            14，delimitIdentifiers：参考tableName的解释，注意，默认的delimitIdentifiers是双引号，如果类似MYSQL这样的数据库，使用的是`（反引号，那么还需要设置context的beginningDelimiter和endingDelimiter属性）
-            15，delimitAllColumns：设置是否所有生成的SQL中的列名都使用标识符引起来。默认为false，delimitIdentifiers参考context的属性
-
-            注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
-         --&gt;
-        &lt;!--
-            &lt;table tableName=&quot;t_collection_order_approval&quot; domainObjectName=&quot;CollectionOrderApproval&quot;
-                   enableSelectByExample=&quot;true&quot;
-                   enableCountByExample=&quot;true&quot;
-                   enableDeleteByExample=&quot;true&quot;
-                   enableUpdateByExample=&quot;true&quot;&gt;
-              &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-              &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-              &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-              &lt;columnOverride column=&quot;create_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;update_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;cancel_at&quot; javaType=&quot;java.time.Instant&quot;/&gt;
-              &lt;columnOverride column=&quot;customer_type&quot; javaType=&quot;java.lang.Integer&quot;/&gt;
-              &lt;columnOverride column=&quot;special_customer_reason&quot; javaType=&quot;java.lang.Integer&quot;/&gt;
-            &lt;/table&gt;
-        --&gt;
-        &lt;!--&lt;table  tableName=&quot;%&quot;&gt;&lt;/table&gt;--&gt;
-
-        &lt;table tableName=&quot;t_user&quot; domainObjectName=&quot;User&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_role_permission&quot; domainObjectName=&quot;RolePermission&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_health_report_female&quot; domainObjectName=&quot;HealthReportFemale&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_health_report_male&quot; domainObjectName=&quot;HealthReportMale&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_job_history&quot; domainObjectName=&quot;JobHistory&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_position&quot; domainObjectName=&quot;Position&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_role&quot; domainObjectName=&quot;Role&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_user_role&quot; domainObjectName=&quot;UserRole&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-        &lt;table tableName=&quot;t_user_test&quot; domainObjectName=&quot;UserTest&quot;&gt;
-            &lt;property name=&quot;useActualColumnNames&quot; value=&quot;false&quot;/&gt;
-            &lt;property name=&quot;selectAllOrderByClause&quot; value=&quot;id DESC&quot;/&gt;
-            &lt;generatedKey column=&quot;id&quot; sqlStatement=&quot;MySql&quot; identity=&quot;true&quot;/&gt;
-        &lt;/table&gt;
-    &lt;/context&gt;
-
-&lt;/generatorConfiguration&gt;
-
-
-</code></pre>
-
-<h2 id="toc_1">maven关于mybatis反向工程的插件</h2>
-
-<pre><code class="language-markup">&lt;plugin&gt;
-    &lt;groupId&gt;org.mybatis.generator&lt;/groupId&gt;
-    &lt;artifactId&gt;mybatis-generator-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;1.3.6&lt;/version&gt;
-    &lt;configuration&gt;
-        &lt;configurationFile&gt;src/main/resources/generator/generatorConfig.xml&lt;/configurationFile&gt;
-        &lt;outputDirectory&gt;${project.build.directory}/generated/mybatis-generator&lt;/outputDirectory&gt;
-        &lt;verbose&gt;true&lt;/verbose&gt;
-        &lt;overwrite&gt;true&lt;/overwrite&gt;
-    &lt;/configuration&gt;
-
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;mysql&lt;/groupId&gt;
-            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-            &lt;version&gt;8.0.19&lt;/version&gt;
-        &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.mybatis.generator.plugin&lt;/groupId&gt;
-            &lt;artifactId&gt;generator-plugin&lt;/artifactId&gt;
-            &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-&lt;/plugin&gt;
-</code></pre>
-
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                  
-                    <span class="date">2020/05/16</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
-          				   
-                    
-
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
-
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
-
-
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   <a href="all_4.html">&laquo; Prev Page</a>  
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			 <a href="all_6.html">&raquo; Next Page</a> 
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
-
- <div class="large-4 medium-4 columns">
-  <div class="hide-for-small">
-    <div id="sidebar" class="sidebar">
-          <div id="site-info" class="site-info">
+              </div>
             
-                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
-            
-                <h1>大爷来玩儿啊~</h1>
-                <div class="site-des">只要干不死就往死里干</div>
-                <div class="social">
-
-
-
-
-
-
-
-
-
-
-
-  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
-                
-              	 </div>
-          	</div>
-
-             
-
-              <div id="site-categories" class="side-item ">
-                <div class="side-header">
-                  <h2>Categories</h2>
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
                 </div>
-                <div class="side-content">
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
 
-      	<p class="cat-list">
-        
-            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
-        
-            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
-        
-            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
-        
-            <a href="mybatis.html"><strong>mybatis</strong></a>
-        
-            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
-        
-            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
-        
-            <a href="redis.html"><strong>redis</strong></a>
-        
-            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
-        
-            <a href="other.html"><strong>other</strong></a>
-        
-            <a href="java.html"><strong>java</strong></a>
-        
-            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
-        
-            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
-        
-            <a href="mysql.html"><strong>mysql</strong></a>
-        
-            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
-         
-        </p>
-
-
+                  </div>
+                </div>
                 </div>
               </div>
-
-              <div id="site-categories" class="side-item">
-                <div class="side-header">
-                  <h2>Recent Posts</h2>
-                </div>
-                <div class="side-content">
-                <ul class="posts-list">
-	      
-		      
-			      <li class="post">
-			        <a href="15949034079714.html">虚拟机栈</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15948275035029.html">十一、哨兵与集群</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15945438416733.html">十、主从复制</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="15943756601312.html">软件设计上的基本知识</a>
-			      </li>
-		     
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		  
-		      
-		   
-		  		</ul>
-                </div>
-              </div>
-        </div><!-- sidebar -->
-      </div><!-- hide for small -->
-</div><!-- large 4 -->
-
-</div><!-- row -->
-
- <div class="page-bottom clearfix">
-  <div class="row">
-   <p class="copyright">Copyright &copy; 2015
-Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
-Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
-  </div>
-</div>
-
-        </section>
+            </nav>
       </div>
-    </div>
+
+ 
+<div class="hero-body ct-body">
+        <div class="container">
+              <div class="columns is-centered">
+                  <div class="column  is-four-fifths">
+                      <div class="columns is-mobile">
+                          <div class="column">
+                              <h1 class="title">
+大爷来玩儿啊~
+              
+                              </h1>
+                              <h2 class="subtitle">
+                                 只要干不死就往死里干
+                              </h2>
+                          </div>
+                          <div class="column is-narrow"><figure class="image is-128x128">
+                            
+                              <img class="is-rounded" src="media/15865826719099/avatar.png">
+                            
+                            </figure></div>
+                      </div>
+                        
+                      
+                  </div>
+                  
+                </div>
+            
+              
+        
+        </div>
+      </div>
+</section>
+<section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4">
+              <div class="column is-two-thirds">
+                
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15902453905639.html"> 
+                            <h2 class="title">MyBatis面试</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15902453905639.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/23</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15902453903846.html"> 
+                            <h2 class="title">MyBatis 插件开发</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15902453903846.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/23</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15902065220428.html"> 
+                            <h2 class="title">MyBatis 与 Spring整合</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15902065220428.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/23</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15896322618729.html"> 
+                            <h2 class="title">线程等待/通知机制</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15896322618729.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/16</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                  <div class="card">
+                    
+                      <div class="card-content">
+                        <div class="content">
+                          <a href="15896298256850.html"> 
+                            <h2 class="title">MyBatis逆向工程</h2>
+                          </a>        
+                                                    
+                          <p> 
+                            <a href="15896298256850.html"><span class="tran-readmore">Read more...</span></a>&nbsp;&nbsp; 
+                            <span class="date">2020/05/16</span>
+                            <span class="tran-posted-in">posted in</span>&nbsp; 
+                            
+                                <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+                                                      
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  
+
+                  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous"   href="all_4.html" ><span class="tran-prev-page">&laquo; Prev Page</span></a>  
+                    <a class="pagination-next"   href="all_6.html" ><span class="tran-next-page">Next Page &raquo;</span></a>                   
+                  </nav>
+
+              </div><!-- end column -->
+              <div class="column">
+                  <div class="card">
+                      <header class="card-header">
+                        <p class="card-header-title">
+                           <span class="tran-site-categories">Categories</span> 
+                        </p>
+                     
+                      </header>
+                      <div class="card-content site-categories">
+                        <div class="content"> 
+                          <ul>
+                          
+                                <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mybatis.html">mybatis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="redis.html">redis</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="other.html">other</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="java.html">java</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="mysql.html">mysql</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                                <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a>
+                                  
+                                  
+                                  
+                                </li> 
+                          
+                          </ul>
+                        </div>
+                      </div>
+                     
+                    </div>
+
+                    <div class="card">
+                        <header class="card-header">
+                          <p class="card-header-title">
+                              <span class="tran-site-tags">Tags</span> 
+                          </p>
+                       
+                        </header>
+                        <div class="card-content site-tags">
+                          <div class="content">
+                           <div class="tags">
+                            
+                              <a class="tag is-link is-light" href="tag_CentOS7.html">#CentOS7</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_docker.html">#docker</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_java%E5%9F%BA%E7%A1%80.html">#java基础</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_jvm.html">#jvm</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_maven.html">#maven</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mybatis.html">#mybatis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_mysql.html">#mysql</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_redis.html">#redis</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_vmfusion.html">#vmfusion</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#创建型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html">#并发容器</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">#并发编程</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#结构型设计模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F.html">#行为模式</a> 
+                            
+                              <a class="tag is-link is-light" href="tag_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">#设计模式</a> 
+                            
+                           </div>
+                             
+                          </div>
+                        </div>
+                       
+                      </div>
+
+              </div>
+            </div>
+
+          
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
 
 
 
@@ -1431,215 +395,10 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-<style type="text/css">
-figure{margin: 0;padding: 0;}
-figcaption{text-align:center;}
-
-/* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-    color: black;
-    background: none;
-    text-shadow: 0 1px white;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    text-align: left;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
-    word-wrap: normal;
-    line-height: 1.5;
-    
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-    
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background:#b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #b3d4fc;
-}
-
-@media print {
-    code[class*="language-"],
-    pre[class*="language-"] {
-        text-shadow: none;
-    }
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
-    overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-    background: #F7F7F7;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
-    white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-    color: slategray;
-}
-
-.token.punctuation {
-    color: #999;
-}
-
-.namespace {
-    opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-    color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-    color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #07a;
-}
-
-.token.function,
-.token.class-name {
-    color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-    color: #e90;
-}
-
-.token.important,
-.token.bold {
-    font-weight: bold;
-}
-.token.italic {
-    font-style: italic;
-}
-
-.token.entity {
-    cursor: help;
-}
-
-
-pre[class*="language-"].line-numbers {
-    position: relative;
-    padding-left: 3.8em;
-    counter-reset: linenumber;
-}
-
-pre[class*="language-"].line-numbers > code {
-    position: relative;
-    white-space: inherit;
-}
-
-.line-numbers .line-numbers-rows {
-    position: absolute;
-    pointer-events: none;
-    top: 0;
-    font-size: 100%;
-    left: -3.8em;
-    width: 3em; /* works for line-numbers below 1000 lines */
-    letter-spacing: -1px;
-    border-right: 1px solid #999;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-}
-
-    .line-numbers-rows > span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-
-        .line-numbers-rows > span:before {
-            content: counter(linenumber);
-            color: #999;
-            display: block;
-            padding-right: 0.8em;
-            text-align: right;
-        }
-
-</style>
 
   
     
 
-    <script src="asset/js/foundation.min.js"></script>
-    <script>
-      $(document).foundation();
-      function fixSidebarHeight(){
-        var w1 = $('.markdown-body').height();
-          var w2 = $('#sidebar').height();
-          if (w1 > w2) { $('#sidebar').height(w1); };
-      }
-      $(function(){
-        fixSidebarHeight();
-      })
-      $(window).load(function(){
-          fixSidebarHeight();
-      });
-     
-    </script>
 
 
 
