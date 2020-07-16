@@ -1,0 +1,826 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  九、Redis 持久化--AOF（二） - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>九、Redis 持久化--AOF（二）</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/07/10</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='redis.html'>redis</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>AOF是Redis的另外一种持久化方式。简单来说，AOF就是将Redis服务端执行过的每一条命令都保存到一个文件，这样当Redis重启时只要按顺序回放这些命令就会恢复到原始状态。</p>
+
+<hr/>
+
+<p><strong>问</strong>：既然已经有了RDB为什么还需要AOF呢？</p>
+
+<p>答：RDB保存的是一个时间点的快照，那么如果Redis出现了故障，丢失的就是从最后一次RDB执行的时间点到故障发生的时间间隔之内产生的数据。如果Redis数据量很大，QPS很高，那么执行一次RDB需要的时间会相应增加，发生故障时丢失的数据也会增多。</p>
+
+<p>而AOF保存的是一条条命令，理论上可以做到发生故障时只丢失一条命令。但由于操作系统中执行写文件操作代价很大，Redis提供了配置参数，通过对安全性和性能的折中，我们可以设置不同的策略。</p>
+
+<hr/>
+
+<p><strong>问</strong>：既然AOF数据安全性更高，是否可以只使用AOF呢？为什么Redis推荐RDB和AOF同时开启呢？</p>
+
+<p>答：RDB保存的是最终的数据，是一个最终状态，而AOF保存的是达到这个最终状态的过程。很明显，如果Redis有大量的修改操作，RDB中一个数据的最终态可能会需要大量的命令才能达到，这会造成AOF文件过大并且加载时速度过慢（Redis提供了一种AOF重写的策略来解决上述问题，后文会详细描述其实现原理）。</p>
+
+<p>再来考虑一下AOF和RDB文件的加载过程。RDB只需要把相应数据加载到内存并生成相应的数据结构（有些结构如intset、ziplist，保存时直接按字符串保存，所以加载时速度会更快），而AOF文件的加载需要先创建一个伪客户端，然后把命令一条条发送给Redis服务端，服务端再完整执行一遍相应的命令。根据Redis作者做的测试，RDB 10s～20s能加载1GB的文件，AOF的速度是RDB速度的一半（如果做了AOF重写会加快）。因为AOF和RDB各有优缺点，因此Redis一般会同时开启AOF和RDB。</p>
+
+<hr/>
+
+<p>但假设线上同时配置了RDB和AOF，那么会带来如下的两难选择：重启时如果优先加载RDB，加载速度更快，但是数据不是很全；如果优先加载AOF，加载速度会变慢，但是数据会比RDB中的要完整。</p>
+
+<p>能不能结合这两者的优点呢？答案是AOF和RDB的混合持久化方案，</p>
+
+<hr/>
+
+<h2 id="toc_0">1、AOF的执行流程</h2>
+
+<p>先介绍Redis服务端执行命令时如何同步到AOF文件以及AOF文件的格式，然后介绍Redis不同的配置对性能和安全性的影响。</p>
+
+<h3 id="toc_1">1.1、AOF命令同步</h3>
+
+<p>通过《<a href="15934396305281.html">三、redis命令处理生命周期</a> 》的执行流程，我们看到每一条命令的执行都会processCommand命令，processCommand命令的执行都会调用 call 函数，AOF命令的同步就是在 call命令中实现的。</p>
+
+<p><figure><img src="media/15943917797824/15943937599696.jpg" alt="AOF命令同步"/><figcaption>AOF命令同步</figcaption></figure></p>
+
+<p>如果开启了AOF，则每条命令执行完毕后都会同步写入aof_buf 中，aof_buf是个全局的SDS类型的缓冲区。</p>
+
+<p>那么命令是按什么格式写入缓冲区中的呢？</p>
+
+<p>Redis通过catAppendOnlyGenericCommand函数将命令转换为保存在缓冲区中的数据结构，</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; SET redis-key value1
+# 保存在缓冲区中的格式
+*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
+</code></pre>
+
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
+
+<p>那么命令写入缓冲区后何时同步到文件中呢？</p>
+
+<h3 id="toc_2">1.2、AOF文件写入</h3>
+
+<p>为了提高文件的写入效率,在现代操作系中,当用户调用 write函数,将一些数据写入到文件的时候,操作系统通常会将写入数据暂时保存在一个内存冲区里面, 等到缓冲区的空间被填满、或者超过了指定的时限之后,才真正地将缓冲区中的数据写入到磁盘里面。</p>
+
+<p>这种做法虽然提高了效率,但也为写入数据带来了安全问题,因为如果计算机发生停机,那么保存在内存缓冲区里面的写入数据将会丢失。<br/>
+为此,系统提供了 fsync和 fdatasync两个同步函数,它们可以强制让操作系统立即将缓冲区中的数据写入到项盘里面,从而确保写入数据的安全性。</p>
+
+<p>AOF持久化最终需要将缓冲区中的内容写入一个文件，写文件通过操作系统提供的write函数执行。但是write之后数据只是保存在kernel的缓冲区中，真正写入磁盘还需要调用 fsync 函数。fsync是一个阻塞并且缓慢的操作，所以Redis通过appendfsync配置控制执行fsync 的频次。具体有如下3种模式：</p>
+
+<ul>
+<li>no ：不执行fsync，将aof_buf 缓冲区中的所有内容写入到AOF文件，但不对AOF文件进行同步，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</li>
+<li>always：每执行一次写入就会执行一次fsync。数据安全性最高但会导致Redis性能降低。</li>
+<li>everysec： 每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡。</li>
+</ul>
+
+<p>生产环境一般配置为appendfsync everysec，即每秒执行一次fsync 操作。</p>
+
+<h3 id="toc_3">1.3、AOF 重写</h3>
+
+<p>随着Redis服务的运行，AOF文件会越来越大，并且当Redis服务有大量的修改操作时，对同一个键可能有成百上千条执行命令。AOF 重写通过fork出一个子进程来执行，重写不会对原有文件进行任何修改和读取，子进程对所有数据库中所有的键各自生成一条相应的执行命令，最后将重写开始后父进程继续执行的命令进行回放，生成一个新的AOF文件。</p>
+
+<p>示例如下：</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; rpush list 1 2 3         //list中增加1,2,3三个元素
+(integer)3 
+127.0.0.1:6379&gt; rpush list 4             //list中增加4 
+(integer)4 
+127.0.0.1:6379&gt; rpush list 5         //list中增加5
+(integer)5 
+127.0.0.1:6379&gt; lpop list            //弹出第一个元素
+&quot;1&quot;
+</code></pre>
+
+<p>AOF重写就是直接按当前list中的内容写为“rpush list 2345”。4条命令变为了一条命令，既可以减小文件大小，又可以提高加载速度。</p>
+
+<h3 id="toc_4">1.4、AOF重写触发方式</h3>
+
+<p>AOF重写有两种触发方式：一种为通过配置自动触发，一种为手动执行bgrewriteaof命令显式触发。</p>
+
+<ul>
+<li><p>看自动触发方式，做如下配置：</p>
+<pre><code class="language-text">auto-aof-rewrite-percentage 100 
+auto-aof-rewrite-min-size 64mb
+</code></pre>
+<p>当AOF文件大于64MB时，并且AOF文件当前大小比基准大小增长了100%时会触发一次AOF重写。那么基准大小如何确定呢？起始的基准大小为Redis重启并加载完AOF文件之后，aof_buf的大小。当执行完一次AOF重写之后，基准大小相应更新为重写之后AOF文件的大小。当做了如上配置之后， Redis服务器会根据配置自动触发AOF重写。</p></li>
+<li><p>手动触发AOF<br/>
+下面我们看下手动触发AOF重写，即通过AOF客户端输入 bgrewriteaof 之后的执行流程。 </p></li>
+</ul>
+
+<p><figure><img src="media/15943917797824/15945412157461.jpg" alt="" style="width:1273px;"/></figure></p>
+
+<p>子进程执行重写时可能会有成千上万条命令继续在父进程中执行，那么如何保证重写完成后的文件也包括这些命令呢？</p>
+
+<p>首先需要在父进程中将重写过程中执行的命令进行保存，其次需要将这些命令在重写后的文件中进行回放。</p>
+
+<p>Redis为了尽量减少主进程的阻塞时间，通过管道按批次将父进程累积的命令发送给子进程，由子进程重写完成后进行回放。</p>
+
+<p>那么如何通过管道同步给子进程呢？分析下下图<br/>
+<figure><img src="media/15943917797824/15945418134506.jpg" alt=""/></figure></p>
+
+<p>父进程在fork之前会建立3对管道：fd0/fd1、fd2/fd3、fd4/fd5，它们各自配对执行。父进程通过fd1将执行aof重写时累积的命令发送给子进程，子进程通过fd0进行接收并保存。当子进程执行完重写之后，向fd3写入一个“！”号通知父进程不需要继续通过管道发送累积命令，父进程通过fd2接收到“！”号之后向fd5也写入一个“！”号进行确认。子进程通过fd4同步阻塞接收到“！”号后才可进行后续的退出操作。退出时首先会将接收到的累积命令进行回放，然后执行fsync。</p>
+
+<h3 id="toc_5">1.5、混合持久化</h3>
+
+<p>混合持久化指进行AOF重写时子进程将当前时间点的数据快照保存为RDB文件格式，而后将父进程累积命令保存为AOF格式。最终形成 RDB file和 AOF file共存的保存形式。</p>
+
+<p>加载时，首先会识别AOF文件是否以REDIS字符串开头，如果是，就按RDB格式加载，加载完RDB后继续按AOF格式加载剩余部分。</p>
+
+<p>是否开启混合持久化由如下配置设置</p>
+
+<pre><code class="language-text">aof-use-rdb-preamble yes
+</code></pre>
+
+<h3 id="toc_6">总结</h3>
+
+<ul>
+<li>AOF文件通过保存所有修改数据库的写命令来记录服务器的数据库状态</li>
+<li>AOF文件中的所有命令都以Redis命令请求协议的格式保存</li>
+<li>命令请求会先保存到AOF缓冲区里面，之后再定期写入并同步到AOF文件</li>
+<li>appendfsync选项的不同值对AOF持久化功能的安全性以及 Redis服务器的性能有很大的影响</li>
+<li>服务器只要载入并重新执行保存在 AOF文件中的命令，就可以还原数据库本来的状态</li>
+<li>AOF重写可以产生一个新的 AOF文件，这个新的 AOF文件和原有的AOF文件保存的数据库状态一样，但体积更小</li>
+<li>AOF重写功能是通过读取数据库中的键值对来实现的，程序无需对现有的AOF文件进行任何读入、分析或者写入操作</li>
+<li>执行 bgrewriteaof命令的时候，redis 服务器会维护一个AOF重写缓冲区,该缓冲区会在子进程创建新的 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新AOF文件工作之后，服务器会将重写缓冲区中的所有内容追加到 新AOF文件的末尾，使新旧两个AOF文件所保存的数据库状态一致。最后，服务器使用新的 AOF 文件替换旧的AOF文件，来完成AOF文件的重写操作。</li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_7">2、RDB 与 AOF 相关配置指令</h2>
+
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>可选值</th>
+<th>功能</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>save</td>
+<td><code>&lt;secondes&gt; &lt;changes&gt;</code> 默认：save 900 1、save 300 10、save 60 10000</td>
+<td>RDB</td>
+<td>自动触发配置</td>
+</tr>
+<tr>
+<td>stop-writes-on-bgsave-error</td>
+<td>yes/no(默认yes)</td>
+<td>RBD</td>
+<td>开启该参数后，如果开启了RDB 快照（即配置了save指令），并且最近一次快照执行失败，则Redis 将停止接收写相关的请求。</td>
+</tr>
+<tr>
+<td>rdbcompression</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>执行RDB快照时是否将 string类型的数据进行LZF压缩。</td>
+</tr>
+<tr>
+<td>rdbchecksum</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>是否开启RDB文件内容的校验</td>
+</tr>
+<tr>
+<td>dbfilename</td>
+<td>文件名称(默认 dump.rdb)</td>
+<td>RDB</td>
+<td>RDB文件名称</td>
+</tr>
+<tr>
+<td>dir</td>
+<td>文件路径(默认./)</td>
+<td>RDB</td>
+<td>RDB和AOF文件存放路径</td>
+</tr>
+<tr>
+<td>rdb-save-incremental-fsync</td>
+<td>yes/no(默认yes)</td>
+<td>RDB</td>
+<td>开启该参数后，生成RDB文件时每产生32MB数据就执行一次fsync。</td>
+</tr>
+<tr>
+<td>appendonly</td>
+<td>yes/no(默认no)</td>
+<td>AOF</td>
+<td>是否开启 AOF 功能</td>
+</tr>
+<tr>
+<td>appendfilename</td>
+<td>文件名称(默认 appendonly.aof)</td>
+<td>AOF</td>
+<td>AOF 文件名称</td>
+</tr>
+<tr>
+<td>appendfsync</td>
+<td>always/everysec/no (默认 everysec)</td>
+<td>AOF</td>
+<td>fsync执行频次,always：将aof_buf缓冲区中的所有内容写入并同步到AOF文件；everysec:每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡;no:  不执行fsync，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</td>
+</tr>
+<tr>
+<td>no-appendfsync-on-rewrite</td>
+<td>yes/no(默认no)</td>
+<td>AOF</td>
+<td>开启该参数后，如果后台正在执行一次RDB快照或者AOF重写，则主进程不再进行fsync操作（即使将appendfsync配置为always或者everysec）</td>
+</tr>
+<tr>
+<td>auto-aof-rewrite-percentage</td>
+<td>百分比(默认100)</td>
+<td>AOF</td>
+<td>自动重写配置项，当前AOF文件大于auto-aof-rewrite-min-size 配置的大小 并且比基准文件增长此百分比时触发AOF重写</td>
+</tr>
+<tr>
+<td>auto-aof-rewrite-min-size</td>
+<td>文件大小(默认64MB)</td>
+<td>AOF</td>
+<td>自动重写配置项，当前AOF文件大于此配置值，并且当前AOF文件 比基准文件增长auto-aof-rewrite-percentage配置的百分比时触发AOF重写</td>
+</tr>
+<tr>
+<td>aof-load-truncated</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>AOF文件以追加日志的方式生成，所以服务端发生故障时可能会有尾部命令不完整的情况。开启该参数后，在此种情况下，AOF文件会截断尾部不完整的命令然后继续加载，并且会在日志中进行提示。如果不开启该参数，则加载AOF文件时会打印错误日志，然后直接退出</td>
+</tr>
+<tr>
+<td>aof-use-rdb-preamble</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>是否开启混合持久化</td>
+</tr>
+<tr>
+<td>aof-rewrite-incremental-fsync</td>
+<td>yes/no(默认yes)</td>
+<td>AOF</td>
+<td>开启该参数后，AOF重写时没产生32MB数据执行一次fsync</td>
+</tr>
+</tbody>
+</table>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15945438416733.html" 
+          title="Previous Post: 十、主从复制">&laquo; 十、主从复制</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15943756601312.html" 
+          title="Next Post: 软件设计上的基本知识">软件设计上的基本知识 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

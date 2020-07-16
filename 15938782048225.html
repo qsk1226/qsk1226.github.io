@@ -1,0 +1,998 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  六、Redis 数据流 stream - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>六、Redis 数据流 stream</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/07/04</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='redis.html'>redis</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <h2 id="toc_0">1、stream 实现</h2>
+
+<p>消息队列是分布式系统中不可缺少的组件之一，主要有异步处理、应用解耦、限流削峰的功能。目前应用较为广泛的消息队列有RabbitMQ、RocketMQ、Kafka等。Redis在最新的5.0.0版本中也加入了消息队列的功能，这就是Stream。</p>
+
+<p>Redis Stream 它主要由消息、生产者、消费者、消费组4部分组成。可以通过如下指令创建一个消息流并项其中加入一条消息<br/>
+<figure><img src="media/15938782048225/15939414214436.jpg" alt="" style="width:800px;"/></figure></p>
+
+<pre><code class="language-text">xadd mystream * name zhangsan age 10
+</code></pre>
+
+<p>上面的命令中</p>
+
+<ul>
+<li>mystream 为 Stream 的名称；</li>
+<li>* 代表由Redis自行生成消息ID；</li>
+<li>name、age为该消息的field；hb、20则为对应的field的值。</li>
+</ul>
+
+<p>每个消息都由以下两部分组成:</p>
+
+<ul>
+<li>每个消息有唯一的消息ID，消息ID严格递增。</li>
+<li>消息内容由多个field-value对组成。</li>
+</ul>
+
+<p>生产者负责向消息队列中生产消息，消费者消费某个消息流。消费者可以归属某个消费组，也可以不归属任何消费组。当消费者不归属于任何消费组时，该消费者可以消费消息队列中的任何消息。</p>
+
+<p>消费组是Stream 具有如下特点</p>
+
+<ul>
+<li>每个消费组通过组名称唯一标识，每个消费组都可以消费该消息队列的全部消息，多个消费组之间相互独立。</li>
+<li>每个消费组可以有多个消费者，消费者通过名称唯一标识，消费者之间的关系是竞争关系，也就是说一个消息只能由该组的一个成员消费。</li>
+<li>组内成员消费消息后需要确认，每个消息组都有一个待确认消息队列（pending entry list，pel），用以维护该消费组已经消费但没有确认的消息。</li>
+<li>消费组中的每个成员也有一个待确认消息队列，维护着该消费者已经消费尚未确认的消息。</li>
+</ul>
+
+<p>Redis Stream的底层实现主要使用了listpack以及Rax树</p>
+
+<h3 id="toc_1">1.1、stream 底层结构 listpack</h3>
+
+<p>listpack 是一个字符串列表的序列化格式，也就是将一个字符串列表进行序列化存储。Redis listpack可用于存储字符串或者整型。</p>
+
+<p><figure><img src="media/15938782048225/15938831394252.jpg" alt="listpack结构图"/><figcaption>listpack结构图</figcaption></figure></p>
+
+<p>listpack由4部分组成：</p>
+
+<ul>
+<li>Total Bytes：整个listpack的空间大小，占用4个字节，每个listpack最多占用4294967295Bytes。</li>
+<li>Num Elem：listpack中的元素个数，即Entry的个数，占用2个字节<br/>
+虽然占用2个字节，但是并不意味着listpack最多只能存放65535个Entry，当Entry个数大于等于65535时，Num Elem被设置为65535，此时如果需要获取元素个数，需要遍历整个listpack</li>
+<li>End：listpack结束标志，占用1个字节，内容为0xFF。</li>
+<li>Entry： 每个具体的元素，其内容可以为字符串或者整型。
+<ul>
+<li>encode： 该entry元素的编码，占用1个字节</li>
+<li>content：entry元素内容</li>
+<li>backlen： 记录了这个Entry的长度（Encode+content）</li>
+</ul></li>
+</ul>
+
+<h3 id="toc_2">1.2、Stream底层结构Rax</h3>
+
+<p>前缀树是字符串查找时，经常使用的一种数据结构，能够在一个字符串集合中快速查找到某个字符串, 但是由于前缀树中每个节点只存储字符串中的一个字符，故而有时会造成空间的浪费。Rax的出现就是为了解决这一问题，Rax中不仅可以存储字符串，同时还可以为这个字符串设置一个值，也就是key-value。</p>
+
+<p><figure><img src="media/15938782048225/15939279706367.jpg" alt="含有两个压缩节点的rax"/><figcaption>含有两个压缩节点的rax</figcaption></figure></p>
+
+<p><figure><img src="media/15938782048225/15939288033339.jpg" alt="含有foobar,footer两个key的Rax"/><figcaption>含有foobar,footer两个key的Rax</figcaption></figure></p>
+
+<pre><code class="language-c">typedef struct rax {    
+     raxNode *head;     //指向头节点的指针
+     uint64_t numele;     //key的个数
+     uint64_t numnodes; //节点个数
+} rax;
+
+typedef struct raxNode {     
+    uint32_t iskey:1;   /* 当前节点是否包含一个key，占用1bit*/     
+    uint32_t isnull:1;  /* 当前key对应的value是否为空，占用1bit */     
+    uint32_t iscompr:1; /* 当前节点是否为压缩节点，占用1bit */     
+    uint32_t size:29;   /* 压缩节点压缩的字符串长度或者非压缩节点的子节点个数，占用29bit */
+    unsigned char data[];  /*包含填充字段，同时存储了当前节点包含的字符串以及子节点的指针、key对应的value指针。*/
+} raxNode;
+</code></pre>
+
+<p>raxNode分为2类，压缩节点和非压缩节点</p>
+
+<ul>
+<li>压缩节点 。我们假设该节点存储的内容为字符串ABC
+<figure><img src="media/15938782048225/15939314326955.jpg" alt=""/></figure>
+<ul>
+<li>·iskey为1且isnull为0时，value-ptr存在，否则value-ptr不存在；</li>
+<li>·iscompr为1代表当前节点是压缩节点，size为3代表存储了3个字符；</li>
+<li>紧随size的是该节点存储的字符串，根据字符串的长度确定是否需要填充字段（填充必要的字节，使得后面的指针地址放到合适的位置上）；</li>
+<li>由于是压缩字段，故而只有最后一个字符有子节点。</li>
+</ul></li>
+<li>非压缩节点 。我们假设其内容为XY
+<figure><img src="media/15938782048225/15939394205610.jpg" alt=""/></figure>
+每个字符都有一个子节点，值得一提的是，字符个数小于2时，都是非压缩节点。</li>
+</ul>
+
+<h2 id="toc_3">2、stream 结构</h2>
+
+<p>Redis Stream的实现依赖于Rax结构以及listpack结构，每个消息的具体信息存储在这个listpack中。Rax用于快速索引；listpack用于存储具体的消息</p>
+
+<p>每个listpack都有一个master entry，该结构中存储了创建这个listpack时待插入消息的所有field，这主要是考虑同一个消息流，消息内容通常具有相似性，如果后续消息的field与master entry内容相同，则不需要再存储其field。</p>
+
+<p>每个listpack中可能存储多条消息</p>
+
+<p><figure><img src="media/15938782048225/15939395823945.jpg" alt="Stream结构"/><figcaption>Stream结构</figcaption></figure></p>
+
+<p>Stream结构如下</p>
+
+<pre><code class="language-c">/*
+*每个Stream会有多个消费组，每个消费组通过组名称进行唯一标识，
+*同时关联一个streamCG结构，
+*/
+typedef struct stream {     
+   /*
+   存储消息生产者生产的具体消息，每个消息有唯一的ID。
+   以消息ID为键，消息内容为值存储在rax中，
+   值得注意的是，rax中的一个节点可能存储多个消息， 
+   */     
+    rax *rax;             
+    /*当前stream中的消息个数（不包括已经删除的消息）*/
+    uint64_t length;     
+    /*当前stream中最后插入的消息的ID，stream为空时，设置为0*/   
+    streamID last_id;
+    /*存储了当前stream相关的消费组，以消费组的组名为键，streamCG为值存储在rax中*/
+    rax *cgroups;
+} stream;
+
+/*消费组结构定义*/
+typedef struct streamCG {
+    /*last_id为该消费组已经确认的最后一个消息的ID*/
+    streamID last_id; 
+    /*该消费组尚未确认的消息，并以消息ID为键，streamNACK（代表一个尚未确认的消息）为值*/
+    rax *pel;
+    /*为该消费组中所有的消费者，并以消费者的名称为键，streamConsumer（代表一个消费者）为值。*/
+    rax *consumers; 
+} streamCG;
+
+/*消费者，每个消费者通过streamConsumer唯一标识*/
+typedef struct streamConsumer {     
+    mstime_t seen_time;     //该消费者最后一次活跃的时间
+    sds name;     //消费者的名称
+    rax *pel;   //该消费者尚未确认的消息，以消息ID为键，streamNACK 为值。
+} streamConsumer;
+
+
+/*未确认消息，维护了消费组或者消费者尚未确认的消息，
+值得注意的是，消费组中的pel的元素与每个消费者的pel中的元素是共享的，
+即该消费组消费了某个消息，这个消息会同时放到消费组以及该消费者的pel队列中，并且二者是同一个streamNACK结构。*/
+typedef struct streamNACK {     
+    mstime_t delivery_time;     //该消息最后发送给消费方的时间
+    uint64_t delivery_count;     //该消息已经发送的次数
+    streamConsumer *consumer;  //该消息当前归属的消费者。
+} streamNACK;
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_4">3、Stream 命令</h2>
+
+<h3 id="toc_5">xadd 命令</h3>
+
+<p>将指定消息数据追加到指定的Stream队列中或裁减列中数据长度。</p>
+
+<pre><code class="language-bash">xadd key [MAXLEN [~|=] &lt;count&gt;] &lt;ID or *&gt; [field value] [field value] ...
+</code></pre>
+
+<p>每条消息由一或多个阈值对组成，消息插入Stream队列中后会返回唯一的消息ID。xadd是唯一可以向Stream队列添加数据的命令</p>
+
+<ul>
+<li>MAXLEN<br/>
+当Stream中数据量过大时，可通过此关键字来裁剪长度，删除stream中旧数据至指定的值；当数据量小于等于指定值时，不进行剪切。其中裁剪模式有两种。
+<ul>
+<li>~：模糊裁剪，优化精确裁剪，一般用此模式，效率更高。</li>
+<li>=：精确裁剪，我们知道，在数据存储的listpack结构体中，裁剪长度的所有阈值是依照数据从老到新的方式，依次把listpack释放掉，但在此模式下，删除最后一个listpack中的数据比较费时，所以推荐用模糊裁剪。</li>
+</ul></li>
+<li>ID：添加消息可指定具体值或用 <code>*</code>代替，<strong>指定的值必须大于当前Stream队列中最大的消息ID</strong>，为<code>*</code>时则默认生成一个最新的ID，ID值取的是当前时间+序列号。</li>
+</ul>
+
+<pre><code class="language-shell"># 添加一条数据，使用系统生成的最新ID
+&gt; xadd mystream * name doubi age 18
+1593943429128-0
+# 如果发现添加新元素后的Stream有超过100W+条消息，则删除旧消息，使长度大约缩减至100W个元素
+&gt; xadd mystream MAXLEN ~ 1000000 * name tim age 29
+</code></pre>
+
+<h3 id="toc_6">xrange命令</h3>
+
+<p>读取给定ID范围内的消息数据，并可以设置返回数据的条数。</p>
+
+<pre><code class="language-shell">&gt; xrange key start end [COUNT count]
+</code></pre>
+
+<p>范围起始值分别由start和end字段指定，将返回两个ID之间（闭区间）的所有消息，消息排序为ID递增排序。</p>
+
+<ul>
+<li>start: 开始消息ID，指定具体值或通过“-”特殊符号来表示最小ID。</li>
+<li>end：结束消息ID，指定具体值或通过“+”特殊符号来表示最大ID。</li>
+<li>COUNT：设定返回的消息数量</li>
+</ul>
+
+<pre><code class="language-text">127.0.0.1:6379&gt; xrange mystream - + count 2
+1) 1) &quot;1593943573938-0&quot;
+   2) 1) &quot;name&quot;
+      2) &quot;doubi&quot;
+      3) &quot;age&quot;
+      4) &quot;18&quot;
+2) 1) &quot;1593957391373-0&quot;
+   2) 1) &quot;name&quot;
+      2) &quot;doubi1&quot;
+      3) &quot;age&quot;
+      4) &quot;19&quot;
+</code></pre>
+
+<h3 id="toc_7">xrevrange命令</h3>
+
+<p>xrevrange命令与xrange用法完全一致，唯一区别是返回数据的顺序为消息ID的递减序，正好与xrange返回的数据顺序相反。</p>
+
+<h3 id="toc_8">xdel 命令</h3>
+
+<p>用于删除Stream队列中指定的一或多个消息ID对应的数据。</p>
+
+<pre><code class="language-text">xdel key ID [ID ...]
+</code></pre>
+
+<p>key 类型必须为OBJ_STREAM，否则报错。</p>
+
+<h3 id="toc_9">xgroup 命令</h3>
+
+<p>用于队列的消费组管理，包含对消费组的创建、删除、修改等操作。</p>
+
+<pre><code class="language-text">xgroup [CREATE key groupname id-or-$]  [SETID key id-or-$]        [DESTROY key groupname]  [DELCONSUMER key groupname consumername] [HELP]
+</code></pre>
+
+<ul>
+<li>CREATE：创建一个新消费组。</li>
+<li>SETID：修改某个消费组消费的消息last_id。</li>
+<li>DESTROY：删除指定消费组。</li>
+<li>DELCONSUMER：删除指定消费组中某个消费者。</li>
+<li>HELP：查看使用帮助。</li>
+</ul>
+
+<pre><code class="language-shell"># 创建一个消费组mmp，从消息id为1593943573938-0的消息开始消费
+127.0.0.1:6379&gt; xgroup CREATE mystream mmp 1593943573938-0
+OK
+</code></pre>
+
+<p>最后一个参数是指定该消费组开始消费的消息ID，其中“0”或“0- 0”，表示从头开始消费，如果使用特殊符“$”，则表示队列中最后一项ID，只读取消息队列中新到的消息。</p>
+
+<h3 id="toc_10">xreadgroup 命令</h3>
+
+<p>用于从消费组中可靠地消费n条消息，如果指定的消费者不存在，则创建之。</p>
+
+<pre><code class="language-text">XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]
+</code></pre>
+
+<ul>
+<li>group：消费组名称</li>
+<li>consumer：消费者名称。</li>
+<li>COUNT：消费多少条数据。</li>
+<li>BLOCK：是否为阻塞模式，milliseconds为阻塞多少毫秒</li>
+<li>STREAMS：Stream队列名称，可指定多个。若指定多个，则ID 也要对应指定相同个数。</li>
+<li>ID：读取只大于指定消息ID后未确认的消息；特殊符号“&gt;”，读取未传递给其他任何消费者的消息，也就是新消息。</li>
+<li>NOACK：该消息不需要确认。</li>
+</ul>
+
+<p>客户端必须使用XACK确认消息处理，以便从待处理条目列表中删除待处理条目。可以使用XPENDING命令检查待处理条目列表。</p>
+
+<h3 id="toc_11">xread 命令</h3>
+
+<p>用于从Stream队列中读取N条消息，一般用作遍历队列中的消息。</p>
+
+<p>从一个或者多个流中读取数据，仅返回ID大于调用者报告的最后接收ID的条目。此命令有一个阻塞选项，用于等待可用的项目，类似于BRPOP或者BZPOPMIN等等。</p>
+
+<pre><code class="language-text">XREAD [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]
+</code></pre>
+
+<ul>
+<li>COUNT: 读取多少条数据</li>
+<li>BLOCK：是否为阻塞模式，milliseconds为阻塞多少毫秒</li>
+<li>STREAMS：Stream队列名称</li>
+<li>ID：指定从哪个消息ID开始读取，也就是消息ID大于指定的ID 的消息，可为“$”特殊符号，代表从最后一条开始读取。</li>
+</ul>
+
+<p>此命令读取消息后无须通过XACK确认，也不需要强制指定消费组名称与消费者名称</p>
+
+<h3 id="toc_12">xacx 命令</h3>
+
+<p>xack命令用于确认一或多个指定ID的消息，使其从待确认列表中删除。</p>
+
+<pre><code class="language-text">xack key groupName ID [ID ...]
+</code></pre>
+
+<ul>
+<li>group：消费组名称；</li>
+<li>ID：确认的消息ID。</li>
+</ul>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; xack mystream mmp 1593957391373-0 1593943573938-0
+(integer) 1
+</code></pre>
+
+<h3 id="toc_13">xpending 命令</h3>
+
+<p>xpending命令用于读取某消费组或者某个消费者的未确认消息，返回未确认的消息ID、空闲时间、被读取次数。</p>
+
+<pre><code class="language-text">xpending key group [start end count] [consumer]
+</code></pre>
+
+<p>group：指定的消费组；·start：范围开始ID，可以为特殊符“-”表示开始或指定ID；·end：范围结束ID，可以为特殊符“+”标识结尾或指定ID；·count：读取条数；·consumer：指定的消费者。</p>
+
+<p>读取消费组cg1中消费者c1的所有待确认消息。</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; xadd mystream * name doubi1 age 19
+&quot;1593962280326-0&quot;
+127.0.0.1:6379&gt; XREADGROUP GROUP mmp c1 COUNT 2 STREAMS mystream &gt;
+1) 1) &quot;mystream&quot;
+   2) 1) 1) &quot;1593962280326-0&quot;
+         2) 1) &quot;name&quot;
+            2) &quot;doubi1&quot;
+            3) &quot;age&quot;
+            4) &quot;19&quot;
+127.0.0.1:6379&gt; xpending mystream mmp - + 2 c1
+1) 1) &quot;1593962280326-0&quot;
+   2) &quot;c1&quot;
+   3) (integer) 3616  # 间隔多长时间没有确认
+   4) (integer) 1
+</code></pre>
+
+<h3 id="toc_14">xinfo命令</h3>
+
+<p>用于读取消息队列、消费组、消费者等的信息。</p>
+
+<pre><code class="language-text">xinfo [CONSUMERS key groupname] [GROUPS key] [STREAM key] [HELP]
+</code></pre>
+
+<p>CONSUMERS：用于查看某个消费组下的消费者信息；·GROUPS：用于查看某个Stream队列下的消费组信息；·STREAM：用于查看某个Stream队列的整体组信息</p>
+
+<pre><code class="language-shell"># 查看消费组c1中消费者消费信息：
+127.0.0.1:6379&gt; xinfo consumers mystream mmp
+1) 1) &quot;name&quot;
+   2) &quot;c1&quot;
+   3) &quot;pending&quot;
+   4) (integer) 0
+   5) &quot;idle&quot;
+   6) (integer) 238485
+   
+   
+   # 查看Stream队列信息
+   127.0.0.1:6379&gt; xinfo stream mystream
+ 1) &quot;length&quot;
+ 2) (integer) 3
+ 3) &quot;radix-tree-keys&quot;
+ 4) (integer) 1
+ 5) &quot;radix-tree-nodes&quot;
+ 6) (integer) 2
+ 7) &quot;groups&quot;
+ 8) (integer) 1
+ 9) &quot;last-generated-id&quot;
+10) &quot;1593962280326-0&quot;
+11) &quot;first-entry&quot;
+12) 1) &quot;1593961742431-0&quot;
+    2) 1) &quot;name&quot;
+       2) &quot;doubi&quot;
+       3) &quot;age&quot;
+       4) &quot;18&quot;
+13) &quot;last-entry&quot;
+14) 1) &quot;1593962280326-0&quot;
+    2) 1) &quot;name&quot;
+       2) &quot;doubi1&quot;
+       3) &quot;age&quot;
+       4) &quot;19&quot;
+</code></pre>
+
+<h3 id="toc_15">xlen 命令</h3>
+
+<p>用于获取Stream队列的数据长度</p>
+
+<pre><code class="language-text">xlen key ID [ID ...]
+</code></pre>
+
+<pre><code class="language-text">127.0.0.1:6379&gt; xlen mystream
+(integer) 3
+</code></pre>
+
+<h3 id="toc_16">xtrim 命令</h3>
+
+<p>缩减消息队列。</p>
+
+<pre><code class="language-text">xtrim key MAXLEN [~] count
+</code></pre>
+
+<p>参照  xadd 命令</p>
+
+<h3 id="toc_17">xclaim命令</h3>
+
+<p>改变一或多个未确认消息的所有权，新的所有者是在命令参数中指定。</p>
+
+<pre><code class="language-text">XCLAIM  key group consumer min-idle-time ID [ID ...] [IDLE ms] [TIME ms-unix-time] [RETRYCOUNT count] [FORCE] [JUSTID]
+</code></pre>
+
+<ul>
+<li>consumer：指定新的消费者</li>
+<li>min-idle-time：指定消息最小空闲数；</li>
+<li>ID：指定消息ID；</li>
+<li>IDLE <ms>: 设置消息的空闲时间（自最后一次交付到目前的时间）。如果没有指定IDLE，则假设IDLE值为0，即时间计数被重置，因为消息现在有新的所有者来尝试处理它。</li>
+<li>TIME <ms-unix-time>: 这个命令与IDLE相同，但它不是设置相对的毫秒数，而是将空闲时间设置为一个指定的Unix时间（以毫秒为单位）。这对于重写生成XCLAIM命令的AOF文件很有用。</li>
+<li>RETRYCOUNT <count>: 将重试计数器设置为指定的值。这个计数器在每一次消息被交付的时候递增。通常，XCLAIM不会更改这个计数器，它只在调用XPENDING命令时提供给客户端：这样客户端可以检测到异常，例如在大量传递尝试后由于某种原因从未处理过的消息。</li>
+<li>FORCE: 在待处理条目列表（PEL）中创建待处理消息条目，即使某些指定的ID尚未在分配给不同客户端的待处理条目列表（PEL）中。但是消息必须存在于流中，否则不存在的消息ID将会被忽略。</li>
+<li>JUSTID: 只返回成功认领的消息ID数组，不返回实际的消息。</li>
+</ul>
+
+<p>在流的消费者组上下文中，此命令改变待处理消息的所有权， 因此新的所有者是在命令参数中指定的消费者。通常是这样的：</p>
+
+<ul>
+<li>假设有一个具有关联消费者组的流。</li>
+<li>某个消费者A在消费者组的上下文中通过XREADGROUP从流中读取一条消息。</li>
+<li>作为读取消息的副作用，消费者组的待处理条目列表（PEL）中创建了一个待处理消息条目：这意味着这条消息已传递给给定的消费者，但是尚未通过XACK确认。</li>
+<li>突然这个消费者出现故障，且永远无法恢复。</li>
+<li>其他消费者可以使用XPENDING检查已经过时很长时间的待处理消息列表，为了继续处理这些消息，他们使用XCLAIM来获得消息的所有权，并继续处理。</li>
+</ul>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15938782054278.html" 
+          title="Previous Post: 限流">&laquo; 限流</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15937003019170.html" 
+          title="Next Post: 五、Redis 基本数据类型与其命令">五、Redis 基本数据类型与其命令 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

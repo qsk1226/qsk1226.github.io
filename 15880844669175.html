@@ -1,0 +1,839 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  代理模式 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>代理模式</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/04/28</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html'>设计模式</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>代理模式(Proxy Pattern) ：给某一个对象提供一个代理，并由代理对象控制对原对象的引用。代理模式的英文叫做Proxy或Surrogate，它是一种对象结构型模式。</p>
+
+<p>在某些情况下，<strong><em>一个客户不想或者不能直接引用一个对象，又或者客户想要增强目标类的功能，但是又不能调整目标类的时候</em></strong>，可以通过一个称之为“代理”的第三者来实现间接引用。代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。</p>
+
+<p>通过引入一个新的对象（如小图片和远程代理 对象）来实现对真实对象的操作或者将新的对 象作为真实对象的一个替身，这种实现机制即为代理模式，通过引入代理对象来间接访问一 个对象，这就是代理模式的模式动机。</p>
+
+<p>代理模式可分为静态代理和动态代理，他们都提供了对目标对象额外的访问方式，即通过代理对象访问目标对象，这样可以在不修改原目标对象的前提下，提供额外的功能操作，扩展目标对象的功能。</p>
+
+<p>那么静态代理与动态代理的区别又是什么呢？</p>
+
+<ul>
+<li>静态代理在编译时就已经实现，编译完成后代理类是一个实际的class文件</li>
+<li>动态代理是在运行时动态生成的，即编译完成后没有实际的class文件，而是使用反射和字节码的技术，在运行期创建指定接口或类的子类以及其实力对象，并加载到JVM中</li>
+</ul>
+
+<h2 id="toc_0">静态代理</h2>
+
+<h3 id="toc_1">静态态代理结构</h3>
+
+<ul>
+<li>Subject: 抽象主题角色</li>
+<li>Proxy: 代理主题角色</li>
+<li>RealSubject: 真实主题角色
+<figure><img src="media/15880844669175/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.jpg" alt="代理模式"/><figcaption>代理模式</figcaption></figure></li>
+</ul>
+
+<h3 id="toc_2">静态代理示例</h3>
+
+<pre><code class="language-java">/**
+ * 接口
+ */
+public interface IUserDao {
+
+    void save();
+}
+/**
+ * 接口实现
+ * 目标对象
+ */
+public class UserDao implements IUserDao {
+    public void save() {
+        System.out.println(&quot;----已经保存数据!----&quot;);
+    }
+}
+/**
+ * 代理对象,静态代理
+ */
+public class UserDaoProxy implements IUserDao{
+    //接收保存目标对象
+    private IUserDao target;
+    public UserDaoProxy(IUserDao target){
+        this.target=target;
+    }
+
+    public void save() {
+        System.out.println(&quot;开始事务...&quot;);
+        target.save();//执行目标对象的方法
+        System.out.println(&quot;提交事务...&quot;);
+    }
+}
+
+/**
+ * 测试类
+ */
+public class App {
+    public static void main(String[] args) {
+        //目标对象
+        UserDao target = new UserDao();
+
+        //代理对象,把目标对象传给代理对象,建立代理关系
+        UserDaoProxy proxy = new UserDaoProxy(target);
+
+        proxy.save();//执行的是代理的方法
+    }
+}
+</code></pre>
+
+<h3 id="toc_3">静态代理总结:</h3>
+
+<ul>
+<li>可以做到在不修改目标对象的功能前提下,对目标功能扩展.</li>
+<li>缺点:因为代理对象需要与目标对象实现一样的接口,所以会有很多代理类,类太多.同时,一旦接口增加方法,目标对象与代理对象都要维护.</li>
+</ul>
+
+<p>如何解决静态代理中的缺点呢?答案是可以使用动态代理方式</p>
+
+<h2 id="toc_4">动态代理技术实现主要方式</h2>
+
+<h3 id="toc_5">JDK原生动态代理</h3>
+
+<p>只能基于有接口代理对象进行代理</p>
+
+<ul>
+<li>Proxy: Proxy是所有动态代理的父类，它提供了一个静态方法来创建动态代理的class对象和实例。
+<code>java
+static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,InvocationHandler h )
+</code>
+<ul>
+<li>ClassLoader loader,:指定当前目标对象使用类加载器,获取加载器的方法是固定的</li>
+<li>Class&lt;?&gt;[] interfaces,:目标对象实现的接口的类型,使用泛型方式确认类型</li>
+<li>InvocationHandler h:事件处理,执行目标对象的方法时,会触发事件处理器的方法,会把当前执行目标对象的方法作为参数传入,每个动态代理实例都有一个关联的InvocationHandler。在代理实例上调用方法时，方法调用被转发到InvocationHandler的invoke方法。</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-java">public class DynamicProxyTest {
+
+    interface IHello{
+        void sayHello();
+    }
+
+    static class Hello implements IHello {
+        @Override
+        public void sayHello() {
+            System.out.println(&quot;Hello world&quot;);
+        }
+    }
+
+    static class DynamicProxy implements InvocationHandler {
+        Object originalObj;
+        Object bind(Object originalObj) {
+            this.originalObj = originalObj;
+            return Proxy.newProxyInstance(originalObj.getClass().getClassLoader(), originalObj.getClass().getInterfaces(), this);
+        }
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            System.out.println(&quot;welcom &quot;);
+            return method.invoke(originalObj, args);
+        }
+
+    }
+
+
+    public static void main(String[] args) {
+        IHello iHello = (IHello) new DynamicProxy().bind(new Hello());
+        iHello.sayHello();
+    }
+}
+</code></pre>
+
+<h3 id="toc_6">CGLIB动态代理</h3>
+
+<p>CGLIB代理,也叫作子类代理,它是在内存中构建一个子类对象从而实现对目标对象功能的扩展.</p>
+
+<p>JDK的动态代理有一个限制,就是使用动态代理的对象必须实现一个或多个接口,如果想代理没有实现接口的类,就可以使用CGLIB实现.</p>
+
+<p>CGLIB是一个强大的高性能的代码生成包,它可以在运行期扩展java类与实现java接口.它广泛的被许多AOP的框架使用,例如Spring AOP和synaop,为他们提供方法的interception(拦截)</p>
+
+<p>CGLIB包的底层是通过使用一个小而块的字节码处理框架ASM来转换字节码并生成新的类.不鼓励直接使用ASM,因为它要求你必须对JVM内部结构包括class文件的格式和指令集都很熟悉.</p>
+
+<ul>
+<li>Enhancer: 来指定要代理的目标对象、实际处理代理逻辑的对象，最终通过调用create()方法得到代理对象，对这个对象所有非final方法的调用都会转发给MethodInterceptor;</li>
+<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。</li>
+</ul>
+
+<pre><code class="language-java">public class ProxyFactory {
+    /**
+     * 产生代理对象
+     *
+     * @param targetClass       目标类
+     * @param callbackFilter    回调增强方法的过滤器
+     * @param methodInterceptor 回调增强方法
+     * @return 代理对象
+     */
+    public static Object createProxy(Class&lt;?&gt; targetClass, CallbackFilter callbackFilter, MethodInterceptor... methodInterceptor) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(targetClass);
+        enhancer.setUseCache(false);
+        // 拦截器
+        //enhancer.setCallbackFilter(callbackFilter);
+        enhancer.setCallbacks(methodInterceptor);
+        return enhancer.create();
+
+    }
+}
+
+/**
+ * 被代理对象
+ */
+public class HelloService {
+
+    public void sayHello() {
+        System.out.println(&quot;hello, Lily&quot;);
+    }
+
+    public void saySb(){
+        System.out.println(&quot;Sb&quot;);
+    }
+    public void sayNinHao(){
+        System.out.println(&quot;您好&quot;);
+    }
+}
+
+/**
+ * 抽象的增强的回调方法
+ **/
+public abstract class AbstractAdviceInterceptor implements MethodInterceptor {
+    abstract void preExecute(MethodProxy proxy, Object object, Method method, Object[] args);
+
+    abstract void afterExecute(MethodProxy proxy, Object object, Method method, Object[] args);
+
+    public Object execute(MethodProxy proxy, Object object, Method method, Object[] args) {
+
+        preExecute(proxy, object, method, args);
+        Object result = null;
+        try {
+            result = proxy.invokeSuper(object, args);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        afterExecute(proxy, object, method, args);
+        return result;
+    }
+
+    @Override
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+        return execute(proxy, obj, method, args);
+    }
+}
+
+/**
+ * 代理对象的增强回调接口实现
+ * MethodInterceptor可以作为类的回调增强，也能只增强当个方法
+ */
+public class HelloInterceptor extends AbstractAdviceInterceptor {
+
+    @Override
+    void preExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
+        System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; pre operation:&quot;);
+    }
+
+    @Override
+    void afterExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
+        System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; after operation:&quot;);
+        System.out.println(&quot;&quot;);
+    }
+
+}
+
+public static void main(String[] args) {
+    /*代理整个类*/
+    HelloService proxy2 = (HelloService) ProxyFactory.createProxy(HelloService.class, null, new HelloInterceptor());
+    proxy2.sayHello();
+    proxy2.saySb();
+    proxy2.sayNinHao();
+
+}
+
+</code></pre>
+
+<h2 id="toc_7">使用场景</h2>
+
+<p>根据代理模式的使用目的，常见的代理模式有以下几种类型：</p>
+
+<ul>
+<li>远程(Remote)代理：为一个位于不同的地址空间的对象提供一个本地 的代理对象，这个不同的地址空间可以是在同一台主机中，也可是在 另一台主机中，远程代理又叫做大使(Ambassador)。</li>
+<li>虚拟(Virtual)代理：如果需要创建一个资源消耗较大的对象，先创建一个消耗相对较小的对象来表示，真实对象只在需要时才会被真正创建。</li>
+<li>Copy-on-Write代理：它是虚拟代理的一种，把复制（克隆）操作延迟 到只有在客户端真正需要时才执行。一般来说，对象的深克隆是一个 开销较大的操作，Copy-on-Write代理可以让这个操作延迟，只有对象被用到的时候才被克隆。</li>
+<li>保护(Protect or Access)代理：控制对一个对象的访问，可以给不同的用户提供不同级别的使用权限。</li>
+<li>缓冲(Cache)代理：为某一个目标操作的结果提供临时的存储空间，以便多个客户端可以共享这些结果。</li>
+<li>防火墙(Firewall)代理：保护目标不让恶意用户接近。</li>
+<li>同步化(Synchronization)代理：使几个用户能够同时使用一个对象而没有冲突。</li>
+<li>智能引用(Smart Reference)代理：当一个对象被引用时，提供一些额外的操作，如将此对象被调用的次数记录下来等。</li>
+</ul>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15882235745444.html" 
+          title="Previous Post: CompletableFuture">&laquo; CompletableFuture</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15880496547017.html" 
+          title="Next Post: 细说Reactor模式">细说Reactor模式 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

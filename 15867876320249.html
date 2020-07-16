@@ -1,0 +1,733 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>JUC辅助同步类之CountDownLatch、CyclicBarrier、Semaphore</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/04/13</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <h2 id="toc_0">CountDownLatch 号令枪</h2>
+
+<p>CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工作后再执行操作。<br/>
+CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
+
+<pre><code class="language-java">public class MichaelShow {
+    private static final AtomicInteger COUNT = new AtomicInteger(0);
+    static class Customer extends Thread {
+        private final CountDownLatch beQuiet;
+        private final CountDownLatch beBoom;
+
+        public Customer(CountDownLatch beQuiet, CountDownLatch beBoom) {
+            this.beQuiet = beQuiet;
+            this.beBoom = beBoom;
+        }
+
+        @Override
+        public void run() {
+            try {
+                beQuiet.await();
+                System.out.println(&quot;观众大喊：Michael Jackson， 我爱你！！！晕厥~~~&quot;);
+                COUNT.getAndAdd(1);
+                beBoom.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch startShow = new CountDownLatch(1);
+        CountDownLatch beBoom = new CountDownLatch(100);
+        for (int i = 0; i &lt; 100; i++) {
+            new Customer(startShow,beBoom).start();
+        }
+
+        System.out.println(&quot;Michael号令，演唱会马上开始&quot;);
+        startShow.countDown(); // 开始演唱会
+        beBoom.await();// 等待晕厥到一定人数，将人送往医院
+        System.out.println(&quot;观众晕厥&quot;+COUNT.get()+&quot;个，都被送往医院&quot;);
+    }
+}
+</code></pre>
+
+<h2 id="toc_1">CyclicBarrier</h2>
+
+<p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做 的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞，直到最后一 个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。 </p>
+
+<p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然 后当前线程被阻塞。<br/>
+CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
+
+<pre><code class="language-java">public class HomeWorkCyclicBarrier {
+
+    private static CyclicBarrier barrier
+            = new CyclicBarrier(4, new Treacher());
+
+    //存放子线程工作结果的容器
+    private static ConcurrentHashMap&lt;String, Long&gt; resultMap
+            = new ConcurrentHashMap&lt;&gt;();
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 4; i++) {
+            Thread thread = new Thread(new Student());
+            thread.start();
+        }
+
+    }
+
+    /*汇总作业*/
+    private static class Treacher implements Runnable {
+
+        @Override
+        public void run() {
+            StringBuilder result = new StringBuilder();
+            for (Map.Entry&lt;String, Long&gt; workResult : resultMap.entrySet()) {
+                result.append( workResult.getValue()+&quot;、&quot;);
+            }
+            System.out.println(&quot;王老师批阅学生&quot; + result+&quot;的作业&quot;);
+            System.out.println(&quot;王老师看学生搞对象&quot;);
+        }
+    }
+
+    /*相互等待的子线程*/
+    private static class Student implements Runnable {
+
+        @Override
+        public void run() {
+            long id = Thread.currentThread().getId();
+            resultMap.put(&quot;作业&quot;+Thread.currentThread().getId() + &quot;&quot;, id);
+            try {
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;写作业&quot;);
+                barrier.await();
+                Thread.sleep(1000 + id);
+                System.out.println(&quot;学生&quot; + id + &quot;搞对象&quot;);
+                //barrier.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}
+</code></pre>
+
+<h3 id="toc_2">Semaphore</h3>
+
+<p>Semaphore（信号量）是用来控制同时访问特定资源的线程数量，它通过协调各个线程，以保证合理的使用公共资源。很多年以来，我都觉得从字面上很难理解Semaphore所表达的含义，只能把它比作是控制流量的红绿灯，比如XX马路要限制流量，只允许同时有一百辆车在这条路上行使，其他的都必须在路口等待，所以前一百辆车会看到绿灯，可以开进这条马路，后面的车会看到红灯，不能驶入XX马路，但是如果前一百辆中有五辆车已经离开了XX马路，那么后面就允许有5辆车驶入马路，这个例子里说的车就是线程，驶入马路就表示线程在执行，离开马路就表示线程执行完成，看见红灯就表示线程被阻塞，不能执行。</p>
+
+<h4 id="toc_3">应用场景</h4>
+
+<p>Semaphore可以用于做流量控制，特别公用资源有限的应用场景，比如数据库连接。假如有一个需求，要读取几万个文件的数据，因为都是IO密集型任务，我们可以启动几十个线程并发的读取，但是如果读到内存后，还需要存储到数据库中，而数据库的连接数只有10个，这时我们必须控制只有十个线程同时获取数据库连接保存数据，否则会报错无法获取数据库连接。这个时候，我们就可以使用Semaphore来做流控，代码如下：</p>
+
+<pre><code class="language-java">public class DBPoolSemaphore {
+    
+    private final static int POOL_SIZE = 10;
+    //两个指示器，分别表示池子还有可用连接和已用连接
+    private final Semaphore useful,useless;
+    //存放数据库连接的容器
+    private static final LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
+    //初始化池
+    static {
+        for (int i = 0; i &lt; POOL_SIZE; i++) {
+            pool.addLast(makeConnection());
+        }
+    }
+    public DBPoolSemaphore() {
+        this.useful = new Semaphore(10);
+        this.useless = new Semaphore(0);
+    }
+    
+    /*归还连接*/
+    public void returnConnect(Connection connection) throws InterruptedException {
+        if(connection!=null) {
+            System.out.println(&quot;当前有&quot;+useful.getQueueLength()+&quot;个线程等待数据库连接!!&quot;
+                    +&quot;可用连接数：&quot;+useful.availablePermits());
+            useless.acquire();
+            synchronized (pool) {
+                pool.addLast(connection);
+            }
+            useful.release();
+        }
+    }
+    
+    /*从池子拿连接*/
+    public Connection takeConnect() throws InterruptedException {
+        useful.acquire();
+        Connection connection;
+        synchronized (pool) {
+            connection = pool.removeFirst();
+        }
+        useless.release();
+        return connection;
+    }
+    
+}
+</code></pre>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15866239860150.html" 
+          title="Previous Post: JVM 中 java 对象">&laquo; JVM 中 java 对象</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15866079598905.html" 
+          title="Next Post: JVM自动内存管理">JVM自动内存管理 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

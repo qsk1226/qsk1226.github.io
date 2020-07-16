@@ -1,0 +1,743 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  MyBatis面试 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>MyBatis面试</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/05/23</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <ul>
+<li><p>MyBatis 的好处是什么？</p>
+<ul>
+<li>MyBatis 把 sql 语句从 Java 源程序中独立出来，放在单独的 XML 文件中编写， 给程序的维护带来了很大便利。 </li>
+<li>MyBatis 封装了底层 JDBC API 的调用细节，并能自动将结果集转换成 Java Bean 对象，大大简化了 Java 数据库编程的重复工作。 </li>
+<li>因为 MyBatis 需要程序员自己去编写 sql 语句，程序员可以结合数据库自身的 特点灵活控制 sql 语句，因此能够实现比 Hibernate 等全自动 orm 框架更高的查 询效率，能够完成复杂查询</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>为什么说 Mybatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？<br/>
+答：Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集 合对象时，可以根据对象关系模型直接获取，所以它是全自动的。而 Mybatis 在查询 关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映<br/>
+射工具。</li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>接口绑定有几种实现方式,分别是怎么实现的?<br/>
+答：接口绑定有两种实现方式,一种是通过注解绑定,就是在接口的方法上面加上 @Select@Update 等注解里面包含 Sql 语句来绑定,另外一种就是通过 xml 里面写 SQL 来绑定,在这种情况下,要指定 xml 映射文件里面的 namespace 必须为接口的全 路径名。</li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>resultType 和 resultMap 的区别？<br/>
+答：resultType 和 resultMap 都是表示数据库表与 pojo 之间的映射规则的。类的名字和数据 库相同时，可以直接设置 resultType 参数为 Pojo 类。若不同或者有关联查询，需要设置 resultMap 将结果名字和 Pojo 名字进行转换；从编程的最佳实践来讲，强制使用resultMap, 不要用 resultClass 当返回参数，即使所有类属性名与数据库字段一一对应，也需要定义； </li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>在 MyBatis 中如何在 mapper 接口中传入多个参数？<br/>
+答：MyBatis 的接口默认只支持一个入参，如果要传递多个参数有三种方式：
+<ul>
+<li>使用 map 传递参数  可读性差，导致可维护性和可扩展性差，杜绝使用</li>
+<li>使用注解传递参数 直观明了，当参数较少一般小于 5 个的时候，建议使用</li>
+<li>使用 Java Bean 的方 式传递参数</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li><p><code>问${}和#{}的区别是什么？</code><br/>
+答：向 sql 语句中传递的可变参数,分为预编译#{}和传值${}两种 </p>
+<ul>
+<li>预编译 #{}：将传入的数据都当成一个字符串，会对自动传入的数据加一个单引号，能 够很大程度防止 sql 注入； </li>
+<li> 传值\({}：传入的数据直接显示生成在 sql 中，无法防止 sql 注入；适用场景：动态报表， 表名、选取的列是动态的，orderby 和 in 操作， 可以考虑使用\)</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>通过 Mybatis 怎么样进行批量插入操作<br/>
+答：有两种方式：
+<ul>
+<li>通过 foreach 动态拼装 SQL 语句 </li>
+<li> 使用 BATCH 类型的 excutor； 而且这两种方式都能返回数据库主键字段；</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li><p>Mybatis 怎么样实现关联查询<br/>
+答：有两种方式：</p>
+<ul>
+<li><p>嵌套结果:使用嵌套结果映射来处理重复的联合结果的子集。使用 join 查询，一部分<br/>
+列是 A 对象的属性值，另外一部分列是关联对象 B 的属性值，好处是只发一个 sql 查询，就可以把主对象和其关联对象查出来。 </p></li>
+<li><p>嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型，在关联标签中配 置 select、fetchType 这样的属性实现，是通过发送多段 SQL 实现的；</p></li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>什么是 N+1 问题，怎么解决？<br/>
+答：嵌套查询会导致“N+1 查询问题” ，导致该问题产生的原因: 
+<ul>
+<li>你执行了一个单独的 SQL 语句来获取结果列表(就是“+1”)。 </li>
+<li>对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是“N”)。 这个问题会导致成百上千的 SQL 语句被执行。这通常不是期望的。 <br/>
+解决“N+1 查询问题”的办法就是开启懒加载、按需加载数据，开启懒加载配置： 在select 节点上配置“fetchType=lazy”，在 MyBatis 核心配置文件中加入如下配置：</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-text">&lt;!-- 开启懒加载 ，当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每 种属性将会按需要加载。默认：true --&gt; 
+&lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;false&quot; /&gt;
+</code></pre>
+
+<hr/>
+
+<ul>
+<li>什么是一级缓存？怎么理解二级缓存？<br/>
+答：一级缓存存在于 SqlSession 的生命周期中，在同一个 SqlSession 中查询时使用。二级缓存 也叫应用缓存，存在于 SqlSessionFactory 的生命周期中，可以理解为跨 sqlSession；二级缓存是 以 namespace 为单位的，不同 namespace 下的操作互不影响。在项目中为了避免脏读的问题， 建议不适用二级缓存。</li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>Mybatis 是如何进行分页的？分页插件的原理是什么？<br/>
+答： 
+<ul>
+<li>Mybatis 使用 RowBounds 对象进行分页，也可以直接编写 sql 实现分页，也可以使用 Mybatis 的分页插件。 </li>
+<li>分页插件的原理：实现 Mybatis 提供的接口，实现自定义插件，在插件的拦截方法内拦 截待执行的 sql，然后重写 sql。 举例： select <em>from student，拦截 sql 后重写为： select t.</em> from（select * from student） t limit 0，10</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>简述 Mybatis 的插件运行原理，以及如何编写一个插件？<br/>
+答： 
+<ul>
+<li>Mybatis 仅可以编写针对 ParameterHandler、 ResultSetHandler、 StatementHandler、 Executor 这 4 种接口的插件，Mybatis 通过动态代理，为需要拦截的接口生成代理 对象以实现接口方法拦截功能，每当执行这 4 种接口对象的方法时，就会进入拦 截方法，具体就是 InvocationHandler 的 invoke()方法，当然，只会拦截那些你指定需要拦截的方法。</li>
+<li>实现 Mybatis 的 Interceptor 接口并复写 intercept()方法，然后在给插件编写 注解，指定要拦截哪一个接口的哪些方法即可，记住，别忘了在配置文件中配置你 编写的插件。</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>Mybatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？<br/>
+答：不同的 Xml 映射文件，如果配置了 namespace，那么 id 可以重复；如果没有配置 namespace， 那么 id 不能重复；毕竟 namespace 不是必须的，只是最佳实践而已。原因就是 namespace+id 是作为 Map<String, MappedStatement>的 key 使用的，如果没有 namespace，就剩下 id， 那么，id 重复会导致数据互相覆盖。有了 namespace，自然 id 就可以重复，namespace 不同， namespace+id 自然也就不同。</li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>Mybatis 都有哪些 Executor 执行器？它们之间的区别是什么？<br/>
+答：Mybatis 有三种基本的 Executor 执行器，SimpleExecutor、ReuseExecutor、BatchExecutor。
+<ul>
+<li>SimpleExecutor：Mybatis 的默认执行器，每执行一次 update 或 select，就开启一个 Statement 对 象，用完立刻关闭 Statement 对象。</li>
+<li>ReuseExecutor：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放 置于 Map3）BatchExecutor：完成批处理。</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>使用 MyBatis 的 mapper 接口调用时有哪些要求？<br/>
+答： 
+<ul>
+<li>Mapper 接口方法名和 mapper.xml 中定义的每个 sql 的 id 相同； </li>
+<li> Mapper 接口方法的输入参数类型和 mapper.xml 中定义的每个 sql 的 parameterType 的 类型相同； </li>
+<li>  Mapper 接口方法的输出参数类型和 mapper.xml 中定义的每个 sql 的 resultType 的类型 相同； </li>
+<li>  Mapper.xml 文件中的 namespace 即是 mapper 接口的类路径。</li>
+</ul></li>
+</ul>
+
+<hr/>
+
+<ul>
+<li>为什么使用 mapper 接口就能对数据库进行访问？<br/>
+答：表面上我们在使用 mapper 接口访问数据库，实际 MyBatis 通过动态代理生成了 mapper 接 口的实现类，通过这个动态生成的实现类，将数据库的访问请求转发给 SqlSession。转发过程中 需要实现三个翻译： 
+<ul>
+<li>通过 sql 语句的类型和接口方法的返回参数确定调用 SqlSession 的哪个方法； </li>
+<li>将 sql 语句在 MyBatis 中的两维坐标作为第一个参数，传入 SqlSession 的方法；</li>
+<li> 将接口传入的参数封装成 map 后作为第二个参数，传入 SqlSession 的方法； 请求转发给 SqlSession 后实现对数据库的访问操作；</li>
+</ul></li>
+</ul>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15902913212619.html" 
+          title="Previous Post: 缓存一致性问题如何解决">&laquo; 缓存一致性问题如何解决</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15902453903846.html" 
+          title="Next Post: MyBatis 插件开发">MyBatis 插件开发 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

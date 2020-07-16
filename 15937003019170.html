@@ -1,0 +1,1358 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  五、Redis 基本数据类型与其命令 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>五、Redis 基本数据类型与其命令</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/07/02</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='redis.html'>redis</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
+
+<p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
+
+<h2 id="toc_0">1、Redis基本数据类型</h2>
+
+<p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
+
+<table>
+<thead>
+<tr>
+<th>结构类型</th>
+<th>编码类型</th>
+<th>结构存储的值</th>
+<th>结构的读写能力</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>string</td>
+<td>raw、int、embstr</td>
+<td>可以使字符串、整数或者浮点数</td>
+<td>对整个字符串或字符串的一部分执行操作；对证书和浮点数执行自增、自减操作</td>
+</tr>
+<tr>
+<td>list</td>
+<td>quicklist</td>
+<td>底层由链表实现，每个节点都包含一个字符串</td>
+<td>从列表的两端推入或者弹出元素；根据偏移量对列表进行修改；读取单个或多个元素；根据值查询或者移除元素</td>
+</tr>
+<tr>
+<td>set</td>
+<td>intset、dict</td>
+<td>不重复的无序集合，但当底层实现是intset的时候则是有序的</td>
+<td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
+</tr>
+<tr>
+<td>zset</td>
+<td>ziplist、skiplist+dict</td>
+<td>不可重复的有序集合，字符串成员(member)于浮点数分支(score)之间的有序映射，元素的排列顺序由分值的大小决定</td>
+<td>添加、获取、移除单个元素；根据分值范围(range)或者成员来获取元素</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>dict、ziplist</td>
+<td>包含键值对的无序散列表</td>
+<td>添加、获取、移除单个键值对；获取所有键值对</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>关于key的几条建议</strong></p>
+
+<ul>
+<li>不建议太长的键值，原因：1、消耗内存；2、这类键值计算成本很高</li>
+<li>不建议太短的键值，设计键值要有良好的可读性，太短的话，看不懂就有点尴尬了</li>
+<li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
+</ul>
+
+<h2 id="toc_1">Redis 中的 string 字符串</h2>
+
+<p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
+
+<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。</p>
+
+<p>字符串值robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>设置</td>
+<td>SET key value [NX] [XX] [EX seconds] [PX milliseconds]</td>
+<td>设置存储在给定键中的值</td>
+<td>set mykey  myvalue</td>
+<td>·NX： 当数据库中key不存在时，可以将key-value添加到数据库。·XX： 当数据库中key存在时，可以将key-value设置到数据库，与NX参数互斥。·EX： key的超时秒数。·PX： key的超时毫秒数，与EX参数互斥。</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>mset key value [key value ...]</td>
+<td>设置多个key-value，如果key之前存在，则使用新的value进行覆盖</td>
+<td>mset idear1 eat idear2 play</td>
+<td>设置键值对 idear1 : ear 、 idear2  : play</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setex key second value</td>
+<td>设置key-value并设置过期时间(单位：秒)</td>
+<td>setex mykey 10  hungry</td>
+<td>设置的mykey : hungry 10秒钟后过期，10秒后get mykey 返回 nil；</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>psetex　key　milliseconds　value</td>
+<td>设置key-value并设置过期时间(单位：毫秒)</td>
+<td>setex mykey 10  hungry</td>
+<td>设置的mykey : hungry 10毫秒钟后过期，10毫秒后get mykey 返回 nil；</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>setnx key value</td>
+<td>只有key不存在时才会设置key-value</td>
+<td>setnx mykey myvalue</td>
+<td>如果mykey不存在则设置，如果存在不执行覆盖操作</td>
+</tr>
+<tr>
+<td>设置</td>
+<td>msetnx key value [key value ...]</td>
+<td>当所有的key都不存在时才会设置这些key-value</td>
+<td>msetnx mykey1 myvalue1 mykey2 myvalue2</td>
+<td>所有的key都不存在设置这些个key-value</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>get key</td>
+<td>获取存储在给定键中的值</td>
+<td>get mykey</td>
+<td>返回myvalue</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>getset key value</td>
+<td>将给定keuy的值设置为value，并返回key的旧值</td>
+<td>getset mykey newValue</td>
+<td>返回mykey的旧值myvalue，并设置mykey为新值 newValue</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>mget key [key...]</td>
+<td>获取多个key</td>
+<td>mget mykey1 mykey2</td>
+<td>获取mykey1、mykey2的值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>getrange key start end</td>
+<td>获取存储在给定键中的值的某一段</td>
+<td>get mykey 0 -2</td>
+<td>返回myvalue 值递第一位置至倒数第二位置的value 值</td>
+</tr>
+<tr>
+<td>获取</td>
+<td>strlen</td>
+<td>获取指定key的长度</td>
+<td>strlen mykey</td>
+<td>复杂度为O(1)</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>append key value</td>
+<td>追加一个值到key上</td>
+<td>append mykey tony</td>
+<td>添加完tony之后运行get mykey 得到结果 myvalue tony</td>
+</tr>
+<tr>
+<td>计数</td>
+<td>decr key</td>
+<td>整数原子减 1</td>
+<td>decr mykey</td>
+<td>如果mykey原先不存在，在减1之前，age会被置为0</td>
+</tr>
+<tr>
+<td>计数</td>
+<td>decrby key decrement</td>
+<td>整数原子减指定整数</td>
+<td>decrby mykey</td>
+<td>如果mykey原先不存在，在减decrement之前，mykey会被置为0</td>
+</tr>
+<tr>
+<td>计数</td>
+<td>incr key</td>
+<td>整数原子加1</td>
+<td>incr mykey</td>
+<td>如果mykey原先不存在，在加1之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>计数</td>
+<td>incrby key increment</td>
+<td>整数原子加指定整数</td>
+<td>incrby mykey 10</td>
+<td>如果mykey原先不存在，在加increment之前mykey会被置为0</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>setrange key offset value</td>
+<td>覆盖key的value的offset之后的字符串</td>
+<td>setrange mykey 2 qu</td>
+<td>mykey之前的值是woca，执行此命令之后的结果就是woqu</td>
+</tr>
+<tr>
+<td>通用</td>
+<td>del key</td>
+<td>删除存储在给定键中的值</td>
+<td>del mykey</td>
+<td>删除 mykey 键</td>
+</tr>
+</tbody>
+</table>
+
+<p>此外还有一种字符串的位操作：<br/>
+位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
+
+<p>Q：追加字符串时，需要判断追加后的字符串长度必须小于512MB，否则会报错，那么在set命令时为什么没有限制最大长度呢？<br/>
+A:在服务端接收到命令的时候，就已经判断了命令的最大长度不能大于512 MB，所以set命令不需要再次判断了</p>
+
+<p>字符串追加会修改原字符串的值，所以必须保证字符串是非共享的。如果字符串是共享的，则需要解除共享，新创建一个值对象。</p>
+
+<h2 id="toc_2">Redis 中的 list 列表</h2>
+
+<p>在 Redis 引入 quicklist之前，Redis采用压缩链表（ziplist）以及双向链表（adlist）作为List的底层实现。当元素个数比较少并且元素长度比较小时，Redis 采用 ziplist 作为其底层存储；当任意一个条件不满足时，Redis采用adlist作为底层存储结构。这么做的主要原因是，当元素长度较小时，采用ziplist可以有效节省存储空间，但ziplist的存储空间是连续的，当元素个数比较多时，修改元素时，必须重新分配存储空间，这无疑会影响Redis的执行效率，故而采用一般的双向链表。</p>
+
+<p>Redis3.2版本之后，列表底层使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
+
+<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>blpop key [key ...] timeout</td>
+<td>lpop的阻塞版本</td>
+<td>blpop myList 0</td>
+<td>调用返回key和左边第一个元素的组合 myList、list3</td>
+</tr>
+<tr>
+<td>brpop key [key ...] timeout</td>
+<td>rpop的阻塞版本</td>
+<td>brpop myList</td>
+<td>没元素的话阻塞在key的列表上</td>
+</tr>
+<tr>
+<td>lindex key index</td>
+<td>通过列表索引获取key列表的value值, index  0：表示第一个元素； -1：表示最后一个元素；-2 ：表示倒数第二个原始</td>
+<td>lindex myList 0</td>
+<td>返回list3</td>
+</tr>
+<tr>
+<td>linsert key before/after pivot value</td>
+<td>把value插入myList 列表中在元素的的前面或后面</td>
+<td>linsert myList before  list2 beauty</td>
+<td>返回[list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>llen key</td>
+<td>获得列表的长度</td>
+<td>llen myList</td>
+<td>返回3</td>
+</tr>
+<tr>
+<td>lpop key</td>
+<td>从队列的左边出队并返回一个元素，列表为空时返回nil</td>
+<td>lpop myList</td>
+<td>返回并删除了第一个元素list3</td>
+</tr>
+<tr>
+<td>lpush key value [value ...]</td>
+<td>从队列的左边入队一个或多个元素</td>
+<td>lpush myList list4 list 5</td>
+<td>value按照先后顺序插入到列表头，最后列表元素[list5,list4,list3,beauty,list2,list1]</td>
+</tr>
+<tr>
+<td>lpushx key vlaue</td>
+<td>当列表存在时，从列表左边入队一个元素</td>
+<td>lpushx myList1  hello</td>
+<td>myList1 不存在 元素插入不成功</td>
+</tr>
+<tr>
+<td>lrange key startIndex stopIndex</td>
+<td>从列表中获取指定位置范围内的元素</td>
+<td>lrange myList 0 1</td>
+<td>结果[list3,list2]</td>
+</tr>
+<tr>
+<td>lrem key count value</td>
+<td>从存于key的列表中移除前count个的值为value的元素，count&gt;0 :从头向尾移除置为value的元素；count&lt;0: 从尾向头移除置为value的元素；count=0： 移除所有值为value的元素</td>
+<td>lrem myList 1 list2</td>
+<td>[list3,list1]</td>
+</tr>
+<tr>
+<td>lset key index value</td>
+<td>设置列表里面的index位置的元素值</td>
+<td>lset myList 2 ghost</td>
+<td>列表更新为[list3,list2,ghost]</td>
+</tr>
+<tr>
+<td>ltrim key start stop</td>
+<td>修剪并保留指定范围内的元素</td>
+<td>ltrim myList 1 2</td>
+<td>列表被编辑为 [list2,list1]</td>
+</tr>
+<tr>
+<td>rpop key</td>
+<td>从列表右边出队并返回一个元素，列表为空时返回nil</td>
+<td>rpop myList</td>
+<td>列表被编辑为 [list3,list2]</td>
+</tr>
+<tr>
+<td>rpush key value [value ...]</td>
+<td>从列表右边入队一个或多个元素</td>
+<td>rpush myList niu</td>
+<td>列表被编辑为 [list3,list2,list1,niu]</td>
+</tr>
+<tr>
+<td>rpushx key value</td>
+<td>列表如果存在，则从列表右边入队一个元素</td>
+<td>rpushx myList leng</td>
+<td>列表被编辑为 [list3,list2,list1,leng]，如果myList不存在，啥都不干</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_3">栈和队列命令列表</h3>
+
+<p>栈与队列是操作受限制的线性表</p>
+
+<p>栈只允许在线性表的同一侧执行插入或删除操作，具有先进后出的特性；</p>
+
+<p>队列只允许在一侧插入另一侧删除，具有先进先出的特性。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令类型</th>
+<th>左侧</th>
+<th>右侧</th>
+<th>左侧阻塞</th>
+<th>右侧阻塞</th>
+<th>左侧必须键存在</th>
+<th>右侧必须键存在</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>push类</td>
+<td>lpush</td>
+<td>rpush</td>
+<td>无</td>
+<td>无</td>
+<td>lpushx</td>
+<td>rpushx</td>
+</tr>
+<tr>
+<td>pop类</td>
+<td>lpop</td>
+<td>rpop</td>
+<td>blpop</td>
+<td>brpop</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_4">Redis 中的 set 集合</h2>
+
+<p>在Redis中，集合元素为字符串和数字，分别用dict和intset存储。对于单个集合，Redis 实现了元素的新增、删除、遍历等操作；对于多个集合，Redis实现了集合间求交集、并集和差集等操作。</p>
+
+<p>set集合中添加元素的时候分两种情况：</p>
+
+<ul>
+<li><p>当encoding方式为OBJ_ENCODING_HT时，set的底层用的是字典，将key直接添加进dict。需要注意的是，用dict存储集合元素时，元素值存储于字典的key中，字典的value值为null。</p></li>
+<li><p>当encoding方式为OBJ_ENCODING_INTSET时，又有两种情况：</p>
+<ul>
+<li>若新增的元素本身非数字（value转long long失败），需要通过setTypeConvert转化后再存储；</li>
+<li>若新增的元素本身是数字，则用intsetAdd新增元素。且当新增成功，但intset的元素个数过多（个数大于server.set_max_intset_entries时。该参数可配置，默认为512），同样会触发setTypeConvert，将OBJ_ENCODING_INTSET转化为OBJ_ENCODING_HT，为避免转化过程中发生字典的rehash操作，代码中用 dictExpand主动扩容。</li>
+</ul></li>
+</ul>
+
+<p>移除元素的时候同样分两种情况进行处理：</p>
+
+<ul>
+<li>若encoding为OBJ_ENCODING_HT时，则调用dictDelete处理删除元素时，会检查字典容量，字典容量不足也会触发扩容操作。</li>
+<li>当encoding为OBJ_ENCODING_INTSET时，调用intsetRemove处理</li>
+</ul>
+
+<p>Set集合相关命令如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sadd key member [member ...]</td>
+<td>添加一个或多个指定的member元素到集合key中.</td>
+<td>sadd myset &quot;hello&quot;</td>
+<td>返回新成功添加到集合里元素的数量，不包括已经存在于集合中的元素.指定的一个或者多个元素member 如果已经在集合key中存在则忽略.如果集合key 不存在，则新建集合key,并添加member元素到集合key中。如果key 的类型不是集合则返回错误。</td>
+</tr>
+<tr>
+<td>scard key</td>
+<td>返回集合存储的key的基数 (集合元素的数量).</td>
+<td>SCARD myset</td>
+<td>集合的基数(元素的数量),如果key不存在,则返回 0.</td>
+</tr>
+<tr>
+<td>sdiff key [key ...]</td>
+<td>返回一个集合与给定集合的差集的元素.</td>
+<td>sdiff  myset1 myset2</td>
+<td>返回myset1和myset2的差集元素，不存在的key认为是空集.</td>
+</tr>
+<tr>
+<td>sdiffstore destination key [key ...]</td>
+<td>返回一个集合与给定集合的差集元素的个数，并将结果放入destination中</td>
+<td>sdiffstore myset myset1 myset2</td>
+<td>将myset1和myset2的差集存储在myset中</td>
+</tr>
+<tr>
+<td>sinter key [key ...]</td>
+<td>返回所有集合的元素交集列表</td>
+<td>sinter myset1 myset2</td>
+<td>如果key不存在则被认为是一个空的集合,当给定的集合为空的时候,结果也为空.(一个集合为空，结果一直为空).</td>
+</tr>
+<tr>
+<td>sinterstore destination key [key ...]</td>
+<td>返回所有集合的元素交集的元素数目，并存储到 destination中</td>
+<td>sinterstore myset myset1 myset2</td>
+<td>myset1和myset2的交集存储到 myset集合中，并返回集合元素的数目，如果destination 集合存在, 则会被重写.</td>
+</tr>
+<tr>
+<td>sismember key member</td>
+<td>判断member是否存在于key集合中，存在返回1，不存在返回0</td>
+<td>sismember myset &quot;121&quot;</td>
+<td>判断121是否存在于myset集合中，myset不存在或121不是myset集合元素返回0，否则返回 1</td>
+</tr>
+<tr>
+<td>smembers key</td>
+<td>返回集合所有元素</td>
+<td>smembers myset</td>
+<td>该命令的作用与使用一个参数的 sinter 命令作用相同.</td>
+</tr>
+<tr>
+<td>smove source destination member</td>
+<td>将member 从source集合移动到destination集合中</td>
+<td>smove myset1 myset2 &quot;sb&quot;</td>
+<td>将sb元素从 myset1 集合 移动到 myset2 集合中</td>
+</tr>
+<tr>
+<td>spop key [count]</td>
+<td>从存储在key的集合中移除并返回一个或多个随机元素</td>
+<td>spop myset 3</td>
+<td>从myset中删除并返回3个元素，被删除的元素，或者当key不存在时返回nil。</td>
+</tr>
+<tr>
+<td>srandmember key [count]</td>
+<td>随机返回集合key中count个数元素</td>
+<td>srandmember myset 3</td>
+<td>随机返回myset集合中的3个元素</td>
+</tr>
+<tr>
+<td>srem key member [member ...]</td>
+<td>移除key 集合中指定的元素</td>
+<td>srem myset &quot;sb1&quot; &quot;sb2&quot;</td>
+<td>从myset中删除sb1 和 sb2，如果集合中不存在 sb1则忽略，myset集合不存在则被视为一个空集合，返回 0</td>
+</tr>
+<tr>
+<td>sscan key cursor [match pattern] [count count]</td>
+<td>遍历集合中所有的元素</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sunion key [key ...]</td>
+<td>返回给定的多个集合的并集中的所有成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sunionstore destination key [key ...]</td>
+<td>将多个集合的并集存储到destination集合中</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_5">Redis 中的 zset  有序集合</h2>
+
+<p>有序集合中，用到的关键数据结构是ziplist以及dict和skiplist，当服务器属性server.zset_max_ziplist_entries的值大于0且元素的member 长度小于服务器属性server.zset_max_ziplist_value的值（默认为64）时，使用的是ziplist，否则使用的是dict和skiplist。</p>
+
+<p>有序集合里面的成员是不能重复的都是唯一的，但是，不同成员间有可能有相同的分数。当多个成员有相同的分数时，相同分数的成员按照字典规则相对排序，字典顺序排序用的是二进制，它比较的是字符串的字节数组。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>zadd key [nx|xx] [ch] [incr] score member [score member]</td>
+<td>将一个或多个member元素及其分值score加入到有序集合对应的key当中。其中，分值score可以是整数值或双精度浮点数。XX：只更新已经存在的元素，不添加元素。NX：不更新已经存在的元素，总是添加新的元素。CH：将返回值从添加的新元素数量修改为更改的元素总数。INCR：对成员的分数进行递增操作。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrem key member [member]</td>
+<td>删除有序集合 key中的一个或者多个member</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zcard key</td>
+<td>获取有序集合key中的技基数</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zcount key min max</td>
+<td>返回有序集合 key 中 scroe 值在 [min,max]区间的成员数量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zincrby key increment member</td>
+<td>在有序集合 key 的 member 的分值上增加 increment</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrank key member</td>
+<td>按照分值从小到大返回有序集合成员member的排名，其中排名从0开始计算</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrank key member</td>
+<td>按照分值从大到小返回有序集合成员member的排名</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zscore key member</td>
+<td>获取有序集合key中成员member的分值</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zscan key cursor [match parttern] [count count]</td>
+<td>迭代有序集合中的元素和分值，match可以通过正则匹配元素，count 是返回的元素数量</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrange key start stop [withscores]</td>
+<td>获取有序集合key中指定区间的成员，成员按照分值递增排序，如果分值相同，成员按照字典序排序</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrange key start stop [withscores]</td>
+<td>获取有序集合key中指定区间的成员，成员按照分值递减排序，如果分值相同，成员按照字典序排序</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrangebyscore key min max [withscores] [limit offset count]</td>
+<td>返回有序集key中，所有score值介于min和max之间（包括等于min或max）的成员。有序集成员按score值递增（从小到大）次序排列。具有相同score值的成员按字典序排列。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrevrangebyscore key min max [withscores] [limit offset count]</td>
+<td>除了有序集合按score值递减之外，跟zrangebyscore完全一样。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zrangebylex key min max [limit offset count]</td>
+<td>分数必须相同，返回给定的有序集合键key中值介于min和max之间的成员，根据成员的字典序排序。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
+<td></td>
+<td>合法的min和max参数必须包含“(”或者“[”，其中“(”表示开区间，“[”表示闭区间；可以使用 “-“ 和 “+” 表示得分最小值和最大值；成员字符串作为二进制数组的字节数进行比较；</td>
+</tr>
+<tr>
+<td>zlexcount key min max</td>
+<td>返回给定的有序集合键key中值介于min和max之间的成员数量。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebyrank key start stop</td>
+<td>移除有序集合key 中指定排名区间的所有成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebyscore key min max</td>
+<td>移除有序集合key中所有score值介于[min,max]之间的成员</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zremrangebylex key min max</td>
+<td>移除该集合中成员字典序介于min和max范围的所有元素</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zunionstore destination numkeys key [key ...] [weights weight] [sumiminimax]</td>
+<td>计算给定的numkeys个有序集合的并集，并且把结果放到destination中。WEIGHTS选项可以在使用聚合函数时为每个有序集分别指定一个乘法因子</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zinterstore destination numkeys key [key ...] [WEIGHTS weight] [SUMIMINIMAX]</td>
+<td>计算给定的numkeys个有序集合的交集，并且把结果放到destination中。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zpopmax key [count]</td>
+<td>删除并返回有序集合key中的最多count个具有最高得分的成员。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zpopmin key [count]</td>
+<td>删除并返回有序集合key中的最多count个具有最少得分的成员。</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bzpopmax key [key ...] timeout</td>
+<td>删除并返回 有序集合 key 中分值最高的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
+<td>bzpopmax zset2 zset1 0</td>
+<td>按照zset的key前后顺序，删除并返回zset2的分值最高的成员</td>
+</tr>
+<tr>
+<td>bzpopmin key [key ..] timeout</td>
+<td>删除并返回 有序集合 key 中分值最低的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_6">Redis 中的 hash 散列表</h2>
+
+<p>Redis散列存储有 ziplist 和 散列表(hashtable) 2种，有时我们需要从ziplist编码转换为散列表编码。值得注意的是，即使后期满足条件，也不会从散列表编码转换为ziplist编码。</p>
+
+<p>当需要存储的key-value结构同时满足下面两个条件时，采用ziplist作为底层存储：</p>
+
+<ul>
+<li>key-value结构的所有键值对的字符串长度都小于hash-max- ziplist-value（默认值64），该值可以通过配置文件配置</li>
+<li>散列对象保存的键值对的个数（一个键值对记为1个）小于hash-max-ziplist-entries（默认值512），该值也可以通过配置文件配置。</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>行为</th>
+<th>示例</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>hset key field value</td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+<td></td>
+<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段在哈希集中存在，它将被重写。</td>
+</tr>
+<tr>
+<td>hmset key field value [field value]</td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+<td></td>
+<td>设置 key 指定的哈希集中指定字段的值</td>
+</tr>
+<tr>
+<td>hsetnx key field value</td>
+<td>只在 key 指定的哈希集中不存在指定的字段时，设置字段的值</td>
+<td></td>
+<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段已存在，该操作无效果。</td>
+</tr>
+<tr>
+<td>hexists key field</td>
+<td>查看某个field是否存在，可以用于标识某个操作之前是否已经执行过</td>
+<td>xxx</td>
+<td>查看field是否存在，存在返回1，key不存在或者field不存在返回0。</td>
+</tr>
+<tr>
+<td>hget key field</td>
+<td>获取单个field对应的value值</td>
+<td></td>
+<td>该字段所关联的值。当字段不存在或者 key 不存在时返回nil。</td>
+</tr>
+<tr>
+<td>hmget key field [field...]</td>
+<td>获取多个field对应的value值</td>
+<td></td>
+<td>当字段不存在或者 key 不存在时返回nil</td>
+</tr>
+<tr>
+<td>hkeys key</td>
+<td>获取某个key下的所有field信息</td>
+<td></td>
+<td>当 key 指定的哈希集不存在时返回空列表</td>
+</tr>
+<tr>
+<td>hvals key</td>
+<td>获取某个key下的所有value信息</td>
+<td></td>
+<td>哈希集中的值的列表，当 key 指定的哈希集不存在时返回空列表</td>
+</tr>
+<tr>
+<td>hgetall key</td>
+<td>获取某个key下的所有key-field信息</td>
+<td></td>
+<td>哈希集中字段和值的列表。当 key 指定的哈希集不存在时返回空列表。</td>
+</tr>
+<tr>
+<td>hlen key</td>
+<td>获取散列表中field的个数，主要用于数据统计。</td>
+<td></td>
+<td>哈希集中字段的数量，当 key 指定的哈希集不存在时返回 0</td>
+</tr>
+<tr>
+<td>hscan key cursor [match pattern] [COUNT count]</td>
+<td>遍历散列表中所有的field-value对</td>
+<td></td>
+<td>cursor指向当前的位置，0代表新一轮的迭代，返回0代表本轮迭代结束；count是需要返回的field 个数，默认值是10，当底层编码为ziplist时，该值无效，Redis会将ziplist中所有field-value返回，当编码为散列表时，返回的元素个数不一定，可能大于，也可能小于或等于此值；pattern是需要匹配的模式，这一步是读取完数据之后，发送数据之前执行的</td>
+</tr>
+<tr>
+<td>hdel key field [field ...]</td>
+<td>将key对应的散列表中的field删除，key为空时返回0，key 不为空时返回成功删除的field个数</td>
+<td></td>
+<td>直接调用ziplist或者散列表的接口将数据删除。散列表中field全部被删除时，key也会被删除。</td>
+</tr>
+<tr>
+<td>hincrby key field increment</td>
+<td>将field对应的value增加increment</td>
+<td></td>
+<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
+</tr>
+<tr>
+<td>hincrbyfloat key field increment</td>
+<td>将field对应的value增加increment</td>
+<td></td>
+<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
+</tr>
+<tr>
+<td>hstrlen key field</td>
+<td>返回hash指定field的value的字符串长度</td>
+<td></td>
+<td>如果hash或field不存在，返回0</td>
+</tr>
+</tbody>
+</table>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15938782048225.html" 
+          title="Previous Post: 六、Redis 数据流 stream">&laquo; 六、Redis 数据流 stream</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15936158582613.html" 
+          title="Next Post: 四、Redis  通用命令">四、Redis  通用命令 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

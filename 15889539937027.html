@@ -1,0 +1,1034 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  myBatis缓存模块分析 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>myBatis缓存模块分析</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/05/09</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>在 Web 应用中，缓存是必不可少的组件。通常我们都会用 Redis 或 memcached 等缓存中间件，拦截大量奔向数据库的请求，以减轻数据库压力。</p>
+
+<h2 id="toc_0">MyBatis缓存实现</h2>
+
+<p>MyBatis 缓存模块需满足如下需求： </p>
+
+<ol>
+<li>MyBatis 缓存的实现是基于 Map 的，从缓存里面读写数据是缓存模块的核心基础功能；</li>
+<li>除核心功能之外，有很多额外的附加功能，如：防止缓存击穿，添加缓存清空策略（fifo、 lru）、序列化功能、日志能力、定时清空能力等；</li>
+<li>附加功能可以以任意的组合附加到核心基础功能之上； </li>
+</ol>
+
+<p>基于 Map 核心缓存能力，将阻塞、清空策略、序列化、日志等等能力以任意组合的方式优 雅的增强是 Mybatis 缓存模块实现最大的难题。MyBatis采用了装饰者模式()巧妙的对缓存功能进行了可自由组合的功能增强。</p>
+
+<p>在 MyBatis 中，缓存接口 Cache，定义了一些基本的缓存操作，所有缓存类都应该实现该接口。</p>
+
+<p>MyBatis 实现缓存模块的过程中，使用了装饰模式，提供了丰富的缓存实现类</p>
+
+<ul>
+<li>PerpetualCache 基础缓存能力</li>
+<li>LruCache 增强LRU策略的缓存</li>
+<li>LoggingCache 增强日志功能的缓存</li>
+<li>ScheduledCache 定时清空的缓存</li>
+<li>BlockingCache<br/>
+阻塞版本的缓存装饰器，保证只有一个线程到数据库 去查找指定的 key 对应的数据(可以作为防止缓存雪崩造成恶劣影响一种方式，可以考虑使用具有细颗粒度锁的方式提升阻塞缓存的性能)</li>
+<li>SynchronizedCache 线程安全的缓存</li>
+</ul>
+
+<h3 id="toc_1">Cache接口</h3>
+
+<pre><code class="language-java">public interface Cache {
+
+    String getId();
+
+    void putObject(Object key, Object value);
+
+    Object getObject(Object key);
+
+    Object removeObject(Object key);
+
+    void clear();
+
+    int getSize();
+
+    default ReadWriteLock getReadWriteLock() {
+        return null;
+    }
+
+}
+</code></pre>
+
+<h3 id="toc_2">具有基本缓存功能的 PerpetualCache</h3>
+
+<pre><code class="language-java">public class PerpetualCache implements Cache {
+
+    private final String id;
+    
+    private final Map&lt;Object, Object&gt; cache = new HashMap&lt;&gt;();
+        public PerpetualCache(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public int getSize() {
+        return cache.size();
+    }
+
+    @Override
+    public void putObject(Object key, Object value) {
+        cache.put(key, value);
+    }
+
+    @Override
+    public Object getObject(Object key) {
+        return cache.get(key);
+    }
+
+    @Override
+    public Object removeObject(Object key) {
+        return cache.remove(key);
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
+    }
+}
+</code></pre>
+
+<p>这里看到缓存的实现使用了线程不安全的HashMap，那么使用mybatis缓存的时候会不会出现并发安全的问题呢？</p>
+
+<p>我们已知mybatis的缓存分为一级缓存和二级缓存。</p>
+
+<ul>
+<li><p>一级缓存是会话独享的，存在于SqlSession的生命周期中，不会出现多个线程同时操作缓存数据的场景，因此一级缓存也不存在并发安全的问题，系统默认是开启状态，要想关闭一级缓存可以在select标签上配置flushCache=&quot;true&quot;进行关闭。如果同一个SqlSession中执行的方法和参数完全一致，那么通过算法会生成相同的缓存key值，当map缓存对象中已经存在该键值key是，则会返回缓存中的对象; INSERT、UPDATE、DELETE操作会清空一级缓存</p></li>
+<li><p>二级缓存也叫做应用缓存，存在于SqlSessionFactory生命周期中，是多个SqlSession共享的缓存；缓存是一namespace为单位划分的，不同的namespace下的操作相互独立；在MyBatis的核心配置文件中cacheEnabled参数是二级缓存的全局开关，默认值是true，如果把这个参数设置为false，即使在mapper.xml文件中配置了二级缓存也不会生效。在使用二级缓存的时候，由于是跨SqlSession的缓存，它可能存在并发安全的问题，因此MyBatis默认会给它加上SynchronizedCache装饰器进行增强,对共享数据的HashMap的操作会进行同步，因此二级缓存也不存在并发安全问题。</p></li>
+</ul>
+
+<p>在mapper.xml文件中增加如下配置，在此mapper的namespace配置二级缓存：</p>
+
+<pre><code class="language-text">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;60000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot;&gt;
+
+此句语义如下：
+1、映射语句文件中的所有 select 语句将会被缓存。 
+2、映射语句文件中的所有 insert,update 和 delete 语句会刷新缓存。
+3、缓存会使用 LeastRecently Used(LRU,最近最少使用的)算法来收回。 
+4、根据时间表(比如 no Flush Interval,没有刷新间隔), 缓存不会以任何时间顺序 来刷新。 
+5、缓存会存储列表集合或对象(无论查询方法返回什么)的 1024 个引用。 
+6、缓存会被视为是 read/write(可读/可写)的缓存；
+
+</code></pre>
+
+<p><strong><em>二级缓存需注意问题</em></strong>： 使用二级缓存容易出现脏读，建议避免使用二级缓存，在业务层使用可控制的缓存代替更好；</p>
+
+<h2 id="toc_3">缓存使用过程</h2>
+
+<ol>
+<li>每次与数据库连接会有限从缓存中获取数据</li>
+<li>先查询二级缓存，二级缓存查不到再查一级缓存</li>
+<li>二级缓存一namespace为单位划分，是SqlSession共享的,容易出现脏读，建议避免使用</li>
+<li>一级缓存是SqlSession独享的，建议开启</li>
+</ol>
+
+<h2 id="toc_4">缓存的唯一标识 CacheKey</h2>
+
+<p>􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬<br/>
+mybatis 中涉及到动态sql的原因，缓存项的key不能仅仅通过一个String来表示，所以通过CacheKey来封装缓存的key值，CacheKey可以封装多个影响缓存项的因素，构成CacheKey对象的要素包括：</p>
+
+<ul>
+<li>mappedStatement的id</li>
+<li>指定查询结果集的范围（分页信息）</li>
+<li>查询所使用的的sql语句</li>
+<li>用户传递给sql语句的实际参数值</li>
+</ul>
+
+<pre><code class="language-java">public class CacheKey implements Cloneable, Serializable { 
+
+    private static final int DEFAULT_MULTIPLYER = 37;
+    private static final int DEFAULT_HASHCODE = 17;
+    // 􏳮􏳆􏱙􏸭􏸮􏳐乘子，默认是37
+    private final int multiplier;
+    // 综合各种影响因子
+    private int hashcode;
+    // 校验和
+    private long checksum;
+    //影响因子个数
+    private int count;
+    // 影响因子集合
+    private List&lt;Object&gt; updateList;
+    
+    public CacheKey() {
+        this.hashcode = DEFAULT_HASHCODE; this.multiplier = DEFAULT_MULTIPLYER; this.count = 0;
+        this.updateList = new ArrayList&lt;Object&gt;();
+    } 
+
+}
+</code></pre>
+
+<h2 id="toc_5">一级缓存源码分析</h2>
+
+<p>一级缓存是数据库的最后一道屏障，如果一级缓存未命中，查询请求将落到数据库上。一级缓存是在BaseExecutor被初始化的，我们看下代码</p>
+
+<pre><code class="language-java">
+public abstract class BaseExecutor implements Executor {
+    //一级缓存的实现，PerpetualCache
+    protected PerpetualCache localCache;
+
+    protected BaseExecutor(Configuration configuration, Transaction transaction) {
+        this.transaction = transaction;
+        this.deferredLoads = new ConcurrentLinkedQueue&lt;&gt;();
+        this.localCache = new PerpetualCache(&quot;LocalCache&quot;);
+        this.localOutputParameterCache = new PerpetualCache(&quot;LocalOutputParameterCache&quot;);
+        this.closed = false;
+        this.configuration = configuration;
+        this.wrapper = this;
+    }
+    
+    // 省略其它代码
+}
+
+</code></pre>
+
+<p>􏴓􏸵􏴕􏴖􏴀􏴆􏶉􏴜 一级缓存的类型是PerpetualCache􏳅􏶳􏶴􏽠􏵌􏸾􏴕􏴖􏴆􏴗􏴘􏶶，没有被其它缓存类修饰过。一级缓存锁存储从查询结果会在MyBatis执行更新操作(insert/update/delete)，以及提交和回滚事务时被清空。</p>
+
+<pre><code class="language-java">@Override
+    public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)
+            throws SQLException {
+    //获取sql语句信息，包括占位符，参数等信息
+    BoundSql boundSql = ms.getBoundSql(parameter);
+    // 获取缓存的key键
+    CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+
+    return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
+}
+
+@SuppressWarnings(&quot;unchecked&quot;)
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler,
+                         CacheKey key, BoundSql boundSql) throws SQLException {
+    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing a query&quot;).object(ms.getId());
+    if (closed) {
+        throw new ExecutorException(&quot;Executor was closed.&quot;);
+    }
+    //非嵌套查询，并且FlushCache配置为true，则需要清空一级缓存
+    if (queryStack == 0 &amp;&amp; ms.isFlushCacheRequired()) {
+        clearLocalCache();
+    }
+    List&lt;E&gt; list;
+    try {
+       //查询层次加 1
+        queryStack++;
+        // 查询一级缓存
+        list = resultHandler == null ? (List&lt;E&gt;) localCache.getObject(key) : null;
+        if (list != null) {
+           // 针对调用存储过程的结果处理
+            handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
+        } else {
+          // 缓存未命中，从数据库中查询
+            list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+        }
+    } finally {
+        queryStack--;
+    }
+    if (queryStack == 0) {
+       //延迟加载处理
+        for (DeferredLoad deferredLoad : deferredLoads) {
+            deferredLoad.load();
+        }
+        deferredLoads.clear();
+        if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+            clearLocalCache();
+        }
+    }
+    return list;
+}
+/* mybatis的增删改最终调用这个方法 */
+@Override
+public int update(MappedStatement ms, Object parameter) throws SQLException {
+    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing an update&quot;).object(ms.getId());
+    if (closed) {
+        throw new ExecutorException(&quot;Executor was closed.&quot;);
+    }
+    //清除一级缓存
+    clearLocalCache();
+    return doUpdate(ms, parameter);
+}
+</code></pre>
+
+<h3 id="toc_6">二级缓存源码分析</h3>
+
+<p>收到查询请求时，mybatis会先查询二级缓存，若二级缓存未命中，再去查询一级缓存。二级缓存和具体的命名空间进行绑定，一级缓存则是和SqlSession绑定。</p>
+
+<pre><code class="language-java">/** CachingExecutor */
+// 委托执行器，BatchExecutor、ReuseExecutor、SimpleExecutor
+private final Executor delegate;
+TransactionalCacheManager tcm = new TransactionalCacheManager();
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    //获取sql语句信息，包括占位符，参数等信息
+    BoundSql boundSql = ms.getBoundSql(parameterObject);
+    //拼装缓存的key值
+    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
+    return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+}
+
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
+        throws SQLException {
+    //从MappedStatement中获取二级缓存,如果mapper配置文件中没有开启二级缓存，Cache则为空
+    Cache cache = ms.getCache();
+    if (cache != null) {
+        flushCacheIfRequired(ms);
+        
+        if (ms.isUseCache() &amp;&amp; resultHandler == null) {
+            ensureNoOutParams(ms, boundSql);
+            //从二级缓存中获取数据
+            List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);
+            if (list == null) {
+                //二级缓存为空，才会调用BaseExecutor.query
+                list = delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                tcm.putObject(cache, key, list); 
+            }
+            return list;
+        }
+    }
+    return delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+}
+
+</code></pre>
+
+<p>二级缓存是从MappedStatement中获取的，由于MappedStatement存在于全局配置中，可以被多个CachingExecutor获取到，这样就会出现线程安全问题，除此之外，若不加以控制，多个事务共用一个缓存实例，会导致脏读问题。</p>
+
+<p>线程安全问题可以通过SynchronizedCache装饰类解决，该装饰类会在Cache实例构造期间被添加上。至于脏读问题，需要接祖其它类来处理，也就是上面代码中的 tcm 变量对应的类型。<br/>
+TransactionalCacheManager持有了cache，transactionalCache的关系，transactionalCache是一个缓存装饰器，为缓存提供事务能力。</p>
+
+<pre><code class="language-java">public class TransactionalCacheManager {
+
+    private final Map&lt;Cache, TransactionalCache&gt; transactionalCaches = new HashMap&lt;&gt;();
+
+    public void clear(Cache cache) {
+        getTransactionalCache(cache).clear();
+    }
+
+    public Object getObject(Cache cache, CacheKey key) {
+        return getTransactionalCache(cache).getObject(key);
+    }
+
+    public void putObject(Cache cache, CacheKey key, Object value) {
+        getTransactionalCache(cache).putObject(key, value);
+    }
+
+    public void commit() {
+        for (TransactionalCache txCache : transactionalCaches.values()) {
+            txCache.commit();
+        }
+    }
+
+    public void rollback() {
+        for (TransactionalCache txCache : transactionalCaches.values()) {
+            txCache.rollback();
+        }
+    }
+
+    private TransactionalCache getTransactionalCache(Cache cache) {
+        return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
+    }
+    
+  /*
+   上面getTransactionalCache(Cache cache) 相当于下面的方法，如果cache的value为null，则新建一个TransactionalCache并放如map集合中
+  private TransactionalCache getTransactionalCache(Cache cache) {
+        return transactionalCaches.computeIfAbsent(cache, new Function&lt;Cache, TransactionalCache&gt;() {
+            @Override
+            public TransactionalCache apply(Cache delegate) {
+                return new TransactionalCache(delegate);
+            }
+        });
+    }*/
+    
+}
+
+</code></pre>
+
+<p>TransactionalCache 事务缓存装饰器。</p>
+
+<pre><code class="language-java">public class TransactionalCache implements Cache {
+
+    private static final Log log = LogFactory.getLog(TransactionalCache.class);
+
+    private final Cache delegate;
+
+    private boolean clearOnCommit;
+    // 在事务提交之前所有从数据库读取到的结果都将存在此集合中
+    private final Map&lt;Object, Object&gt; entriesToAddOnCommit;
+    // 在事务提交之前，所有缓存未命中的CacheKey都将存放于此集合中。
+    private final Set&lt;Object&gt; entriesMissedInCache;
+
+    public TransactionalCache(Cache delegate) {
+        this.delegate = delegate;
+        this.clearOnCommit = false;
+        this.entriesToAddOnCommit = new HashMap&lt;&gt;();
+        this.entriesMissedInCache = new HashSet&lt;&gt;();
+    }
+
+    @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    @Override
+    public int getSize() {
+        return delegate.getSize();
+    }
+
+    @Override
+    public Object getObject(Object key) {
+        // 查询delegate缓存，缓存中未命中key，放入entriesMissedInCache集合
+        Object object = delegate.getObject(key);
+        if (object == null) {
+            entriesMissedInCache.add(key);
+        }
+        // issue #146
+        if (clearOnCommit) {
+            return null;
+        } else {
+            return object;
+        }
+    }
+
+    @Override
+    public void putObject(Object key, Object object) {
+        entriesToAddOnCommit.put(key, object);
+    }
+
+    @Override
+    public Object removeObject(Object key) {
+        return null;
+    }
+
+    /**
+     * 清除缓存
+     */
+    @Override
+    public void clear() {
+        clearOnCommit = true;
+        entriesToAddOnCommit.clear();
+    }
+
+    public void commit() {
+        if (clearOnCommit) {
+            delegate.clear();
+        }
+        flushPendingEntries();
+        reset();
+    }
+
+    public void rollback() {
+        unlockMissedEntries();
+        reset();
+    }
+    /**
+     * 重置entriesToAddOnCommit和entriesMissedInCache
+     **/
+    private void reset() {
+        clearOnCommit = false;
+        entriesToAddOnCommit.clear();
+        entriesMissedInCache.clear();
+    }
+
+    private void flushPendingEntries() {
+        for (Map.Entry&lt;Object, Object&gt; entry : entriesToAddOnCommit.entrySet()) {
+            delegate.putObject(entry.getKey(), entry.getValue());
+        }
+        for (Object entry : entriesMissedInCache) {
+            if (!entriesToAddOnCommit.containsKey(entry)) {
+                delegate.putObject(entry, null);
+            }
+        }
+    }
+
+    private void unlockMissedEntries() {
+        // 将二级缓存未命中的key从二级缓存中移除
+        for (Object entry : entriesMissedInCache) {
+            try {
+                delegate.removeObject(entry);
+            } catch (Exception e) {
+                //log
+            }
+        }
+    }
+
+}
+
+</code></pre>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15889540064384.html" 
+          title="Previous Post: mybatis反射模块分析">&laquo; mybatis反射模块分析</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15889539650351.html" 
+          title="Next Post: mybatis数据源模块分析">mybatis数据源模块分析 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

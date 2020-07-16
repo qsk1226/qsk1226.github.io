@@ -1,0 +1,860 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  细说java 显式锁 Lock - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>细说java 显式锁 Lock</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/04/13</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
+
+<p>问:java中有了synchronized，为什么又会出现java显式锁呢？<br/>
+答：Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
+
+<p>使用synchronized方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
+
+<p>lock的使用应使用如下的惯用写法:</p>
+
+<pre><code class="language-java">Lock l = ...;
+l.lock();
+try{
+    // 访问被此锁保护起来的相关资源
+} finally{
+    l.unlock();
+}
+</code></pre>
+
+<pre><code class="language-text">public interface Lock {
+    // 获得锁资源
+    void lock();
+    // 尝试获得锁，如果当前线程被调用了interrupted则中断，并抛出异常，否则就获得锁
+    void lockInterruptibly() throws InterruptedException;
+    // 判断能否获得锁，如果能获得，则获得锁，并返回true(此时已经获得了锁)
+    boolean tryLock();
+    // 保持给定的等待时间，如果期间能拿到锁，则获得锁，同样如果期间被中断，则抛异常
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    // 释放锁
+    void unlock();
+    // 返回与此Lock对象绑定Condition实例
+    Condition newCondition();
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_0">ReentrantLock重入锁，内部实现有公平锁和非公平锁。</h2>
+
+<h3 id="toc_1">可重入</h3>
+
+<p>重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞， 该特性的实现需要解决以下两个问题。<br/>
+1)线程再次获取锁。锁需要去识别获取锁的线程是否为当前占据锁的线程， 如果是，则再次成功获取。<br/>
+2)锁的最终释放。线程重复 n 次获取了锁，随后在第 n 次释放该锁后，其 他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示 当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于 0 时表示锁已 经成功释放。</p>
+
+<p>nonfairTryAcquire 方法增加了再次获取同步状态的处理逻辑:通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请 求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。<br/>
+如果该锁被获取了 n 次，那么前(n-1)次 tryRelease(int releases)方法必须返回 false，而只有同步状态完全释放了，才能返回 true。可以看到，该方法将同步状 态是否为 0 作为最终释放的条件，当同步状态为 0 时，将占有线程设置为 null， 并返回 true，表示释放成功。</p>
+
+<h3 id="toc_2">公平和非公平锁</h3>
+
+<pre><code class="language-java">public ReentrantLock(boolean fair) {
+    sync = fair ? new FairSync() : new NonfairSync();
+}
+</code></pre>
+
+<p>ReentrantLock 的构造函数中，默认的无参构造函数将会把 Sync 对象创建为NonfairSync 对象，这是一个“非公平锁”;</p>
+
+<p>而另一个构造函数 ReentrantLock(boolean fair)传入参数为 true 时将会把 Sync 对象创建为“公平锁” FairSync。</p>
+
+<p>nonfairTryAcquire(int acquires)方法，对于非公平锁，只要 CAS 设置同步状态 成功，则表示当前线程获取了锁，而公平锁则不同。</p>
+
+<p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
+
+<pre><code class="language-java">final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    } else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0) // overflow
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+
+protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (!hasQueuedPredecessors() &amp;&amp;
+                compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    } else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0)
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+
+protected final boolean tryRelease(int releases) {
+    int c = getState() - releases;
+    if (Thread.currentThread() != getExclusiveOwnerThread())
+        throw new IllegalMonitorStateException();
+    boolean free = false;
+    if (c == 0) {
+        free = true;
+        setExclusiveOwnerThread(null);
+    }
+    setState(c);
+    return free;
+}
+</code></pre>
+
+<hr/>
+
+<h3 id="toc_3">condition接口</h3>
+
+<p>Condition与Lock要结合使用，使用Condition可以用来实现wait()和notify()/notifyAll()类似的等待/通知模式。与Object对象里不同的是，Condition更加灵活，可以在一个Lock对象里创建多个Condition实例，有选择的进行线程通知，在线程调度上更加灵活。<br/>
+Condition接口的通过<br/>
+java.util.concurrent.locks.AbstractQueuedSynchronizer.ConditionObject <br/>
+<a href="15867863097702.html">细说AbstractQueuedSynchronizer(AQS)</a><br/>
+来实现。</p>
+
+<p>使用Condition注释上的栗子：</p>
+
+<pre><code class="language-java">/**
+ * 阻塞的有界队列
+ */
+public class BoundedBuffer {
+    final Lock lock = new ReentrantLock();
+    final Condition notFull  = lock.newCondition(); 
+    final Condition notEmpty = lock.newCondition(); 
+
+    final Object[] items = new Object[100];
+    int putptr, takeptr, count;
+
+    public void put(Object x) throws InterruptedException {
+        lock.lock();
+        try {
+            // 当count等于数组的大小时，当前线程等待，直到notFull通知，再进行生产
+            while (count == items.length)
+                notFull.await();
+            items[putptr] = x;
+            if (++putptr == items.length) putptr = 0;
+            ++count;
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Object take() throws InterruptedException {
+        lock.lock();
+        try {
+            // 当count为0，进入等待，直到notEmpty通知，进行消费。
+            while (count == 0)
+                notEmpty.await();
+            Object x = items[takeptr];
+            if (++takeptr == items.length) takeptr = 0;
+            --count;
+            notFull.signal();
+            return x;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+</code></pre>
+
+<p>可以通过多个线程来调用put和take方法，来模拟生产者和消费者。<br/>
+我们来换成常规的wait/notify的实现方式：</p>
+
+<pre><code class="language-java">public class BoundedBuffer {
+    private final Object lock;
+    
+    public BoundedBuffer(Object lock) {
+        this.lock = lock;
+    }
+    public void put(Object x) {
+        try {
+            synchronized (items) {
+                while (count == items.length) {
+                    items.wait();
+                }
+                items[putptr] = x;
+                if (++putptr == items.length) putptr = 0;
+                ++count;
+                // items.notify();
+                items.notifyAll();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Object take() {
+        try {
+            synchronized (items) {
+                while (count == 0) {
+                    items.wait();
+                }
+                Object x = items[takeptr];
+                if (++takeptr == items.length) takeptr = 0;
+                --count;
+                // items.notify();
+                items.notifyAll();
+                return x;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+</code></pre>
+
+<p>如果将items.notifyAll()换成items.notify()，在多生产者和多消费者模式情况下，可能出现take唤醒了take的情况，导致生产者在等待消费者消费，而消费者等待生产者生产，最终导致程序无限等待，而用notifyAll()，则唤醒所有的生产者和消费者，不像Condition可以选择性的通知。下面我们来看一下它的源码：</p>
+
+<pre><code class="language-java">public interface Condition {
+    // 让当前线程等待，直到被通知或者被中断
+    void await() throws InterruptedException;
+    // 与前者的区别是，当等待过程中被中断时，仍会继续等待，直到被唤醒，才会设置中断状态
+    void awaitUninterruptibly();
+    // 让当前线程等待，直到它被告知或中断，或指定的等待时间已经过。
+    boolean await(long time, TimeUnit unit) throws InterruptedException;
+    // 与上面的类似，让当前线程等待，不过时间单位是纳秒
+    long awaitNanos(long nanosTimeout) throws InterruptedException;
+    // 让当前线程等待到确切的指定时间，而不是时长
+    boolean awaitUntil(Date deadline) throws InterruptedException;
+    // 唤醒一个等待当前condition的线程，有多个则随机选一个
+    void signal();
+    // 唤醒所有等待当前condition的线程
+    void signalAll();
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_4">ReadWriteLock</h2>
+
+<p>读写锁接口只定义了两个获取读锁和写锁的接口方法，需要具体实现类ReentrantReadWriteLock实现</p>
+
+<pre><code class="language-java">public interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+</code></pre>
+
+<h3 id="toc_5">ReentrantReadWriteLock</h3>
+
+<h4 id="toc_6">读写状态的设计</h4>
+
+<p>读写锁同样依赖自定义同步器来实现同步功能，而读写状态就是其同步器的 同步状态。<br/>
+回想 ReentrantLock 中自定义同步器的实现，同步状态表示锁被一个线程重 复获取的次数，而读写锁的自定义同步器需要在同步状态(一个整型变量)上维 护多个读线程和一个写线程的状态，使得该状态的设计成为读写锁实现的关键。<br/>
+如果在一个整型变量上维护多种状态，就一定需要“按位切割使用”这个变 量，读写锁将变量切分成了两个部分，高 16 位表示读，低 16 位表示写，读写锁 是如何迅速确定读和写各自的状态呢?<br/>
+答案是通过位运算。假设当前同步状态值为 S，写状态等于 S&amp;0x0000FFFF (将高 16 位全部抹去)，读状态等于 S&gt;&gt;&gt;16(无符号补 0 右移 16 位)。当写 状态增加 1 时，等于 S+1，当读状态增加 1 时，等于 S+(1&lt;<16)，也就是 S+0x00010000。 根据状态的划分能得出一个推论:S 不等于 0 时，当写状态(S&0x0000FFFF)等 于 0 时，则读状态(S>&gt;&gt;16)大于 0，即读锁已被获取。</p>
+
+<h4 id="toc_7">写锁的获取与释放</h4>
+
+<p>写锁是一个支持重进入的排它锁。如果当前线程已经获取了写锁，则增加写 状态。如果当前线程在获取写锁时，读锁已经被获取(读状态不为 0)或者该线 程不是已经获取写锁的线程，则当前线程进入等待状态。</p>
+
+<p>该方法除了重入条件(当前线程为获取了写锁的线程)之外，增加了一个读 锁是否存在的判断。如果存在读锁，则写锁不能被获取，原因在于:读写锁要确 保写锁的操作对读锁可见，如果允许读锁在已被获取的情况下对写锁的获取，那么正在运行的其他读线程就无法感知到当前写线程的操作。因此，只有等待其他 读线程都释放了读锁，写锁才能被当前线程获取，而写锁一旦被获取，则其他读 写线程的后续访问均被阻塞。</p>
+
+<p>写锁的释放与ReentrantLock的释放过程基本类似，每次释放均减少写状态， 当写状态为 0 时表示写锁已被释放，从而等待的读写线程能够继续访问读写锁， 同时前次写线程的修改对后续读写线程可见</p>
+
+<h4 id="toc_8">读锁的获取与释放</h4>
+
+<p>读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他 写线程访问(或者写状态为 0)时，读锁总会被成功地获取，而所做的也只是(线 程安全的)增加读状态。如果当前线程已经获取了读锁，则增加读状态。</p>
+
+<p>如果当前线程在获取读锁时，写锁已被其他线程获取，则进入等待状态。读 状态是所有线程获取读锁次数的总和，而每个线程各自获取读锁的次数只能选择 保存在 ThreadLocal 中，由线程自身维护。在 tryAcquireShared(int unused)方法中， 如果其他线程已经获取了写锁，则当前线程获取读锁失败，进入等待状态。如果 当前线程获取了写锁或者写锁未被获取，则当前线程(线程安全，依靠 CAS 保证) 增加读状态，成功获取读锁。读锁的每次释放(线程安全的，可能有多个读线程 同时释放读锁)均减少读状态。</p>
+
+<h4 id="toc_9">锁的升降级</h4>
+
+<p>锁降级指的是写锁降级成为读锁。如果当前线程拥有写锁，然后将其释放， 最后再获取读锁，这种分段完成的过程不能称之为锁降级。</p>
+
+<p>锁降级是指把持住(当前拥有的)写锁，再获取到读锁，随后释放(先前拥有的)写锁的过程。</p>
+
+<p>RentrantReadWriteLock 不支持锁升级(把持读锁、获取写锁，最后释放读锁 的过程)。目的是保证数据可见性，如果读锁已被多个线程获取，其中任意线程 成功获取了写锁并更新了数据，则其更新对其他获取到读锁的线程是不可见的。<br/>
+ReadLock<br/>
+WriteLock </p>
+
+<h3 id="toc_10">StampedLock</h3>
+
+<p>JDK1.8增加的一种新的锁实现</p>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15586676190905.html" 
+          title="Previous Post: 设计模式六大原则">&laquo; 设计模式六大原则</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15866239860150.html" 
+          title="Next Post: JVM 中 java 对象">JVM 中 java 对象 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

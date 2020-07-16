@@ -1,0 +1,1312 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
+</script>
+<div class="row">
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="15889472727845.html">
+                
+                  <h1>工厂模式</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>工厂模式主要是为创建对象提供过渡接口，以便将创建对象的具体过程屏蔽隔离起来，<br/>
+达到提高灵活性的目的。</p>
+
+<p>工厂模式在《Java 与模式》中分为三类:</p>
+
+<ul>
+<li>简单工厂模式(Simple Factory)</li>
+<li>工厂方法模式(Factory Method)</li>
+<li>抽象工厂模式(Abstract Factory) <br/>
+这三种模式从上到下逐步抽象，并且更具一般性</li>
+</ul>
+
+<h2 id="toc_0">简单工厂模式</h2>
+
+<p>先来看看它的组成:<br/>
+1) 工厂类角色:这是本模式的核心，含有一定的商业逻辑和判断逻辑。<br/>
+2) 抽象对象角色:它一般是具体产品继承的父类或者实现的接口<br/>
+3) 具体产品角色:工厂类所创建的对象就是此角色的实例。</p>
+
+<p><figure><img src="media/15889472727845/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82.jpg" alt="简单工厂"/><figcaption>简单工厂</figcaption></figure></p>
+
+<hr/>
+
+<h2 id="toc_1">工厂方法模式</h2>
+
+<p>工厂方法模式(Factory Method Pattern)又称为工厂模式，也叫虚拟构造器(Virtual Constructor)模式或者多态工厂(Polymorphic Factory)模式，它属于类创建型模式。在工厂方法模式中，工厂父类负责定义创建产品对象的公共接口，而工厂子类则负责生成具体的产品对象，这样做的目的是将产品类的实例化操作延迟到工厂子类中完成，即通过工厂子类来确定究竟应该实例化哪一个具体产品类。</p>
+
+<p>工厂方法模式是简单工厂模式的进一步抽象和推广。由于使用了面向对象的多态性，工厂方法模式保持了简单工厂模式的优点，而且克服了它的缺点。在工厂方法模式中，核心的工厂类不再负责所有产品的创建，而是将具体创建工作交给子类去做。这个核心类仅仅负责给出具体工厂必须实现的接口，而不负责哪一个产品类被实例化这种细节，这使得工厂方法模式可以允许系统在不修改工厂角色的情况下引进新产品。</p>
+
+<h3 id="toc_2">工厂模式优点</h3>
+
+<ul>
+<li><p>在工厂方法模式中，工厂方法用来创建客户所需要的产品，同时还向客户隐藏了哪种具体产品类将被实例化这一细节，用户只需要关心所需产品对应的工厂，无须关心创建细节，甚至无须知道具体产品类的类名。</p></li>
+<li><p>基于工厂角色和产品角色的多态性设计是工厂方法模式的关键。它能够使工厂可以自主确定创建何种产品对象，而如何创建这个对象的细节则完全封装在具体工厂内部。工厂方法模式之所以又被称为多态工厂模式，是因为所有的具体工厂类都具有同一抽象父类。</p></li>
+<li><p>使用工厂方法模式的另一个优点是在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。这样，系统的可扩展性也就变得非常好，完全符合“开闭原则”。</p>
+<h3 id="toc_3">工厂模式缺点</h3></li>
+<li><p>在添加新产品时，需要编写新的具体产品类，而且还要提供与之对应的具体工厂类，系统中类的个数将成对增加，在一定程度上增加了系统的复杂度，有更多的类需要编译和运行，会给系统带来一些额外的开销。</p></li>
+<li><p>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</p></li>
+</ul>
+
+<h3 id="toc_4">模式结构</h3>
+
+<p>工厂方法模式包含如下角色：</p>
+
+<ul>
+<li>Product：抽象产品</li>
+<li>ConcreteProduct：具体产品</li>
+<li>Factory：抽象工厂</li>
+<li>ConcreteFactory：具体工厂</li>
+</ul>
+
+<p><figure><img src="media/15889472727845/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.jpg" alt="工厂模式"/><figcaption>工厂模式</figcaption></figure></p>
+
+<h3 id="toc_5">使用场景</h3>
+
+<ul>
+<li><p>一个类不知道它所需要的对象的类：在工厂方法模式中，客户端不需要知道具体产品类的类名，只需要知道所对应的工厂即可，具体的产品对象由具体工厂类创建；客户端需要知道创建具体产品的工厂类。</p></li>
+<li><p>一个类通过其子类来指定创建哪个对象：在工厂方法模式中，对于抽象工厂类只需要提供一个创建产品的接口，而由其子类来确定具体要创建的对象，利用面向对象的多态性和里氏代换原则，在程序运行时，子类对象将覆盖父类对象，从而使得系统更容易扩展。</p></li>
+<li><p>将创建对象的任务委托给多个工厂子类中的某一个，客户端在使用时可以无须关心是哪一个工厂子类创建产品子类，需要时再动态指定，可将具体工厂类的类名存储在配置文件或数据库中。</p></li>
+</ul>
+
+<hr/>
+
+<h2 id="toc_6">抽象工厂</h2>
+
+<p>抽象工厂模式(Abstract Factory Pattern)：提供一个创建一系列相关或相互依赖对象的接口，而无须指定它们具体的类。抽象工厂模式又称为Kit模式，属于对象创建型模式。</p>
+
+<h3 id="toc_7">抽象工厂结构</h3>
+
+<p><figure><img src="media/15889472727845/15916015353768.jpg" alt=""/></figure></p>
+
+<p>抽象工厂模式包含如下角色：</p>
+
+<ul>
+<li>AbstractFactory：抽象工厂</li>
+</ul>
+
+<pre><code class="language-java">public abstract class AbstractComputerFactory {
+
+    /**
+     * cpu
+     */
+    public abstract Cpu createCpu();
+
+    /**
+     * 内存条
+     */
+    public abstract Memory createMemory();
+}
+</code></pre>
+
+<ul>
+<li>ConcreteFactory：具体工厂</li>
+</ul>
+
+<pre><code class="language-java">public class GameComputerFactory extends AbstractComputerFactory {
+
+    @Override
+    Cpu createCpu() {
+        return new AMDCpu();
+    }
+
+    @Override
+    Memory createMemory() {
+        return new SamsungMemory();
+    }
+}
+
+public class OfficeComputerFactory extends AbstractComputerFactory{
+    @Override
+    Cpu createCpu() {
+        return new IntelCpu();
+    }
+
+    @Override
+    Memory createMemory() {
+        return new KingstonMemory();
+    }
+}
+
+</code></pre>
+
+<ul>
+<li>AbstractProduct：抽象产品</li>
+</ul>
+
+<pre><code class="language-java">public interface Cpu {
+    /**
+     * 计算
+     */
+    long calculate();
+}
+
+public interface Memory {
+    /**
+     * 传输
+     */
+    long transfer();
+}
+
+</code></pre>
+
+<ul>
+<li>Product：具体产品</li>
+</ul>
+
+<pre><code class="language-java">public class AMDCpu implements Cpu {
+    @Override
+    public long calculate() {
+        System.out.println(&quot;飞机以300公里每小时速度前进&quot;);
+        return 300;
+    }
+}
+public class IntelCpu implements Cpu {
+    @Override
+    public long calculate() {
+        return 500;
+    }
+}
+public class SamsungMemory implements Memory {
+    @Override
+    public long transfer() {
+        return 0;
+    }
+}
+public class KingstonMemory implements Memory {
+
+    @Override
+    public long transfer() {
+        return 0;
+    }
+}
+</code></pre>
+
+<ul>
+<li>client</li>
+</ul>
+
+<pre><code class="language-java">@Test
+public void testFactory() {
+    AbstractComputerFactory factory = new GameComputerFactory();
+    Cpu cpu = factory.createCpu();
+    Memory memory = factory.createMemory();
+}
+</code></pre>
+
+<h3 id="toc_8">使用场景</h3>
+
+<p>在以下情况下可以使用抽象工厂模式：</p>
+
+<ul>
+<li><p>一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节，这对于所有类型的工厂模式都是重要的。</p></li>
+<li><p>系统中有多于一个的产品族，而每次只使用其中某一产品族。</p></li>
+<li><p>属于同一个产品族的产品将在一起使用，这一约束必须在系统的设计中体现出来。</p></li>
+<li><p>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于具体实现。</p></li>
+</ul>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/08</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html'>设计模式</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889338912208.html">
+                
+                  <h1>mybatis日志模块 logging</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>mybatis本身并没有提供日志的实现类，她需要计入第三方的日志组件，由于是第三方的日志实现，实现上也会有所不同，但是mybatis统一提供的日志的基本操作行为, 如下所示</p>
+
+<pre><code class="language-java">void error(String s, Throwable e);
+void error(String s);
+void debug(String s);
+void trace(String s);
+void warn(String s);
+</code></pre>
+
+<p>针对主流的日志框架，mybatis提供了一种优先加载机制：slf4J → commonsLoging → Log4J2 → Log4J → JdkLog。</p>
+
+<h2 id="toc_0">mybatis的日志功能的实现</h2>
+
+<h3 id="toc_1">使用到的设计模式</h3>
+
+<p>不同的日志框架的实现各不相同，mybatis如何适配这些不同的日志框架呢，这里使用到一种适配器模式<a href="15896081275436.html">适配器模式</a></p>
+
+<p>实现了Log接口的各个适配器，内部适配各自的日志框架实现。<br/>
+<figure><img src="media/15889338912208/15889495671258.jpg" alt="" style="width:450px;"/></figure><br/>
+适配器模式是如何实现MyBatis日志功能的呢？</p>
+
+<ul>
+<li>Target：目标角色,期待得到的接口。org.apache.ibatis.logging.Log 接口，对内提供了统一 的日志接口；</li>
+<li>Adaptee：适配者角色,被适配的接口。其他日志组件组件如 slf4J 、commonsLoging 、 Log4J2 等被包含在适配器中。</li>
+<li>Adapter：适配器角色,将源接口转换成目标接口。针对每个日志组件都提供了适配器， 每 个适配器都对特定的日志组件进行封装和转换；如 Slf4jLoggerImpl 、 JakartaCommonsLoggingImpl 等；</li>
+</ul>
+
+<p>客户端在使用日志时，面向 Log 接口进行编程，不需要关心底层日志模块具体是如实实现的，符合依赖倒转原则。如果需要加入其他第三方日志框架，只需要扩展新的模块满足新需求，而不需要修改原有代码，这又符合了开闭原则；</p>
+
+<h3 id="toc_2">日志组件的优先加载</h3>
+
+<p>org.apache.ibatis.logging.LogFactory日志工厂的静态代码块确保第三方日志插件的加载优先级</p>
+
+<pre><code class="language-java">//mybatis所使用的第三方日志组件适配器的构造方法
+private static Constructor&lt;? extends Log&gt; logConstructor;
+//自动扫描日志实现，第三方日志插件加载优先级如下：slf4J → commonsLoging → Log4J2 → Log4J → JdkLog → noLogging
+static {
+    tryImplementation(LogFactory::useSlf4jLogging);
+    tryImplementation(LogFactory::useCommonsLogging);
+    tryImplementation(LogFactory::useLog4J2Logging);
+    tryImplementation(LogFactory::useLog4JLogging);
+    tryImplementation(LogFactory::useJdkLogging);
+    tryImplementation(LogFactory::useNoLogging);
+}
+
+private static void tryImplementation(Runnable runnable) {
+    //当构造方法不为空才执行方法
+    if (logConstructor == null) {
+      try {
+        runnable.run();
+      } catch (Throwable t) {
+        // ignore
+      }
+    }
+}
+
+private static void setImplementation(Class&lt;? extends Log&gt; implClass) {
+    try {
+      Constructor&lt;? extends Log&gt; candidate = implClass.getConstructor(String.class);
+      Log log = candidate.newInstance(LogFactory.class.getName());
+      if (log.isDebugEnabled()) {
+        log.debug(&quot;Logging initialized using &#39;&quot; + implClass + &quot;&#39; adapter.&quot;);
+      }
+      logConstructor = candidate;
+    } catch (Throwable t) {
+      throw new LogException(&quot;Error setting Log implementation.  Cause: &quot; + t, t);
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_3">mybatis如何为sql的执行增强日志功能</h2>
+
+<p>mysql执行过程中，我们有时想要知道执行的sql语句、参数类型、参数值以及查询结果等，因此在mybatis的日志模块中提供了下面的日志增强类：</p>
+
+<ul>
+<li><strong>BaseJdbcLogger</strong> 所有日志增强类的抽象基类,用于记录JDBC哪些方法需要增强，保存运行期sql参数信息。</li>
+<li><strong>ConnectionLogger</strong> 负责打印链接信息和sql语句。 􏲍􏲽􏲾通过动态代理，对Connection进行增强，调用 prepareStatement、prepareCall、createStatement 方法， 􏲿􏳀打印要执行的sql语句，返回PrepareStatement的代理对象PreparedStatementLogger。</li>
+<li><strong>PreparedStatementLogger</strong>  对prepareStatement对象增强
+<ul>
+<li>增强PreparedStatement的setxxx方法将参数设置到columnMap、columnNames、columnValues容器中，为打印参数做准备</li>
+<li>增强PreparedStatement的execute相关方法，当方法执行时，通过动态代理打印参数，返回动态代理能力的resultSet。</li>
+<li>如果是查询，增强PreparedStatement的getResultSet方法，返回动态代理能力的resultSet；如果是更新，直接打印受影响的行数</li>
+</ul></li>
+<li><strong>ResultSetLogger</strong> 􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴负责打印数据结果信息。</li>
+<li><strong>StatementLogger</strong>  Statement日志增强代理类</li>
+</ul>
+
+<p>􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴以上介绍的日志增强类是在什么时候，哪个地方被mybatis所调用的呢？看下面的代码：</p>
+
+<pre><code class="language-java">/*org.apache.ibatis.executor.SimpleExecutor#prepareStatement*/
+private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+    Statement stmt;
+    //获取connection对象的动态代理，添加日志能力；
+    Connection connection = getConnection(statementLog);
+    //通过不同的StatementHandler，利用connection创建prepareStatement
+    stmt = handler.prepare(connection, transaction.getTimeout());
+    //使用parameterHandler处理占位符
+    handler.parameterize(stmt);
+    return stmt;
+}
+
+/*org.apache.ibatis.executor.BaseExecutor#getConnection*/
+protected Connection getConnection(Log statementLog) throws SQLException {
+    Connection connection = transaction.getConnection();
+    // 是否开启了debug模式的日志功能
+    if (statementLog.isDebugEnabled()) {
+        return ConnectionLogger.newInstance(connection, statementLog, queryStack);
+    } else {
+        return connection;
+    }
+}
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/08</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889268955334.html">
+                
+                  <h1>MyBatis概要分析</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>MyBatis的执行过程之前，我们有必要了解我们为什么要使用MyBatis这个框架。</p>
+
+<p>MyBatis是一种半自动的java持久层ORM框架，通过注解或XML文件的方式将对象和sql关联起来。</p>
+
+<p>说MyBatis是一种半自动的ORM框架，一点也不冤枉它，当我们使用Hibernate的时候，Hibernate可以全自动的为我们生成SQL，但是Mybatis却需要我们自行维护SQL。自行维护sql是一件繁琐的任务，但是可以让我们控制SQL逻辑，可对sql进行优化以提高效率。 </p>
+
+<h2 id="toc_0">MyBatis整体架构</h2>
+
+<p><figure><img src="media/15889268955334/15948274550412.jpg" alt=""/></figure></p>
+
+<h2 id="toc_1">MyBatis包结构``</h2>
+
+<ul>
+<li>annotations<br/>
+MyBatis Mapper接口开发过程中可使用的注解类信息，都是运用到传统意义上映射器接口中的方法、类或者方法参数中的,本包只被builder.annotation包的MapperAnnotationBuilder类引用。</li>
+<li>binding<br/>
+生成mapper接口的动态代理并进行管理</li>
+<li>builder<br/>
+包含Configuration对象所有的构建器，主要包括XML、注解两种配置解析方式</li>
+<li>cache<br/>
+为MyBatis提供缓存能力，TransactionalCache实现的二级缓存功能，BlockingCache实现的阻塞式缓存等等。采用装饰这模式实现功能增强，TransactionalCache、SynchronizedCache、LoggingCache、SerializedCache、LruCache、BlockingCache、PerpetualCache。</li>
+<li>cursor<br/>
+实现游标的方式查询数据、游标非常适合处理百万级别的数据查询，通常情况下不适合一次性加载到内存中，这种方式类似使用SAX解析XML文件。</li>
+<li>datasource<br/>
+为MyBatis提供数据源、数据库连接池功能，开发中也可以使用第三方提供的数据源jar包</li>
+<li>executor<br/>
+MyBatis的核心包， ErrorContext 错误上下文对象，跟踪所有执行流程；sql语句执行器，定义了数据库操作的基本方法，遵循访问数据库的JDBC规范，功能包括：
+<ul>
+<li>主键生成功能</li>
+<li>执行参数解析功能</li>
+<li>执行结果集解析功能</li>
+<li>SQL执行器</li>
+<li>缓存执行器</li>
+</ul></li>
+<li>io<br/>
+为MyBatis提供读写文件的能力，包含了资源加载和访问相关的类。</li>
+<li>javassist<br/>
+为MyBatis提供动态代理能力</li>
+<li>logging<br/>
+为MyBatis提供日志输出的能力，提供了日志框架的优先级加载顺序slf4J → commonsLoging → Log4J2 → Log4J → JdkLog</li>
+<li>mapping<br/>
+配置文件与实体对象的映射功能，Mapper映射、参数映射、结果映射等</li>
+<li>parsing<br/>
+配置文件的解析类GenericTokenParser：解析#{} ${} 这种占位符；XPathParser：XPath 形式解析XML；PropertyParser: properties解析器</li>
+<li>plugin<br/>
+拦截器插件相关接口和类，使用代理模式实现拦截</li>
+<li>reflection<br/>
+反射工具包，其中比较重要的类 MetaObject、SystemMetaObject，通过把Java对象转换成 元数据对象MetaObject，然后就可以对元数据对象进行赋值操作，数据库查询结果到Java对象映射就是通过元对象实现</li>
+<li>scripting<br/>
+动态SQL语言实现，配置文件中<if> <where> <set> <foreach> <choose>功能就是在这个包实现，借助OGNL表达式,你也可以扩展自己的语言实现功能</li>
+<li>session： </li>
+<li>transaction<br/>
+MyBatis对事物的抽象，包装了数据库连接，处理数据库连接生命周期包括：连接创建，预编译，提交\回滚和关闭，2种实现方式：JdbcTransaction手动管理；ManagedTransaction受容器管理的事务</li>
+<li>type<br/>
+类型处理，包含了类型处理器接口TypeHandler，父类BaseTypeHandler,以及若干个子类，例如所有数据库类型对应Java类型的处理器，如果要实现自己类型处理器就需要实现包下的基础接口<br/>
+## MyBatis核心类或组件</li>
+<li>SqlSessionFactoryBuilder ： 读取配置信息创建SqlSessionFactory,使用建造者模式，方法级别的生命周期，构建出SqlSessionFactory之后即消亡。</li>
+<li>SqlSessionFactory ： 创建SqlSession对象的工厂对象，采用工厂模式，存在于程序的整个生命周期。</li>
+<li>SqlSession 代表一次数据库连接，一般通过调用Mapper访问数据库，也可以直接发送sql执行，线程不安全的，需要保证线程独享。</li>
+<li>Sql Mapper组件
+<ul>
+<li>MappedStatement</li>
+<li>MapperProxyFactory</li>
+<li>MapperMethod</li>
+<li>mapperRegistry</li>
+<li>BoundSql</li>
+</ul></li>
+</ul>
+
+<h2 id="toc_2">配置文件</h2>
+
+<p><a href="15889256556480.html">Mybatis 全局配置文件样例mybatis-config.xml</a></p>
+
+<h2 id="toc_3">MyBatis流程概述</h2>
+
+<p>看下MyBatis的快速使用事例，代码如下：</p>
+
+<pre><code class="language-java">public class MybatisTest {
+
+    private SqlSessionFactory sqlSessionFactory;
+
+    @Before
+    public void init() throws IOException {
+        //--------------------第一阶段---------------------------
+        // 1.读取myBatis配置文件创SqlSessionFactory
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        inputStream.close();
+    }
+
+    @Test
+    // 快速入门
+    public void quickStart() throws IOException {
+        //--------------------第二阶段---------------------------
+        // 2.获取sqlSession
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        // 3.获取对应mapper
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+
+        //--------------------第三阶段---------------------------
+        // 4.执行查询语句并返回查询结果
+        User user = mapper.selectByPrimaryKey(1);
+        System.out.println(user);
+
+    }
+}
+</code></pre>
+
+<p>通过对快速使用代码的分析，可以把 MyBatis 的运行流程分为三大阶段： </p>
+
+<ol>
+<li>初始化阶段：读取 XML 配置文件和注解中的配置信息，创建配置对象，并完成各个模块的初始化的工作</li>
+<li>代理封装阶段：封装 iBatis 的编程模型，使用 mapper 接口开发的初始化工作</li>
+<li>数据访问阶段：通过 SqlSession 完成 SQL 的解析，参数的映射、SQL 的执行、结果的解析过程</li>
+</ol>
+
+<p>传送门：<a href="15889543039853.html">MyBatis执行流程分析 </a></p>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/08</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889256556480.html">
+                
+                  <h1>Mybatis 全局配置文件样例mybatis-config.xml</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE configuration PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;
+&lt;!--可供参考的配置文件--&gt;
+&lt;configuration&gt;
+
+    &lt;!-- 参数设置 --&gt;
+    &lt;settings&gt;
+        &lt;!-- 这个配置使全局的映射器启用或禁用缓存 --&gt;
+        &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载 --&gt;
+        &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载 --&gt;
+        &lt;setting name=&quot;aggressiveLazyLoading&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动） --&gt;
+        &lt;setting name=&quot;multipleResultSetsEnabled&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 使用列标签代替列名。不同的驱动在这方便表现不同。参考驱动文档或充分测试两种方法来决定所使用的驱动 --&gt;
+        &lt;setting name=&quot;useColumnLabel&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 允许JDBC支持生成的键。需要适合的驱动。如果设置为true则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如Derby） --&gt;
+        &lt;setting name=&quot;useGeneratedKeys&quot; value=&quot;true&quot;/&gt;
+        &lt;!-- 指定MyBatis如何自动映射列到字段/属性。PARTIAL只会自动映射简单，没有嵌套的结果。FULL会自动映射任意复杂的结果（嵌套的或其他情况） --&gt;
+        &lt;setting name=&quot;autoMappingBehavior&quot; value=&quot;PARTIAL&quot;/&gt;
+        &lt;!--当检测出未知列（或未知属性）时，如何处理，默认情况下没有任何提示，这在测试的时候很不方便，不容易找到错误。 NONE : 不做任何处理
+            (默认值) WARNING : 警告日志形式的详细信息 FAILING : 映射失败，抛出异常和详细信息 --&gt;
+        &lt;setting name=&quot;autoMappingUnknownColumnBehavior&quot; value=&quot;WARNING&quot;/&gt;
+        &lt;!-- 配置默认的执行器。SIMPLE执行器没有什么特别之处。REUSE执行器重用预处理语句。BATCH执行器重用语句和批量更新 --&gt;
+        &lt;setting name=&quot;defaultExecutorType&quot; value=&quot;SIMPLE&quot;/&gt;
+        &lt;!-- 设置超时时间，它决定驱动等待一个数据库响应的时间 --&gt;
+        &lt;setting name=&quot;defaultStatementTimeout&quot; value=&quot;25000&quot;/&gt;
+        &lt;!--设置查询返回值数量，可以被查询数值覆盖 --&gt;
+        &lt;setting name=&quot;defaultFetchSize&quot; value=&quot;100&quot;/&gt;
+        &lt;!-- 允许在嵌套语句中使用分页 --&gt;
+        &lt;setting name=&quot;safeRowBoundsEnabled&quot; value=&quot;false&quot;/&gt;
+        &lt;!--是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn
+            的类似映射。 --&gt;
+        &lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;false&quot;/&gt;
+        &lt;!--MyBatis 利用本地缓存机制（Local Cache）防止循环引用（circular references）和加速重复嵌套查询。
+            默认值为 SESSION，这种情况下会缓存一个会话中执行的所有查询。 若设置值为 STATEMENT，本地会话仅用在语句执行上，对相同 SqlSession
+            的不同调用将不会共享数据。 --&gt;
+        &lt;setting name=&quot;localCacheScope&quot; value=&quot;SESSION&quot;/&gt;
+        &lt;!-- 当没有为参数提供特定的 JDBC 类型时，为空值指定 JDBC 类型。 某些驱动需要指定列的 JDBC 类型，多数情况直接用一般类型即可，比如
+            NULL、VARCHAR OTHER。 --&gt;
+        &lt;setting name=&quot;jdbcTypeForNull&quot; value=&quot;OTHER&quot;/&gt;
+        &lt;!-- 指定哪个对象的方法触发一次延迟加载。 --&gt;
+        &lt;setting name=&quot;lazyLoadTriggerMethods&quot; value=&quot;equals,clone,hashCode,toString&quot;/&gt;
+    &lt;/settings&gt;
+
+    &lt;!-- 别名定义 --&gt;
+    &lt;typeAliases&gt;
+        &lt;package name=&quot;com.shengke.sbd.entity&quot;/&gt;
+    &lt;/typeAliases&gt;
+
+    &lt;!--自定义类型处理器 --&gt;
+    &lt;typeHandlers&gt;
+        &lt;!--扫描整个包下的自定义类型处理器 --&gt;
+        &lt;package name=&quot;com.shengke.sbd.handler&quot;/&gt;
+    &lt;/typeHandlers&gt;
+
+    &lt;!--plugins插件之 分页拦截器 --&gt;
+    &lt;!--&lt;plugins&gt;
+        &lt;plugin interceptor=&quot;继承interceptor接口的插件类&quot;&gt;&lt;/plugin&gt;
+    &lt;/plugins&gt;
+    --&gt;
+
+    &lt;!--配置environment环境 --&gt;
+    &lt;environments default=&quot;development&quot;&gt;
+        &lt;!-- 环境配置1，每个SqlSessionFactory对应一个环境 --&gt;
+        &lt;environment id=&quot;development&quot;&gt;
+            &lt;!-- 事务配置 type= JDBC、MANAGED 1.JDBC:这个配置直接简单使用了JDBC的提交和回滚设置。它依赖于从数据源得到的连接来管理事务范围。
+                2.MANAGED:这个配置几乎没做什么。它从来不提交或回滚一个连接。而它会让容器来管理事务的整个生命周期（比如Spring或JEE应用服务器的上下文）。
+                默认情况下它会关闭连接。然而一些容器并不希望这样，因此如果你需要从连接中停止它，将closeConnection属性设置为false --&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+            &lt;!-- &lt;transactionManager type=&quot;MANAGED&quot;&gt; &lt;property name=&quot;closeConnection&quot;
+                value=&quot;false&quot;/&gt; &lt;/transactionManager&gt; --&gt;
+            &lt;!-- 数据源类型：type = UNPOOLED、POOLED、JNDI 1.UNPOOLED：这个数据源的实现是每次被请求时简单打开和关闭连接。它有一点慢，这是对简单应用程序的一个很好的选择，因为它不需要及时的可用连接。
+                不同的数据库对这个的表现也是不一样的，所以对某些数据库来说配置数据源并不重要，这个配置也是闲置的 2.POOLED：这是JDBC连接对象的数据源连接池的实现，用来避免创建新的连接实例时必要的初始连接和认证时间。
+                这是一种当前Web应用程序用来快速响应请求很流行的方法。 3.JNDI：这个数据源的实现是为了使用如Spring或应用服务器这类的容器，容器可以集中或在外部配置数据源，然后放置一个JNDI上下文的引用 --&gt;
+            &lt;dataSource type=&quot;UNPOOLED&quot;&gt;
+                &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+                &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/mybatis&quot;/&gt;
+                &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+                &lt;property name=&quot;password&quot; value=&quot;12345678&quot;/&gt;
+                &lt;!-- 默认连接事务隔离级别 &lt;property name=&quot;defaultTransactionIsolationLevel&quot; value=&quot;&quot;
+                    /&gt; --&gt;
+            &lt;/dataSource&gt;
+        &lt;/environment&gt;
+
+        &lt;!-- 环境配置2 --&gt;
+        &lt;environment id=&quot;development2&quot;&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+            &lt;dataSource type=&quot;POOLED&quot;&gt;
+                &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+                &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/mybatis&quot;/&gt;
+                &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+                &lt;property name=&quot;password&quot; value=&quot;12345678&quot;/&gt;
+                &lt;!-- 在任意时间存在的活动（也就是正在使用）连接的数量 --&gt;
+                &lt;property name=&quot;poolMaximumActiveConnections&quot; value=&quot;10&quot;/&gt;
+                &lt;!-- 任意时间存在的空闲连接数 --&gt;
+                &lt;property name=&quot;poolMaximumIdleConnections&quot; value=&quot;5&quot;/&gt;
+                &lt;!-- 在被强制返回之前，池中连接被检查的时间 --&gt;
+                &lt;property name=&quot;poolMaximumCheckoutTime&quot; value=&quot;20000&quot;/&gt;
+                &lt;!-- 这是给连接池一个打印日志状态机会的低层次设置，还有重新尝试获得连接，这些情况下往往需要很长时间（为了避免连接池没有配置时静默失败） --&gt;
+                &lt;property name=&quot;poolTimeToWait&quot; value=&quot;20000&quot;/&gt;
+                &lt;!-- 发送到数据的侦测查询，用来验证连接是否正常工作，并且准备接受请求。 --&gt;
+                &lt;property name=&quot;poolPingQuery&quot; value=&quot;NO PING QUERY SET&quot;/&gt;
+                &lt;!-- 这是开启或禁用侦测查询。如果开启，你必须用一个合法的SQL语句（最好是很快速的）设置poolPingQuery属性 --&gt;
+                &lt;property name=&quot;poolPingEnabled&quot; value=&quot;false&quot;/&gt;
+                &lt;!-- 这是用来配置poolPingQuery多次时间被用一次。这可以被设置匹配标准的数据库连接超时时间，来避免不必要的侦测 --&gt;
+                &lt;property name=&quot;poolPingConnectionsNotUsedFor&quot; value=&quot;0&quot;/&gt;
+            &lt;/dataSource&gt;
+        &lt;/environment&gt;
+
+        &lt;!-- 环境配置3 --&gt;
+        &lt;environment id=&quot;development3&quot;&gt;
+            &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+            &lt;dataSource type=&quot;JNDI&quot;&gt;
+                &lt;property name=&quot;data_source&quot; value=&quot;java:comp/env/jndi/mybatis&quot;/&gt;
+                &lt;property name=&quot;env.encoding&quot; value=&quot;UTF8&quot;/&gt;
+                &lt;!-- &lt;property name=&quot;initial_context&quot; value=&quot;&quot;/&gt; &lt;property name=&quot;env.encoding&quot;
+                    value=&quot;UTF8&quot;/&gt; --&gt;
+            &lt;/dataSource&gt;
+        &lt;/environment&gt;
+    &lt;/environments&gt;
+
+    &lt;!-- 映射文件，mapper的配置文件 --&gt;
+    &lt;mappers&gt;
+                   &lt;mapper resource=&quot;mapper/UserTestMapper.xml&quot;/&gt;
+    &lt;/mappers&gt;
+
+&lt;/configuration&gt;
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/08</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15882588104882.html">
+                
+                  <h1>Maven内置变量说明：</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>\({basedir} 项目根目录(即pom.xml文件所在目录)<br/>
+\){project.build.directory} 构建目录，缺省为target目录<br/>
+\({project.build.outputDirectory} 构建过程输出目录，缺省为target/classes<br/>
+\){project.build.finalName} 产出物名称，缺省为\({project.artifactId}-\){project.version}<br/>
+\({project.packaging} 打包类型，缺省为jar<br/>
+\){project.xxx} 当前pom文件的任意节点的内容<br/>
+\({env.xxx} 获取系统环境变量。例如,&quot;env.PATH&quot;指代了\)path环境变量（在Windows上是%PATH%）。<br/>
+\({settings.xxx} 指代了settings.xml中对应元素的值。例如：&lt;settings&gt;&lt;offline&gt;false&lt;/offline&gt;&lt;/settings&gt;通过 \){settings.offline}获得offline的值。<br/>
+Java System Properties: 所有可通过java.lang.System.getProperties()访问的属性都能在POM中使用，例如 ${JAVA_HOME}。</p>
+
+<p>Maven总共有6类属性，内置属性、POM属性、自定义属性、Settings属性、java系统属性和环境变量属性；</p>
+
+<p>1.内置属性</p>
+
+<p>两个常用内置属性 \({basedir} 或者 \){project.basedir} 表示项目跟目录，即包含pom.xml文件的目录；${version} 表示项目版本</p>
+
+<p>2.POM属性<br/>
+用户可以使用该类属性引用POM文件中对应元素的值。如${project.artifactId}就对应了<project> <artifactId>元素的值，常用的POM属性包括：</p>
+
+<pre><code class="language-text">${project.build.sourceDirectory}:项目的主源码目录，默认为src/main/java/ 。
+
+${project.build.testSourceDirectory}:项目的测试源码目录，默认为src/test/java/ 。
+
+${project.build.directory} ： 项目构建输出目录，默认为target/ 。
+
+${project.outputDirectory} : 项目主代码编译输出目录，默认为target/classes/ 。
+
+${project.testOutputDirectory}：项目测试主代码输出目录，默认为target/testclasses/ 。
+
+${project.groupId}:项目的groupId。
+
+${project.artifactId}：项目的artifactId。
+　　　　
+${project.version}:项目的version, 与 ${version} 等价。
+
+${project.build.finalName}：项目打包输出文件的名称，默认为${project.artifactId}-${project.version}。
+</code></pre>
+
+<p>3.自定义属性</p>
+
+<p>如下account-aggregator的pom.xml，那么继承了此pom.xml的子模块也可以用此自定义属性</p>
+
+<p>4.Settings属性</p>
+
+<p>与POM属性同理，用户使用以settings. 开头的属性引用settings.xml文件中的XML元素的值。 </p>
+
+<p>5.Java系统属性</p>
+
+<p>所有java系统属性都可以用Maven属性引用，如${user.home}指向了用户目录。</p>
+
+<p>6.环境变量属性<br/>
+所有环境变量属性都可以使用以env. 开头的Maven属性引用，如${env.JAVA_HOME}指代了JAVA_HOME环境变量的的值。</p>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/04/30</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html'>构建工具</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
+
+
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   <a href="all_7.html">&laquo; Prev Page</a>  
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			 <a href="all_9.html">&raquo; Next Page</a> 
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

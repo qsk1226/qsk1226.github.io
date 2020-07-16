@@ -1,0 +1,1337 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  如何优雅的做数据校验-Hibernate Validator详细使用说明 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>如何优雅的做数据校验-Hibernate Validator详细使用说明</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/06/02</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html'>解决方案</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>数据校验是在平时的编码过程中常做的工作，在系统的各个层可能都要去实现一些校验逻辑，再去做业务处理。这些繁琐的校验与我们的业务代码在一块就会显得臃肿。而且这些校验通常是业务无关的。也是在工作中使用到Hibernate Validator，但却发现有人没有使用好它（竟然还能看到一些if else的校验代码...），所以在这里决定整理下关于Hibernate Validator的使用<br/>
+Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据模型和API，Hibernate Validator是目前最好的实现，这篇主要是说Hibernate Validator的使用</p>
+
+<h2 id="toc_0">Hibernate Validator的使用</h2>
+
+<p>依赖<br/>
+如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
+
+<pre><code class="language-markup">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>如果是Spring Mvc，那可以直接添加hibernate-validator依赖</p>
+
+<pre><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
+    &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+    &lt;version&gt;6.0.17.Final&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h2 id="toc_1">bean约束声明和验证，Validator</h2>
+
+<p>先给我们的Java对象添加约束注解</p>
+
+<pre><code class="language-java">@Data
+@AllArgsConstructor
+public class User {
+
+    private String id;
+
+    @NotBlank
+    @Size(max = 20)
+    private String name;
+
+    @NotNull
+    @Pattern(regexp = &quot;[A-Z][a-z][0-9]&quot;)
+    private String password;
+    
+    @NotNull
+    private Integer age;
+
+    @Max(10)
+    @Min(1)
+    private Integer level;
+}
+</code></pre>
+
+<p>验证实体实例需要先获取Validator实例</p>
+
+<pre><code class="language-java">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+validator = factory.getValidator();
+</code></pre>
+
+<p>Validator接口有三个方法，可用于验证整个实体或仅验证实体的单个属性</p>
+
+<ul>
+<li>Validator#validate()                   验证所有bean的所有约束</li>
+<li>Validator#validateProperty()   验证单个属性</li>
+<li>Validator#validateValue()         检查给定类的单个属性是否可以成功验证</li>
+</ul>
+
+<pre><code class="language-java">public class UserTest {
+    private static Validator validator;
+    @BeforeAll
+    public static void setUpValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    public void validatorTest() {
+        User user = new User(null, &quot;&quot;, &quot;!@#$&quot;, null, 11);
+
+        // 验证所有bean的所有约束
+        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations = validator.validate(user);
+        // 验证单个属性
+        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations2 = validator.validateProperty(user, &quot;name&quot;);
+        // 检查给定类的单个属性是否可以成功验证
+        Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations3 = validator.validateValue(User.class, &quot;password&quot;, &quot;sa!&quot;);
+
+        constraintViolations.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+        constraintViolations2.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+        constraintViolations3.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+    }
+}
+</code></pre>
+
+<p>测试结果</p>
+
+<pre><code class="language-text">不能为空
+最大不能超过10
+需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
+不能为null
+不能为空
+需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
+</code></pre>
+
+<h2 id="toc_2">方法约束声明和验证，ExecutableValidator</h2>
+
+<p>从Bean Validation 1.1开始，约束不仅可以应用于JavaBean及其属性，而且可以应用于任何Java类型的方法和构造函数的参数和返回值，这里简单看一个例子</p>
+
+<pre><code class="language-java">public class RentalStation {
+
+    public RentalStation(@NotNull String name) {
+        //...
+    }
+
+    public void rentCar(@NotNull @Future LocalDate startDate, @Min(1) int durationInDays) {
+        //...
+    }
+
+    @NotNull
+    @Size(min = 1)
+    public List&lt;@NotNull String&gt; getCustomers() {
+        //...
+        return null;
+    }
+}
+</code></pre>
+
+<p>ExecutableValidator接口可以完成方法约束的验证</p>
+
+<pre><code class="language-text">ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+executableValidator = factory.getValidator().forExecutables();
+</code></pre>
+
+<p>该ExecutableValidator界面共有四种方法：</p>
+
+<ul>
+<li>validateParameters()和validateReturnValue()用于方法验证</li>
+<li>validateConstructorParameters()和validateConstructorReturnValue()用于构造函数验证</li>
+</ul>
+
+<pre><code class="language-java">public class RentalStationTest {
+
+    private static ExecutableValidator executableValidator;
+
+    @BeforeAll
+    public static void setUpValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        executableValidator = factory.getValidator().forExecutables();
+    }
+
+    @Test
+    public void validatorTest() throws NoSuchMethodException {
+        RentalStation rentalStation = new RentalStation(&quot;z&quot;);
+
+        Method method = RentalStation.class.getMethod(&quot;rentCar&quot;, LocalDate.class, int.class);
+        Object[] parameterValues = {LocalDate.now().minusDays(1), 0};
+        Set&lt;ConstraintViolation&lt;RentalStation&gt;&gt; violations = executableValidator.validateParameters(
+                rentalStation, method, parameterValues);
+
+        violations.forEach(violation -&gt; System.out.println(violation.getMessage()));
+    }
+}
+</code></pre>
+
+<p>测试结果</p>
+
+<pre><code class="language-text">需要是一个将来的时间
+最小不能小于1
+</code></pre>
+
+<p>约束注解<br/>
+validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
+
+<p><strong>空与非空检查</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@Null</td>
+<td>Object</td>
+<td>为null</td>
+</tr>
+<tr>
+<td>@NotNull</td>
+<td>Object</td>
+<td>不为null</td>
+</tr>
+<tr>
+<td>@NotBlank</td>
+<td>CharSequence</td>
+<td>不为null，且必须有一个非空格字符</td>
+</tr>
+<tr>
+<td>@NotEmpty</td>
+<td>CharSequence、Collection、Map、Array</td>
+<td>不为null，且不为空（length/size&gt;0）</td>
+</tr>
+</tbody>
+</table>
+
+<p>Boolean值检查</p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@AssertTrue</td>
+<td>boolean、Boolean</td>
+<td>为true</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@AssertFalse</td>
+<td>boolean、Boolean</td>
+<td>为false</td>
+<td>为null有效</td>
+</tr>
+</tbody>
+</table>
+
+<p>日期检查</p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@Future</td>
+<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
+<td>验证日期为当前时间之后</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@FutureOrPresent</td>
+<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
+<td>验证日期为当前时间或之后</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Past</td>
+<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
+<td>验证日期为当前时间之前</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@PastOrPresent</td>
+<td>Date、Calendar、Instant、LocalDate、LocalDateTime、LocalTime、MonthDay、OffsetDateTime、OffsetTime、Year、YearMonth、ZonedDateTime、HijrahDate、JapaneseDate、MinguoDate、ThaiBuddhistDate</td>
+<td>验证日期为当前时间或之前</td>
+<td>为null有效</td>
+</tr>
+</tbody>
+</table>
+
+<p>数值检查</p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@Max</td>
+<td>BigDecimal、BigInteger，byte、short、int、long以及包装类</td>
+<td>小于或等于</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Min</td>
+<td>BigDecimal、BigInteger，byte、short、int、long以及包装类</td>
+<td>大于或等于</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@DecimalMax</td>
+<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
+<td>小于或等于</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@DecimalMin</td>
+<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
+<td>大于或等于</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Negative</td>
+<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
+<td>负数</td>
+<td>为null有效，0无效</td>
+</tr>
+<tr>
+<td>@NegativeOrZero</td>
+<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
+<td>负数或零</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Positive</td>
+<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
+<td>正数</td>
+<td>为null有效，0无效</td>
+</tr>
+<tr>
+<td>@PositiveOrZero</td>
+<td>BigDecimal、BigInteger，byte、short、int、long、float、double以及包装类</td>
+<td>正数或零</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Digits(integer = 3, fraction = 2)</td>
+<td>BigDecimal、BigInteger、CharSequence，byte、short、int、long以及包装类</td>
+<td>整数位数和小数位数上限</td>
+<td>为null有效</td>
+</tr>
+</tbody>
+</table>
+
+<p>其他</p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@Pattern</td>
+<td>CharSequence</td>
+<td>匹配指定的正则表达式</td>
+<td>为null有效</td>
+</tr>
+<tr>
+<td>@Email</td>
+<td>CharSequence</td>
+<td>邮箱地址</td>
+<td>为null有效，默认正则 &#39;.*&#39;</td>
+</tr>
+<tr>
+<td>@Size</td>
+<td>CharSequence、Collection、Map、Array</td>
+<td>大小范围（length/size&gt;0）</td>
+<td>为null有效</td>
+</tr>
+</tbody>
+</table>
+
+<p>hibernate-validator扩展约束（部分）</p>
+
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>支持Java类型</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>@LengthString</td>
+<td>字符串长度范围</td>
+<td></td>
+</tr>
+<tr>
+<td>@Range</td>
+<td>数值类型和String</td>
+<td>指定范围</td>
+</tr>
+<tr>
+<td>@URL</td>
+<td>URL</td>
+<td>地址验证</td>
+</tr>
+</tbody>
+</table>
+
+<p>自定义约束注解<br/>
+除了以上提供的约束注解（大部分情况都是能够满足的），我们还可以根据自己的需求自定义自己的约束注解<br/>
+定义自定义约束，有三个步骤</p>
+
+<ul>
+<li>创建约束注解</li>
+<li>实现一个验证器</li>
+<li>定义默认的错误信息<br/>
+那么下面就直接来定义一个简单的验证手机号码的注解</li>
+</ul>
+
+<pre><code class="language-java">@Documented
+@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
+@Constraint(validatedBy = {MobileValidator.class})
+@Retention(RUNTIME)
+@Repeatable(Mobile.List.class)
+public @interface Mobile {
+
+    /**
+     * 错误提示信息，可以写死,也可以填写国际化的key
+     */
+    String message() default &quot;手机号码不正确&quot;;
+
+    Class&lt;?&gt;[] groups() default {};
+    
+    Class&lt;? extends Payload&gt;[] payload() default {};
+
+    String regexp() default &quot;^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\\d{8}$&quot;;
+
+    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
+    @Retention(RUNTIME)
+    @Documented
+    @interface List {
+        Mobile[] value();
+    }
+}
+</code></pre>
+
+<p>关于注解的配置这里不说了，自定义约束需要下面3个属性</p>
+
+<ul>
+<li>message 错误提示信息，可以写死,也可以填写国际化的key</li>
+<li>groups 分组信息，允许指定此约束所属的验证组（下面会说到分组约束）</li>
+<li>payload 有效负载，可以通过payload来标记一些需要特殊处理的操作<br/>
+@Repeatable注解和List定义可以让该注解在同一个位置重复多次，通常是不同的配置（比如不同的分组和消息）<br/>
+@Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</li>
+</ul>
+
+<pre><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
+
+    /**
+     * 手机验证规则
+     */
+    private Pattern pattern;
+
+    @Override
+    public void initialize(Mobile mobile) {
+        pattern = Pattern.compile(mobile.regexp());
+    }
+
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
+
+        return pattern.matcher(value).matches();
+    }
+}
+</code></pre>
+
+<p>ConstraintValidator接口定义了在实现中设置的两个类型参数。第一个指定要验证的注解类（如Mobile），第二个指定验证器可以处理的元素类型（如String）；initialize()方法可以访问约束注解的属性值；isValid()方法用于验证，返回true表示验证通过<br/>
+Bean验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释<br/>
+到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
+
+<pre><code class="language-java">public class MobileTest {
+
+    public void setMobile(@Mobile String mobile){
+        // to do
+    }
+
+    private static ExecutableValidator executableValidator;
+
+    @BeforeAll
+    public static void setUpValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        executableValidator = factory.getValidator().forExecutables();
+    }
+
+    @Test
+    public void manufacturerIsNull() throws NoSuchMethodException {
+        MobileTest mobileTest = new MobileTest();
+
+        Method method = MobileTest.class.getMethod(&quot;setMobile&quot;, String.class);
+        Object[] parameterValues = {&quot;1111111&quot;};
+        Set&lt;ConstraintViolation&lt;MobileTest&gt;&gt; violations = executableValidator.validateParameters(
+                mobileTest, method, parameterValues);
+
+        violations.forEach(violation -&gt; System.out.println(violation.getMessage()));
+    }
+}
+</code></pre>
+
+<p>分组约束<br/>
+在上面的自定义约束中，有个groups属性是用来指定验证约束的分组，我们在为属性加上注解的时候，如果没有配置分组信息，那么默认会采用默认分组 javax.validation.groups.Default<br/>
+分组是用接口定义的，用做标识，这里创建两个标识AddGroup和UpdateGroup，分别标识新增和修改<br/>
+public interface AddGroup {<br/>
+}</p>
+
+<p>public interface UpdateGroup {<br/>
+}<br/>
+复制代码<br/>
+然后对我们的User对象的id属性做分组标识</p>
+
+<pre><code class="language-java">@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+
+    @Null(groups = AddGroup.class)
+    @NotBlank(groups = UpdateGroup.class)
+    private String id;
+    
+    // ... 省略了其他属性
+}    
+
+我们看下如何使用
+@Test
+public void validatorGroupTest() {
+    User user = new User();
+
+    // 检查给定类的单个属性是否可以成功验证
+    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;, UpdateGroup.class);
+    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations2 = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;);
+    Set&lt;ConstraintViolation&lt;User&gt;&gt; constraintViolations3 = validator.validateValue(User.class, &quot;id&quot;, &quot;&quot;, AddGroup.class);
+
+    constraintViolations.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+    constraintViolations2.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+    constraintViolations3.forEach(constraintViolation -&gt; System.out.println(constraintViolation.getMessage()));
+}
+</code></pre>
+
+<p>上面的测试只有加了UpdateGroug分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
+
+<pre><code class="language-java">public interface AddGroup extends Default {
+}
+</code></pre>
+
+<p>在Spring中使用Hibernate Validator<br/>
+上面介绍了Validator的一些使用，还有注解的介绍，那么在Spring中我们怎么去使用Hibernate Validator做验证呢？或者说再Web项目中怎么使用Hibernate Validator？<br/>
+spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的<br/>
+配置Validator</p>
+
+<pre><code class="language-java">@Configuration
+public class ValidatorConfig {
+
+    /**
+     * 配置验证器
+     *
+     * @return validator
+     */
+    @Bean
+    public Validator validator() {
+        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
+                .configure()
+                // 快速失败模式
+                .failFast(true)
+                // .addProperty( &quot;hibernate.validator.fail_fast&quot;, &quot;true&quot; )
+                .buildValidatorFactory();
+        return validatorFactory.getValidator();
+    }
+}
+</code></pre>
+
+<p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息<br/>
+如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
+
+<pre><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
+
+&lt;!-- validator基本配置 --&gt;
+&lt;bean id=&quot;validator&quot; class=&quot;org.springframework.validation.beanvalidation.LocalValidatorFactoryBean&quot;&gt;
+    &lt;property name=&quot;providerClass&quot; value=&quot;org.hibernate.validator.HibernateValidator&quot;/&gt;
+    &lt;!-- 映射资源文件 --&gt;
+    &lt;property name=&quot;validationMessageSource&quot; ref=&quot;messageSource&quot;/&gt;
+&lt;/bean&gt;
+
+&lt;bean id=&quot;messageSource&quot; class=&quot;org.springframework.context.support.ReloadableResourceBundleMessageSource&quot; name=&quot;messageSource&quot;&gt;
+    &lt;!--&lt;property name=&quot;basenames&quot;&gt;
+                &lt;list&gt;
+                    &lt;value&gt;classpath:messages/messages&lt;/value&gt;
+                    &lt;value&gt;classpath:messages/ValidationMessages&lt;/value&gt;
+                &lt;/list&gt;
+            &lt;/property&gt;--&gt;
+    &lt;property name=&quot;useCodeAsDefaultMessage&quot; value=&quot;false&quot; /&gt;
+    &lt;property name=&quot;defaultEncoding&quot; value=&quot;UTF-8&quot; /&gt;
+    &lt;property name=&quot;cacheSeconds&quot; value=&quot;60&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p>请求参数bean验证<br/>
+接口上的Bean验证，需要在参数前加上@Valid或Spring的 @Validated注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出BindException异常，并变成400（BAD_REQUEST）响应；或者可以通过Errors或BindingResult参数在控制器内本地处理验证错误。另外，如果参数前有@RequestBody注解，验证错误会抛出MethodArgumentNotValidException异常。</p>
+
+<pre><code class="language-java">
+@RestController
+public class UserController {
+
+    @PostMapping(&quot;/user&quot;)
+    public R handle(@Valid @RequestBody User user, BindingResult result) {
+        // 在控制器内本地处理验证错误
+        if (result.hasErrors()) {
+            result.getAllErrors().forEach(s -&gt; System.out.println(s.getDefaultMessage()));
+             return R.fail(result.getAllErrors().get(0).getDefaultMessage());
+        }
+        // ...
+        return R.success();
+    }
+
+    @PostMapping(&quot;/user2&quot;)
+    public R handle2(@Valid User user, BindingResult result) {
+        // 在控制器内本地处理验证错误
+        if (result.hasErrors()) {
+            result.getAllErrors().forEach(s -&gt; System.out.println(s.getDefaultMessage()));
+             return R.fail(result.getAllErrors().get(0).getDefaultMessage());
+        }
+        // ...
+        return R.success();
+    }
+
+    /**
+     * 验证不通过抛出 `MethodArgumentNotValidException`
+     */
+    @PostMapping(&quot;/user3&quot;)
+    public R handle3(@Valid @RequestBody User user) {
+        // ...
+        return R.success();
+    }
+
+    /**
+     * 验证不通过抛出 `BindException`
+     */
+    @PostMapping(&quot;/user4&quot;)
+    public R handle4(@Valid User user) {
+        // ...
+        return R.success();
+    }
+}
+</code></pre>
+
+<p>配合Spring的BindingResult参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
+
+<pre><code class="language-java">@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    /**
+     * hibernate validator 数据绑定验证异常拦截
+     *
+     * @param e 绑定验证异常
+     * @return 错误返回消息
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BindException.class)
+    public R validateErrorHandler(BindException e) {
+        ObjectError error = e.getAllErrors().get(0);
+        log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
+        return R.fail(error.getDefaultMessage());
+    }
+
+    /**
+     * hibernate validator 数据绑定验证异常拦截
+     *
+     * @param e 绑定验证异常
+     * @return 错误返回消息
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R validateErrorHandler(MethodArgumentNotValidException e) {
+        ObjectError error = e.getBindingResult().getAllErrors().get(0);
+        log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
+        return R.fail(error.getDefaultMessage());
+    }
+}    
+</code></pre>
+
+<p>方法参数验证<br/>
+配置</p>
+
+<p>Hibernate Validator是可以在方法级验证参数的，Spring中当然也是有实现的。<br/>
+我们在Validator的配置中，添加MethodValidationPostProcessorBean，在上面的ValidatorConfig.java中添加一下配置</p>
+
+<pre><code class="language-java">/**
+ * 设置方法参数验证器
+ */
+@Bean
+public MethodValidationPostProcessor methodValidationPostProcessor() {
+    MethodValidationPostProcessor postProcessor = new MethodValidationPostProcessor();
+    // 设置validator模式为快速失败返回
+    postProcessor.setValidator(validator());
+    return postProcessor;
+}
+</code></pre>
+
+<p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller里面是无效的</p>
+
+<pre><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
+&lt;bean id=&quot;methodValidationPostProcessor&quot; class=&quot;org.springframework.validation.beanvalidation.MethodValidationPostProcessor&quot;&gt;
+    &lt;property name=&quot;validator&quot; ref=&quot;validator&quot;/&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p>使用</p>
+
+<p>配置了上面的MethodValidationPostProcessor，我们就可以在方法参数或返回值使用约束注解了，要注意的是，在要使用参数验证的类上一定要加上@Validated注解，否则无效</p>
+
+<pre><code class="language-java">/**
+ * 一定要加上 `@Validated` 注解
+ */
+@Validated
+@RestController
+public class UserController {
+
+    @GetMapping(&quot;/user&quot;)
+    public R handle(@Mobile String mobile) {
+        // ...
+        return R.success();
+    }
+}
+</code></pre>
+
+<p>如果验证不通过，会抛出ConstraintViolationException异常，同样的，我们可以在全局的异常处理器里面处理验证错误，在GlobalExceptionHandler中添加一下代码</p>
+
+<pre><code class="language-java">/**
+ * spring validator 方法参数验证异常拦截
+ *
+ * @param e 绑定验证异常
+ * @return 错误返回消息
+ */
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+@ExceptionHandler(ConstraintViolationException.class)
+public R defaultErrorHandler(ConstraintViolationException e) {
+    Set&lt;ConstraintViolation&lt;?&gt;&gt; violations = e.getConstraintViolations();
+    ConstraintViolation&lt;?&gt; violation = violations.iterator().next();
+    log.info(&quot;数据验证异常：{}&quot;, violation.getMessage());
+    return R.fail(violation.getMessage());
+}
+</code></pre>
+
+<p>分组<br/>
+Spring的@Validate注解是可以支持分组验证的</p>
+
+<pre><code class="language-java">@PostMapping(&quot;/user&quot;)
+public R handle(@Validated(AddGroup.class) @RequestBody User user) {
+    // ...
+    return R.success();
+}
+</code></pre>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15917825334671.html" 
+          title="Previous Post: 责任链模式">&laquo; 责任链模式</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15902913212619.html" 
+          title="Next Post: 缓存一致性问题如何解决">缓存一致性问题如何解决 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

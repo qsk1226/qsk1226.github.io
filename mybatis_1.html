@@ -1,0 +1,2601 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  mybatis - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
+</script>
+<div class="row">
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="15889543039853.html">
+                
+                  <h1>MyBatis执行流程分析</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<h2 id="toc_0">MyBatis运行流程之配置初始化</h2>
+
+<p>首先了解下大致流程<br/>
+<figure><img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="配置初始化"/><figcaption>配置初始化</figcaption></figure></p>
+
+<p>在MyBatis中负责加载配置文件的核心类有三个:</p>
+
+<ul>
+<li>BaseBuilder：所有解析器的父类，包含配置文件实例，为解析文件提供的一些通用的方 法；</li>
+<li>XMLConfigBuilder： 主要负责解析 mybatis-config.xml全局配置文件，将相关配置放入Configuration对象中； </li>
+<li>XMLMapperBuilder： 主要负责解析映射配置 Mapper.xml 文件，填充Configuration的caches、resultMappings； </li>
+<li>XMLStatementBuilder： 主要负责解析映射配置文件中的 INSERT、UPDATE、DELETE、SELECT 节点，填充Configuration的MappedStatement；</li>
+</ul>
+
+<p>UML类图如下所示：<br/>
+<figure><img src="media/15889543039853/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD.png" alt="配置文件加载继承关系"/><figcaption>配置文件加载继承关系</figcaption></figure></p>
+
+<p>XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 这三个类在配置文件加载过程中非常重要，另外MapperBuilderAssistant可辅助XMLMapperBuilder和XMLStatementBuilder完成配置工作。</p>
+
+<h3 id="toc_1">Configuration对象</h3>
+
+<p>实例化并初始化 Configuration 对象是第一个阶段的最终目的，所以熟悉 configuration 对象是理解这一阶段代码的核心；<br/>
+看下Configuration对象中的关键属性：</p>
+
+<ul>
+<li>MapperRegistry：mapper 接口动态代理工厂类的注册中心。在 MyBatis 中，通过 mapperProxy 实现 InvocationHandler 接口，MapperProxyFactory 用于生成动态代理的实 例对象；</li>
+<li>ResultMap：用于解析 mapper.xml 文件中的 resultMap 节点，使用 ResultMapping 来封装 id，result 等子元素； </li>
+<li>MappedStatement：用于存储 mapper.xml 文件中的 select、 insert、 update 和 delete 节点， 同时还包含了这些节点的很多重要属性； </li>
+<li>SqlSource：用于创建 BoundSql，mapper.xml 文件中的 sql 语句会被解析成 BoundSql 对象，经过解析 BoundSql 包含的语句最终仅仅包含？占位符，可以直接提交给数据库执行；</li>
+</ul>
+
+<pre><code class="language-java">public class Configuration {
+   /*数据库环境**/
+    protected Environment environment;
+    /* 是否启用行内嵌套语句**/
+    protected boolean safeRowBoundsEnabled;
+    protected boolean safeResultHandlerEnabled = true;
+    /* 是否启用数据组A_column自动映射到Java类中的驼峰命名的属性**/
+    protected boolean mapUnderscoreToCamelCase;
+
+    /*当对象使用延迟加载时 属性的加载取决于能被引用到的那些延迟属性,否则,按需加载(需要的是时候才去加载)**/
+    protected boolean aggressiveLazyLoading;
+
+    /*是否允许单条sql 返回多个数据集  (取决于驱动的兼容性) default:true **/
+    protected boolean multipleResultSetsEnabled = true;
+
+    /*-允许JDBC 生成主键。需要驱动器支持。如果设为了true，这个设置将强制使用被生成的主键，有一些驱动器不兼容不过仍然可以执行。  default:false**/
+    protected boolean useGeneratedKeys;
+
+    /* 使用列标签代替列名。不同的驱动在这方面会有不同的表现， 具体可参考相关驱动文档或通过测试这两种不同的模式来观察所用驱动的结果。**/
+    protected boolean useColumnLabel = true;
+
+    /*配置全局性的cache开关，默认为true**/
+    protected boolean cacheEnabled = true;
+    protected boolean callSettersOnNulls;
+    protected boolean useActualParamName = true;
+    protected boolean returnInstanceForEmptyRow;
+
+    /* 日志打印所有的前缀 **/
+    protected String logPrefix;
+
+    /* 指定 MyBatis 所用日志的具体实现，未指定时将自动查找**/
+    protected Class&lt;? extends Log&gt; logImpl;
+
+    /*虚拟文件系统实现*/
+    protected Class&lt;? extends VFS&gt; vfsImpl;
+
+    /* 设置本地缓存范围，session：就会有数据的共享，statement：语句范围，这样不会有数据的共享**/
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+
+    /* 设置但JDBC类型为空时,某些驱动程序 要指定值**/
+    protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
+    /* 设置触发延迟加载的方法**/
+    protected Set&lt;String&gt; lazyLoadTriggerMethods = new HashSet&lt;&gt;(Arrays.asList(&quot;equals&quot;, &quot;clone&quot;, &quot;hashCode&quot;, &quot;toString&quot;));
+    /* 设置驱动等待数据响应超时数**/
+    protected Integer defaultStatementTimeout;
+    /* 设置驱动返回结果数的大小**/
+    protected Integer defaultFetchSize;
+
+    protected ResultSetType defaultResultSetType;
+    /* 执行类型，有simple、resue及batch**/
+    protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
+
+    /*指定 MyBatis 应如何自动映射列到字段或属性*/
+    protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
+    protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
+    // 在&lt;properties&gt;标签下的属性以及
+    protected Properties variables = new Properties();
+
+    protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
+
+    /*MyBatis每次创建结果对象的新实例时，它都会使用对象工厂（ObjectFactory）去构建POJO*/
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    /*延迟加载的全局开关*/
+    protected boolean lazyLoadingEnabled = false;
+
+    /*指定 Mybatis 创建具有延迟加载能力的对象所用到的代理工具*/
+    protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
+
+    protected String databaseId;
+    /**
+     * 创建用于加载反序列化未读属性的配置。
+     */
+    protected Class&lt;?&gt; configurationFactory;
+
+
+    /*插件集合，plugins标签容器*/
+    protected final InterceptorChain interceptorChain = new InterceptorChain();
+
+    /*TypeHandler注册中心*/
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
+
+    /*TypeAlias注册中心*/
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+
+    /*mapper接口的动态代理注册中心*/
+    protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+    /*mapper文件中增删改查操作的注册中心*/
+    protected final Map&lt;String, MappedStatement&gt; mappedStatements = new StrictMap&lt;MappedStatement&gt;(&quot;Mapped Statements collection&quot;)
+            .conflictMessageProducer((savedValue, targetValue) -&gt; &quot;. please check &quot; + savedValue.getResource() + &quot; and &quot; + targetValue.getResource());
+
+    /*mapper文件中配置cache节点的 二级缓存*/
+    protected final Map&lt;String, Cache&gt; caches = new StrictMap&lt;&gt;(&quot;Caches collection&quot;);
+
+    /*mapper文件中配置的所有resultMap对象  key为命名空间+ID*/
+    protected final Map&lt;String, ResultMap&gt; resultMaps = new StrictMap&lt;&gt;(&quot;Result Maps collection&quot;);
+
+    /*mapper文件中配置所有的parameterMap对象，key为命名空间+ID*/
+    protected final Map&lt;String, ParameterMap&gt; parameterMaps = new StrictMap&lt;&gt;(&quot;Parameter Maps collection&quot;);
+
+    /*mapper文件中配置KeyGenerator的insert和update节点，key为命名空间+ID*/
+    protected final Map&lt;String, KeyGenerator&gt; keyGenerators = new StrictMap&lt;&gt;(&quot;Key Generators collection&quot;);
+
+    /*加载到的所有*mapper.xml文件*/
+    protected final Set&lt;String&gt; loadedResources = new HashSet&lt;&gt;();
+
+    /*mapper文件中配置的sql元素，key为命名空间+ID*/
+    protected final Map&lt;String, XNode&gt; sqlFragments = new StrictMap&lt;&gt;(&quot;XML fragments parsed from previous mappers&quot;);
+
+    protected final Collection&lt;XMLStatementBuilder&gt; incompleteStatements = new LinkedList&lt;&gt;();
+    protected final Collection&lt;CacheRefResolver&gt; incompleteCacheRefs = new LinkedList&lt;&gt;();
+    protected final Collection&lt;ResultMapResolver&gt; incompleteResultMaps = new LinkedList&lt;&gt;();
+    protected final Collection&lt;MethodResolver&gt; incompleteMethods = new LinkedList&lt;&gt;();
+
+    /*
+     * key: 在哪个namespace中声明
+     * value: 引用哪个namespace中的cache
+     */
+    protected final Map&lt;String, String&gt; cacheRefMap = new HashMap&lt;&gt;();
+}
+</code></pre>
+
+<h3 id="toc_2">配置加载过程</h3>
+
+<p>MyBatis配置加载的过程大致可如下图所示：<br/>
+<figure><img src="media/15889543039853/Mysql%E5%88%9D%E5%A7%8B%E5%8C%96.jpg" alt="Mysql初始化"/><figcaption>Mysql初始化</figcaption></figure></p>
+
+<p>现在看下配置加载的核心代码：</p>
+
+<h4 id="toc_3">通过 SqlSessionFactoryBuilder 建造 SqlSessionFactory，并创建 XMLConfigBuilder 对象读取 MyBatis 核心配置文件，</h4>
+
+<pre><code class="language-java">public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
+    try {
+        //1、读取配置文件
+        XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+        //1.1、解析配置文件得到configuration对象，并返回SqlSessionFactory的实现DefaultSqlSessionFactory
+        return build(parser.parse());
+    } catch (Exception e) {
+        throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, e);
+    } finally {
+        ErrorContext.instance().reset();
+        try {
+            // 关闭输入流
+            reader.close();
+        } catch (IOException e) {
+            // Intentionally ignore. Prefer previous error.
+        }
+    }
+}
+</code></pre>
+
+<p>XMLConfigBuilder 的 parseConfiguration 方法，对 MyBatis 核心配置文件的各个 元素进行解析，读取元素信息后填充到 configuration 对象</p>
+
+<pre><code class="language-java">/**
+ * 解析mybatis-config.xml文档
+ *
+ * @param root mybatis-config.xml的root节点configuration
+ */
+private void parseConfiguration(XNode root) {
+    try {
+        // issue #117 read properties first
+        /* 解析&lt;properties&gt;节点,填充configuration的variables属性*/
+        propertiesElement(root.evalNode(&quot;properties&quot;));
+        /* 解析&lt;settings&gt;节点*/
+        Properties settings = settingsAsProperties(root.evalNode(&quot;settings&quot;));
+        /*VFS含义是虚拟文件系统；主要是通过程序能够方便读取本地文件系统、FTP文件系统等系统中的文件资源。*/
+        loadCustomVfs(settings);
+        loadCustomLogImpl(settings);
+        /*解析&lt;typeAliases&gt;节点，填充Configuration的typeAliasRegistry属性*/
+        typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));
+        /*解析&lt;plugins&gt;节点*，填充Configuration的interceptorChain属性/
+        pluginElement(root.evalNode(&quot;plugins&quot;));
+        /*解析ObjectFactory*/
+        objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));
+        /*解析&lt;objectWrapperFactory&gt;节点*/
+        objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));
+        /*解析&lt;reflectorFactory&gt;节点*/
+        reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));
+
+        /*将settings填充到configuration*/
+        settingsElement(settings);
+
+        /*解析&lt;environments&gt;节点，填充Configuration的environment*/
+        environmentsElement(root.evalNode(&quot;environments&quot;));
+        //解析&lt;databaseIdProvider&gt;节点
+        databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));
+        /*解析&lt;typeHandlers&gt;节点，填充Configuration的typeHandlerRegistry*/
+        typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));
+        /*解析mapper节点*/
+        mapperElement(root.evalNode(&quot;mappers&quot;));
+    } catch (Exception e) {
+        throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + e, e);
+    }
+}
+</code></pre>
+
+<p>XMLMapperBuilder 的核心方法为 configurationElement（XNode），该方法对 mapper.xml 配置文件的各个元素进行解析，读取元素信息后填充到 configuration 对象。</p>
+
+<pre><code class="language-java">/**
+ * 解析Mapper.xml文件
+ **/
+private void configurationElement(XNode context) {
+    try {
+        // 获取mapper.xml 的 namespace 名字
+        String namespace = context.getStringAttribute(&quot;namespace&quot;);
+        if (namespace == null || namespace.isEmpty()) {
+            throw new BuilderException(&quot;Mapper&#39;s namespace cannot be empty&quot;);
+        }
+        //设置builderAssistant的namespace属性
+        builderAssistant.setCurrentNamespace(namespace);
+
+        cacheRefElement(context.evalNode(&quot;cache-ref&quot;));
+        /* 1. 分析缓存cache节点，二级缓存  configuration.addCache(cache);*/
+        cacheElement(context.evalNode(&quot;cache&quot;));
+        parameterMapElement(context.evalNodes(&quot;/mapper/parameterMap&quot;));
+        /* 2. 分析 ：解析resultMap节点，填充Configuration的 resultMap*/
+        resultMapElements(context.evalNodes(&quot;/mapper/resultMap&quot;));
+        /* 3. 解析sql节点*/
+        sqlElement(context.evalNodes(&quot;/mapper/sql&quot;));
+        /* 4. 解析select、insert、update、delete节点 ，填充Configuration的 MappedStatement*/
+        buildStatementFromContext(context.evalNodes(&quot;select|insert|update|delete&quot;));
+    } catch (Exception e) {
+        throw new BuilderException(&quot;Error parsing Mapper XML. The XML location is &#39;&quot; + resource + &quot;&#39;. Cause: &quot; + e, e);
+    }
+}
+</code></pre>
+
+<p>在 XMLStatmentBuilder 的 parseStatementNode()方法中，对 Mapper.xml 中 select、 insert、update、delete 节点进行解析，并调用 MapperBuilderAssistant 负责将信息填充到 configuration。在理解 parseStatementNod()方法之前，有必要了解 MappedStatement，这个类用于封装 select 、insert 、update 、delete 节点的信息 </p>
+
+<pre><code class="language-java">/**
+ * 封装mapper.xml文件信息的select 、insert 、update 、delete 节点的信息
+ * id、sqlSource、parameterMap、ResultMaps、keyGenerator 
+ **/
+public final class MappedStatement {
+
+    private String resource;//节点的完整的id属性，包括命名空间
+    private Configuration configuration;
+    private String id;//节点的id属性
+    private Integer fetchSize;//节点的fetchSize属性,查询数据的条数
+    private Integer timeout;//节点的timeout属性，超时时间
+    private StatementType statementType;//节点的statementType属性,默认值：StatementType.PREPARED
+    private ResultSetType resultSetType;//节点的resultSetType属性,jdbc知识
+    private SqlSource sqlSource;//节点中sql语句信息
+    private Cache cache;//对应的二级缓存
+    private ParameterMap parameterMap;
+    private List&lt;ResultMap&gt; resultMaps;//节点的resultMaps属性
+    private boolean flushCacheRequired;//节点的flushCache属性是否刷新缓存
+    private boolean useCache;//节点的useCache属性是否使用二级缓存
+    private boolean resultOrdered;
+    private SqlCommandType sqlCommandType;//sql语句的类型，包括：INSERT, UPDATE, DELETE, SELECT
+    private KeyGenerator keyGenerator;//节点keyGenerator属性
+    private String[] keyProperties;
+    private String[] keyColumns;
+    private boolean hasNestedResultMaps;//是否有嵌套resultMap
+    private String databaseId;
+    private Log statementLog;
+    private LanguageDriver lang;
+    private String[] resultSets;//多结果集使用
+}
+</code></pre>
+
+<h2 id="toc_4">mybatis运行流程之代理封装</h2>
+
+<p>在经过第一阶段之后，MyBatis的Configuration已经初始化完毕，接下来进入第二阶段，获取SqlSessijon和Mapper接口代理类。</p>
+
+<p>其执行的过程如下图所示：</p>
+
+<p><figure><img src="media/15889543373179/mybatis%E8%8E%B7%E5%8F%96mapper%E4%BB%A3%E7%90%86.jpg" alt="mybatis获取mapper代理"/><figcaption>mybatis获取mapper代理</figcaption></figure></p>
+
+<h3 id="toc_5">MyBatis的接口层</h3>
+
+<h4 id="toc_6">SqlSession</h4>
+
+<p>第一个对象就是 SqlSession，SqlSession 是 MyBaits 对外提供的最关键的核心接口，通过它可以执行数据库读写命令、获取映射器、管理事务等；SqlSession 也 意味着客户端与数据库的一次连接，客户端对数据库的访问请求都是由SqlSession来处理的， SqlSession 由 SqlSessionFactory 创建，每个 SqlSession 都会引用 SqlSessionFactory 中全局唯一单例存在的 configuration 对象；</p>
+
+<p>SqlSession 默认实现类为 org.apache.ibatis.session.defaults.DefaultSqlSession,是 MyBatis 对外提供数据访问的主要 API。如下图所示，sqlSession是围绕着Executor在运转的。</p>
+
+<p><figure><img src="media/15889543373179/SqlSession.png" alt="SqlSession"/><figcaption>SqlSession</figcaption></figure></p>
+
+<h3 id="toc_7">SqlSessionFactory</h3>
+
+<p>SqlSessionFactory 使用工厂模式创建 SqlSession，其默认的实现类为 DefaultSqlSessionFactory ，其中获取 SqlSession 的核心方法为openSessionFromDataSource(ExecutorType, TransactionIsolationLevel, boolean)，在这个方法中从 configuration 中获取的 TransactionFactory 是典 型的策略模式的应用。运行期，TransactionFactory 接口的实现，是由配置文件配置决定的，可配置选项包括： JDBC、Managed, 可根据需求灵活的替换 TransactionFactory 的实现。</p>
+
+<pre><code class="language-java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+    Transaction tx = null;
+
+    try {
+        //获取mybatis配置文件中的environment对象
+        final Environment environment = configuration.getEnvironment();
+        //从environment获取transactionFactory工厂对象
+        final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+        //创建事务对象
+        tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+        //根据配置创建executor
+        final Executor executor = configuration.newExecutor(tx, execType);
+        //创建DefaultSqlSession
+        return new DefaultSqlSession(configuration, executor, autoCommit);
+    } catch (Exception e) {
+        closeTransaction(tx); // may have fetched a connection so lets call close()
+        throw ExceptionFactory.wrapException(&quot;Error opening session.  Cause: &quot; + e, e);
+    } finally {
+        ErrorContext.instance().reset();
+    }
+}
+</code></pre>
+
+<h3 id="toc_8">Mapper接口</h3>
+
+<p>在使用 Mapper 接口编程的时候，实际上 MyBatis 的内部，将对 Mapper 接口的调用转发给了 SqlSession，这个请求的转发是建立在 配置文件解读、动态代理增强的基础之上实现的，实现的过程有三个关键要素： </p>
+
+<ul>
+<li>找到 SqlSession 中对应的方法执行； </li>
+<li>找到命名空间和方法名（两维坐标）</li>
+<li>传递参数 </li>
+</ul>
+
+<h4 id="toc_9">如何获取Mapper接口</h4>
+
+<p>了解binding模块中如下几个关键类：</p>
+
+<ul>
+<li>MapperRegistry<br/>
+mapper 接口和对应的代理对象工厂的注册中心； </li>
+</ul>
+
+<pre><code class="language-java">/**
+ * mapper 接口动态代理工厂类的注册中心。
+ */
+public class MapperRegistry {
+
+    private final Configuration config;
+    // 存放MapperProxyFactory
+    private final Map&lt;Class&lt;?&gt;, MapperProxyFactory&lt;?&gt;&gt; knownMappers = new HashMap&lt;&gt;();
+
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+        final MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);
+        if (mapperProxyFactory == null) {
+            throw new BindingException(&quot;Type &quot; + type + &quot; is not known to the MapperRegistry.&quot;);
+        }
+        try {
+            return mapperProxyFactory.newInstance(sqlSession);
+        } catch (Exception e) {
+            throw new BindingException(&quot;Error getting mapper instance. Cause: &quot; + e, e);
+        }
+    }
+
+    public &lt;T&gt; boolean hasMapper(Class&lt;T&gt; type) {
+        return knownMappers.containsKey(type);
+    }
+
+    public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+        if (type.isInterface()) {
+            if (hasMapper(type)) {
+                throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+            }
+            boolean loadCompleted = false;
+            try {
+                knownMappers.put(type, new MapperProxyFactory&lt;&gt;(type));
+                MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+                parser.parse();
+                loadCompleted = true;
+            } finally {
+                if (!loadCompleted) {
+                    knownMappers.remove(type);
+                }
+            }
+        }
+    }
+    
+    public Collection&lt;Class&lt;?&gt;&gt; getMappers() {
+        return Collections.unmodifiableCollection(knownMappers.keySet());
+    }
+
+    
+    public void addMappers(String packageName, Class&lt;?&gt; superType) {
+        ResolverUtil&lt;Class&lt;?&gt;&gt; resolverUtil = new ResolverUtil&lt;&gt;();
+        resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
+        Set&lt;Class&lt;? extends Class&lt;?&gt;&gt;&gt; mapperSet = resolverUtil.getClasses();
+        for (Class&lt;?&gt; mapperClass : mapperSet) {
+            addMapper(mapperClass);
+        }
+    }
+
+    public void addMappers(String packageName) {
+        addMappers(packageName, Object.class);
+    }
+
+}
+</code></pre>
+
+<ul>
+<li>MapperProxyFactory<br/>
+用于生成 mapper 接口动态代理的实例对象；保证 Mapper 实例对象是局部变量；</li>
+</ul>
+
+<pre><code class="language-java">public class MapperProxyFactory&lt;T&gt; {
+
+    private final Class&lt;T&gt; mapperInterface;
+
+    private final Map&lt;Method, MapperMethodInvoker&gt; methodCache = new ConcurrentHashMap&lt;&gt;();
+
+    public MapperProxyFactory(Class&lt;T&gt; mapperInterface) {
+        this.mapperInterface = mapperInterface;
+    }
+
+    public Class&lt;T&gt; getMapperInterface() {
+        return mapperInterface;
+    }
+
+    public Map&lt;Method, MapperMethodInvoker&gt; getMethodCache() {
+        return methodCache;
+    }
+
+    protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
+        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
+    }
+
+    public T newInstance(SqlSession sqlSession) {
+        final MapperProxy&lt;T&gt; mapperProxy = new MapperProxy&lt;&gt;(sqlSession, mapperInterface, methodCache);
+        return newInstance(mapperProxy);
+    }
+
+}
+</code></pre>
+
+<ul>
+<li> MapperProxy<br/>
+实现了 InvocationHandler 接口，它是增强 mapper 接口的实现；</li>
+</ul>
+
+<pre><code class="language-java">public class MapperProxy&lt;T&gt; implements InvocationHandler, Serializable {
+
+    private static final long serialVersionUID = -4724728412955527868L;
+    private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
+            | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
+    private static final Constructor&lt;Lookup&gt; lookupConstructor;
+    private static final Method privateLookupInMethod;
+    //记录关联的sqlsession对象
+    private final SqlSession sqlSession;
+    //mapper接口对应的class对象；
+    private final Class&lt;T&gt; mapperInterface;
+    //key是mapper接口中的某个方法的method对象，value是对应的MapperMethodInvoker，封装了MapperMethod，MapperMethod对象不记录任何状态信息，所以它可以在多个代理对象之间共享
+    private final Map&lt;Method, MapperMethodInvoker&gt; methodCache;
+
+    public MapperProxy(SqlSession sqlSession, Class&lt;T&gt; mapperInterface, Map&lt;Method, MapperMethodInvoker&gt; methodCache) {
+        this.sqlSession = sqlSession;
+        this.mapperInterface = mapperInterface;
+        this.methodCache = methodCache;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+            if (Object.class.equals(method.getDeclaringClass())) {
+                return method.invoke(this, args);
+            } else {
+                return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
+            }
+        } catch (Throwable t) {
+            throw ExceptionUtil.unwrapThrowable(t);
+        }
+    }
+
+    private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
+        try {
+            return methodCache.computeIfAbsent(method, m -&gt; {
+                if (m.isDefault()) {
+                    try {
+                        if (privateLookupInMethod == null) {
+                            return new DefaultMethodInvoker(getMethodHandleJava8(method));
+                        } else {
+                            return new DefaultMethodInvoker(getMethodHandleJava9(method));
+                        }
+                    } catch (IllegalAccessException | InstantiationException | InvocationTargetException
+                            | NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
+                }
+            });
+        } catch (RuntimeException re) {
+            Throwable cause = re.getCause();
+            throw cause == null ? re : cause;
+        }
+    }
+
+    interface MapperMethodInvoker {
+        Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable;
+    }
+
+    private static class PlainMethodInvoker implements MapperMethodInvoker {
+        private final MapperMethod mapperMethod;
+
+        public PlainMethodInvoker(MapperMethod mapperMethod) {
+            super();
+            this.mapperMethod = mapperMethod;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
+            return mapperMethod.execute(sqlSession, args);
+        }
+    }
+
+    private static class DefaultMethodInvoker implements MapperMethodInvoker {
+        private final MethodHandle methodHandle;
+
+        public DefaultMethodInvoker(MethodHandle methodHandle) {
+            super();
+            this.methodHandle = methodHandle;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
+            return methodHandle.bindTo(proxy).invokeWithArguments(args);
+        }
+    }
+}
+</code></pre>
+
+<ul>
+<li> MapperMethod<br/>
+封装了 Mapper 接口中对应方法的信息，以及对应的 sql 语句的信息； 它是 mapper 接口与映射配置文件中 sql 语句的桥梁； MapperMethod 对象不记录任何 状态信息，所以它可以在多个代理对象之间共享；MapperMethod 内几个关键数据结构： 
+<ul>
+<li> SqlCommand 从 configuration 中获取方法的命名空间.方法名以及 SQL 语句的类型；
+<code>
+//sql节点的id： namespace+方法名<br/>
+private final String name;<br/>
+//是什么类型的sql（UNKNOWN, INSERT, UPDATE, DELETE, SELECT, FLUSH）<br/>
+private final SqlCommandType type;
+</code></li>
+<li> MethodSignature：封装 mapper 接口方法的相关信息（入参，返回类型）和ParamNameResolver信息(解析 mapper 接口方法中的入参，将多个参数转成 Map)</li>
+</ul></li>
+</ul>
+
+<p>看下MapperMethod的关键代码</p>
+
+<pre><code class="language-java">
+public Object execute(SqlSession sqlSession, Object[] args) {
+    Object result;
+    //判断是那种类型的SQL语句
+    switch (command.getType()) {
+        case INSERT: {
+           //解析参数
+            Object param = method.convertArgsToSqlCommandParam(args);
+            result = rowCountResult(sqlSession.insert(command.getName(), param));
+            break;
+        }
+        case UPDATE: {
+            Object param = method.convertArgsToSqlCommandParam(args);
+            result = rowCountResult(sqlSession.update(command.getName(), param));
+            break;
+        }
+        case DELETE: {
+            Object param = method.convertArgsToSqlCommandParam(args);
+            result = rowCountResult(sqlSession.delete(command.getName(), param));
+            break;
+        }
+        case SELECT:
+            if (method.returnsVoid() &amp;&amp; method.hasResultHandler()) {
+                executeWithResultHandler(sqlSession, args);
+                result = null;
+            } else if (method.returnsMany()) {
+                result = executeForMany(sqlSession, args);
+            } else if (method.returnsMap()) {
+                result = executeForMap(sqlSession, args);
+            } else if (method.returnsCursor()) {
+                result = executeForCursor(sqlSession, args);
+            } else {
+                Object param = method.convertArgsToSqlCommandParam(args);
+                result = sqlSession.selectOne(command.getName(), param);
+                if (method.returnsOptional()
+                        &amp;&amp; (result == null || !method.getReturnType().equals(result.getClass()))) {
+                    result = Optional.ofNullable(result);
+                }
+            }
+            break;
+        case FLUSH:
+            result = sqlSession.flushStatements();
+            break;
+        default:
+            throw new BindingException(&quot;Unknown execution method for: &quot; + command.getName());
+    }
+    if (result == null &amp;&amp; method.getReturnType().isPrimitive() &amp;&amp; !method.returnsVoid()) {
+        throw new BindingException(&quot;Mapper method &#39;&quot; + command.getName()
+                + &quot; attempted to return null from a method with a primitive return type (&quot; + method.getReturnType() + &quot;).&quot;);
+    }
+    return result;
+}
+</code></pre>
+
+<h2 id="toc_10">mybatis运行流程之数据访问阶段</h2>
+
+<p>在了解数据访问源码之前，先看下数据访问的时序图，如下图所示：</p>
+
+<p><figure><img src="media/15889543782019/MyBatis%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E9%98%B6%E6%AE%B5.jpg" alt="MyBatis数据访问阶段"/><figcaption>MyBatis数据访问阶段</figcaption></figure></p>
+
+<h3 id="toc_11">ExeCutor组件</h3>
+
+<p>从图中看到访问数据是从SqlSession开始的，SqlSession的功能是给予ExeCutor来实现的，Executor是MyBatis的核心接口之一，定义了数据库操作的基本方法，遵循JDBC规范完成对数据库的访问，Executor类的继承关系如下图所示：<br/>
+<figure><img src="media/15889543039853/Executor.png" alt="Executo"/><figcaption>Executo</figcaption></figure></p>
+
+<ul>
+<li>ExeCutor<br/>
+MyBatis核心接口之一，定义了数据库操作的基本方法</li>
+<li>CachingExecutor<br/>
+使用装饰者模式，对真正提供数据库查询功能的Executor增强了二级缓存的能力，二级缓存在DefaultSqlSessionFactory.openSession()方法中完成初始化</li>
+<li>BaseExector<br/>
+实现了Executor接口大部分方法的抽象类，主要提供了缓存管理和事务管理能力，其它子类需要实现的抽象方法为doUpdate、doQuery等方法</li>
+<li>BatchExeCutor<br/>
+批量执行所有更新语句，在doQuery方法中实现批量执行多条SQL语句的能力，基于JDBC的batch操作实现批处理</li>
+<li>SimpleExecutor<br/>
+默认执行器，在doQuery方法中使用PrepareStatement对象访问数据库，每次执行都会创建一个statement，用完后关闭。</li>
+<li>ReuseExecutor<br/>
+可重用执行器，在doQuery方法中使用PrepareStatement对象访问数据库，将statement存入map中，操作map中的statement儿不会重复创建statement。</li>
+</ul>
+
+<h3 id="toc_12">Executor依赖的三个重要类</h3>
+
+<p>通过对SimpleExecutor.doQuery方法的解读发现，Executor负责调度3个类来完成数据库的访问工作，这3个类如下：</p>
+
+<ul>
+<li>StatementHandler<br/>
+使用数据库的Statement或PrepareStatement执行操作。</li>
+<li>ParameterHandler<br/>
+对预编译的sql语句进行参数设置，sql语句中的占位符 &#39;?&#39; 对对应BoundSql.parameterMappings集合中的一个元素，在该对象中记录了对应的参数名称一级该参数的相关属性</li>
+<li>ResultSetHandler<br/>
+对数据库返回的结果及ResultSet进行封装，返回用户指定的实体类型</li>
+</ul>
+
+<p><figure><img src="media/15889543039853/%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.jpg" alt="数据访问执行流程"/><figcaption>数据访问执行流程</figcaption></figure></p>
+
+<h3 id="toc_13">StatementHandler</h3>
+
+<p>StatementHandler完成MyBatis最核心的工作，功能包括创建statement对象，为sql语句绑定参数，执行增删改查等sql语句、将结果集映射进行转化等。</p>
+
+<p><figure><img src="media/15889543039853/StatementHandler.png" alt="StatementHandle"/><figcaption>StatementHandle</figcaption></figure></p>
+
+<ul>
+<li>BaseStatementHandler<br/>
+所有子类的抽象父类，定义了初始化 statement 的操作顺序，由 子类实现具体的实例化不同的 statement（模板模式）； </li>
+<li>RoutingStatementHandler<br/>
+Executor 组件真正实例化的子类，使用静态代理模式，根据上下文决定创建哪个具体实体类
+<ul>
+<li>RoutingStatementHandler 是在 Configuration 的 newStatementHandler 中创建的</li>
+<li> RoutingStatementHandler 在构造方法中， 根据上下文（配置）决定创建具体实现类</li>
+</ul></li>
+</ul>
+
+<pre><code class="language-java">public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+
+    switch (ms.getStatementType()) {
+        case STATEMENT:
+            delegate = new SimpleStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+            break;
+        case PREPARED:
+            delegate = new PreparedStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+            break;
+        case CALLABLE:
+            delegate = new CallableStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+            break;
+        default:
+            throw new ExecutorException(&quot;Unknown statement type: &quot; + ms.getStatementType());
+    }
+
+}
+</code></pre>
+
+<ul>
+<li> SimpleStatmentHandler ：使用 statement 对象访问数据库，无须参数化； </li>
+<li> PreparedStatmentHandler ：使用预编译 PrepareStatement 对象访问数据库； </li>
+<li> CallableStatmentHandler ：调用存储过程；</li>
+</ul>
+
+<h3 id="toc_14">ResultHandler</h3>
+
+<p>映射规则匹配<br/>
+反射实例化对象<br/>
+根据规则填充属性值</p>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/09</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889540064384.html">
+                
+                  <h1>mybatis反射模块分析</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>反射是 Mybatis 模块中类最多的模块，通过反射实现了 POJO 对象的实例化和 POJO 的属性赋 值，相对 JDK 自带的反射功能，MyBatis 的反射模块功能更为强大，性能更高；反射模块关 键的几个类如下：</p>
+
+<ul>
+<li>ObjectFactory：MyBatis 每次创建结果对象的新实例时，它都会使用对象工厂 （ObjectFactory）去构建 POJO； </li>
+<li>ReflectorFactory：创建 Reflector 的工厂类，Reflector 是 MyBatis 反射模块的基础，每个 Reflector 对象都对应一个类，在其中缓存了反射操作所需要的类元信息；</li>
+<li>ObjectWrapper：对对象的包装，抽象了对象的属性信息，他定义了一系列查询对象属 性信息的方法，以及更新属性的方法； </li>
+<li>ObjectWrapperFactory： ObjectWrapper 的工厂类，用于创建 ObjectWrapper ； </li>
+<li>MetaObject：封装了对象元信息，包装了 MyBatis 中五个核心的反射类。也是提供给外 部使用的反射工具类，可以利用它可以读取或者修改对象的属性信息；</li>
+</ul>
+
+<pre><code class="language-java">public final class SystemMetaObject {
+  // 默认的ObjectFactory
+    public static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
+    // 默认的ObjectWrapperFactory
+    public static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+    public static final MetaObject NULL_META_OBJECT = MetaObject.forObject(NullObject.class, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
+
+    private SystemMetaObject() {
+        // Prevent Instantiation of Static Class
+    }
+
+    private static class NullObject {
+    }
+
+    public static MetaObject forObject(Object object) {
+        return MetaObject.forObject(object, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
+    }
+
+}
+
+@Data
+public class RichType {
+    private RichType richType;
+    private String richField;
+    private String richProperty;
+    private Map richMap = new HashMap();
+}
+
+@Test
+void shouldGetAndSetField() {
+    RichType rich = new RichType();
+    MetaObject meta = SystemMetaObject.forObject(rich);
+    meta.setValue(&quot;richField&quot;, &quot;foo&quot;);
+    assertEquals(&quot;foo&quot;, meta.getValue(&quot;richField&quot;));
+}
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/09</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889539937027.html">
+                
+                  <h1>myBatis缓存模块分析</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>在 Web 应用中，缓存是必不可少的组件。通常我们都会用 Redis 或 memcached 等缓存中间件，拦截大量奔向数据库的请求，以减轻数据库压力。</p>
+
+<h2 id="toc_0">MyBatis缓存实现</h2>
+
+<p>MyBatis 缓存模块需满足如下需求： </p>
+
+<ol>
+<li>MyBatis 缓存的实现是基于 Map 的，从缓存里面读写数据是缓存模块的核心基础功能；</li>
+<li>除核心功能之外，有很多额外的附加功能，如：防止缓存击穿，添加缓存清空策略（fifo、 lru）、序列化功能、日志能力、定时清空能力等；</li>
+<li>附加功能可以以任意的组合附加到核心基础功能之上； </li>
+</ol>
+
+<p>基于 Map 核心缓存能力，将阻塞、清空策略、序列化、日志等等能力以任意组合的方式优 雅的增强是 Mybatis 缓存模块实现最大的难题。MyBatis采用了装饰者模式()巧妙的对缓存功能进行了可自由组合的功能增强。</p>
+
+<p>在 MyBatis 中，缓存接口 Cache，定义了一些基本的缓存操作，所有缓存类都应该实现该接口。</p>
+
+<p>MyBatis 实现缓存模块的过程中，使用了装饰模式，提供了丰富的缓存实现类</p>
+
+<ul>
+<li>PerpetualCache 基础缓存能力</li>
+<li>LruCache 增强LRU策略的缓存</li>
+<li>LoggingCache 增强日志功能的缓存</li>
+<li>ScheduledCache 定时清空的缓存</li>
+<li>BlockingCache<br/>
+阻塞版本的缓存装饰器，保证只有一个线程到数据库 去查找指定的 key 对应的数据(可以作为防止缓存雪崩造成恶劣影响一种方式，可以考虑使用具有细颗粒度锁的方式提升阻塞缓存的性能)</li>
+<li>SynchronizedCache 线程安全的缓存</li>
+</ul>
+
+<h3 id="toc_1">Cache接口</h3>
+
+<pre><code class="language-java">public interface Cache {
+
+    String getId();
+
+    void putObject(Object key, Object value);
+
+    Object getObject(Object key);
+
+    Object removeObject(Object key);
+
+    void clear();
+
+    int getSize();
+
+    default ReadWriteLock getReadWriteLock() {
+        return null;
+    }
+
+}
+</code></pre>
+
+<h3 id="toc_2">具有基本缓存功能的 PerpetualCache</h3>
+
+<pre><code class="language-java">public class PerpetualCache implements Cache {
+
+    private final String id;
+    
+    private final Map&lt;Object, Object&gt; cache = new HashMap&lt;&gt;();
+        public PerpetualCache(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public int getSize() {
+        return cache.size();
+    }
+
+    @Override
+    public void putObject(Object key, Object value) {
+        cache.put(key, value);
+    }
+
+    @Override
+    public Object getObject(Object key) {
+        return cache.get(key);
+    }
+
+    @Override
+    public Object removeObject(Object key) {
+        return cache.remove(key);
+    }
+
+    @Override
+    public void clear() {
+        cache.clear();
+    }
+}
+</code></pre>
+
+<p>这里看到缓存的实现使用了线程不安全的HashMap，那么使用mybatis缓存的时候会不会出现并发安全的问题呢？</p>
+
+<p>我们已知mybatis的缓存分为一级缓存和二级缓存。</p>
+
+<ul>
+<li><p>一级缓存是会话独享的，存在于SqlSession的生命周期中，不会出现多个线程同时操作缓存数据的场景，因此一级缓存也不存在并发安全的问题，系统默认是开启状态，要想关闭一级缓存可以在select标签上配置flushCache=&quot;true&quot;进行关闭。如果同一个SqlSession中执行的方法和参数完全一致，那么通过算法会生成相同的缓存key值，当map缓存对象中已经存在该键值key是，则会返回缓存中的对象; INSERT、UPDATE、DELETE操作会清空一级缓存</p></li>
+<li><p>二级缓存也叫做应用缓存，存在于SqlSessionFactory生命周期中，是多个SqlSession共享的缓存；缓存是一namespace为单位划分的，不同的namespace下的操作相互独立；在MyBatis的核心配置文件中cacheEnabled参数是二级缓存的全局开关，默认值是true，如果把这个参数设置为false，即使在mapper.xml文件中配置了二级缓存也不会生效。在使用二级缓存的时候，由于是跨SqlSession的缓存，它可能存在并发安全的问题，因此MyBatis默认会给它加上SynchronizedCache装饰器进行增强,对共享数据的HashMap的操作会进行同步，因此二级缓存也不存在并发安全问题。</p></li>
+</ul>
+
+<p>在mapper.xml文件中增加如下配置，在此mapper的namespace配置二级缓存：</p>
+
+<pre><code class="language-text">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;60000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot;&gt;
+
+此句语义如下：
+1、映射语句文件中的所有 select 语句将会被缓存。 
+2、映射语句文件中的所有 insert,update 和 delete 语句会刷新缓存。
+3、缓存会使用 LeastRecently Used(LRU,最近最少使用的)算法来收回。 
+4、根据时间表(比如 no Flush Interval,没有刷新间隔), 缓存不会以任何时间顺序 来刷新。 
+5、缓存会存储列表集合或对象(无论查询方法返回什么)的 1024 个引用。 
+6、缓存会被视为是 read/write(可读/可写)的缓存；
+
+</code></pre>
+
+<p><strong><em>二级缓存需注意问题</em></strong>： 使用二级缓存容易出现脏读，建议避免使用二级缓存，在业务层使用可控制的缓存代替更好；</p>
+
+<h2 id="toc_3">缓存使用过程</h2>
+
+<ol>
+<li>每次与数据库连接会有限从缓存中获取数据</li>
+<li>先查询二级缓存，二级缓存查不到再查一级缓存</li>
+<li>二级缓存一namespace为单位划分，是SqlSession共享的,容易出现脏读，建议避免使用</li>
+<li>一级缓存是SqlSession独享的，建议开启</li>
+</ol>
+
+<h2 id="toc_4">缓存的唯一标识 CacheKey</h2>
+
+<p>􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬􏽱􏸔􏽲􏽳􏲽􏽴􏽵􏱡􏲰􏱙􏳬<br/>
+mybatis 中涉及到动态sql的原因，缓存项的key不能仅仅通过一个String来表示，所以通过CacheKey来封装缓存的key值，CacheKey可以封装多个影响缓存项的因素，构成CacheKey对象的要素包括：</p>
+
+<ul>
+<li>mappedStatement的id</li>
+<li>指定查询结果集的范围（分页信息）</li>
+<li>查询所使用的的sql语句</li>
+<li>用户传递给sql语句的实际参数值</li>
+</ul>
+
+<pre><code class="language-java">public class CacheKey implements Cloneable, Serializable { 
+
+    private static final int DEFAULT_MULTIPLYER = 37;
+    private static final int DEFAULT_HASHCODE = 17;
+    // 􏳮􏳆􏱙􏸭􏸮􏳐乘子，默认是37
+    private final int multiplier;
+    // 综合各种影响因子
+    private int hashcode;
+    // 校验和
+    private long checksum;
+    //影响因子个数
+    private int count;
+    // 影响因子集合
+    private List&lt;Object&gt; updateList;
+    
+    public CacheKey() {
+        this.hashcode = DEFAULT_HASHCODE; this.multiplier = DEFAULT_MULTIPLYER; this.count = 0;
+        this.updateList = new ArrayList&lt;Object&gt;();
+    } 
+
+}
+</code></pre>
+
+<h2 id="toc_5">一级缓存源码分析</h2>
+
+<p>一级缓存是数据库的最后一道屏障，如果一级缓存未命中，查询请求将落到数据库上。一级缓存是在BaseExecutor被初始化的，我们看下代码</p>
+
+<pre><code class="language-java">
+public abstract class BaseExecutor implements Executor {
+    //一级缓存的实现，PerpetualCache
+    protected PerpetualCache localCache;
+
+    protected BaseExecutor(Configuration configuration, Transaction transaction) {
+        this.transaction = transaction;
+        this.deferredLoads = new ConcurrentLinkedQueue&lt;&gt;();
+        this.localCache = new PerpetualCache(&quot;LocalCache&quot;);
+        this.localOutputParameterCache = new PerpetualCache(&quot;LocalOutputParameterCache&quot;);
+        this.closed = false;
+        this.configuration = configuration;
+        this.wrapper = this;
+    }
+    
+    // 省略其它代码
+}
+
+</code></pre>
+
+<p>􏴓􏸵􏴕􏴖􏴀􏴆􏶉􏴜 一级缓存的类型是PerpetualCache􏳅􏶳􏶴􏽠􏵌􏸾􏴕􏴖􏴆􏴗􏴘􏶶，没有被其它缓存类修饰过。一级缓存锁存储从查询结果会在MyBatis执行更新操作(insert/update/delete)，以及提交和回滚事务时被清空。</p>
+
+<pre><code class="language-java">@Override
+    public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)
+            throws SQLException {
+    //获取sql语句信息，包括占位符，参数等信息
+    BoundSql boundSql = ms.getBoundSql(parameter);
+    // 获取缓存的key键
+    CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+
+    return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
+}
+
+@SuppressWarnings(&quot;unchecked&quot;)
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler,
+                         CacheKey key, BoundSql boundSql) throws SQLException {
+    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing a query&quot;).object(ms.getId());
+    if (closed) {
+        throw new ExecutorException(&quot;Executor was closed.&quot;);
+    }
+    //非嵌套查询，并且FlushCache配置为true，则需要清空一级缓存
+    if (queryStack == 0 &amp;&amp; ms.isFlushCacheRequired()) {
+        clearLocalCache();
+    }
+    List&lt;E&gt; list;
+    try {
+       //查询层次加 1
+        queryStack++;
+        // 查询一级缓存
+        list = resultHandler == null ? (List&lt;E&gt;) localCache.getObject(key) : null;
+        if (list != null) {
+           // 针对调用存储过程的结果处理
+            handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
+        } else {
+          // 缓存未命中，从数据库中查询
+            list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
+        }
+    } finally {
+        queryStack--;
+    }
+    if (queryStack == 0) {
+       //延迟加载处理
+        for (DeferredLoad deferredLoad : deferredLoads) {
+            deferredLoad.load();
+        }
+        deferredLoads.clear();
+        if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
+            clearLocalCache();
+        }
+    }
+    return list;
+}
+/* mybatis的增删改最终调用这个方法 */
+@Override
+public int update(MappedStatement ms, Object parameter) throws SQLException {
+    ErrorContext.instance().resource(ms.getResource()).activity(&quot;executing an update&quot;).object(ms.getId());
+    if (closed) {
+        throw new ExecutorException(&quot;Executor was closed.&quot;);
+    }
+    //清除一级缓存
+    clearLocalCache();
+    return doUpdate(ms, parameter);
+}
+</code></pre>
+
+<h3 id="toc_6">二级缓存源码分析</h3>
+
+<p>收到查询请求时，mybatis会先查询二级缓存，若二级缓存未命中，再去查询一级缓存。二级缓存和具体的命名空间进行绑定，一级缓存则是和SqlSession绑定。</p>
+
+<pre><code class="language-java">/** CachingExecutor */
+// 委托执行器，BatchExecutor、ReuseExecutor、SimpleExecutor
+private final Executor delegate;
+TransactionalCacheManager tcm = new TransactionalCacheManager();
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    //获取sql语句信息，包括占位符，参数等信息
+    BoundSql boundSql = ms.getBoundSql(parameterObject);
+    //拼装缓存的key值
+    CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
+    return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+}
+
+@Override
+public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
+        throws SQLException {
+    //从MappedStatement中获取二级缓存,如果mapper配置文件中没有开启二级缓存，Cache则为空
+    Cache cache = ms.getCache();
+    if (cache != null) {
+        flushCacheIfRequired(ms);
+        
+        if (ms.isUseCache() &amp;&amp; resultHandler == null) {
+            ensureNoOutParams(ms, boundSql);
+            //从二级缓存中获取数据
+            List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);
+            if (list == null) {
+                //二级缓存为空，才会调用BaseExecutor.query
+                list = delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                tcm.putObject(cache, key, list); 
+            }
+            return list;
+        }
+    }
+    return delegate.&lt;E&gt;query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+}
+
+</code></pre>
+
+<p>二级缓存是从MappedStatement中获取的，由于MappedStatement存在于全局配置中，可以被多个CachingExecutor获取到，这样就会出现线程安全问题，除此之外，若不加以控制，多个事务共用一个缓存实例，会导致脏读问题。</p>
+
+<p>线程安全问题可以通过SynchronizedCache装饰类解决，该装饰类会在Cache实例构造期间被添加上。至于脏读问题，需要接祖其它类来处理，也就是上面代码中的 tcm 变量对应的类型。<br/>
+TransactionalCacheManager持有了cache，transactionalCache的关系，transactionalCache是一个缓存装饰器，为缓存提供事务能力。</p>
+
+<pre><code class="language-java">public class TransactionalCacheManager {
+
+    private final Map&lt;Cache, TransactionalCache&gt; transactionalCaches = new HashMap&lt;&gt;();
+
+    public void clear(Cache cache) {
+        getTransactionalCache(cache).clear();
+    }
+
+    public Object getObject(Cache cache, CacheKey key) {
+        return getTransactionalCache(cache).getObject(key);
+    }
+
+    public void putObject(Cache cache, CacheKey key, Object value) {
+        getTransactionalCache(cache).putObject(key, value);
+    }
+
+    public void commit() {
+        for (TransactionalCache txCache : transactionalCaches.values()) {
+            txCache.commit();
+        }
+    }
+
+    public void rollback() {
+        for (TransactionalCache txCache : transactionalCaches.values()) {
+            txCache.rollback();
+        }
+    }
+
+    private TransactionalCache getTransactionalCache(Cache cache) {
+        return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
+    }
+    
+  /*
+   上面getTransactionalCache(Cache cache) 相当于下面的方法，如果cache的value为null，则新建一个TransactionalCache并放如map集合中
+  private TransactionalCache getTransactionalCache(Cache cache) {
+        return transactionalCaches.computeIfAbsent(cache, new Function&lt;Cache, TransactionalCache&gt;() {
+            @Override
+            public TransactionalCache apply(Cache delegate) {
+                return new TransactionalCache(delegate);
+            }
+        });
+    }*/
+    
+}
+
+</code></pre>
+
+<p>TransactionalCache 事务缓存装饰器。</p>
+
+<pre><code class="language-java">public class TransactionalCache implements Cache {
+
+    private static final Log log = LogFactory.getLog(TransactionalCache.class);
+
+    private final Cache delegate;
+
+    private boolean clearOnCommit;
+    // 在事务提交之前所有从数据库读取到的结果都将存在此集合中
+    private final Map&lt;Object, Object&gt; entriesToAddOnCommit;
+    // 在事务提交之前，所有缓存未命中的CacheKey都将存放于此集合中。
+    private final Set&lt;Object&gt; entriesMissedInCache;
+
+    public TransactionalCache(Cache delegate) {
+        this.delegate = delegate;
+        this.clearOnCommit = false;
+        this.entriesToAddOnCommit = new HashMap&lt;&gt;();
+        this.entriesMissedInCache = new HashSet&lt;&gt;();
+    }
+
+    @Override
+    public String getId() {
+        return delegate.getId();
+    }
+
+    @Override
+    public int getSize() {
+        return delegate.getSize();
+    }
+
+    @Override
+    public Object getObject(Object key) {
+        // 查询delegate缓存，缓存中未命中key，放入entriesMissedInCache集合
+        Object object = delegate.getObject(key);
+        if (object == null) {
+            entriesMissedInCache.add(key);
+        }
+        // issue #146
+        if (clearOnCommit) {
+            return null;
+        } else {
+            return object;
+        }
+    }
+
+    @Override
+    public void putObject(Object key, Object object) {
+        entriesToAddOnCommit.put(key, object);
+    }
+
+    @Override
+    public Object removeObject(Object key) {
+        return null;
+    }
+
+    /**
+     * 清除缓存
+     */
+    @Override
+    public void clear() {
+        clearOnCommit = true;
+        entriesToAddOnCommit.clear();
+    }
+
+    public void commit() {
+        if (clearOnCommit) {
+            delegate.clear();
+        }
+        flushPendingEntries();
+        reset();
+    }
+
+    public void rollback() {
+        unlockMissedEntries();
+        reset();
+    }
+    /**
+     * 重置entriesToAddOnCommit和entriesMissedInCache
+     **/
+    private void reset() {
+        clearOnCommit = false;
+        entriesToAddOnCommit.clear();
+        entriesMissedInCache.clear();
+    }
+
+    private void flushPendingEntries() {
+        for (Map.Entry&lt;Object, Object&gt; entry : entriesToAddOnCommit.entrySet()) {
+            delegate.putObject(entry.getKey(), entry.getValue());
+        }
+        for (Object entry : entriesMissedInCache) {
+            if (!entriesToAddOnCommit.containsKey(entry)) {
+                delegate.putObject(entry, null);
+            }
+        }
+    }
+
+    private void unlockMissedEntries() {
+        // 将二级缓存未命中的key从二级缓存中移除
+        for (Object entry : entriesMissedInCache) {
+            try {
+                delegate.removeObject(entry);
+            } catch (Exception e) {
+                //log
+            }
+        }
+    }
+
+}
+
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/09</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889539650351.html">
+                
+                  <h1>mybatis数据源模块分析</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<h2 id="toc_0">Mybatis是如何配置数据源的</h2>
+
+<pre><code class="language-markup">&lt;!--配置environment环境, 默认使用配置dev --&gt;
+&lt;environments default=&quot;dev&quot;&gt;
+    &lt;!-- 环境配置1，每个SqlSessionFactory对应一个环境 --&gt;
+    &lt;environment id=&quot;development&quot;&gt;
+        &lt;!-- 事务配置 type= JDBC、MANAGED
+            1.JDBC:这个配置直接简单使用了JDBC的提交和回滚设置。它依赖于从数据源得到的连接来管理事务范围。
+            2.MANAGED:这个配置几乎没做什么。它从来不提交或回滚一个连接。而它会让容器来管理事务的整个生命周期（比如Spring或JEE应用服务器的上下文）。
+            默认情况下它会关闭连接。然而一些容器并不希望这样，因此如果你需要从连接中停止它，将closeConnection属性设置为false --&gt;
+        &lt;transactionManager type=&quot;JDBC&quot;/&gt;
+        &lt;!-- &lt;transactionManager type=&quot;MANAGED&quot;&gt; &lt;property name=&quot;closeConnection&quot;
+            value=&quot;false&quot;/&gt; &lt;/transactionManager&gt; --&gt;
+        &lt;!-- 数据源类型：type = UNPOOLED、POOLED、JNDI
+            1.UNPOOLED：这个数据源的实现是每次被请求时简单打开和关闭连接。它有一点慢，这是对简单应用程序的一个很好的选择，因为它不需要及时的可用连接。
+            不同的数据库对这个的表现也是不一样的，所以对某些数据库来说配置数据源并不重要，这个配置也是闲置的
+            2.POOLED：这是JDBC连接对象的数据源连接池的实现，用来避免创建新的连接实例时必要的初始连接和认证时间。
+            这是一种当前Web应用程序用来快速响应请求很流行的方法。
+            3.JNDI：这个数据源的实现是为了使用如Spring或应用服务器这类的容器，容器可以集中或在外部配置数据源，然后放置一个JNDI上下文的引用 --&gt;
+        &lt;dataSource type=&quot;UNPOOLED&quot;&gt;
+            &lt;property name=&quot;driver&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+            &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/mybatis&quot;/&gt;
+            &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+            &lt;property name=&quot;password&quot; value=&quot;12345678&quot;/&gt;
+            &lt;!-- 默认连接事务隔离级别 &lt;property name=&quot;defaultTransactionIsolationLevel&quot; value=&quot;&quot; /&gt; --&gt;
+        &lt;/dataSource&gt;
+    &lt;/environment&gt;
+&lt;/environments&gt;
+</code></pre>
+
+<h2 id="toc_1">Mybatis关于数据源的结构分析</h2>
+
+<p><figure><img src="media/15889539650351/15890169905279.jpg" alt=""/></figure></p>
+
+<p>DataSource: 数据源接口，JDBC标准规范之一，定义获取Connection的方法。<br/>
+UnPooledDataSource: 不带连接池的数据源，该种数据源每 248次会返回一个新的数据库连接，而非复用旧的连接。</p>
+
+<pre><code class="language-java">public class UnpooledDataSource implements DataSource {
+    /**
+     * 获取真实的数据库连接
+     *
+     * @param properties  properties是在mybatis配置初始化阶段解析Environment标签的时候 填充的
+     */
+    private Connection doGetConnection(Properties properties) throws SQLException {
+        // 注册数据库驱动
+        initializeDriver();
+        // 获取数据库连接
+        Connection connection = DriverManager.getConnection(url, properties);
+        //设置事务是否自动提交，事务的隔离级别
+        configureConnection(connection);
+        return connection;
+    }
+}
+</code></pre>
+
+<p>PooledDataSource： 带连接池的数据源，提高连接资源的复用性，避免频繁地创建、关闭连接资源带来的开销。</p>
+
+<p>DataSourceFactory: 工厂接口，定义了创建DataSource的方法。</p>
+
+<p>UnpooledDataSourceFactory：工厂接口的实现，用于创建UnPooledDataSource</p>
+
+<pre><code class="language-java">public class UnpooledDataSourceFactory implements DataSourceFactory {
+
+    private static final String DRIVER_PROPERTY_PREFIX = &quot;driver.&quot;;
+    private static final int DRIVER_PROPERTY_PREFIX_LENGTH = DRIVER_PROPERTY_PREFIX.length();
+
+    protected DataSource dataSource;
+
+    public UnpooledDataSourceFactory() {
+        // 创建UnpooledDataSource数据源对象
+        this.dataSource = new UnpooledDataSource();
+    }
+   /*设置数据源的配置信息*/
+    @Override
+    public void setProperties(Properties properties) {
+        Properties driverProperties = new Properties();
+        // 为 dataSource 创建元信息对象
+        MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+        // 遍历 properties 键列表，properties 由配置文件解析器传入
+        for (Object key : properties.keySet()) {
+            String propertyName = (String) key;
+            
+            if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
+                String value = properties.getProperty(propertyName);
+                driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
+            } else if (metaDataSource.hasSetter(propertyName)) {
+                String value = (String) properties.get(propertyName);
+                Object convertedValue = convertValue(metaDataSource, propertyName, value);
+                metaDataSource.setValue(propertyName, convertedValue);
+            } else {
+                throw new DataSourceException(&quot;Unknown DataSource property: &quot; + propertyName);
+            }
+        }
+
+        if (driverProperties.size() &gt; 0) {
+            // 设置 driverProperties 到 UnpooledDataSource 的 driverProperties
+            metaDataSource.setValue(&quot;driverProperties&quot;, driverProperties);
+        }
+    }
+
+    @Override
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    private Object convertValue(MetaObject metaDataSource, String propertyName, String value) {
+        Object convertedValue = value;
+        Class&lt;?&gt; targetType = metaDataSource.getSetterType(propertyName);
+        if (targetType == Integer.class || targetType == int.class) {
+            convertedValue = Integer.valueOf(value);
+        } else if (targetType == Long.class || targetType == long.class) {
+            convertedValue = Long.valueOf(value);
+        } else if (targetType == Boolean.class || targetType == boolean.class) {
+            convertedValue = Boolean.valueOf(value);
+        }
+        return convertedValue;
+    }
+
+}
+
+</code></pre>
+
+<p>PooledDataSourceFactory：工厂接口的实现，用于创建PooledDataSource。</p>
+
+<pre><code class="language-java">public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+
+    public PooledDataSourceFactory() {
+        this.dataSource = new PooledDataSource();
+    }
+
+}
+</code></pre>
+
+<h2 id="toc_2">mybatis数据库连接池的技术解析</h2>
+
+<p>数据库连接池结束时提升数据库访问效率常用的手段，使用连接池可以提高连接资源的复用性，避免频繁创建、销毁连接资源带来的各种开销，我们看下Mybatis是怎么实现数据库连接池的</p>
+
+<ul>
+<li>PooledDataSource<br/>
+一个简单的、线程安全的数据库连接池</li>
+<li>PooledConnection<br/>
+继承InvocationHandler，使用动态代理封装了真是的数据库连接对象，在连接使用之前和关闭的时候进行增强</li>
+<li>PoolState<br/>
+用于管理PooledConnection对象状态的组件，通过两个List分别管理空闲状态的连接资源和活动状态的连接资源。</li>
+<li>UnpooledDataSource<br/>
+用于获取真是的数据库连接。</li>
+</ul>
+
+<p>看下数据库连接的增强代理类</p>
+
+<pre><code class="language-java">class PooledConnection implements InvocationHandler {
+
+    private static final String CLOSE = &quot;close&quot;;
+    private static final Class&lt;?&gt;[] IFACES = new Class&lt;?&gt;[]{Connection.class};
+
+    private final int hashCode;
+    //记录当前连接所在的数据源对象，本次连接是有这个数据源创建的，关闭后也是回到这个数据源；
+    private final PooledDataSource dataSource;
+    //真正的连接对象
+    private final Connection realConnection;
+    //连接的代理对象
+    private final Connection proxyConnection;
+    //从数据源取出来连接的时间戳
+    private long checkoutTimestamp;
+    //连接创建的的时间戳
+    private long createdTimestamp;
+    //连接最后一次使用的时间戳
+    private long lastUsedTimestamp;
+    //根据数据库url、用户名、密码生成一个hash值，唯一标识一个连接池
+    private int connectionTypeCode;
+    //连接是否有效
+    private boolean valid;
+    
+    .....
+    
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        String methodName = method.getName();
+        // 关闭数据库连接
+        if (CLOSE.equals(methodName)) {
+          //  这里是重点
+            dataSource.pushConnection(this);
+            return null;
+        }
+        try {
+            if (!Object.class.equals(method.getDeclaringClass())) {
+                // 
+                checkConnection();
+            }
+            return method.invoke(realConnection, args);
+        } catch (Throwable t) {
+            throw ExceptionUtil.unwrapThrowable(t);
+        }
+
+    }
+    .....
+}
+</code></pre>
+
+<p>再看下数据库连接池的实现</p>
+
+<pre><code class="language-java">public class PooledDataSource implements DataSource {
+    // 用于管理PooledConnection对象状态的组件，
+    // 通过两个list分别管理空闲状态的连接资源和活跃状态的连接资源
+    private final PoolState state = new PoolState(this);
+
+
+    //真正用于创建连接的数据源
+    private final UnpooledDataSource dataSource;
+
+    // OPTIONAL CONFIGURATION FIELDS
+    //最大活跃连接数
+    protected int poolMaximumActiveConnections = 10;
+    //最大闲置连接数
+    protected int poolMaximumIdleConnections = 5;
+    //最大checkout时长（最长使用时间）
+    protected int poolMaximumCheckoutTime = 20000;
+    //无法取得连接是最大的等待时间
+    protected int poolTimeToWait = 20000;
+    //最多允许几次无效连接
+    protected int poolMaximumLocalBadConnectionTolerance = 3;
+    //测试连接是否有效的sql语句
+    protected String poolPingQuery = &quot;NO PING QUERY SET&quot;;
+    //是否允许测试连接
+    protected boolean poolPingEnabled;
+
+    //配置一段时间，当连接在这段时间内没有被使用，才允许测试连接是否有效
+    protected int poolPingConnectionsNotUsedFor;
+    //根据数据库url、用户名、密码生成一个hash值，唯一标识一个连接池，由这个连接池生成的连接都会带上这个值
+    private int expectedConnectionTypeCode;
+    
+    public PooledDataSource(String driver, String url, String username, String password) {
+       //可以获取到真是的数据库连接
+        dataSource = new UnpooledDataSource(driver, url, username, password);
+        // 生成本连接池的唯一标识
+        expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+    }
+    // ....   getter setter方法、部分构造器省略
+    
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+        return popConnection(username, password).getProxyConnection();
+    }
+   /* 回收连接，并把连接重新压入空闲的连接队列中 */
+   protected void pushConnection(PooledConnection conn) throws SQLException {
+     // 由于PoolState并不是线程安全的，此处需要对state进行同步操作
+        synchronized (state) {
+            state.activeConnections.remove(conn);//从活跃连接池中删除此连接
+            if (conn.isValid()) {//先判断连接是否有效
+                //判断闲置连接池资源是否已经达到上限，并判断是由本连接池创建
+                if (state.idleConnections.size() &lt; poolMaximumIdleConnections &amp;&amp; conn.getConnectionTypeCode() == expectedConnectionTypeCode) {
+                    //没有达到上限，进行回收
+                    state.accumulatedCheckoutTime += conn.getCheckoutTime();//增加累计使用时间
+                    if (!conn.getRealConnection().getAutoCommit()) {
+                        conn.getRealConnection().rollback();//如果还有事务没有提交，进行回滚操作
+                    }
+                    //基于该连接，创建一个新的连接资源，并刷新连接状态
+                    PooledConnection newConn = new PooledConnection(conn.getRealConnection(), this);
+                    state.idleConnections.add(newConn);
+                    newConn.setCreatedTimestamp(conn.getCreatedTimestamp());
+                    newConn.setLastUsedTimestamp(conn.getLastUsedTimestamp());
+                    //老连接失效
+                    conn.invalidate();
+                    if (log.isDebugEnabled()) {
+                        log.debug(&quot;Returned connection &quot; + newConn.getRealHashCode() + &quot; to pool.&quot;);
+                    }
+                    //唤醒其他被阻塞的线程
+                    state.notifyAll();
+                } else {//如果闲置连接池已经达到上限了，将连接真实关闭
+                    state.accumulatedCheckoutTime += conn.getCheckoutTime();
+                    if (!conn.getRealConnection().getAutoCommit()) {
+                        conn.getRealConnection().rollback();
+                    }
+                    //关闭真的数据库连接
+                    conn.getRealConnection().close();
+                    if (log.isDebugEnabled()) {
+                        log.debug(&quot;Closed connection &quot; + conn.getRealHashCode() + &quot;.&quot;);
+                    }
+                    //将连接对象设置为无效
+                    conn.invalidate();
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(&quot;A bad connection (&quot; + conn.getRealHashCode() + &quot;) attempted to return to the pool, discarding connection.&quot;);
+                }
+                state.badConnectionCount++;
+            }
+        }
+    } 
+    
+    /*从连接池获取资源*/
+    private PooledConnection popConnection(String username, String password) throws SQLException {
+        boolean countedWait = false;
+        PooledConnection conn = null;
+        //记录尝试获取连接的起始时间戳
+        long t = System.currentTimeMillis();
+        //初始化获取到无效连接的次数
+        int localBadConnectionCount = 0;
+
+        while (conn == null) {
+            //获取连接必须是同步的
+            synchronized (state) {
+                //检测是否有空闲连接
+                if (!state.idleConnections.isEmpty()) {
+                    // Pool has available connection
+                    // 有空闲连接直接使用
+                    conn = state.idleConnections.remove(0);
+                    if (log.isDebugEnabled()) {
+                        log.debug(&quot;Checked out connection &quot; + conn.getRealHashCode() + &quot; from pool.&quot;);
+                    }
+                } else {
+                    // 没有空闲连接,判断活跃连接池中的数量是否大于最大连接数
+                    if (state.activeConnections.size() &lt; poolMaximumActiveConnections) {
+                        // 没有则可创建新的连接
+                        conn = new PooledConnection(dataSource.getConnection(), this);
+                        if (log.isDebugEnabled()) {
+                            log.debug(&quot;Created connection &quot; + conn.getRealHashCode() + &quot;.&quot;);
+                        }
+                    } else {
+                        // 如果已经等于最大连接数，则不能创建新连接, 获取最早创建的连接
+                        PooledConnection oldestActiveConnection = state.activeConnections.get(0);
+                        long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
+                        //检测是否已经以及超过最长使用时间
+                        if (longestCheckoutTime &gt; poolMaximumCheckoutTime) {
+                            // 如果超时，对超时连接的信息进行统计
+                            state.claimedOverdueConnectionCount++;//超时连接次数+1
+                            state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;//累计超时时间增加
+                            state.accumulatedCheckoutTime += longestCheckoutTime;//累计的使用连接的时间增加
+                            state.activeConnections.remove(oldestActiveConnection);//从活跃队列中删除
+                            if (!oldestActiveConnection.getRealConnection().getAutoCommit()) {//如果超时连接未提交，则手动回滚
+                                try {
+                                    oldestActiveConnection.getRealConnection().rollback();
+                                } catch (SQLException e) {//发生异常仅仅记录日志
+                                    log.debug(&quot;Bad connection. Could not roll back&quot;);
+                                }
+                            }
+                            //在连接池中创建新的连接，注意对于数据库来说，并没有创建新连接；
+                            conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
+                            conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
+                            conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
+                            //让老连接失效
+                            oldestActiveConnection.invalidate();
+                            if (log.isDebugEnabled()) {
+                                log.debug(&quot;Claimed overdue connection &quot; + conn.getRealHashCode() + &quot;.&quot;);
+                            }
+                        } else {
+                            // 无空闲连接，最早创建的连接没有失效，无法创建新连接，只能阻塞
+                            try {
+                                if (!countedWait) {
+                                    state.hadToWaitCount++;//连接池累计等待次数加1
+                                    countedWait = true;
+                                }
+                                if (log.isDebugEnabled()) {
+                                    log.debug(&quot;Waiting as long as &quot; + poolTimeToWait + &quot; milliseconds for connection.&quot;);
+                                }
+                                long wt = System.currentTimeMillis();
+                                state.wait(poolTimeToWait);//阻塞等待指定时间
+                                state.accumulatedWaitTime += System.currentTimeMillis() - wt;//累计等待时间增加
+                            } catch (InterruptedException e) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (conn != null) {
+                    // 检测连接是否有效，isValid 方法除了会检测 valid 是否为 true，
+                    // 还会通过 PooledConnection 的 pingConnection 方法执行 SQL 语句，检测连接是否可用.
+                    if (conn.isValid()) {
+                        // 回滚之前的事务
+                        if (!conn.getRealConnection().getAutoCommit()) {
+                            conn.getRealConnection().rollback();
+                        }
+                        //连接池相关统计信息更新
+                        conn.setConnectionTypeCode(assembleConnectionTypeCode(dataSource.getUrl(), username, password));
+                        conn.setCheckoutTimestamp(System.currentTimeMillis());
+                        conn.setLastUsedTimestamp(System.currentTimeMillis());
+                        state.activeConnections.add(conn);
+                        state.requestCount++;
+                        state.accumulatedRequestTime += System.currentTimeMillis() - t;
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug(&quot;A bad connection (&quot; + conn.getRealHashCode() + &quot;) was returned from the pool, getting another connection.&quot;);
+                        }
+                        state.badConnectionCount++;//累计的获取无效连接次数+1
+                        localBadConnectionCount++;//当前获取无效连接次数+1
+                        conn = null;
+                        //拿到无效连接，但如果没有超过重试的次数，允许再次尝试获取连接，否则抛出异常
+                        if (localBadConnectionCount &gt; (poolMaximumIdleConnections + poolMaximumLocalBadConnectionTolerance)) {
+                            if (log.isDebugEnabled()) {
+                                log.debug(&quot;PooledDataSource: Could not get a good connection to the database.&quot;);
+                            }
+                            throw new SQLException(&quot;PooledDataSource: Could not get a good connection to the database.&quot;);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (conn == null) {
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.&quot;);
+            }
+            throw new SQLException(&quot;PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.&quot;);
+        }
+
+        return conn;
+    }
+}
+</code></pre>
+
+<p>再看下管理PooledConnection对象状态的组件PooleState</p>
+
+<pre><code class="language-java">public class PoolState {
+
+    protected PooledDataSource dataSource;
+
+    //空闲的连接池资源集合,非线程安全的列表
+    protected final List&lt;PooledConnection&gt; idleConnections = new ArrayList&lt;&gt;();
+    //活跃的连接池资源集合，非线程安全的列表
+    protected final List&lt;PooledConnection&gt; activeConnections = new ArrayList&lt;&gt;();
+    //请求的次数
+    protected long requestCount = 0;
+    //累计的获得连接的时间
+    protected long accumulatedRequestTime = 0;
+    //累计的使用连接的时间。从连接取出到归还，算一次使用的时间；
+    protected long accumulatedCheckoutTime = 0;
+    //使用连接超时的次数
+    protected long claimedOverdueConnectionCount = 0;
+    //累计超时时间
+    protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
+    //累计等待时间
+    protected long accumulatedWaitTime = 0;
+    //等待次数
+    protected long hadToWaitCount = 0;
+    //无效的连接次数
+    protected long badConnectionCount = 0;
+
+    public PoolState(PooledDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public synchronized long getRequestCount() {
+        return requestCount;
+    }
+
+    public synchronized long getAverageRequestTime() {
+        return requestCount == 0 ? 0 : accumulatedRequestTime / requestCount;
+    }
+
+    public synchronized long getAverageWaitTime() {
+        return hadToWaitCount == 0 ? 0 : accumulatedWaitTime / hadToWaitCount;
+
+    }
+
+    public synchronized long getHadToWaitCount() {
+        return hadToWaitCount;
+    }
+
+    public synchronized long getBadConnectionCount() {
+        return badConnectionCount;
+    }
+
+    public synchronized long getClaimedOverdueConnectionCount() {
+        return claimedOverdueConnectionCount;
+    }
+
+    public synchronized long getAverageOverdueCheckoutTime() {
+        return claimedOverdueConnectionCount == 0 ? 0 : accumulatedCheckoutTimeOfOverdueConnections / claimedOverdueConnectionCount;
+    }
+
+    public synchronized long getAverageCheckoutTime() {
+        return requestCount == 0 ? 0 : accumulatedCheckoutTime / requestCount;
+    }
+
+    public synchronized int getIdleConnectionCount() {
+        return idleConnections.size();
+    }
+
+    public synchronized int getActiveConnectionCount() {
+        return activeConnections.size();
+    }
+
+}
+</code></pre>
+
+<p>重新梳理一下获取数据库连接的流程</p>
+
+<p><figure><img src="media/15889539650351/15890449209327.jpg" alt="" style="width:815px;"/></figure></p>
+
+<p>释放连接流程</p>
+
+<p><figure><img src="media/15889539650351/15890456168806.jpg" alt="" style="width:552px;"/></figure></p>
+
+<h2 id="toc_3">使用第三方数据源产品</h2>
+
+<p>mybatis配置数据源的代码段</p>
+
+<pre><code class="language-java">
+private DataSourceFactory dataSourceElement(XNode context) throws Exception {
+    if (context != null) {
+        String type = context.getStringAttribute(&quot;type&quot;);
+        Properties props = context.getChildrenAsProperties();
+        // 获取数据源工厂类
+        DataSourceFactory factory = (DataSourceFactory) resolveClass(type).newInstance();
+        factory.setProperties(props);
+        return factory;
+    }
+    throw new BuilderException(&quot;Environment declaration requires a DataSourceFactory.&quot;);
+}
+</code></pre>
+
+<p>实现UnpooledDataSourceFactory类</p>
+
+<pre><code class="language-java">public class DruidDataSourceFactory extends UnpooledDataSourceFactory {
+    public DruidDataSourceFactory() {
+        dataSource = new DruidDataSource();
+    }
+}
+</code></pre>
+
+<p>mybatis-config.xml配置修改如下：</p>
+
+<pre><code class="language-markup">&lt;environments default=&quot;default&quot;&gt;
+    &lt;environment id=&quot;default&quot;&gt;
+        &lt;transactionManager type=&quot;JDBC&quot;&gt;&lt;/transactionManager&gt;
+        &lt;dataSource type=&quot;com.goddess.sbd.DruidDataSourceFactory&quot;&gt;
+            &lt;!-- 基本属性 url、user、password --&gt;
+            &lt;property name=&quot;driverClassName&quot; value=&quot;${jdbc_driver}&quot;/&gt;
+            &lt;property name=&quot;url&quot; value=&quot;${jdbc_url}&quot;/&gt;
+            &lt;property name=&quot;username&quot; value=&quot;${jdbc_username}&quot;/&gt;
+            &lt;property name=&quot;password&quot; value=&quot;${jdbc_password}&quot;/&gt;
+
+            &lt;!-- 配置初始化大小、最小、最大 --&gt;
+            &lt;property name=&quot;initialSize&quot; value=&quot;1&quot;/&gt;
+            &lt;property name=&quot;minIdle&quot; value=&quot;1&quot;/&gt;
+            &lt;property name=&quot;maxActive&quot; value=&quot;20&quot;/&gt;
+
+            &lt;!-- 配置获取连接等待超时的时间 --&gt;
+            &lt;property name=&quot;maxWait&quot; value=&quot;60000&quot;/&gt;
+
+            &lt;!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --&gt;
+            &lt;property name=&quot;timeBetweenEvictionRunsMillis&quot; value=&quot;60000&quot;/&gt;
+
+            &lt;!-- 配置一个连接在池中最小生存的时间，单位是毫秒 --&gt;
+            &lt;property name=&quot;minEvictableIdleTimeMillis&quot; value=&quot;300000&quot;/&gt;
+
+            &lt;property name=&quot;validationQuery&quot; value=&quot;SELECT &#39;x&#39;&quot;/&gt;
+            &lt;property name=&quot;testWhileIdle&quot; value=&quot;true&quot;/&gt;
+            &lt;property name=&quot;testOnBorrow&quot; value=&quot;false&quot;/&gt;
+            &lt;property name=&quot;testOnReturn&quot; value=&quot;false&quot;/&gt;
+
+            &lt;!-- 打开PSCache，并且指定每个连接上PSCache的大小 --&gt;
+            &lt;property name=&quot;poolPreparedStatements&quot; value=&quot;true&quot;/&gt;
+            &lt;property name=&quot;maxPoolPreparedStatementPerConnectionSize&quot;
+                      value=&quot;20&quot;/&gt;
+            &lt;!-- 配置监控统计拦截的filters --&gt;
+            &lt;property name=&quot;filters&quot; value=&quot;stat&quot;/&gt;
+        &lt;/dataSource&gt;
+    &lt;/environment&gt;
+&lt;/environments&gt;
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/09</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="15889338912208.html">
+                
+                  <h1>mybatis日志模块 logging</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>mybatis本身并没有提供日志的实现类，她需要计入第三方的日志组件，由于是第三方的日志实现，实现上也会有所不同，但是mybatis统一提供的日志的基本操作行为, 如下所示</p>
+
+<pre><code class="language-java">void error(String s, Throwable e);
+void error(String s);
+void debug(String s);
+void trace(String s);
+void warn(String s);
+</code></pre>
+
+<p>针对主流的日志框架，mybatis提供了一种优先加载机制：slf4J → commonsLoging → Log4J2 → Log4J → JdkLog。</p>
+
+<h2 id="toc_0">mybatis的日志功能的实现</h2>
+
+<h3 id="toc_1">使用到的设计模式</h3>
+
+<p>不同的日志框架的实现各不相同，mybatis如何适配这些不同的日志框架呢，这里使用到一种适配器模式<a href="15896081275436.html">适配器模式</a></p>
+
+<p>实现了Log接口的各个适配器，内部适配各自的日志框架实现。<br/>
+<figure><img src="media/15889338912208/15889495671258.jpg" alt="" style="width:450px;"/></figure><br/>
+适配器模式是如何实现MyBatis日志功能的呢？</p>
+
+<ul>
+<li>Target：目标角色,期待得到的接口。org.apache.ibatis.logging.Log 接口，对内提供了统一 的日志接口；</li>
+<li>Adaptee：适配者角色,被适配的接口。其他日志组件组件如 slf4J 、commonsLoging 、 Log4J2 等被包含在适配器中。</li>
+<li>Adapter：适配器角色,将源接口转换成目标接口。针对每个日志组件都提供了适配器， 每 个适配器都对特定的日志组件进行封装和转换；如 Slf4jLoggerImpl 、 JakartaCommonsLoggingImpl 等；</li>
+</ul>
+
+<p>客户端在使用日志时，面向 Log 接口进行编程，不需要关心底层日志模块具体是如实实现的，符合依赖倒转原则。如果需要加入其他第三方日志框架，只需要扩展新的模块满足新需求，而不需要修改原有代码，这又符合了开闭原则；</p>
+
+<h3 id="toc_2">日志组件的优先加载</h3>
+
+<p>org.apache.ibatis.logging.LogFactory日志工厂的静态代码块确保第三方日志插件的加载优先级</p>
+
+<pre><code class="language-java">//mybatis所使用的第三方日志组件适配器的构造方法
+private static Constructor&lt;? extends Log&gt; logConstructor;
+//自动扫描日志实现，第三方日志插件加载优先级如下：slf4J → commonsLoging → Log4J2 → Log4J → JdkLog → noLogging
+static {
+    tryImplementation(LogFactory::useSlf4jLogging);
+    tryImplementation(LogFactory::useCommonsLogging);
+    tryImplementation(LogFactory::useLog4J2Logging);
+    tryImplementation(LogFactory::useLog4JLogging);
+    tryImplementation(LogFactory::useJdkLogging);
+    tryImplementation(LogFactory::useNoLogging);
+}
+
+private static void tryImplementation(Runnable runnable) {
+    //当构造方法不为空才执行方法
+    if (logConstructor == null) {
+      try {
+        runnable.run();
+      } catch (Throwable t) {
+        // ignore
+      }
+    }
+}
+
+private static void setImplementation(Class&lt;? extends Log&gt; implClass) {
+    try {
+      Constructor&lt;? extends Log&gt; candidate = implClass.getConstructor(String.class);
+      Log log = candidate.newInstance(LogFactory.class.getName());
+      if (log.isDebugEnabled()) {
+        log.debug(&quot;Logging initialized using &#39;&quot; + implClass + &quot;&#39; adapter.&quot;);
+      }
+      logConstructor = candidate;
+    } catch (Throwable t) {
+      throw new LogException(&quot;Error setting Log implementation.  Cause: &quot; + t, t);
+    }
+}
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_3">mybatis如何为sql的执行增强日志功能</h2>
+
+<p>mysql执行过程中，我们有时想要知道执行的sql语句、参数类型、参数值以及查询结果等，因此在mybatis的日志模块中提供了下面的日志增强类：</p>
+
+<ul>
+<li><strong>BaseJdbcLogger</strong> 所有日志增强类的抽象基类,用于记录JDBC哪些方法需要增强，保存运行期sql参数信息。</li>
+<li><strong>ConnectionLogger</strong> 负责打印链接信息和sql语句。 􏲍􏲽􏲾通过动态代理，对Connection进行增强，调用 prepareStatement、prepareCall、createStatement 方法， 􏲿􏳀打印要执行的sql语句，返回PrepareStatement的代理对象PreparedStatementLogger。</li>
+<li><strong>PreparedStatementLogger</strong>  对prepareStatement对象增强
+<ul>
+<li>增强PreparedStatement的setxxx方法将参数设置到columnMap、columnNames、columnValues容器中，为打印参数做准备</li>
+<li>增强PreparedStatement的execute相关方法，当方法执行时，通过动态代理打印参数，返回动态代理能力的resultSet。</li>
+<li>如果是查询，增强PreparedStatement的getResultSet方法，返回动态代理能力的resultSet；如果是更新，直接打印受影响的行数</li>
+</ul></li>
+<li><strong>ResultSetLogger</strong> 􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴负责打印数据结果信息。</li>
+<li><strong>StatementLogger</strong>  Statement日志增强代理类</li>
+</ul>
+
+<p>􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴以上介绍的日志增强类是在什么时候，哪个地方被mybatis所调用的呢？看下面的代码：</p>
+
+<pre><code class="language-java">/*org.apache.ibatis.executor.SimpleExecutor#prepareStatement*/
+private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+    Statement stmt;
+    //获取connection对象的动态代理，添加日志能力；
+    Connection connection = getConnection(statementLog);
+    //通过不同的StatementHandler，利用connection创建prepareStatement
+    stmt = handler.prepare(connection, transaction.getTimeout());
+    //使用parameterHandler处理占位符
+    handler.parameterize(stmt);
+    return stmt;
+}
+
+/*org.apache.ibatis.executor.BaseExecutor#getConnection*/
+protected Connection getConnection(Log statementLog) throws SQLException {
+    Connection connection = transaction.getConnection();
+    // 是否开启了debug模式的日志功能
+    if (statementLog.isDebugEnabled()) {
+        return ConnectionLogger.newInstance(connection, statementLog, queryStack);
+    } else {
+        return connection;
+    }
+}
+</code></pre>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2020/05/08</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='mybatis.html'>mybatis</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
+
+
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   <a href="mybatis.html">&laquo; Prev Page</a>  
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			 <a href="mybatis_2.html">&raquo; Next Page</a> 
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

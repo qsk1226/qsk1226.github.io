@@ -1,0 +1,635 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  软件设计上的基本知识 - 大爷来玩儿啊~
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site:www.throne4j.com ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">博客</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">归档</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; 大爷来玩儿啊~</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">博客</a></li>
+        
+        <li><a target="_self" href="archives.html">归档</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html">JVM深入理解</a></li>
+        
+            <li><a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">解决方案</a></li>
+        
+            <li><a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html">数据结构</a></li>
+        
+            <li><a href="mybatis.html">mybatis</a></li>
+        
+            <li><a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html">构建工具</a></li>
+        
+            <li><a href="spring%E6%BA%90%E7%A0%81.html">spring源码</a></li>
+        
+            <li><a href="redis.html">redis</a></li>
+        
+            <li><a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html">java并发编程</a></li>
+        
+            <li><a href="other.html">other</a></li>
+        
+            <li><a href="java.html">java</a></li>
+        
+            <li><a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html">服务器</a></li>
+        
+            <li><a href="%E5%AE%B9%E5%99%A8.html">容器</a></li>
+        
+            <li><a href="mysql.html">mysql</a></li>
+        
+            <li><a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html">设计模式</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>软件设计上的基本知识</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/07/10</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html'>解决方案</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <h2 id="toc_0">API与SPI分离</h2>
+
+<p>框架或组件通常有两类客户，一个是使用者，一个是扩展者，API(Application Programming Interface)是给使用者用的，而SPI(Service Provide Interface)是给扩展者用的，在设计时，尽量把它们隔离开，而不要混在一起，也就是说，使用者是看不到扩展者写的实现的，比如：一个Web框架，它有一个API接口叫Action，里面有个execute()方法，是给使用者用来写业务逻辑的，然后，Web框架有一个SPI接口给扩展者控制输出方式，比如用velocity模板输出还是用json输出等，如果这个Web框架使用一个都继承Action的VelocityAction和一个JsonAction做为扩展方式，要用velocity模板输出的就继承VelocityAction，要用json输出的就继承JsonAction，这就是API和SPI没有分离的反面例子，SPI接口混在了API接口中，合理的方式是，有一个单独的Renderer接口，有VelocityRenderer和JsonRenderer实现，Web框架将Action的输出转交给Renderer接口做渲染输出。</p>
+
+<pre><code class="language-text">![](media/15943756601312/15943757095695.jpg)
+
+![](media/15943756601312/15943757185485.jpg)
+</code></pre>
+
+<h2 id="toc_1">服务域/实体域/会话域分离</h2>
+
+<p>任何框架或组件，总会有核心领域模型，比如：<br/>
+Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
+这个核心领域模型及其组成部分称为实体域，它代表着我们要操作的目标本身，实体域通常是线程安全的，不管是通过不变类，同步状态，或复制的方式，服务域也就是行为域，它是组件的功能集，同时也负责实体域和会话域的生命周期管理，比如Spring的ApplicationContext，Dubbo的ServiceManager等，服务域的对象通常会比较重，而且是线程安全的，并以单一实例服务于所有调用，什么是会话？就是一次交互过程，会话中重要的概念是上下文，什么是上下文？</p>
+
+<p>比如我们说：“老地方见”，这里的“老地方”就是上下文信息，为什么说“老地方”对方会知道，因为我们前面定义了“老地方”的具体内容，所以说，上下文通常持有交互过程中的状态变量等，会话对象通常较轻，每次请求都重新创建实例，请求结束后销毁。</p>
+
+<p>简而言之：<br/>
+把元信息交由实体域持有，把一次请求中的临时状态由会话域持有，由服务域贯穿整个过程。</p>
+
+<p><figure><img src="media/15943756601312/15943757281530.jpg" alt=""/></figure>       <figure><img src="media/15943756601312/15943757329746.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">在重要的过程上设置拦截接口</h2>
+
+<p>如果你要写个远程调用框架，那远程调用的过程应该有一个统一的拦截接口，如果你要写一个ORM框架，那至少SQL的执行过程，Mapping过程要有拦截接口，如果你要写一个Web框架，那请求的执行过程应该要有拦截接口，等等，没有哪个公用的框架可以Cover住所有需求，允许外置行为，是框架的基本扩展方式，这样，如果有人想在远程调用前，验证下令牌，验证下黑白名单，统计下日志，如果有人想在SQL执行前加下分页包装，做下数据权限控制，统计下SQL执行时间，如果有人想在请求执行前检查下角色，包装下输入输出流，统计下请求量，等等，就可以自行完成，而不用侵入框架内部，拦截接口，通常是把过程本身用一个对象封装起来，传给拦截器链，</p>
+
+<p>比如：远程调用主过程为invoke()，那拦截器接口通常invoke(Invocation)，Invocation对象封装了本来要执行过程的上下文，并且Invocation里有一个invoke()方法，由拦截器决定什么时候执行，同时，Invocation也代表拦截器行为本身，这样上一拦截器的Invocation其实是包装的下一拦截器的过程，直到最后一个拦截器的Invocation是包装的最终的invoke()过程，同理，SQL主过程为execute()，那拦截器接口通常为execute(Execution)，原理一样，当然，实现方式可以任意，上面只是举例。</p>
+
+<p><figure><img src="media/15943756601312/15943757516458.jpg" alt=""/></figure></p>
+
+<h2 id="toc_3">重要的状态的变更发送事件并留出监听接口</h2>
+
+<p>这里先要讲一个事件和上面拦截器的区别，拦截器是干预过程的，它是过程的一部分，是基于过程行为的，而事件是基于状态数据的，任何行为改变的相同状态，对事件应该是一致的，事件通常是事后通知，是一个Callback接口，方法名通常是过去式的，比如onChanged()，比如远程调用框架，当网络断开或连上应该发出一个事件，当出现错误也可以考虑发出一个事件，这样外围应用就有可能观察到框架内部的变化，做相应适应。</p>
+
+<p><figure><img src="media/15943756601312/15943757591172.jpg" alt=""/></figure></p>
+
+<h2 id="toc_4">扩展接口职责尽可能单一，具有可组合性</h2>
+
+<p>比如，远程调用框架它的协议是可以替换的，如果只提供一个总的扩展接口，当然可以做到切换协议，但协议支持是可以细分为底层通讯，序列化，动态代理方式等等，如果将接口拆细，正交分解，会更便于扩展者复用已有逻辑，而只是替换某部分实现策略，当然这个分解的粒度需要把握好。</p>
+
+<h2 id="toc_5">微核插件式，平等对待第三方</h2>
+
+<p>大凡发展的比较好的框架，都遵守微核的理念，Eclipse的微核是OSGi， Spring的微核是BeanFactory，Maven的微核是Plexus，通常核心是不应该带有功能性的，而是一个生命周期和集成容器，这样各功能可以通过相同的方式交互及扩展，并且任何功能都可以被替换，如果做不到微核，至少要平等对待第三方，即原作者能实现的功能，扩展者应该可以通过扩展的方式全部做到，原作者要把自己也当作扩展者，这样才能保证框架的可持续性及由内向外的稳定性。</p>
+
+<h2 id="toc_6">不要控制外部对象的生命周期</h2>
+
+<p>比如上面说的Action使用接口和Renderer扩展接口，框架如果让使用者或扩展者把Action或Renderer实现类的类名或类元信息报上来，然后在内部通过反射newInstance()创建一个实例，这样框架就控制了Action或Renderer实现类的生命周期，Action或Renderer的生老病死，框架都自己做了，外部扩展或集成都无能为力，好的办法是让使用者或扩展者把Action或Renderer实现类的实例报上来，框架只是使用这些实例，这些对象是怎么创建的，怎么销毁的，都和框架无关，框架最多提供工具类辅助管理，而不是绝对控制。</p>
+
+<h2 id="toc_7">可配置一定可编程，并保持友好的CoC约定</h2>
+
+<p>因为使用环境的不确定因素很多，框架总会有一些配置，一般都会到classpath直扫某个指定名称的配置，或者启动时允许指定配置路径，做为一个通用框架，应该做到凡是能配置文件做的一定要能通过编程方式进行，否则当使用者需要将你的框架与另一个框架集成时就会带来很多不必要的麻烦，另外，尽可能做一个标准约定，如果用户按某种约定做事时，就不需要该配置项。</p>
+
+<p>比如：配置模板位置，你可以约定，如果放在templates目录下就不用配了，如果你想换个目录，就配置下。</p>
+
+<h2 id="toc_8">区分命令与查询，明确前置条件与后置条件</h2>
+
+<p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
+
+<p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="15943917797824.html" 
+          title="Previous Post: 九、Redis 持久化--AOF（二）">&laquo; 九、Redis 持久化--AOF（二）</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="15942163464303.html" 
+          title="Next Post: 八、Redis 持久化--RDB（一）">八、Redis 持久化--RDB（一） &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/15865826719099/avatar.png" /></div>
+            
+                <h1>大爷来玩儿啊~</h1>
+                <div class="site-des">只要干不死就往死里干</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html"><strong>JVM深入理解</strong></a>
+        
+            <a href="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html"><strong>解决方案</strong></a>
+        
+            <a href="%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.html"><strong>数据结构</strong></a>
+        
+            <a href="mybatis.html"><strong>mybatis</strong></a>
+        
+            <a href="%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html"><strong>构建工具</strong></a>
+        
+            <a href="spring%E6%BA%90%E7%A0%81.html"><strong>spring源码</strong></a>
+        
+            <a href="redis.html"><strong>redis</strong></a>
+        
+            <a href="java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html"><strong>java并发编程</strong></a>
+        
+            <a href="other.html"><strong>other</strong></a>
+        
+            <a href="java.html"><strong>java</strong></a>
+        
+            <a href="%E6%9C%8D%E5%8A%A1%E5%99%A8.html"><strong>服务器</strong></a>
+        
+            <a href="%E5%AE%B9%E5%99%A8.html"><strong>容器</strong></a>
+        
+            <a href="mysql.html"><strong>mysql</strong></a>
+        
+            <a href="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.html"><strong>设计模式</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="15949034079714.html">虚拟机栈</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15948275035029.html">十一、哨兵与集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15945438416733.html">十、主从复制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943917797824.html">九、Redis 持久化--AOF（二）</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="15943756601312.html">软件设计上的基本知识</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>
