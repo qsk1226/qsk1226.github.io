@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-19T23:24:49+08:00</updated>
+  <updated>2020-07-19T23:24:53+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -215,6 +215,8 @@ EXEC
 </code></pre>
 
 <p>如果所有的从服务器都已更新完毕，则切换状态更新为SENTINEL_FAILOVER_STATE_UPDATE_CONFIG。该步骤会将哨兵中监听的Master（旧Master）重置为被选中的从服务器（新Master），并且将旧Master也配置为新Master的从服务器。然后将切换状态更新为SENTINEL_FAILOVER_STATE_NONE。至此，主从切换已完成。</p>
+
+<h2 id="toc_3">哨兵相关命令</h2>
 
 <ul>
 <li>SENTINEL MASTERS：返回该哨兵监控的所有Master的相关信息。</li>
