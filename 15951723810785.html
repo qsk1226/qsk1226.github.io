@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    集群 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            集群   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/07/19</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='redis.html'>redis</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>redis集群是在redis 3.0版本推出的一个功能，Redis 集群 提供的分布式数据库方案, 集群通过分片( sharding)来进行数据共享,并提供复制和故障转移功能。其有效的解决了redis在分布式方面的需求。</p>
+
+<p>当遇到单机内存，并发和流量瓶颈等问题时，可采用Cluster方案达到负载均衡的目的。</p>
+
+<p>从另一方面讲，redis中sentinel有效的解决了故障转移的问题，也解决了主节点下线客户端无法识别新的可用节点的问题，但是如果是从节点下线了，sentinel是不会对其进行故障转移的，并且连接从节点的客户端也无法获取到新的可用从节点，而这些问题在Cluster中都得到了有效的解决。</p>
+
+<p>Redis 集群包括如下几个方面 节点、槽指派、命令执行、重新分片、转向、故障转移、消息等。</p>
+
+<p>开启Redis的集群模式需要修改redis.conf文件：</p>
+
+<pre><code class="language-text">cluster-enabled yes
+</code></pre>
+
+<p>如下是一个典型的集群部署方式：<br/>
+<figure><img src="media/15951723810785/15952500358343.jpg" alt=""/></figure></p>
+
+<p>集群用来提供横向扩展能力，即当数据量增多之后，通过增加服务节点就可以扩展服务能力。背后理论思想是将数据通过某种算法分布到不同的服务节点，这样当节点越多，单台节点所需提供服务的数据就越少。</p>
+
+<p>集群首先需要解决如下问题：</p>
+
+<ul>
+<li>分槽（slot）：即如何决定某条数据应该由哪个节点提供服务；</li>
+<li>端如何向集群发起请求（客户端并不知道某个数据应该由哪个节点提供服务，并且如果扩容或者节点发生故障后，不应该影响客户端的访问）？</li>
+<li>某个节点发生故障之后，该节点服务的数据该如何处理？</li>
+<li>扩容，即向集群中添加新节点该如何操作？</li>
+<li>同一条命令需要处理的key分布在不同的节点中（如Redis中集合取并集、交集的相关命令），如何操作？</li>
+</ul>
+
+<h2 id="toc_0">redis 节点</h2>
+
+<p>一个 Redis集群通常有多个节点 （node）组成，一个正常工作的Redis集群通常由多个节点构成。连接各个节点的工作可以使用 cluster meet 命令来完成。</p>
+
+<pre><code class="language-shell">cluster meet &lt;ip&gt; &lt;port&gt;
+</code></pre>
+
+<p>向一个节点 node发送 cluster meet命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
+
+<p>通过命令查看集群当前包含的节点信息</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; cluster nodes
+a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 connected
+</code></pre>
+
+<p>通过 cluster meet 命令将 指定节点添加到集群后，cluster nodes 命令将返回多个节点信息。</p>
+
+<h2 id="toc_1">slot 槽</h2>
+
+<p>redis集群中数据是和槽（slot）挂钩的，Redis将键空间分为了16384个slot，所有的数据根据一致哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上的。</p>
+
+<p>Redis 通过如下算法计算出每个key所属的slot</p>
+
+<pre><code class="language-text">HASH_SLOT = CRC16(key) mod 16384
+</code></pre>
+
+<p>客户端可以请求任意一个节点，每个节点中都会保存所有16384个slot对应到哪一个节点的信息。如果一个key所属的slot正好由被请求的节点提供服务，则直接处理并返回结果，否则返回MOVED重定向信息。</p>
+
+<p>实际应用中，Redis客户端可以通过向集群请求slot 和节点的映射关系并缓存，然后通过本地计算要操作的key所属的slot，查询映射关系，直接向正确的节点发起请求，这样可以获得几乎等价于单节点部署的性能。</p>
+
+<p>集群中的数据分片之后由不同的节点提供服务，即每个主节点的数据都不相同，此种情况下，为了确保没有单点故障，主服务必须挂载至少一个从服务。</p>
+
+<p>客户端请求时可以向任意一个主节点或者从节点发起，当向从节点发起请求时，从节点会返回MOVED信息重定向到相应的主节点。</p>
+
+<p><strong>注意：</strong>Redis集群中，客户端只能在主节点执行读写操作。如果需要在从节点中进行读操作，需要满足如下条件：</p>
+
+<ul>
+<li>首先在客户端中执行readonly命令</li>
+<li>如果一个key所属的slot由主节点A提供服务，则请求该key时可以向A所属的从节点发起读请求。该请求不会被重定向。</li>
+</ul>
+
+<p>当一个主节点发生故障后，其挂载的从节点会切换为主节点继续提供服务。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

@@ -118,7 +118,7 @@
                   <article class="markdown-body single-content">
                     <p>哨兵是Redis的高可用方案，可以在Redis Master发生故障时自动选择一个Redis Slave切换为Master，继续对外提供服务。</p>
 
-<p>集群提供数据自动分片到不同节点的功能，并且当部分节点失效后仍然可以使用。</p>
+<p>redis中 sentinel 有效的解决了故障转移的问题，也解决了主节点下线客户端无法识别新的可用节点的问题，但是如果是从节点下线了，sentinel是不会对其进行故障转移的，并且连接从节点的客户端也无法获取到新的可用从节点，而这些问题在Cluster中都得到了有效的解决。</p>
 
 <h2 id="toc_0">Redis 哨兵</h2>
 
@@ -178,7 +178,16 @@ sentinel parallel-syncs resque 5
 <p>哨兵可以直接使用 redis-server 命令启动，如下：</p>
 
 <pre><code class="language-shell">redis-server /path/sentinel.conf --sentinel
+或者
+redis-sentinel /path/sentinel.conf
 </code></pre>
+
+<p>sentinel 启动时的执行步骤如下：<br/>
+1)初始化服务器。<br/>
+2)将普通 Redis服务器使用的代码替换成 Sentinel专用代码。<br/>
+3)初始化 Sentinel状态。<br/>
+4)根据给定的配置文件,初始化 Sentinel的监视主服务器列表。<br/>
+5)创建连向主服务器的网络连接。</p>
 
 <p>单个哨兵连接示意图：</p>
 
@@ -240,7 +249,34 @@ sentinel parallel-syncs resque 5
 
 <p>如果判断一个Redis Master处于客观下线状态，这时就需要开始执行主从切换了。</p>
 
-<h2 id="toc_2">主从切换</h2>
+<h2 id="toc_2">选举哨兵领头节点</h2>
+
+<p>Sentinel系统选举领头 Sentinel的方法是对Raf算法的领头选举方法的实现。<br/>
+当一个主服务器被判断为客观下线时,监视这个下线主服务器的各个 Sentinel会进行协商，选举出一个领头 Sentinel,并由领头 Sentinel对下线主服务器执行故障转移操作。</p>
+
+<p>Redis选举领头 Sentinel的规则和方法：</p>
+
+<ul>
+<li>所有在线的 Sentinel都有被选为领头 Sentinel的资格,换句话说,监视同一个主服务器的多个在线 Sentinel中的任意一个都有可能成为领头 Sentinel 口每次进行领头 Sentinel选举之后,不论选举是否成功,所有 Sentinel的配置纪元( configuration epoch)的值都会自增一次。配置纪元实际上就是一个计数器,并没有什么特别的。</li>
+<li>在一个配置纪元里面,所有 Sentinel都有一次将某个 Sentinel设置为局部领头Sentinel的机会,并且局部领头一旦设置,在这个配置纪元里面就不能再更改。</li>
+<li>每个发现主服务器进人客观下线的 Sentinel都会要求其他 Sentinel将自己设置为局部领头 Sentinel。</li>
+<li>当一个 Sentinel(源 Sentinel)向另一个 Sentinel(目标 Sentinel)发送 SENTINEL is- master-down-by-adr命令,并且命令中的 runid参数不是*符号而是源Sentinel的运行ID时,这表示源 Sentinel要求目标 Sentinel将前者设置为后者的局部领头 Sentinel</li>
+<li>Sentinel设置局部领头 Sentinel的规则是先到先得:最先向目标 Sentinel发送设置要求的源 Sentinel将成为目标 Sentinel的局部领头 Sentinel,而之后接收到的所有设置要求都会被目标 Sentinel拒绝。</li>
+<li>目标 Sentinel在接收到 SENTINEL is- master-down-by-addr命令之后,将向源 Sentinel返回一条命令回复,回复中的1 eader_ runid参数和 leader epoch 参数分别记录了目标 Sentinel的局部领头 Sentinel的运行ID和配置纪元。</li>
+<li>源 Sentinel在接收到目标 Sentinel返回的命令回复之后,会检查回复中1 eader epoch参数的值和自己的配置纪元是否相同,如果相同的话,那么源 Sentinel g继续取出回复中的1 eader runid参数,如果1 eader runid参数的值和源 Sentinel 的运行D一致,那么表示目标 Sentinel将源 Sentinel设置成了局部领头 Sentinel</li>
+<li>如果有某个 Sentinel被半数以上的 Sentinel设置成了局部领头 Sentinel,那么这个Sentinel成为领头 Sentinel。举个例子,在一个由10个 Sentinel组成的 Sentinel系统里面,只要有大于等于10/2+1=6个 Sentinel将某个 Sentinel设置为局部领头Sentinel,那么被设置的那个 Sentinel就会成为领头 Sentinel </li>
+<li>因为领头 Sentinel的产生需要半数以上 Sentinel I的支持,并且每个 Sentinel在每个配置纪元里面只能设置一次局部领头 Sentinel,所以在一个配置纪元里面,只会出现个领头 Sentinel 在一段时间之后再次进行选举,直到选出领头 Sentinel为此。</li>
+<li>那如果在给定时限内,没有一个 Sentinel被选举为领头 Sentinel，那么各个 Sentinel将在一段时间之后再次进行选举，直到选出领头sentinel为止。</li>
+</ul>
+
+<h2 id="toc_3">故障转移</h2>
+
+<p>在选举产生出领头 Sentinel之后,领头 Sentinel将对已下线的主服务器执行故障转移操作,该操作包含以下三个步骤: <br/>
+1)在已下线主服务器属下的所有从服务器里面,挑选出一个从服务器,并将其转换为主服务器。<br/>
+2)让已下线主服务器属下的所有从服务器改为复制新的主服务器。<br/>
+3)将已下线主服务器设置为新的主服务器的从服务器,当这个旧的主服务器重新上线时,它就会成为新的主服务器的从服务器。</p>
+
+<h2 id="toc_4">主从切换</h2>
 
 <p>当Redis哨兵方案中的Master处于客观下线状态，为了保证Redis 的高可用性，此时需要执行主从切换。即将其中一个Slave提升为Master，其他Slave从该提升的Slave继续同步数据，主从切换有一个状态迁移图，其所有状态定义如下：</p>
 
@@ -269,16 +305,16 @@ sentinel parallel-syncs resque 5
 <pre><code class="language-text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者*
 </code></pre>
 
-<p>最后一项参数为sentinel_runid，即该哨兵的ID，第5项current_epoch在开始执行切换后会加1。当从哨兵中选出一个主哨兵之后，接下来的切换都由该主哨兵执行。</p>
+<p>最后一项参数为sentinel_runid，即该哨兵的ID，第5项current_epoch在开始执行切换后会加1。 当从哨兵中选出一个主哨兵之后，接下来的切换都由该主哨兵执行。</p>
 
 <p>主哨兵首先会将当前切换状态更改为SENTINEL_FAILOVER_STATE_SELECT_SLAVE，即开始选择一台从服务器作为新的主服务器。那么，假设有多台从服务器，该选择哪台呢？</p>
 
-<p>Redis中选择规则如下:</p>
+<p>Redis中选择主服务器的规则如下:</p>
 
 <ul>
 <li>如果该Slave处于主观下线状态，则不能被选中。</li>
 <li>如果该Slave 5s之内没有有效回复ping命令或者与主服务器断开时间过长，则不能被选中</li>
-<li>如果slave-priority为0，则不能被选中（slave-priority可以在配置文件中指定。正整数，值越小优先级越高，当指定为0时，不能被选为主服务器）。</li>
+<li>如果slave-prio-rity为0，则不能被选中（slave-priority可以在配置文件中指定。正整数，值越小优先级越高，当指定为0时，不能被选为主服务器）。</li>
 <li>在剩余Slave中比较优先级，优先级高的被选中；如果优先级相同，则有较大复制偏移量的被选中；否则按字母序选择排名靠前的Slave。</li>
 </ul>
 
@@ -298,7 +334,7 @@ EXEC
 
 <p>执行完该步骤之后，会将切换状态更新为SENTINEL_FAILOVER_STATE_WAIT_PRO-MOTION, 上一步我们向被选中的从服务器发送了slaveof no one命令，执行完之后Redis中并没有处理返回值，而是在下一次info命令的返回中检查该从服务器的role字段，如果返回role:master，说明该从服务器已变更自己的角色为主服务器。于是切换状态变更为SENTINEL_FAILOVER_STATE_RECONF_SLAVES。</p>
 
-<p>在该步骤设置SENTINEL_FAILOVER_STATE_RECONF_SLAVES后，哨兵会依次向其他从服务器发送切换主服务器的命令：</p>
+<p>在该步骤设置SENTINEL_FAILOVER_STATE_RECONF_SLAVES后，哨兵会依次向其他从服务器发送切换主服务器的slaveof命令 ：</p>
 
 <pre><code class="language-text">//开启一个事务
 MULTI
@@ -314,7 +350,7 @@ EXEC
 
 <p>如果所有的从服务器都已更新完毕，则切换状态更新为SENTINEL_FAILOVER_STATE_UPDATE_CONFIG。该步骤会将哨兵中监听的Master（旧Master）重置为被选中的从服务器（新Master），并且将旧Master也配置为新Master的从服务器。然后将切换状态更新为SENTINEL_FAILOVER_STATE_NONE。至此，主从切换已完成。</p>
 
-<h2 id="toc_3">哨兵相关命令</h2>
+<h2 id="toc_5">哨兵相关命令</h2>
 
 <ul>
 <li>SENTINEL MASTERS：返回该哨兵监控的所有Master的相关信息。</li>
@@ -331,7 +367,21 @@ EXEC
 <li>SENTINEL CKQUORUM<name>：根据可用哨兵数量，计算哨兵可用数量是否满足配置数量（认定客观下线的数量）；是否满足切换数量（即哨兵数量的一半以上）。</li>
 <li>SENTINEL SET<mastername>[<option><value>...]：设置指定名称的Master的各类参数（例如超时时间等）。</li>
 <li>SENTINEL SIMULATE-FAILURE<flag><flag>...<flag>：模拟崩溃。flag可以为crash-after-election或者crash-after-promotion，分别代表切换时选举完成主哨兵之后崩溃以及将被选中的从服务器推举为Master之后崩溃。</li>
-<li></li>
+</ul>
+
+<h2 id="toc_6">总结</h2>
+
+<ul>
+<li>Sentinel只是一个运行在特殊模式下的 Redis服务器,它使用了和普通模式不同的命第三部分多机据库的实现令表,所以 Sentinel模式能够使用的命令和普通 Redis服务器能够使用的命令不同。</li>
+<li>Sentinel会读入用户指定的配置文件,为每个要被监视的主服务器创建相应的实例结构,并创建连向主服务器的命令连接和订阅连接,其中命令连接用于向主服务器发送命令请求,而订阅连接则用于接收指定频道的消息。</li>
+<li>Sentinel通过向主服务器发送INFO命令来获得主服务器属下所有从服务器的地址信息,并为这些从服务器创建相应的实例结构,以及连向这些从服务器的命令连接和订阅连接。</li>
+<li>在一般情况下, Sentinel以每十秒一次的频率向被监视的主服务器和从服务器发送INFO命令,当主服务器处于下线状态,或者 Sentinel正在对主服务器进行故障转移操作时, Sentinel I向从服务器发送INFO命令的频率会改为每秒一次。</li>
+<li>对于监视同一个主服务器和从服务器的多个 Sentinel来说,它们会以每两秒一次的频率,通过向被监视服务器的 sentinel:he11o频道发送消息来向其他Sentinel宣告自己的存在。</li>
+<li>每个 Sentinel也会从 sentinel1:he1o频道中接收其他 Sentinel发来的信息, 并根据这些信息为其他 Sentinel 1创建相应的实例结构,以及命令连接。</li>
+<li>Sentinel只会与主服务器和从服务器创建命令连接和订阅连接, Sentinel与 Sentinel 之间则只创建命令连接。</li>
+<li>Sentinel以每秒一次的频率向实例(包括主服务器、从服务器、其他 Sentinel)发送PING命令,并根据实例对PNG命令的回复来判断实例是否在线,当一个实例在指定的时长中连续向 Sentinel发送无效回复时, Sentinel会将这个实例判断为主观下线。</li>
+<li>当 Sentinel将一个主服务器判断为主观下线时,它会向同样监视这个主服务器的其他Sentinel进行询问,看它们是否同意这个主服务器已经进入主观下线状态。</li>
+<li>当 Sentinel l收集到足够多的主观下线投票之后,它会将主服务器判断为客观下线,并发起一次针对主服务器的故障转移操作。</li>
 </ul>
 
                   </article>

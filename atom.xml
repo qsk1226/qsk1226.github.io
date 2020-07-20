@@ -4,13 +4,196 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-19T23:24:53+08:00</updated>
+  <updated>2020-07-20T23:56:34+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[过期键的删除策略]]></title>
+    <link href="http://www.throne4j.com/15952588914829.html"/>
+    <updated>2020-07-20T23:28:11+08:00</updated>
+    <id>http://www.throne4j.com/15952588914829.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">redis过期键删除策略</h2>
+
+<p>一个键过期了，它什么时候被删除呢？</p>
+
+<p>Redis 服务器采用惰性删除策略和定期删除两种策略，通过分配使用这两种删除策略，redis服务器可以很好的利用cpu时间和避免内存浪费之间取得一个较好的平衡</p>
+
+<ul>
+<li>定时删除:在设置键的过期时间的同时,创建一个定时器( timer),让定时器在键的过期时间来临时,立即执行对键的删除操作。</li>
+<li>惰性删除:放任键过期不管,但是每次从键空间中获取健时,都检查取得的键是否过期,如果过期的话,就删除该键;如果没有过期,就返回该键。</li>
+<li>定期删除:每隔一段时间,程序就对数据库进行一次检查,删除里面的过期键。至于要删除多少过期键,以及要检査多少个数据库,则由算法决定。<br/>
+在这三种策略中,第一种和第三种为主动删除策略,而第二种则为被动删除策略。</li>
+</ul>
+
+<h2 id="toc_1">定时删除策略</h2>
+
+<p>定时删除策略，设置键过期时间的同时，创建定时器，让定时器在键的过期时间来来临时立即执行对键的删除操作。</p>
+
+<p>优点是：可以保证过期键会尽可能快的被删除，并释放过期键所占用的内存，</p>
+
+<p>但缺点也很明显：会占用一定的cpu时间，影响服务器的响应时间和吞吐量，</p>
+
+<p>除此之外，创建定时器需要用到 redis 服务器的时间事件，而当前时间事件的实现方式是无序链表，查找一个时间的时间复杂度为 O(N)，并不能高效的处理大量的时间事件。</p>
+
+<h2 id="toc_2">惰性删除策略</h2>
+
+<p>惰性删除策略，访问数据库键时，校验该键是否过期，如果过期则删除</p>
+
+<p>优点是：对cpu时间来说最友好，程序只会在取出键时才对键进行过期检查，可以保证删除过期键的操作只会在费做不可的情况下进行，并且删除过期键的操作仅限当前处理的键，</p>
+
+<p>但是此种策略非常占用内存，有内存泄漏的风险，已过期的键不会立马删除，占着内存直到下次访问时才会释放内存空间。</p>
+
+<h2 id="toc_3">定期删除策略</h2>
+
+<p>定期删除策略，周期性删除过期键，redisServer启动过程最后一步(开启事件循环，会触发Redis的定时任务的时间事件，查看 <a href="15934396305281.html">三、redis命令处理生命周期</a>) </p>
+
+<ul>
+<li>每个一段时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少删除操作对cpu时间的影响</li>
+<li>通过定期删除过期键，有效的减少了过期键带来的内存损耗。</li>
+</ul>
+
+<p>定期删除策略的难点是确定删除操作执行的时长和频率：</p>
+
+<ul>
+<li>如果删除操作执行得太频繁,或者执行的时间太长,定期删除策略就会退化成定时除策略,以至于将CPU时间过多地消耗在删除过期键上面。</li>
+<li>如果删除操作执行得太少,或者执行的时间太短,定期删除策略又会和惰性删除策略一样,出现浪费内存的情况。</li>
+</ul>
+
+<h2 id="toc_4">AOF、RDB和复制功能对过期键的处理</h2>
+
+<h3 id="toc_5">RDB 文件生成</h3>
+
+<p>在执行SAⅣE命令或者 BGSAVE命令创建一个新的RDB文件时,程序会对数据库中的键进行检查,已过期的键不会被保存到新创建的RDB文件中。</p>
+
+<h3 id="toc_6">载入RDB文件</h3>
+
+<p>在启动 Redis服务器时,如果服务器开启了RDB功能,那么服务器将对RDB文件进行载人: </p>
+
+<ul>
+<li>如果服务器以主服务器模式运行,那么在载入RDB文件时,程序会对文件中保存的键进行检查,未过期的键会被载入到数据库中,而过期键则会被忽略,所以过期键对载入RDB文件的主服务器不会造成影响</li>
+<li>如果服务器以从服务器模式运行,那么在载入RDB文件时,文件中保存的所有键, 不论是否过期,都会被载人到数据库中。不过,因为主从服务器在进行数据同步的时候,从服务器的数据库就会被清空,所以一般来讲,过期键对载人RDB文件的从服务器也不会造成影响。</li>
+</ul>
+
+<h3 id="toc_7">AOF 文件写入</h3>
+
+<p>当服务器以AOF持久化模式运行时,如果数据库中的某个键已经过期,但它还没有被惰性删除或者定期删除,那么AOF文件不会因为这个过期键而产生任何影响。</p>
+
+<p>当过期键被惰性删除或者定期删除之后, 程序会向AOF文件迫加( append)一条DEL 命令,来显式地记录该键已被删除。</p>
+
+<p>举个例子,如果客户端使用 GET message命令,试图访向问过期的 message键,那么服务器将执行以下三个动作: </p>
+
+<p>1)从数据库中删除 message键。<br/>
+2)追加一条 DEL message命令到AOF文件。<br/>
+3)向执行GET命令的客户端返回空回复。</p>
+
+<p>和生成RDB文件时类似,在执行AOF重写的过程中,程序会对数据库中的键进行检査,已过期的键不会被保存到重写后的AOF文件中。</p>
+
+<h2 id="toc_8">复制</h2>
+
+<p>当服务器运行在复制模式下时,从服务器的过期键删除动作由主服务器控制</p>
+
+<ul>
+<li>主服务器在删除一个过期键之后,会显式地向所有从服务器发送一个DEL命令,告知从服务器删除这个过期键。</li>
+<li>从服务器在执行客户端发送的读命令时,即使碰到过期键也不会将过期健删除,而是继续像处理未过期的键一样来处理过期键。</li>
+<li>从服务器只有在接到主服务器发来的DEL命令之后,才会删除过期键。</li>
+</ul>
+
+<p>通过由主服务器来控制从服务器统一地删除过期键,可以保证主从服务器数据的一致性,也正是因为这个原因,当一个过期键仍然存在于主服务器的数据库时,这个过期键在从服务器里的复制品也会继续存在。</p>
+
+<p>如果这时有客户端向从服务器发送命令 GET message,那么从服务器将发现 message 键已经过期,但从服务器并不会删除 message键,而是继续将 message键的值返回给客户端,就好像 message健并没有过期一样。</p>
+
+<p>假设在此之后,有客户端向主服务器发送命令 GET message,那么主服务器将发现键message已经过期，主服务器会删除 message键,向客户端返回空回复,并向从服务器发送 DEL message命令。</p>
+
+<p>从服务器在接收到主服务器发来的DEL message命令之后,也会从数据库中删除 message键,在这之后,主从服务器都不再保存过期键 message了。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[集群]]></title>
+    <link href="http://www.throne4j.com/15951723810785.html"/>
+    <updated>2020-07-19T23:26:21+08:00</updated>
+    <id>http://www.throne4j.com/15951723810785.html</id>
+    <content type="html"><![CDATA[
+<p>redis集群是在redis 3.0版本推出的一个功能，Redis 集群 提供的分布式数据库方案, 集群通过分片( sharding)来进行数据共享,并提供复制和故障转移功能。其有效的解决了redis在分布式方面的需求。</p>
+
+<p>当遇到单机内存，并发和流量瓶颈等问题时，可采用Cluster方案达到负载均衡的目的。</p>
+
+<p>从另一方面讲，redis中sentinel有效的解决了故障转移的问题，也解决了主节点下线客户端无法识别新的可用节点的问题，但是如果是从节点下线了，sentinel是不会对其进行故障转移的，并且连接从节点的客户端也无法获取到新的可用从节点，而这些问题在Cluster中都得到了有效的解决。</p>
+
+<p>Redis 集群包括如下几个方面 节点、槽指派、命令执行、重新分片、转向、故障转移、消息等。</p>
+
+<p>开启Redis的集群模式需要修改redis.conf文件：</p>
+
+<pre><code class="language-text">cluster-enabled yes
+</code></pre>
+
+<p>如下是一个典型的集群部署方式：<br/>
+<figure><img src="media/15951723810785/15952500358343.jpg" alt=""/></figure></p>
+
+<p>集群用来提供横向扩展能力，即当数据量增多之后，通过增加服务节点就可以扩展服务能力。背后理论思想是将数据通过某种算法分布到不同的服务节点，这样当节点越多，单台节点所需提供服务的数据就越少。</p>
+
+<p>集群首先需要解决如下问题：</p>
+
+<ul>
+<li>分槽（slot）：即如何决定某条数据应该由哪个节点提供服务；</li>
+<li>端如何向集群发起请求（客户端并不知道某个数据应该由哪个节点提供服务，并且如果扩容或者节点发生故障后，不应该影响客户端的访问）？</li>
+<li>某个节点发生故障之后，该节点服务的数据该如何处理？</li>
+<li>扩容，即向集群中添加新节点该如何操作？</li>
+<li>同一条命令需要处理的key分布在不同的节点中（如Redis中集合取并集、交集的相关命令），如何操作？</li>
+</ul>
+
+<h2 id="toc_0">redis 节点</h2>
+
+<p>一个 Redis集群通常有多个节点 （node）组成，一个正常工作的Redis集群通常由多个节点构成。连接各个节点的工作可以使用 cluster meet 命令来完成。</p>
+
+<pre><code class="language-shell">cluster meet &lt;ip&gt; &lt;port&gt;
+</code></pre>
+
+<p>向一个节点 node发送 cluster meet命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
+
+<p>通过命令查看集群当前包含的节点信息</p>
+
+<pre><code class="language-shell">127.0.0.1:6379&gt; cluster nodes
+a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 connected
+</code></pre>
+
+<p>通过 cluster meet 命令将 指定节点添加到集群后，cluster nodes 命令将返回多个节点信息。</p>
+
+<h2 id="toc_1">slot 槽</h2>
+
+<p>redis集群中数据是和槽（slot）挂钩的，Redis将键空间分为了16384个slot，所有的数据根据一致哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上的。</p>
+
+<p>Redis 通过如下算法计算出每个key所属的slot</p>
+
+<pre><code class="language-text">HASH_SLOT = CRC16(key) mod 16384
+</code></pre>
+
+<p>客户端可以请求任意一个节点，每个节点中都会保存所有16384个slot对应到哪一个节点的信息。如果一个key所属的slot正好由被请求的节点提供服务，则直接处理并返回结果，否则返回MOVED重定向信息。</p>
+
+<p>实际应用中，Redis客户端可以通过向集群请求slot 和节点的映射关系并缓存，然后通过本地计算要操作的key所属的slot，查询映射关系，直接向正确的节点发起请求，这样可以获得几乎等价于单节点部署的性能。</p>
+
+<p>集群中的数据分片之后由不同的节点提供服务，即每个主节点的数据都不相同，此种情况下，为了确保没有单点故障，主服务必须挂载至少一个从服务。</p>
+
+<p>客户端请求时可以向任意一个主节点或者从节点发起，当向从节点发起请求时，从节点会返回MOVED信息重定向到相应的主节点。</p>
+
+<p><strong>注意：</strong>Redis集群中，客户端只能在主节点执行读写操作。如果需要在从节点中进行读操作，需要满足如下条件：</p>
+
+<ul>
+<li>首先在客户端中执行readonly命令</li>
+<li>如果一个key所属的slot由主节点A提供服务，则请求该key时可以向A所属的从节点发起读请求。该请求不会被重定向。</li>
+</ul>
+
+<p>当一个主节点发生故障后，其挂载的从节点会切换为主节点继续提供服务。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[十一、哨兵]]></title>
@@ -20,7 +203,7 @@
     <content type="html"><![CDATA[
 <p>哨兵是Redis的高可用方案，可以在Redis Master发生故障时自动选择一个Redis Slave切换为Master，继续对外提供服务。</p>
 
-<p>集群提供数据自动分片到不同节点的功能，并且当部分节点失效后仍然可以使用。</p>
+<p>redis中 sentinel 有效的解决了故障转移的问题，也解决了主节点下线客户端无法识别新的可用节点的问题，但是如果是从节点下线了，sentinel是不会对其进行故障转移的，并且连接从节点的客户端也无法获取到新的可用从节点，而这些问题在Cluster中都得到了有效的解决。</p>
 
 <h2 id="toc_0">Redis 哨兵</h2>
 
@@ -80,7 +263,16 @@ sentinel parallel-syncs resque 5
 <p>哨兵可以直接使用 redis-server 命令启动，如下：</p>
 
 <pre><code class="language-shell">redis-server /path/sentinel.conf --sentinel
+或者
+redis-sentinel /path/sentinel.conf
 </code></pre>
+
+<p>sentinel 启动时的执行步骤如下：<br/>
+1)初始化服务器。<br/>
+2)将普通 Redis服务器使用的代码替换成 Sentinel专用代码。<br/>
+3)初始化 Sentinel状态。<br/>
+4)根据给定的配置文件,初始化 Sentinel的监视主服务器列表。<br/>
+5)创建连向主服务器的网络连接。</p>
 
 <p>单个哨兵连接示意图：</p>
 
@@ -142,7 +334,34 @@ sentinel parallel-syncs resque 5
 
 <p>如果判断一个Redis Master处于客观下线状态，这时就需要开始执行主从切换了。</p>
 
-<h2 id="toc_2">主从切换</h2>
+<h2 id="toc_2">选举哨兵领头节点</h2>
+
+<p>Sentinel系统选举领头 Sentinel的方法是对Raf算法的领头选举方法的实现。<br/>
+当一个主服务器被判断为客观下线时,监视这个下线主服务器的各个 Sentinel会进行协商，选举出一个领头 Sentinel,并由领头 Sentinel对下线主服务器执行故障转移操作。</p>
+
+<p>Redis选举领头 Sentinel的规则和方法：</p>
+
+<ul>
+<li>所有在线的 Sentinel都有被选为领头 Sentinel的资格,换句话说,监视同一个主服务器的多个在线 Sentinel中的任意一个都有可能成为领头 Sentinel 口每次进行领头 Sentinel选举之后,不论选举是否成功,所有 Sentinel的配置纪元( configuration epoch)的值都会自增一次。配置纪元实际上就是一个计数器,并没有什么特别的。</li>
+<li>在一个配置纪元里面,所有 Sentinel都有一次将某个 Sentinel设置为局部领头Sentinel的机会,并且局部领头一旦设置,在这个配置纪元里面就不能再更改。</li>
+<li>每个发现主服务器进人客观下线的 Sentinel都会要求其他 Sentinel将自己设置为局部领头 Sentinel。</li>
+<li>当一个 Sentinel(源 Sentinel)向另一个 Sentinel(目标 Sentinel)发送 SENTINEL is- master-down-by-adr命令,并且命令中的 runid参数不是*符号而是源Sentinel的运行ID时,这表示源 Sentinel要求目标 Sentinel将前者设置为后者的局部领头 Sentinel</li>
+<li>Sentinel设置局部领头 Sentinel的规则是先到先得:最先向目标 Sentinel发送设置要求的源 Sentinel将成为目标 Sentinel的局部领头 Sentinel,而之后接收到的所有设置要求都会被目标 Sentinel拒绝。</li>
+<li>目标 Sentinel在接收到 SENTINEL is- master-down-by-addr命令之后,将向源 Sentinel返回一条命令回复,回复中的1 eader_ runid参数和 leader epoch 参数分别记录了目标 Sentinel的局部领头 Sentinel的运行ID和配置纪元。</li>
+<li>源 Sentinel在接收到目标 Sentinel返回的命令回复之后,会检查回复中1 eader epoch参数的值和自己的配置纪元是否相同,如果相同的话,那么源 Sentinel g继续取出回复中的1 eader runid参数,如果1 eader runid参数的值和源 Sentinel 的运行D一致,那么表示目标 Sentinel将源 Sentinel设置成了局部领头 Sentinel</li>
+<li>如果有某个 Sentinel被半数以上的 Sentinel设置成了局部领头 Sentinel,那么这个Sentinel成为领头 Sentinel。举个例子,在一个由10个 Sentinel组成的 Sentinel系统里面,只要有大于等于10/2+1=6个 Sentinel将某个 Sentinel设置为局部领头Sentinel,那么被设置的那个 Sentinel就会成为领头 Sentinel </li>
+<li>因为领头 Sentinel的产生需要半数以上 Sentinel I的支持,并且每个 Sentinel在每个配置纪元里面只能设置一次局部领头 Sentinel,所以在一个配置纪元里面,只会出现个领头 Sentinel 在一段时间之后再次进行选举,直到选出领头 Sentinel为此。</li>
+<li>那如果在给定时限内,没有一个 Sentinel被选举为领头 Sentinel，那么各个 Sentinel将在一段时间之后再次进行选举，直到选出领头sentinel为止。</li>
+</ul>
+
+<h2 id="toc_3">故障转移</h2>
+
+<p>在选举产生出领头 Sentinel之后,领头 Sentinel将对已下线的主服务器执行故障转移操作,该操作包含以下三个步骤: <br/>
+1)在已下线主服务器属下的所有从服务器里面,挑选出一个从服务器,并将其转换为主服务器。<br/>
+2)让已下线主服务器属下的所有从服务器改为复制新的主服务器。<br/>
+3)将已下线主服务器设置为新的主服务器的从服务器,当这个旧的主服务器重新上线时,它就会成为新的主服务器的从服务器。</p>
+
+<h2 id="toc_4">主从切换</h2>
 
 <p>当Redis哨兵方案中的Master处于客观下线状态，为了保证Redis 的高可用性，此时需要执行主从切换。即将其中一个Slave提升为Master，其他Slave从该提升的Slave继续同步数据，主从切换有一个状态迁移图，其所有状态定义如下：</p>
 
@@ -171,16 +390,16 @@ sentinel parallel-syncs resque 5
 <pre><code class="language-text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者*
 </code></pre>
 
-<p>最后一项参数为sentinel_runid，即该哨兵的ID，第5项current_epoch在开始执行切换后会加1。当从哨兵中选出一个主哨兵之后，接下来的切换都由该主哨兵执行。</p>
+<p>最后一项参数为sentinel_runid，即该哨兵的ID，第5项current_epoch在开始执行切换后会加1。 当从哨兵中选出一个主哨兵之后，接下来的切换都由该主哨兵执行。</p>
 
 <p>主哨兵首先会将当前切换状态更改为SENTINEL_FAILOVER_STATE_SELECT_SLAVE，即开始选择一台从服务器作为新的主服务器。那么，假设有多台从服务器，该选择哪台呢？</p>
 
-<p>Redis中选择规则如下:</p>
+<p>Redis中选择主服务器的规则如下:</p>
 
 <ul>
 <li>如果该Slave处于主观下线状态，则不能被选中。</li>
 <li>如果该Slave 5s之内没有有效回复ping命令或者与主服务器断开时间过长，则不能被选中</li>
-<li>如果slave-priority为0，则不能被选中（slave-priority可以在配置文件中指定。正整数，值越小优先级越高，当指定为0时，不能被选为主服务器）。</li>
+<li>如果slave-prio-rity为0，则不能被选中（slave-priority可以在配置文件中指定。正整数，值越小优先级越高，当指定为0时，不能被选为主服务器）。</li>
 <li>在剩余Slave中比较优先级，优先级高的被选中；如果优先级相同，则有较大复制偏移量的被选中；否则按字母序选择排名靠前的Slave。</li>
 </ul>
 
@@ -200,7 +419,7 @@ EXEC
 
 <p>执行完该步骤之后，会将切换状态更新为SENTINEL_FAILOVER_STATE_WAIT_PRO-MOTION, 上一步我们向被选中的从服务器发送了slaveof no one命令，执行完之后Redis中并没有处理返回值，而是在下一次info命令的返回中检查该从服务器的role字段，如果返回role:master，说明该从服务器已变更自己的角色为主服务器。于是切换状态变更为SENTINEL_FAILOVER_STATE_RECONF_SLAVES。</p>
 
-<p>在该步骤设置SENTINEL_FAILOVER_STATE_RECONF_SLAVES后，哨兵会依次向其他从服务器发送切换主服务器的命令：</p>
+<p>在该步骤设置SENTINEL_FAILOVER_STATE_RECONF_SLAVES后，哨兵会依次向其他从服务器发送切换主服务器的slaveof命令 ：</p>
 
 <pre><code class="language-text">//开启一个事务
 MULTI
@@ -216,7 +435,7 @@ EXEC
 
 <p>如果所有的从服务器都已更新完毕，则切换状态更新为SENTINEL_FAILOVER_STATE_UPDATE_CONFIG。该步骤会将哨兵中监听的Master（旧Master）重置为被选中的从服务器（新Master），并且将旧Master也配置为新Master的从服务器。然后将切换状态更新为SENTINEL_FAILOVER_STATE_NONE。至此，主从切换已完成。</p>
 
-<h2 id="toc_3">哨兵相关命令</h2>
+<h2 id="toc_5">哨兵相关命令</h2>
 
 <ul>
 <li>SENTINEL MASTERS：返回该哨兵监控的所有Master的相关信息。</li>
@@ -233,7 +452,21 @@ EXEC
 <li>SENTINEL CKQUORUM<name>：根据可用哨兵数量，计算哨兵可用数量是否满足配置数量（认定客观下线的数量）；是否满足切换数量（即哨兵数量的一半以上）。</li>
 <li>SENTINEL SET<mastername>[<option><value>...]：设置指定名称的Master的各类参数（例如超时时间等）。</li>
 <li>SENTINEL SIMULATE-FAILURE<flag><flag>...<flag>：模拟崩溃。flag可以为crash-after-election或者crash-after-promotion，分别代表切换时选举完成主哨兵之后崩溃以及将被选中的从服务器推举为Master之后崩溃。</li>
-<li></li>
+</ul>
+
+<h2 id="toc_6">总结</h2>
+
+<ul>
+<li>Sentinel只是一个运行在特殊模式下的 Redis服务器,它使用了和普通模式不同的命第三部分多机据库的实现令表,所以 Sentinel模式能够使用的命令和普通 Redis服务器能够使用的命令不同。</li>
+<li>Sentinel会读入用户指定的配置文件,为每个要被监视的主服务器创建相应的实例结构,并创建连向主服务器的命令连接和订阅连接,其中命令连接用于向主服务器发送命令请求,而订阅连接则用于接收指定频道的消息。</li>
+<li>Sentinel通过向主服务器发送INFO命令来获得主服务器属下所有从服务器的地址信息,并为这些从服务器创建相应的实例结构,以及连向这些从服务器的命令连接和订阅连接。</li>
+<li>在一般情况下, Sentinel以每十秒一次的频率向被监视的主服务器和从服务器发送INFO命令,当主服务器处于下线状态,或者 Sentinel正在对主服务器进行故障转移操作时, Sentinel I向从服务器发送INFO命令的频率会改为每秒一次。</li>
+<li>对于监视同一个主服务器和从服务器的多个 Sentinel来说,它们会以每两秒一次的频率,通过向被监视服务器的 sentinel:he11o频道发送消息来向其他Sentinel宣告自己的存在。</li>
+<li>每个 Sentinel也会从 sentinel1:he1o频道中接收其他 Sentinel发来的信息, 并根据这些信息为其他 Sentinel 1创建相应的实例结构,以及命令连接。</li>
+<li>Sentinel只会与主服务器和从服务器创建命令连接和订阅连接, Sentinel与 Sentinel 之间则只创建命令连接。</li>
+<li>Sentinel以每秒一次的频率向实例(包括主服务器、从服务器、其他 Sentinel)发送PING命令,并根据实例对PNG命令的回复来判断实例是否在线,当一个实例在指定的时长中连续向 Sentinel发送无效回复时, Sentinel会将这个实例判断为主观下线。</li>
+<li>当 Sentinel将一个主服务器判断为主观下线时,它会向同样监视这个主服务器的其他Sentinel进行询问,看它们是否同意这个主服务器已经进入主观下线状态。</li>
+<li>当 Sentinel l收集到足够多的主观下线投票之后,它会将主服务器判断为客观下线,并发起一次针对主服务器的故障转移操作。</li>
 </ul>
 
 ]]></content>
@@ -2543,27 +2776,7 @@ A:在服务端接收到命令的时候，就已经判断了命令的最大长度
 </tbody>
 </table>
 
-<h3 id="toc_1">过期键的删除策略</h3>
-
-<p>过期键的删除策略</p>
-
-<ul>
-<li><p>惰性删除策略，访问数据库键时，校验该键是否过期，如果过期则删除<br/>
-对于cpu时间来说最友好，程序只会在取出键时才对键进行过期检查，可以保证删除过期键的操作只会在费做不可的情况下进行，并且删除的木啊比偶仅限当前处理的键，但是此种策略又非常占用内存，已过期的键不会立马删除，占着内存直到下次访问时才会释放内存空间</p></li>
-<li><p>定时删除策略，设置键过期时间的同时，创建定时器，让定时器在键的过期时间来临时，立即执行对键的删除操作<br/>
-可以保证过期键会尽可能快的被删除，并释放过期键所占用的内存，但是会占用一定的cpu时间，影响服务器的响应时间和吞吐量，除此之外，创建定时器需要用到 redis 服务器的时间事件，而当前时间事件的实现方式是无序链表，查找一个时间的时间复杂度为 O(N)，并不能高效的处理大量的时间事件。</p></li>
-<li><p>定期删除策略，周期性删除过期键，redisServer启动过程最后一步(开启事件循环，会触发Redis的定时任务的时间事件，查看 <a href="15934396305281.html">三、redis命令处理生命周期</a>) </p>
-<ul>
-<li>每个一段时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少删除操作对cpu时间的影响</li>
-<li>通过定期删除过期键，有效的减少了过期键带来的内存损耗。</li>
-</ul></li>
-</ul>
-
-<h3 id="toc_2">redis过期键删除策略</h3>
-
-<p>Redis 服务器采用惰性删除策略和定期删除两种策略，通过分配使用这两种删除策略，redis服务器可以很好的利用cpu时间和避免内存浪费之间取得一个较好的平衡</p>
-
-<h2 id="toc_3">2、Redis服务器相关命令</h2>
+<h2 id="toc_1">2、Redis服务器相关命令</h2>
 
 <table>
 <thead>
@@ -3814,231 +4027,6 @@ Redis 命令的执行过程： 发送指令 --&gt; 执行指令 --&gt; 返回结
 <li>通过类名获取Class对象，不会触发类的初始化</li>
 <li>通过Class.forName加载指定类是，如果指定参数 initialize 为 false 时，也不会触发类初始化，其实这个参数是告诉虚拟机，是否要对类进行初始化</li>
 <li>通过ClassLoader 默认的 loadClass 方法，也不会触发初始化动作。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[]]></title>
-    <link href="http://www.throne4j.com/15917994951575.html"/>
-    <updated>2020-06-10T22:31:35+08:00</updated>
-    <id>http://www.throne4j.com/15917994951575.html</id>
-    <content type="html"><![CDATA[
-<p>WebMvcConfigurer<br/>
-跨域--&gt; WebMvcConfigurer#addCorsMappings(CorsRegistry registry)</p>
-
-<p>HandlerInterceptor<br/>
-WebRequestInterceptor</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#addDefaultHttpMessageConverters</p>
-
-<hr/>
-
-<p>WebMvcConfigurationSupport#requestMappingHandlerMapping</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcPathMatcher</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcUrlPathHelper</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcContentNegotiationManager</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#viewControllerHandlerMapping</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#beanNameHandlerMapping</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#resourceHandlerMapping</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcResourceUrlProvider</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#defaultServletHandlerMapping</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#requestMappingHandlerAdapter</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcConversionService</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcValidator</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcUriComponentsContributor</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#httpRequestHandlerAdapter</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#simpleControllerHandlerAdapter</p>
-
-<p><strong>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#handlerExceptionResolver</strong></p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcViewResolver</p>
-
-<p>org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#mvcHandlerMappingIntrospector</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[观察者模式]]></title>
-    <link href="http://www.throne4j.com/15917825632729.html"/>
-    <updated>2020-06-10T17:49:23+08:00</updated>
-    <id>http://www.throne4j.com/15917825632729.html</id>
-    <content type="html"><![CDATA[
-<ul>
-<li>
-<a href="#toc_0">观察者模式定义</a>
-</li>
-<li>
-<a href="#toc_1">观察者模式结构</a>
-<ul>
-<li>
-<a href="#toc_2">优点</a>
-</li>
-<li>
-<a href="#toc_3">缺点</a>
-</li>
-</ul>
-</li>
-<li>
-<a href="#toc_4">代码示例</a>
-</li>
-<li>
-<a href="#toc_5">使用场景</a>
-</li>
-</ul>
-
-
-<h2 id="toc_0">观察者模式定义</h2>
-
-<p>观察者模式是使用频率较高的设计模式之一。它定义对象之间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式是一种对象行为型模式。</p>
-
-<p>观察者模式的别名包括发布-订阅（Publish/Subscribe）模式、模型-视图（Model/View）模式、源-监听器（Source/Listener）模式或从属者（Dependents）模式。</p>
-
-<p>观察者模式包含观察目标和观察者两类对象，一个目标可以有任意数目的与之相依赖的观察者，一旦观察目标的状态发生改变，所有的观察者都将得到通知。</p>
-
-<h2 id="toc_1">观察者模式结构</h2>
-
-<p>Subject（目标）：目标又称为主题，它是指被观察的对象。在目标中定义了一个观察者集合，一个观察目标可以接受任意数量的观察者来观察，它提供一系列方法来增加和删除观察者对象，同时它定义了通知方法notify()。目标类可以是接口，也可以是抽象类或具体类。</p>
-
-<p>ConcreteSubject（具体目标）：具体目标是目标类的子类，通常它包含有经常发生改变的数据，当它的状态发生改变时，向它的各个观察者发出通知；同时它还实现了在目标类中定义的抽象业务逻辑方法（如果有的话）。如果无须扩展目标类，则具体目标类可以省略。</p>
-
-<p>Observer（观察者）：观察者将对观察目标的改变做出反应，观察者一般定义为接口，该接口声明了更新数据的方法update()，因此又称为抽象观察者。</p>
-
-<p>ConcreteObserver（具体观察者）：在具体观察者中维护一个指向具体目标对象的引用，它存储具体观察者的有关状态，这些状态需要和具体目标的状态保持一致；它实现了在抽象观察者Observer中定义的update()方法。通常在实现时，可以调用具体目标类的attach()方法将自己添加到目标类的集合中或通过detach()方法将自己从目标类的集合中删除。</p>
-
-<p><figure><img src="media/15917825632729/15919534018048.jpg" alt=""/></figure></p>
-
-<h3 id="toc_2">优点</h3>
-
-<ul>
-<li>降低了目标与观察者之间的耦合关系，两者之间是抽象耦合关系</li>
-<li>目标与观察者之间建立了一套触发机制</li>
-<li>支持广播通信</li>
-<li>符合“开闭原则”的要求</li>
-</ul>
-
-<h3 id="toc_3">缺点</h3>
-
-<ul>
-<li>目标与观察者之间的依赖关系并没有完全解除，而且有可能出现循环引用</li>
-<li>当观察者对象很多时，通知的发布会花费很多时间，影响程序的效率</li>
-</ul>
-
-<h2 id="toc_4">代码示例</h2>
-
-<pre><code class="language-java">
-/**
- * 抽象观察者
- **/
-public interface Observer {
-    public void update(String message);
-}
-
-/**
- * 具体观察者
- **/
-public class GuardianObserver implements Observer {
-
-    private String name;
-
-    public GuardianObserver(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void update(String message) {
-        System.out.println(name + &quot;-&quot; + message);
-    }
-}
-</code></pre>
-
-<pre><code class="language-java">
-/**
- * 抽象被观察者
- **/
-public interface Subject {
-    /**
-     * 增加订阅者
-     */
-    public void addObserver(Observer observer);
-
-    /**
-     * 删除订阅者
-     */
-    public void removeObserver(Observer observer);
-
-    /**
-     * 通知订阅者更新消息
-     */
-    public void notifyObserver(String message);
-}
-
-/**
- * 具体的被观察者
- **/
-public class SubscriptionSubject implements Subject {
-    
-    private List&lt;Observer&gt; guardianObserver = new ArrayList&lt;&gt;();
-
-    @Override
-    public void addObserver(Observer observer) {
-        guardianObserver.add(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        guardianObserver.remove(observer);
-    }
-
-    @Override
-    public void notifyObserver(String message) {
-        for (Observer observer : guardianObserver) {
-            observer.update(message);
-        }
-    }
-}
-</code></pre>
-
-<pre><code class="language-java">/**
- * 观察者模式客户端
- **/
-public class Client {
-    public static void main(String[] args) {
-        SubscriptionSubject mSubscriptionSubject = new SubscriptionSubject();
-        //创建监护人
-        GuardianObserver user1 = new GuardianObserver(&quot;孩儿他爹&quot;);
-        GuardianObserver user2 = new GuardianObserver(&quot;孩儿他娘&quot;);
-        // 添加监护
-        mSubscriptionSubject.addObserver(user1);
-        mSubscriptionSubject.addObserver(user2);
-        // 通知打架的通知
-        mSubscriptionSubject.notifyObserver(&quot;孩儿又在学校打架了&quot;);
-    }
-}
-</code></pre>
-
-<h2 id="toc_5">使用场景</h2>
-
-<ul>
-<li>关联行为场景，需要注意的是，关联行为是可拆分的，而不是“组合”关系。</li>
-<li>事件多级触发场景。</li>
-<li>跨系统的消息交换场景，如消息队列、事件总线的处理机制。</li>
 </ul>
 
 ]]></content>
