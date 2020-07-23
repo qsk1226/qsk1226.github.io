@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    软引用（SoftReference）和引用队列（ReferenceQueue） - 大爷来玩儿啊~
+    二、软引用（SoftReference）和引用队列（ReferenceQueue） - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            软引用（SoftReference）和引用队列（ReferenceQueue）   
+                            二、软引用（SoftReference）和引用队列（ReferenceQueue）   
                       </h1>
                      
                     
@@ -125,7 +125,7 @@
 <p>SoftReference的特点是它的一个实例保存对一个Java对象的软引用，该软引用的存在不妨碍垃圾收集线程对该Java对象的回收。也就是说，一旦SoftReference保存了对一个Java对象的软引用后，在垃圾线程对这个Java对象回收前，SoftReference类所提供的get()方法返回Java对象的强引用。另外，一旦垃圾线程回收该Java对象之后，get()方法将返回null。</p>
 
 <pre><code class="language-java">MyObject aRef = new MyObject();
-SoftReference aSoftRef=new SoftReference(aRef);
+SoftReference  aSoftRef=new SoftReference(aRef);
 </code></pre>
 
 <p>此时，对于这个MyObject对象，有两个引用路径，一个是来自SoftReference对象的软引用，一个来自变量aReference的强引用，所以这个MyObject对象是强可及对象。<br/>

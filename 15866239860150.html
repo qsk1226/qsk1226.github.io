@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    JVM 中 java 对象 - 大爷来玩儿啊~
+    四、JVM 中 java 对象 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            JVM 中 java 对象   
+                            四、JVM 中 java 对象   
                       </h1>
                      
                     
@@ -189,11 +189,14 @@
 
 <h2 id="toc_1">对象的内存布局</h2>
 
-<p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。</p>
+<p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。<br/>
+<figure><img src="media/15866239860150/15953364937726.jpg" alt=""/></figure></p>
 
 <h3 id="toc_2">对象头</h3>
 
-<p>对象头分两部分：Mark Word、class pointer(类型指针)</p>
+<p>对象头分两部分：Mark Word、class pointer(类型指针)<br/>
+Mark Word用于存储对象自身的运行时数据，如哈希码，GC分代年龄，锁状态标志，线程持有的锁，偏向线程ID，偏向时间戳等。<br/>
+类型指针即对象指向它的类元数据的指针。并不是所有的虚拟机实现都必须在对象数据上保留类型指针（用句柄实现）。</p>
 
 <ul>
 <li>Mark Word的组成以及布局情况</li>
@@ -242,10 +245,28 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 <ul>
 <li><p>使用句柄访问<br/>
 java堆内存中将可能划分出一块内存作为句柄池，reference中存储的就是对象的句柄地址，句柄中包含了对象的实例数据与类型数据各自具体的地址信息。<br/>
-当对象改变之后，只需要改变句柄中的实例数据的指针地址，而句柄本身的地址这不会改变，那么reference的引用也不会改变。</p></li>
+当对象改变之后，只需要改变句柄中的实例数据的指针地址，而句柄本身的地址这不会改变，那么reference的引用也不会改变。<br/>
+<figure><img src="media/15866239860150/15953360466927.jpg" alt=""/></figure></p></li>
 <li><p>使用直接指针访问<br/>
-reference中存储的直接就是对象的地址，直接访问对象的话，一步到位，访问速度会更加迅速。</p></li>
+reference中存储的直接就是对象的地址，直接访问对象的话，一步到位，访问速度会更加迅速。<br/>
+<figure><img src="media/15866239860150/15953360587854.jpg" alt=""/></figure></p></li>
 </ul>
+
+<pre><code class="language-text">public void method () {
+    Object obj = new Object();
+}
+</code></pre>
+
+<p>以上代码生成两部分的内存区域：1：Obj这个引用变量，因为是方法的内部变量，放在java 虚拟机栈里面  2:真正的Object class的实例放在java堆里面。</p>
+
+<p><strong>上面的new Object()一共消耗12个字节，JVM 规定引用占4个字节bytes(在JVM Stack)，而空对象占用8个字节bytes(在java heap space)。</strong></p>
+
+<p>方法结束后，jvm stack中的变量马上进行回收，但是Heap space中的对象要等GC(垃圾收集器)进行回收</p>
+
+<p>java对象创建(new关键字)的三个步骤：<br/>
+1、在堆内存中创建类的实例<br/>
+2、为对象实例的成员变量赋初值<br/>
+3、将对象的引用返回</p>
 
                   </article>
                   <div class="comments-wrap">

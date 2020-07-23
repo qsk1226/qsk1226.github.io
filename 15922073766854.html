@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    JVM 类加载机制 - 大爷来玩儿啊~
+    六、类的生命周期 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            JVM 类加载机制   
+                            六、类的生命周期   
                       </h1>
                      
                     
@@ -114,8 +114,23 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>JVM 类加载机制分为五个部分<br/>
+                    <p>从类被加载到虚拟机内存中开始，到卸载出内存为止，类的生命周期包括加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段，其中验证、准备和解析三部分称为连接。类的加载、连接、初始化过程都是在程序运行期间进行的</p>
+
+<p>在如下几种情况下，Java虚拟机将结束生命周期</p>
+
+<pre><code class="language-text">– 执行了System.exit()方法
+
+– 程序正常执行结束
+
+– 程序在执行过程中遇到了异常或错误而异常终止
+
+– 由于操作系统出现错误而导致Java虚拟机进程终止
+</code></pre>
+
+<p>JVM 类加载机制分为五个部分<br/>
 <figure><img src="media/15922073766854/15922110200798.jpg" alt=""/></figure></p>
+
+<p>虚拟机把描述类的数据从Class文件加载到内存， 并对数据进行校验、转换解析和初始化， 最终形成可以被虚拟机直接使用的Java类型， 这就是虚拟机的类加载机制。</p>
 
 <h2 id="toc_0">加载</h2>
 
@@ -181,7 +196,7 @@
 
 <h2 id="toc_4">初始化</h2>
 
-<p>类加载阶段 的最后一个阶段，前面的类加载阶段之后，除了在加载阶段可以自定义类加载器以外，其它操作都有jvm主导，到了初始化阶段，才开始真正执行类中定义的java程序代码。</p>
+<p>初始化是指执行<strong><em>静态代码块，静态变量</em></strong>的初始化操作，它是类加载阶段的最后一个阶段，前面的类加载阶段之后，除了在加载阶段可以自定义类加载器以外，其它操作都有jvm主导，到了初始化阶段，才开始真正执行类中定义的java程序代码。</p>
 
 <p>初始化阶段是执行类构造器<client>方法的过程。<client>方法是由编译器自动收集类中的类变 量的赋值操作和静态语句块中的语句合并而成的。<strong>虚拟机会保证子<client>方法执行之前，父类 的<client>方法已经执行完毕</strong></p>
 
@@ -213,6 +228,144 @@
 <li>通过Class.forName加载指定类是，如果指定参数 initialize 为 false 时，也不会触发类初始化，其实这个参数是告诉虚拟机，是否要对类进行初始化</li>
 <li>通过ClassLoader 默认的 loadClass 方法，也不会触发初始化动作。</li>
 </ul>
+
+<p><strong><em>静态变量、静态代码块的初始化是按照上到下的顺序执行的</em></strong></p>
+
+<p><strong><em>类与接口的初始化不同，如果一个类被初始化，则其父类或父接口也会被初始化，但如果一个接口初始化，则不会引起其父接口的初始化。</em></strong></p>
+
+<p><strong><em>被static final限定的常量叫做编译时常量，对于这种常量，不需要初始化就可以读取。在编译阶段这个常量被放入被调用这个方法所在的类的常量池当中。当一个常量的值并非在编译期间可以确定的情况，那么其值就不会别放到调用类的常量池中，这时在程序运行时会导致主动使用这个常量所在的类，这时就会触发别调用类的初始化</em></strong></p>
+
+<pre><code class="language-text">/**
+* -XX:+TraceClassLoading,用于追踪类的加载信息并打印出来
+* -XX:+&lt;option&gt; 表示开启option操作
+* -XX:-&lt;option&gt; 表示关闭option操作
+* -XX:&lt;option&gt;=&lt;value&gt; 表示将option选项的值设置为value
+*/
+public class ClassInit {
+
+    public static void main(String[] args) throws Exception{
+        //System.out.println(MyParent.name);
+        System.out.println(MyDaddy.str);
+    }
+}
+
+interface ParentInterface {
+    public static final String name = &quot;lucky&quot;;
+}
+
+class MyParent implements ParentInterface {
+
+    public static String str = &quot;Hello world&quot;;
+
+    public MyParent() {
+        System.out.println(&quot;MyParent constructor&quot;);
+    }
+    static {
+        System.out.println(&quot;myParent static block&quot;);
+    }
+}
+
+class MyDaddy extends MyParent {
+    public static String str1 = &quot;Welcome to the world!&quot;;
+    static {
+        System.out.println(&quot;MyDaddy static block&quot;);
+    }
+}
+
+</code></pre>
+
+<pre><code class="language-text">/**
+* 常量在编译阶段会存入到调用这个常量的方法所在类的常量池中
+* 本质上，调用类的那方并没有直接引用到定义常量的类，因此并不会触发定义常量的类
+* 的初始化
+* ClassInit1 调用了Parent2.str, 这个str就会放入到调用方ClassInit1的常量池中
+*/
+public class ClassInit1 {
+
+    public static void main(String[] args) throws Exception{
+        System.out.println(MyParent2.str);
+    }
+}
+
+class Parent2{
+    public static final String str = &quot;what&quot;;
+}
+
+</code></pre>
+
+<p>反编译一下class文件 com.dragon.jvm.ClassInit1</p>
+
+<pre><code class="language-text">&gt; javap -c com.dragon.jvm.ClassInit1
+public class com.dragon.jvm.ClassInit1 {
+  public com.dragon.jvm.ClassInit();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+       4: return
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #4                  // String Hello world
+       5: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       8: return
+}
+</code></pre>
+
+<p>助记符</p>
+
+<ul>
+<li>- dlc 表示int，float或string类型的常量值从常量池中推送至栈顶</li>
+<li>- bipush 表示将单字节(-128-127) 的常量值推送至栈顶</li>
+<li>- sipush 表示将一个短整型常量值(-32768 ~ 32767) 的常量值推送至栈顶</li>
+<li>- iconst_1 表示将int类型的 1 推送至栈顶 (iconst_m1 ~ iconst_5)</li>
+</ul>
+
+<pre><code class="language-text">/**
+ * 当一个常量的值并非在编译期间可以确定的情况，那么其值就不会别放到调用类的常量池中，这时在程序运行时会导致主动使用这个常量所在的类，这时就会触发别调用类的初始化
+ *
+ * @author qinshengke
+ * @date Create at 2019/12/9
+ */
+public class StaticFinalOfRandom {
+    public static void main(String[] args) {
+        System.out.println(Example.str);
+    }
+}
+
+class Example{
+    public static final String str = UUID.randomUUID().toString();
+
+    static {
+        System.out.println(&quot;Example static block&quot;);
+    }
+}
+
+&gt;Example static block
+&gt;15bbbe0a-7e43-43dc-a87d-c1be82867d13
+</code></pre>
+
+<pre><code class="language-text">// 数组并不会触发Example的初始化
+public class ArrayInit {
+    public static void main(String[] args) {
+        Example[] examples = new Example[1];
+        System.out.println(examples.getClass());
+    }
+}
+
+</code></pre>
+
+<blockquote>
+<p>class [Lcom.dragon.jvm.Example;<br/>
+[ 开头的对象名称是数组 </p>
+</blockquote>
+
+<h2 id="toc_7">类的卸载</h2>
+
+<p>当类A被加载、连接、初始胡之后、它的生命周期就开始了，当代表类A的Class对象不再被引用，即类不可达的时候，Class对象就会结束生命周期，类A在方法区内的数据就会被卸载，从而结束类A的生命周期。 <br/>
+一个类何时结束生命周期，取决于代表它的class对象何时结束生命周期。</p>
+
+<p>有java虚拟机自带的类加载器加载的类，在虚拟机的生命周期中，始终不会被卸载。而又用户自定义的类加载器所加载的类是可以被卸载的。</p>
 
                   </article>
                   <div class="comments-wrap">
@@ -256,6 +409,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

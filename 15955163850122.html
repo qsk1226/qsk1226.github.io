@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    # HTTP访问控制（CORS） - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            # HTTP访问控制（CORS）   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/07/23</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='http.html'>http</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>跨域资源共享(CORS) 是一种机制，它使用额外的 HTTP 头来告诉浏览器  让运行在一个 origin (domain) 上的Web应用被准许访问来自不同源服务器上的指定的资源。当一个资源从与该资源本身所在的服务器不同的域、协议或端口请求一个资源时，资源会发起一个跨域 HTTP 请求。</p>
+
+<p>比如，站点 <a href="http://domain-a.com">http://domain-a.com</a> 的某 HTML 页面又去请求 <a href="http://domain-b.com/xxx%E9%A1%B5%E9%9D%A2%E3%80%82%E7%BD%91%E7%BB%9C%E4%B8%8A%E7%9A%84%E8%AE%B8%E5%A4%9A%E9%A1%B5%E9%9D%A2%E9%83%BD%E4%BC%9A%E5%8A%A0%E8%BD%BD%E6%9D%A5%E8%87%AA%E4%B8%8D%E5%90%8C%E5%9F%9F%E7%9A%84CSS%E6%A0%B7%E5%BC%8F%E8%A1%A8%EF%BC%8C%E5%9B%BE%E5%83%8F%E5%92%8C%E8%84%9A%E6%9C%AC%E7%AD%89%E8%B5%84%E6%BA%90%E3%80%82">http://domain-b.com/xxx页面。网络上的许多页面都会加载来自不同域的CSS样式表，图像和脚本等资源。</a></p>
+
+<p>出于安全原因，浏览器限制从脚本内发起的跨源HTTP请求。 例如，XMLHttpRequest和Fetch API遵循同源策略。 这意味着使用这些API的Web应用程序只能从加载应用程序的同一个域请求HTTP资源，除非响应报文包含了正确CORS响应头。</p>
+
+<p><figure><img src="media/15955111272689/15955114749443.jpg" alt=""/></figure></p>
+
+<p>跨域资源共享（ CORS ）机制允许 Web 应用服务器进行跨域访问控制，从而使跨域数据传输得以安全进行。现代浏览器支持在 API 容器中（例如 XMLHttpRequest 或 Fetch ）使用 CORS，以降低跨域 HTTP 请求所带来的风险。</p>
+
+<hr/>
+
+<h2 id="toc_0">什么情况下需要 CORS ？</h2>
+
+<p>跨域资源共享标准（ cross-origin sharing standard ）允许在下列场景中使用跨域 HTTP 请求：</p>
+
+<ul>
+<li>由 XMLHttpRequest 或 Fetch 发起的跨域 HTTP 请求。</li>
+<li>Web 字体 (CSS 中通过 @font-face 使用跨域字体资源), 因此，网站就可以发布 TrueType 字体资源，并只允许已授权网站进行跨站调用。</li>
+<li>WebGL 贴图</li>
+<li>使用 drawImage 将 Images/video 画面绘制到 canvas<br/>
+本文概述了跨域资源共享机制及其所涉及的 HTTP 头。</li>
+</ul>
+
+<p>跨域资源共享标准新增了一组 HTTP 首部字段，允许服务器声明哪些源站通过浏览器有权限访问哪些资源。另外，规范要求，对那些可能对服务器数据产生副作用的 HTTP 请求方法（特别是 GET 以外的 HTTP 请求，或者搭配某些 MIME 类型的 POST 请求），浏览器必须首先使用 OPTIONS 方法发起一个预检请求（preflight request），从而获知服务端是否允许该跨域请求。服务器确认允许之后，才发起实际的 HTTP 请求。在预检请求的返回中，服务器端也可以通知客户端，是否需要携带身份凭证（包括 Cookies 和 HTTP 认证相关数据）。</p>
+
+<p>CORS请求失败会产生错误，但是为了安全，在JavaScript代码层面是无法获知到底具体是哪里出了问题。你只能查看浏览器的控制台以得知具体是哪里出现了错误。</p>
+
+<hr/>
+
+<h2 id="toc_1">HTTP 响应 header 字段</h2>
+
+<p>使用 Origin 和 Access-Control-Allow-Origin 就能完成最简单的访问控制。</p>
+
+<ul>
+<li><p>Access-Control-Allow-Origin: <origin> | *<br/>
+服务端设置 Access-Control-Allow-Origin 就是告诉浏览器允许向服务端请求资源的域名，浏览器通过 Response 中的 Access-Control-Allow-Origin 就可以知道能不能把数据吐出来。<br/>
+例如：</p>
+<pre><code class="language-text">Access-Control-Allow-Origin: http://mozilla.com
+</code></pre>
+<p>如果服务端指定了具体的域名而非“*”，那么响应首部中的 Vary 字段的值必须包含 Origin。这将告诉客户端：服务器对不同的源站返回不同的内容</p></li>
+<li><p>Access-Control-Expose-Headers : 让服务器把允许浏览器访问的头放入白名单<br/>
+在跨域访问时，XMLHttpRequest对象的getResponseHeader()方法只能拿到一些最基本的响应头，Cache-Control、Content-Language、Content-Type、Expires、Last-Modified、Pragma，如果要访问其他头，则需要服务器设置本响应头。<br/>
+例如：</p>
+<pre><code class="language-text">Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+</code></pre>
+<p>这样浏览器就能够通过getResponseHeader访问X-My-Custom-Header和 X-Another-Custom-Header 响应头了。</p></li>
+<li><p>Access-Control-Max-Age: <delta-seconds> <br/>
+指定了preflight请求的结果能够被缓存多久，delta-seconds 参数表示preflight请求的结果在多少秒内有效。</p></li>
+<li><p>Access-Control-Allow-Credentials: true|false <br/>
+指定了当浏览器的credentials设置为true时是否允许浏览器读取response的内容</p></li>
+<li><p>Access-Control-Allow-Methods: <method>[, <method>]* <br/>
+指明实际请求所允许使用的 HTTP 方法</p></li>
+<li><p>Access-Control-Allow-Headers: <field-name>[, <field-name>]* <br/>
+指明实际请求中允许携带的首部字段</p></li>
+</ul>
+
+<h2 id="toc_2">HTTP 请求header字段</h2>
+
+<ul>
+<li>Origin  表明预检请求或实际请求的源站 URI,不管是否跨域ORIGIN 字段总是被发送</li>
+<li>Access-Control-Request-Method 将实际请求所使用的 HTTP 方法告诉服务器</li>
+<li>Access-Control-Request-Headers  将实际请求所携带的首部字段告诉服务器</li>
+</ul>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>
