@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    HTTP协议（二）-- HTTP 协议报文结构 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            HTTP协议（二）-- HTTP 协议报文结构   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/07/24</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='http.html'>http</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">1.HTTP 报文</h2>
+
+<p>用于 HTTP 协议交互的信息被称为 HTTP 报文。请求端（客户端）的 HTTP 报文叫做请求报文；响应端（服务器端）的叫做响应报文。HTTP 报文本身是由多行（用 CR+LF 作换行符）数据构成的字符串文本。</p>
+
+<h2 id="toc_1">2.HTTP 报文结构</h2>
+
+<p>HTTP 报文大致可分为报文首部和报文主体两部分。两者由最初出现的空行（CR+LF）来划分。通常，并不一定有报文主体。如下：</p>
+
+<p><figure><img src="media/15955168840534/15957370382069.jpg" alt="HTTP 报文结构"/><figcaption>HTTP 报文结构</figcaption></figure></p>
+
+<p><figure><img src="media/15955168840534/15957373454385.jpg" alt=""/></figure></p>
+
+<h3 id="toc_2">2.1请求报文结构</h3>
+
+<p><figure><img src="media/15955168840534/15957373620655.jpg" alt="请求报文结构"/><figcaption>请求报文结构</figcaption></figure></p>
+
+<p>请求报文的首部内容由以下数据组成：</p>
+
+<ul>
+<li>请求行 —— 包含用于请求的方法、请求 URI 和 HTTP 版本。</li>
+<li>首部字段 —— 包含表示请求的各种条件和属性的各类首部。（通用首部、请求首部、实体首部以及RFC里未定义的首部如 Cookie 等）<br/>
+请求报文的示例，如下：
+<figure><img src="media/15955168840534/15957373766248.jpg" alt="请求报文示例"/><figcaption>请求报文示例</figcaption></figure></li>
+</ul>
+
+<h3 id="toc_3">2.2响应报文结构</h3>
+
+<p><figure><img src="media/15955168840534/15957373975954.jpg" alt="响应报文结构"/><figcaption>响应报文结构</figcaption></figure></p>
+
+<p>响应报文的首部内容由以下数据组成：</p>
+
+<ul>
+<li>状态行 —— 包含表明响应结果的状态码、原因短语和 HTTP 版本。</li>
+<li>首部字段 —— 包含表示请求的各种条件和属性的各类首部。（通用首部、响应首部、实体首部以及RFC里未定义的首部如 Cookie 等）<br/>
+响应报文的示例，如下：
+<figure><img src="media/15955168840534/15957375812162.jpg" alt=""/></figure></li>
+</ul>
+
+<h2 id="toc_4">HTTP 报文首部之请求行、状态行</h2>
+
+<h3 id="toc_5">1.请求行</h3>
+
+<p>举个栗子，下面是一个 HTTP 请求的报文：</p>
+
+<pre><code class="language-text">GET  /index.htm  HTTP/1.1
+Host: sample.com
+</code></pre>
+
+<p>其中，下面的这行就是请求行，</p>
+
+<pre><code class="language-text">GET  /index.htm  HTTP/1.1
+</code></pre>
+
+<ul>
+<li>开头的 GET 表示请求访问服务器的类型，称为方法；</li>
+<li>随后的字符串 /index.htm 指明了请求访问的资源对象，也叫做请求 URI；</li>
+<li>最后的 HTTP/1.1，即 HTTP 的版本号，用来提示客户端使用的 HTTP 协议功能。<br/>
+综合来看，大意是请求访问某台 HTTP 服务器上的 /index.htm 页面资源。</li>
+</ul>
+
+<h3 id="toc_6">2.状态行</h3>
+
+<p>同样举个栗子，下面是一个 HTTP 响应的报文：</p>
+
+<pre><code class="language-text">HTTP/1.1  200  OK
+Date: Mon, 10 Jul 2017 15:50:06 GMT
+Content-Length: 256
+Content-Type: text/html
+    
+&lt;html&gt;
+...
+</code></pre>
+
+<p>其中，下面的这行就是状态行，</p>
+
+<pre><code class="language-text">HTTP/1.1  200  OK
+</code></pre>
+
+<p>开头的 HTTP/1.1 表示服务器对应的 HTTP 版本；<br/>
+紧挨着的 200 OK 表示请求的处理结果的状态码和原因短语。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

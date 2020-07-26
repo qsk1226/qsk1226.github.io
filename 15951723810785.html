@@ -165,12 +165,19 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 
 <p>redis集群中数据是和槽（slot）挂钩的，Redis将键空间分为了16384个slot，所有的数据根据一致哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上的。</p>
 
+<p>当数据库中的16384个槽都有节点在处理时,集群处于上线状态(ok);相反地,如果数据库中有任何一个槽没有得到处理,那么集群处于下线状态(fail)。</p>
+
 <p>Redis 通过如下算法计算出每个key所属的slot</p>
 
 <pre><code class="language-text">HASH_SLOT = CRC16(key) mod 16384
 </code></pre>
 
 <p>客户端可以请求任意一个节点，每个节点中都会保存所有16384个slot对应到哪一个节点的信息。如果一个key所属的slot正好由被请求的节点提供服务，则直接处理并返回结果，否则返回MOVED重定向信息。</p>
+
+<pre><code class="language-text">-MOVED slot IP:PORT
+</code></pre>
+
+<p>由-MOVED开头，接着是该key计算出的slot，然后是该slot对应到的节点IP和Port。客户端应该处理该重定向信息，并且向拥有该key 的节点发起请求。</p>
 
 <p>实际应用中，Redis客户端可以通过向集群请求slot 和节点的映射关系并缓存，然后通过本地计算要操作的key所属的slot，查询映射关系，直接向正确的节点发起请求，这样可以获得几乎等价于单节点部署的性能。</p>
 
@@ -186,6 +193,10 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 </ul>
 
 <p>当一个主节点发生故障后，其挂载的从节点会切换为主节点继续提供服务。</p>
+
+<p>当一条命令需要操作的key分属于不同的节点时，Redis会报错。<br/>
+Redis提供了一种称为hash tags的机制，由业务方保证当需要进行多个key的处理时，将所有key分布到同一个节点。<br/>
+该机制实现原理如下：如果一个key包括{substring}这种模式，则计算slot时只计算“{”和“}”之间的子字符串。即keys{sub}1、keys{sub}2、keys{sub}3 计算slot时都会按照sub串进行。这样保证这3个字符串会分布到同一个节点。</p>
 
                   </article>
                   <div class="comments-wrap">
