@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    七、JVM类的加载机制 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            七、JVM类的加载机制   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/08/02</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>从类被加载到虚拟机内存中开始，到卸载出内存为止，类的生命周期包括加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段，其中验证、准备和解析三部分称为连接。类的加载、连接、初始化过程都是在程序运行期间进行的</p>
+
+<p>在如下几种情况下，Java虚拟机将结束生命周期</p>
+
+<pre><code class="language-text">– 执行了System.exit()方法
+
+– 程序正常执行结束
+
+– 程序在执行过程中遇到了异常或错误而异常终止
+
+– 由于操作系统出现错误而导致Java虚拟机进程终止
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_0">类加载器的类型</h2>
+
+<ol>
+<li>java虚拟机自带的加载器
+<ul>
+<li>启动类加载器 (Bootstrap Classloader)<br/>
+此加载器没有父加载器，它的实现依赖于操作系统地城服务，是java虚拟机实现的一部分，负责加载虚拟机的核心类库。</li>
+<li>扩展类加载器 (Extension Classloader)<br/>
+扩展加载器负责加载系统属性java.ext.dirs指定位置的类库、加载jdk安装目录下面的jre/lib/ext目录下的类库，父类是java.lang.ClassLoader</li>
+<li>应用程序类加载器 (application Classloader)<br/>
+应用类加载器负责加载classpath或者系统属性java.class.path所指位置的类库。</li>
+</ul></li>
+<li>用户自定义的类加载器<br/>
+继承java.lang.ClassLoader，通过重写方法findClass/loadClass方法来实现自定义的委派机制/破坏委派机制的类加载器</li>
+</ol>
+
+<p>加载器的加载阶段主要完成3件事：</p>
+
+<pre><code class="language-text">1. 通过类的全限定名来获取定义此类的二进制字节流
+2. 将这个类字节流代表的静态存储结构转为 方法区的运行时数据结构
+3. 在堆中生成一个代表此类的java.lang.Class对象，作为访问方法区这些数据结构的入口。
+</code></pre>
+
+<p>JVM 规范允许加载器预测到某个类将要被使用就会预先加载这个类，在加载这个类的时候，如果发现这个class类有缺失或存在错误，类加载器必须在<strong><em>这个类被首次被使用的时候才会抛出错误信息</em></strong>。如果这类一直没有被程序主动使用，则加载器不会跑抛出错误。</p>
+
+<p><strong>获取ClassLoader的方式</strong>：</p>
+
+<ul>
+<li>clazz.getClassLoader() 获取当前类的加载器</li>
+<li>Thread.currentThread().getContextClassLoader() 获取当前线程的加载器</li>
+<li>ClassLoader.getSystemClassLoader() 获取系统的加载器</li>
+<li>DriverManager.getCallerClassLoader 获取调用者的ClassLoader</li>
+</ul>
+
+<h2 id="toc_1">jvm类加载器加载机制</h2>
+
+<ul>
+<li>全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载</li>
+<li>父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类</li>
+<li>缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效</li>
+</ul>
+
+<p>类加载有三种方式：</p>
+
+<pre><code class="language-text">1、命令行启动应用时候由JVM初始化加载
+2、通过Class.forName()方法动态加载
+3、通过ClassLoader.loadClass()方法动态加载
+</code></pre>
+
+<p>对于数组类而言， 情况就有所不同， 数组类本身不通过类加载器创建， 它是由 Java 虚拟机直接创建的。 但数组类与类加载器仍然有很密切的关系， 因为数组类的元素类型 (Element一个数组类（下面简Type, 指的是数组去掉所有维度的类型）最终是要靠类加载器去创建，一个数组类（简称为C)创建过程就遵循以下规则：</p>
+
+<ol>
+<li><p>如果数组的组件类型（Component Type, 指的是数组去掉一个维度的类型）是引用类型， 那就递归采用本节中定义的加载过程去加载这个组件类型， 数组C将在加载该组件类型的类加载器的类名称空间上被标识（ 一个类必须与类加载器一起确定唯一性）．</p></li>
+<li><p>如果数组的组件类型不是引用类型（假如是int[] 数组）， 数组是没有加载器的。</p></li>
+<li><p>数组类的可见性与它的组件类型的可见性一致， 如果组件类型不是引用类型， 那数组类的可见性将默认为public 。</p></li>
+</ol>
+
+<p>下面我们看下Class.forName(String name, boolean initialize, ClassLoader loader)方法的实现</p>
+
+<pre><code class="language-text">/**
+* name: 要加载类的名称
+* initalize: 是否要进行初始化操作，true：加载完之后要进行初始化操作，false不进行初始化操作
+* loader: 指定类加载加载器，如果为null，则使用启动加载器进行加载。
+* 
+*/
+public static Class&lt;?&gt; forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
+        Class&lt;?&gt; caller = null;
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            // Reflective call to get caller class is only needed if a security manager
+            // is present.  Avoid the overhead of making this call otherwise.
+            caller = Reflection.getCallerClass();
+            if (sun.misc.VM.isSystemDomainLoader(loader)) {
+                ClassLoader ccl = ClassLoader.getClassLoader(caller);
+                if (!sun.misc.VM.isSystemDomainLoader(ccl)) {
+                    sm.checkPermission(
+                        SecurityConstants.GET_CLASSLOADER_PERMISSION);
+                }
+            }
+        }
+        return forName0(name, initialize, loader, caller);
+    }
+    
+    /** Called after security check for system loader access checks have been made. */
+    private static native Class&lt;?&gt; forName0(String name, boolean initialize,
+                                            ClassLoader loader,
+                                            Class&lt;?&gt; caller)
+        throws ClassNotFoundException;
+</code></pre>
+
+<h2 id="toc_2">双亲委派模型</h2>
+
+<p>JVM的类加载器的实现方式采用双亲委派机制，所谓双亲委派机制是加载器在收到加载某个类的请求时，首先，它自己不会尝试去加载这个类，而是将请求委派给父加载器去完成，最终会委派给启动加载器(bootstrap classloader)去完成，如果父加载器无法完成加载请求，则在将请求委派给子加载器去完成。</p>
+
+<p>双亲委派模型意义：</p>
+
+<ul>
+<li>可以确保java核心类库所提供的类不会被自定义的类所代替</li>
+<li>不同的类加载器可以为相同名称的类创建额外的命名空间。相同名称的类可以并存在java虚拟机中，但需要不同的类加载器来加载他们</li>
+<li>不同类加载器所加载的类之间是不兼容的，这就相当于在java虚拟机内部创建了多个相互隔离的java类空间</li>
+</ul>
+
+<p>通过重写方法findClass/loadClass方法可以实现自定义的委派机制/破坏委派机制的类加载器</p>
+
+<p><strong>子加载器能访问到父加载器加载的类，但是反过来父加载器无法访问到子加载器所加载的类</strong><br/>
+每个加载器都有属于它自己的命名空间</p>
+
+<p>在运行期，一个java类的唯一性是由该类的完全限定名称(二进制名),和用于加载该类的定义类加载器所共同决定的。</p>
+
+<p>父ClassLoader可以使用当前线程Thread.currentThread().getContextClassLoader()所制定的ClassLoader加载的类，这就改变了父classLoader不能使用子classLoader或其他没有直接父子关系的ClassLoader加载的类的情况.</p>
+
+<p>如果没有通过setContextClassLoader(ClassLoader cl)进行设置的话，线程将继承其父线程的上下文加载器(在Laucher启动类中设置的)。java应用运行时的初始线程的上下文加载器是系统类加载器。在线程中运行的代码可以通过该类的加载器来加载类与资源。</p>
+
+<p><strong>SPI(service provider interface)</strong></p>
+
+<p>在双亲委托模型下，类加载是右下至上的，即下层的类加载器会委托上层加载器进行加载。但对于SPI来说，有些接口是Java和兴库所提供的，而java核心库是由启动类加载器来加载的，而这些接口的实现却来自于不同的jar包，java的启动类加载器是不会加载其他来源的jar包，这样传统的双亲委托模型就无法满足SPI要求。</p>
+
+<p>通过给当前线程设置上下文类加载器，就可以由设置的上下文类加载器来实现对接口实现类的加载,在SPI开发中经常使用到。</p>
+
+<p>关于线程上下文类加载器的使用模式</p>
+
+<p>如果一个类由加载器A加载，那么这个类的依赖类也是由相同的累啊加载器A加载的。ContextClassLoader 的作用就是为了破坏java的类加载机制。</p>
+
+<p>当高层提供了统一的接口让低层去实现，同时又要在搞成加载低层的类，就必须通过线程上下文类加载器来帮助高层ClassLoader找到并加载类。</p>
+
+<p>ServiceLoader类在jvm中是很重要的类,一个简单的服务提供者 加载工具。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

@@ -228,7 +228,27 @@ public class FiFOMutex {
 
 <h2 id="toc_1">AQS 使用方式</h2>
 
-<p>AQS 的主要使用方式是继承，子类通过继承 AQS 并实现它的抽象方法来管 理同步状态，在 AQS 里由一个 int 型的 state 来代表这个状态，在抽象方法的实 现过程中免不了要对同步状态进行更改，这时就需要使用同步器提供的 3 个方法 (getState()、setState(int newState)和 compareAndSetState(int expect,int update)) 来进行操作，因为它们能够保证状态的改变是安全的。</p>
+<p>AbstractQueuedSynchronizer 又称为队列同步器(后面简称AQS)。</p>
+
+<p>它是用来构建锁或其他同步组件的基础框架，内部通过一个int类型的成员变量state来控制同步状态：</p>
+
+<ul>
+<li>当state=0时，则说明没有任何线程占有共享资源的锁</li>
+<li>当state=1时，则说明有线程目前正在使用共享变量，其他线程必须加入同步队列进行等待</li>
+</ul>
+
+<p>AQS内部通过内部类 Node 构成 FIFO 的同步队列来完成线程获取锁的排队工作，同时利用内部类 ConditionObject 构建等待队列，当Condition 调用 wait() 方法后，线程将会加入等待队列中，而当Condition 调用signal() 方法后，线程将从等待队列转移动同步队列中进行锁竞争。</p>
+
+<p><strong>注意：</strong>这里涉及到两种队列，一种的同步队列，当线程请求锁而等待的后将加入同步队列等待，而另一种则是等待队列(可有多个)，通过Condition调用await()方法释放锁后，将加入等待队列</p>
+
+<p>AQS 的主要使用方式是继承，子类通过继承 AQS 并实现它的抽象方法来管 理同步状态 state，访问或修改同步状态的方法，重写同步器指定的方法时，需要使用同步器提供的如下 3 个方法来访问或修改同步状态：</p>
+
+<p>•getState():获取当前同步状态。</p>
+
+<p>•setState(int newState):设置当前同步状态。</p>
+
+<p>•compareAndSetState(int expect,int update)<br/>
+使用 CAS 设置当前状态，该方 法能够保证状态设置的原子性。</p>
 
 <p>AQS支持默认独占模式和共享模式来获取同步状态，子类应被定义为自定义同步组件的非公共静态内部类，AQS 自身不实现任何同步接口，它仅仅是定义了若干同步状态获取和释放的方法来供自定义同步组件使用，这样就可以方便实现不同类型的同步组件(ReentrantLock、 ReentrantReadWriteLock、CountDownLatch、Semaphore、CyclicBarrier 等)。</p>
 
@@ -269,7 +289,7 @@ public class FiFOMutex {
 </tr>
 <tr>
 <td>boolean release(int arg)</td>
-<td>以独占方式释放同步状态，在释放同步状态之后，将同步队列中第一个节点包含的线程唤醒</td>
+<td>以独占方式释放同步状态，在释放同步状态之后，将同步队列中第一个节点包含的线程唤醒。</td>
 </tr>
 <tr>
 <td>boolean releaseShared(int arg)</td>
@@ -357,16 +377,10 @@ public class FiFOMutex {
 </tr>
 <tr>
 <td>boolean isHeldExclusively()</td>
-<td>当前同步器是否被当前线程所独占，此方法仅在AbstractQueuedSynchronizer.ConditionObject方法内部调用，因此如果不使用条件，则不需要定义该方法</td>
+<td>当前同步器是否被当前线程所独占，此方法仅在AbstractQueuedSynchronizer.ConditionObject方法内部调用，因此如果不使用条件，则不需要定义该方法。</td>
 </tr>
 </tbody>
 </table>
-
-<p>访问或修改同步状态的方法<br/>
-重写同步器指定的方法时，需要使用同步器提供的如下 3 个方法来访问或修 改同步状态。<br/>
-•getState():获取当前同步状态。<br/>
-•setState(int newState):设置当前同步状态。<br/>
-•compareAndSetState(int expect,int update):使用 CAS 设置当前状态，该方 法能够保证状态设置的原子性。</p>
 
 <p>开发者可以自定义同步器，例如：</p>
 
@@ -405,61 +419,79 @@ class BooleanLatch {
 
 <p><figure><img src="media/15867863097702/15874785413013.jpg" alt=""/></figure></p>
 
+<pre><code class="language-java">/**
+ * AQS抽象类
+ */
+public abstract class AbstractQueuedSynchronizer
+    extends AbstractOwnableSynchronizer{
+//指向同步队列队头
+private transient volatile Node head;
+
+//指向同步的队尾
+private transient volatile Node tail;
+
+//同步状态，0代表锁未被占用，1代表锁已被占用
+private volatile int state;
+
+//省略其他代码......
+}
+</code></pre>
+
 <h4 id="toc_4">Node节点</h4>
 
 <p>Node节点是同步队列节点类。同步队列（由Node实现）是“CLH”(Craig、Landin和Hagersten)锁队列的变体，CLH锁通常用于自旋锁。<br/>
 Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请求的状态（取消、通知下一节点）；3、当前节点的前驱和后驱节点等信息。</p>
 
-<p>Node节点设计如下：</p>
+<p>Node节点数据结构如下所示：</p>
 
 <pre><code class="language-java">static final class Node {
-        // 初始 共享模式节点
-        static final Node SHARED = new Node();
-        // 独占模式节点
-        static final Node EXCLUSIVE = null;
-        //表示由于超时或中断线程，已取消的等待状态值
-        static final int CANCELLED = 1; 
-        //表示当前节点在释放或取消的占用状态的时候需要将其后继节点的线程唤醒
-        static final int SIGNAL = -1;
-        //表示线程正在等待某个条件
-        static final int CONDITION = -2;
-        //表示一个被释放的节点应该被传播到其他节点。这是在doReleaseShared中设置的(仅针对head节点)，以确保传播能够继续，即使其他操作已经介入。
-        static final int PROPAGATE = -3;
-        // 线程”获取锁“ 的请求等待状态 0、CANCELLED、SIGNAL、PROPAGATE、CONDITION
-        volatile int waitStatus;
-        // 表示该节点的前一个 Node 节点(前驱)
-        volatile Node prev;
-        //表示该节点的后一个 Node 节点(后继)
-        volatile Node next;
-        // 表示该节点的代表的线程
-        volatile Thread thread;
-        // 表示等待 condition 条件的 Node 节点
-        Node nextWaiter;
-        // 是否共享模式
-        final boolean isShared() {
-            return nextWaiter == SHARED;
-        }
-        // 当前节点的前驱节点
-        final Node predecessor() throws NullPointerException {
-            Node p = prev;
-            if (p == null)
-                throw new NullPointerException();
-            else
-                return p;
-        }
-        //用于建立初始标头或共享标头
-        Node() {}
-        
-        Node(Thread thread, Node mode) {     // Used by addWaiter
-            this.nextWaiter = mode;
-            this.thread = thread;
-        }
-
-        Node(Thread thread, int waitStatus) { // Used by Condition
-            this.waitStatus = waitStatus;
-            this.thread = thread;
-        }
+    // 初始 共享模式节点
+    static final Node SHARED = new Node();
+    // 独占模式节点
+    static final Node EXCLUSIVE = null;
+    //表示由于超时或中断线程，已取消的等待状态值
+    static final int CANCELLED = 1; 
+    //表示当前节点在释放或取消的占用状态的时候需要将其后继节点的线程唤醒
+    static final int SIGNAL = -1;
+    //表示线程正在等待某个条件
+    static final int CONDITION = -2;
+    //表示一个被释放的节点应该被传播到其他节点。这是在doReleaseShared中设置的(仅针对head节点)，以确保传播能够继续，即使其他操作已经介入。
+    static final int PROPAGATE = -3;
+    // 线程”获取锁“ 的请求等待状态 0、CANCELLED、SIGNAL、PROPAGATE、CONDITION
+    volatile int waitStatus;
+    // 表示该节点的前一个 Node 节点(前驱)
+    volatile Node prev;
+    //表示该节点的后一个 Node 节点(后继)
+    volatile Node next;
+    // 表示该节点的代表的线程
+    volatile Thread thread;
+    // 表示等待 condition 条件的 Node 节点
+    Node nextWaiter;
+    // 是否共享模式
+    final boolean isShared() {
+        return nextWaiter == SHARED;
     }
+    // 当前节点的前驱节点
+    final Node predecessor() throws NullPointerException {
+        Node p = prev;
+        if (p == null)
+            throw new NullPointerException();
+        else
+            return p;
+    }
+    //用于建立初始标头或共享标头
+    Node() {}
+    
+    Node(Thread thread, Node mode) {     // Used by addWaiter
+        this.nextWaiter = mode;
+        this.thread = thread;
+    }
+
+    Node(Thread thread, int waitStatus) { // Used by Condition
+        this.waitStatus = waitStatus;
+        this.thread = thread;
+    }
+}
 </code></pre>
 
 <h4 id="toc_5">head 和 tail</h4>

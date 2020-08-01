@@ -4,13 +4,553 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-07-26T14:01:01+08:00</updated>
+  <updated>2020-08-02T00:09:03+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[七、JVM类的加载机制]]></title>
+    <link href="http://www.throne4j.com/15962980278783.html"/>
+    <updated>2020-08-02T00:07:07+08:00</updated>
+    <id>http://www.throne4j.com/15962980278783.html</id>
+    <content type="html"><![CDATA[
+<p>从类被加载到虚拟机内存中开始，到卸载出内存为止，类的生命周期包括加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段，其中验证、准备和解析三部分称为连接。类的加载、连接、初始化过程都是在程序运行期间进行的</p>
+
+<p>在如下几种情况下，Java虚拟机将结束生命周期</p>
+
+<pre><code class="language-text">– 执行了System.exit()方法
+
+– 程序正常执行结束
+
+– 程序在执行过程中遇到了异常或错误而异常终止
+
+– 由于操作系统出现错误而导致Java虚拟机进程终止
+</code></pre>
+
+<hr/>
+
+<h2 id="toc_0">类加载器的类型</h2>
+
+<ol>
+<li>java虚拟机自带的加载器
+<ul>
+<li>启动类加载器 (Bootstrap Classloader)<br/>
+此加载器没有父加载器，它的实现依赖于操作系统地城服务，是java虚拟机实现的一部分，负责加载虚拟机的核心类库。</li>
+<li>扩展类加载器 (Extension Classloader)<br/>
+扩展加载器负责加载系统属性java.ext.dirs指定位置的类库、加载jdk安装目录下面的jre/lib/ext目录下的类库，父类是java.lang.ClassLoader</li>
+<li>应用程序类加载器 (application Classloader)<br/>
+应用类加载器负责加载classpath或者系统属性java.class.path所指位置的类库。</li>
+</ul></li>
+<li>用户自定义的类加载器<br/>
+继承java.lang.ClassLoader，通过重写方法findClass/loadClass方法来实现自定义的委派机制/破坏委派机制的类加载器</li>
+</ol>
+
+<p>加载器的加载阶段主要完成3件事：</p>
+
+<pre><code class="language-text">1. 通过类的全限定名来获取定义此类的二进制字节流
+2. 将这个类字节流代表的静态存储结构转为 方法区的运行时数据结构
+3. 在堆中生成一个代表此类的java.lang.Class对象，作为访问方法区这些数据结构的入口。
+</code></pre>
+
+<p>JVM 规范允许加载器预测到某个类将要被使用就会预先加载这个类，在加载这个类的时候，如果发现这个class类有缺失或存在错误，类加载器必须在<strong><em>这个类被首次被使用的时候才会抛出错误信息</em></strong>。如果这类一直没有被程序主动使用，则加载器不会跑抛出错误。</p>
+
+<p><strong>获取ClassLoader的方式</strong>：</p>
+
+<ul>
+<li>clazz.getClassLoader() 获取当前类的加载器</li>
+<li>Thread.currentThread().getContextClassLoader() 获取当前线程的加载器</li>
+<li>ClassLoader.getSystemClassLoader() 获取系统的加载器</li>
+<li>DriverManager.getCallerClassLoader 获取调用者的ClassLoader</li>
+</ul>
+
+<h2 id="toc_1">jvm类加载器加载机制</h2>
+
+<ul>
+<li>全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载</li>
+<li>父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类</li>
+<li>缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效</li>
+</ul>
+
+<p>类加载有三种方式：</p>
+
+<pre><code class="language-text">1、命令行启动应用时候由JVM初始化加载
+2、通过Class.forName()方法动态加载
+3、通过ClassLoader.loadClass()方法动态加载
+</code></pre>
+
+<p>对于数组类而言， 情况就有所不同， 数组类本身不通过类加载器创建， 它是由 Java 虚拟机直接创建的。 但数组类与类加载器仍然有很密切的关系， 因为数组类的元素类型 (Element一个数组类（下面简Type, 指的是数组去掉所有维度的类型）最终是要靠类加载器去创建，一个数组类（简称为C)创建过程就遵循以下规则：</p>
+
+<ol>
+<li><p>如果数组的组件类型（Component Type, 指的是数组去掉一个维度的类型）是引用类型， 那就递归采用本节中定义的加载过程去加载这个组件类型， 数组C将在加载该组件类型的类加载器的类名称空间上被标识（ 一个类必须与类加载器一起确定唯一性）．</p></li>
+<li><p>如果数组的组件类型不是引用类型（假如是int[] 数组）， 数组是没有加载器的。</p></li>
+<li><p>数组类的可见性与它的组件类型的可见性一致， 如果组件类型不是引用类型， 那数组类的可见性将默认为public 。</p></li>
+</ol>
+
+<p>下面我们看下Class.forName(String name, boolean initialize, ClassLoader loader)方法的实现</p>
+
+<pre><code class="language-text">/**
+* name: 要加载类的名称
+* initalize: 是否要进行初始化操作，true：加载完之后要进行初始化操作，false不进行初始化操作
+* loader: 指定类加载加载器，如果为null，则使用启动加载器进行加载。
+* 
+*/
+public static Class&lt;?&gt; forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
+        Class&lt;?&gt; caller = null;
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            // Reflective call to get caller class is only needed if a security manager
+            // is present.  Avoid the overhead of making this call otherwise.
+            caller = Reflection.getCallerClass();
+            if (sun.misc.VM.isSystemDomainLoader(loader)) {
+                ClassLoader ccl = ClassLoader.getClassLoader(caller);
+                if (!sun.misc.VM.isSystemDomainLoader(ccl)) {
+                    sm.checkPermission(
+                        SecurityConstants.GET_CLASSLOADER_PERMISSION);
+                }
+            }
+        }
+        return forName0(name, initialize, loader, caller);
+    }
+    
+    /** Called after security check for system loader access checks have been made. */
+    private static native Class&lt;?&gt; forName0(String name, boolean initialize,
+                                            ClassLoader loader,
+                                            Class&lt;?&gt; caller)
+        throws ClassNotFoundException;
+</code></pre>
+
+<h2 id="toc_2">双亲委派模型</h2>
+
+<p>JVM的类加载器的实现方式采用双亲委派机制，所谓双亲委派机制是加载器在收到加载某个类的请求时，首先，它自己不会尝试去加载这个类，而是将请求委派给父加载器去完成，最终会委派给启动加载器(bootstrap classloader)去完成，如果父加载器无法完成加载请求，则在将请求委派给子加载器去完成。</p>
+
+<p>双亲委派模型意义：</p>
+
+<ul>
+<li>可以确保java核心类库所提供的类不会被自定义的类所代替</li>
+<li>不同的类加载器可以为相同名称的类创建额外的命名空间。相同名称的类可以并存在java虚拟机中，但需要不同的类加载器来加载他们</li>
+<li>不同类加载器所加载的类之间是不兼容的，这就相当于在java虚拟机内部创建了多个相互隔离的java类空间</li>
+</ul>
+
+<p>通过重写方法findClass/loadClass方法可以实现自定义的委派机制/破坏委派机制的类加载器</p>
+
+<p><strong>子加载器能访问到父加载器加载的类，但是反过来父加载器无法访问到子加载器所加载的类</strong><br/>
+每个加载器都有属于它自己的命名空间</p>
+
+<p>在运行期，一个java类的唯一性是由该类的完全限定名称(二进制名),和用于加载该类的定义类加载器所共同决定的。</p>
+
+<p>父ClassLoader可以使用当前线程Thread.currentThread().getContextClassLoader()所制定的ClassLoader加载的类，这就改变了父classLoader不能使用子classLoader或其他没有直接父子关系的ClassLoader加载的类的情况.</p>
+
+<p>如果没有通过setContextClassLoader(ClassLoader cl)进行设置的话，线程将继承其父线程的上下文加载器(在Laucher启动类中设置的)。java应用运行时的初始线程的上下文加载器是系统类加载器。在线程中运行的代码可以通过该类的加载器来加载类与资源。</p>
+
+<p><strong>SPI(service provider interface)</strong></p>
+
+<p>在双亲委托模型下，类加载是右下至上的，即下层的类加载器会委托上层加载器进行加载。但对于SPI来说，有些接口是Java和兴库所提供的，而java核心库是由启动类加载器来加载的，而这些接口的实现却来自于不同的jar包，java的启动类加载器是不会加载其他来源的jar包，这样传统的双亲委托模型就无法满足SPI要求。</p>
+
+<p>通过给当前线程设置上下文类加载器，就可以由设置的上下文类加载器来实现对接口实现类的加载,在SPI开发中经常使用到。</p>
+
+<p>关于线程上下文类加载器的使用模式</p>
+
+<p>如果一个类由加载器A加载，那么这个类的依赖类也是由相同的累啊加载器A加载的。ContextClassLoader 的作用就是为了破坏java的类加载机制。</p>
+
+<p>当高层提供了统一的接口让低层去实现，同时又要在搞成加载低层的类，就必须通过线程上下文类加载器来帮助高层ClassLoader找到并加载类。</p>
+
+<p>ServiceLoader类在jvm中是很重要的类,一个简单的服务提供者 加载工具。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[五、深入理解JVM---垃圾回收机制]]></title>
+    <link href="http://www.throne4j.com/15960948965127.html"/>
+    <updated>2020-07-30T15:41:36+08:00</updated>
+    <id>http://www.throne4j.com/15960948965127.html</id>
+    <content type="html"><![CDATA[
+<p>对java的垃圾回收机制来说，我们需要考虑3个问题</p>
+
+<ol>
+<li>哪些内存需要回收</li>
+<li>什么时候回收</li>
+<li>如何回收</li>
+</ol>
+
+<p>引用计数算法</p>
+
+<p>给对象添加一个引用计数器，当一个地方引用它，则计数器加1，引用失效，计数器减1，任何时候 计数器为0 的对象就是不可在此使用的对象。<br/>
+它很难解决对象直减的相互循环引用的问题。  </p>
+
+<pre><code class="language-text">
+/**
+ * 这个示例展示两个对象相互引用，程序计数器不会为0的，
+ * 如果gc采用引用计数算法，这两个对象将不会得到回收。
+ * 但实际情况是，这两个对象得到了回收，hospital jvm采用的不是引用计数垃圾回收算法。
+ * -XX:+PrintGCDetails -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:SurvivorRatio=8
+ *
+ * @author qinshengke
+ * @since 2020/1/9
+ */
+public class ReferenceCountingGC {
+
+    public Object instance = null;
+
+    private static final int _1MB = 1024 * 1024;
+
+    private byte[] bigSize = new byte[2 * _1MB];
+
+    public static void testGC() {
+        ReferenceCountingGC objA = new ReferenceCountingGC();
+        ReferenceCountingGC objB = new ReferenceCountingGC();
+        objA.instance = objB;
+        objB.instance = objA;
+
+        objA = null;
+        objB = null;
+
+        System.gc();
+    }
+
+
+    public static void main(String[] args) {
+        testGC();
+    }
+}
+垃圾回收结果
+[GC (System.gc()) [PSYoungGen: 8028K-&gt;624K(76288K)] 8028K-&gt;632K(251392K), 0.0016257 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] 
+[Full GC (System.gc()) [PSYoungGen: 624K-&gt;0K(76288K)] [ParOldGen: 8K-&gt;418K(175104K)] 632K-&gt;418K(251392K), [Metaspace: 3153K-&gt;3153K(1056768K)], 0.0134161 secs] [Times: user=0.03 sys=0.00, real=0.01 secs] 
+Heap
+ PSYoungGen      total 76288K, used 1966K [0x000000076ab00000, 0x0000000770000000, 0x00000007c0000000)
+  eden space 65536K, 3% used [0x000000076ab00000,0x000000076aceb9e0,0x000000076eb00000)
+  from space 10752K, 0% used [0x000000076eb00000,0x000000076eb00000,0x000000076f580000)
+  to   space 10752K, 0% used [0x000000076f580000,0x000000076f580000,0x0000000770000000)
+ ParOldGen       total 175104K, used 418K [0x00000006c0000000, 0x00000006cab00000, 0x000000076ab00000)
+  object space 175104K, 0% used [0x00000006c0000000,0x00000006c0068b30,0x00000006cab00000)
+ Metaspace       used 3173K, capacity 4496K, committed 4864K, reserved 1056768K
+  class space    used 356K, capacity 388K, committed 512K, reserved 1048576K
+</code></pre>
+
+<p>根搜索算法 GC Roots Tracing <br/>
+可作为GC Roots的对象包括下面几种：</p>
+
+<ul>
+<li>虚拟机栈(栈帧中的本地变量表)中的引用对象</li>
+<li>方法区中的类静态属性引用的对象</li>
+<li>方法区中的常量引用的对象</li>
+<li>本地方法中JNI引用的对象</li>
+</ul>
+
+<p>方法区主要回收两部分的内容： 废弃常量和无用类。<br/>
+类回收需要满足如下3个条件：</p>
+
+<ul>
+<li>该类所有的实例都已经别GC,也就是JVM中不存在该Class的任何实例</li>
+<li>加载该类的ClassLoader已经被GC</li>
+<li>该类对应的java.lang.Class对象没有在任何地方被引用，如不能在任何地方通过反射访问该类的方法。</li>
+</ul>
+
+<p>常见的垃圾收集算法(gc)</p>
+
+<ul>
+<li>标记-清除算法 mark-sweep</li>
+<li>标记整理算法 mark-compact</li>
+<li>复制算法 copying</li>
+<li>分代算法 generational</li>
+</ul>
+
+<p>年轻代</p>
+
+<ul>
+<li>新生成的对象都放在新生代，<strong>年轻代用复制算法进行gc</strong>(理论上，年轻代对象的生命周期非常短，是和复制算法)</li>
+<li>年轻代分为3个区域，Eden区、from survivor、 to survivor，Eden区满的时候，还存活的对象将被复制到一个from survivor，当from survivor区域满了之后，依然存活的对象被移动到to survivor 区域，to survivor区域满了之后，依然存活的对象会被复制到老年代。</li>
+<li>Eden和两个survivor的缺省比例是8:1:1</li>
+</ul>
+
+<p>老年代</p>
+
+<ul>
+<li>存放了经过一个或多次GC还存活的对象</li>
+<li>一般采用Mark-Sweep或者Mark-Compact算法进行GC</li>
+<li>有多种垃圾收集器可以选择。每种垃圾收集器可以看做一个GC算法的具体实现。可以根据具体应用的需求选用何时的垃圾收集器(追求吞吐量还是追求最短的湘阴那个时间？)</li>
+</ul>
+
+<p>大对象在内存中会直接分配到老年代上<br/>
+原子类型的内存分批是分配在java虚拟机栈上</p>
+
+<h2 id="toc_0">垃圾回收</h2>
+
+<p>GC要做的是将那些死亡(没有被引用对象)的对象所占用的内存回收掉。在进行full gc的时候会对Reference类型的应用那个进行特殊处理。<br/>
+无论是引用计数算法还是根搜索算法，都和对象的引用有关，那么我们看一下java中的引用概念，java将引用分为强引用、软引用、弱引用、虚引用四种</p>
+
+<ul>
+<li>强引用是通过new关键字创建的对象，只要存在强引用，则垃圾回收机制不能对此对象进行回收；</li>
+<li>软引用是用来描述非必须对象的，它通过SoftReference类实现的，软引用在JVM将要发生内存溢出时或者长期没有被使用的会将此类引用纳入可回收的范围内进行回收</li>
+<li>弱引用 也是藐视非必须对象的，它通过WeekReference类实现，但是它的地位要比软引用还要低，它存活于下一次垃圾回收之前，当下一次垃圾回收发生时，弱引用也会被回收掉。</li>
+<li>虚引用，它是最弱的一种引用关系，一个对象是否有序引用的存在，完全不会影响其生存时间，一万五发通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的就是希望在这个对象被收集器回收时收到一个系统通知。</li>
+</ul>
+
+<p>在根算法中不可达的对象，这个对象至少要经历两次标记过程，算法得出对象不可达后，第一次标记并进行一次筛选(根据对象是否有必要执行finalize()</p>
+
+<ul>
+<li>如果对象没有覆写finalize()方法</li>
+<li>finalize()方法已经被虚拟机调用过<br/>
+以上两种情况被视为没有必要执行回收操作</li>
+</ul>
+
+<p>如果对象被判定有必要执行finalize()方法，那么这个对象会被放置在一个名为F-Queue的队列之中，稍后由一条虚拟机自动建立的、低优先级的Finalizer线程去执行。</p>
+
+<p>年轻代的垃圾收集算法有 Serial、ParNew、Parallel Scavenge<br/>
+老年代的垃圾收集算法有 CMS、Serial Old(MSC)、Parallel Old</p>
+
+<p>[GC (Allocation Failure) [PSYoungGen: 2615K-&gt;663K(9216K)] 9783K-&gt;7839K(19456K), 0.0017269 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] </p>
+
+<p>(Allocation Failure)  gc触发原因<br/>
+2615K: 新生代gc时存活的对象<br/>
+663K： 新生代gc后存活的对象大小<br/>
+9216K: 新生代中总大小</p>
+
+<p>9783K: 堆中存活的对象大小<br/>
+7839K:</p>
+
+<h3 id="toc_1">GC的时机</h3>
+
+<ul>
+<li>在分代模型的基础上，GC从时机上分为两种: Scavenge GC和Full GC</li>
+<li>Scavenge GC(Minor GC)
+<ul>
+<li>触发时机: 新对象生成时，Eden空间满了</li>
+<li>理论上Eden区域大多数对象会在Scavenge GC 回收，复制算法的执行效率会非常高，Scavenge GC时间比较短。</li>
+</ul></li>
+<li>Full GC 
+<ul>
+<li>对整个JVM进行整理吗，包括Young、old和Perm/MetaSpace</li>
+<li>主要的触发时机: <br/>
+a) Old满了 <br/>
+b) Perm/MetaSpace满了<br/>
+c) System.gc()</li>
+<li>效率低，尽量减少Full GC。</li>
+</ul></li>
+</ul>
+
+<h4 id="toc_2">垃圾回收器</h4>
+
+<h5 id="toc_3">Serial</h5>
+
+<p>单线程收集器，收集时会暂停所有的工作线程</p>
+
+<ul>
+<li>最早的收集器，单线程执行</li>
+<li>New和Old Generation都可以使用</li>
+<li>在新生代采用复式算法；在老年代使用Mark-Compact算法</li>
+<li>虚拟机运行在client模式时的默认新生代垃圾收集器。</li>
+</ul>
+
+<h5 id="toc_4">ParNew收集器</h5>
+
+<ul>
+<li>ParNew收集器是Serial收集器的多线程版本</li>
+<li>虚拟机运行在Server模式的默认新生代收集器</li>
+<li>通过-XX:ParallelGCThreads来控制GC线程数的多少</li>
+</ul>
+
+<h5 id="toc_5">Parallel Scavenge 收集器</h5>
+
+<ul>
+<li>多线程收集器</li>
+<li>采用复制算法</li>
+<li>实现以吞吐量最大化为目标(允许较长时间内的STOP THE WORLD)</li>
+</ul>
+
+<h5 id="toc_6">CMS (Concurrent mark sweep)</h5>
+
+<ul>
+<li>以最短停顿时间为目标的垃圾收集器</li>
+<li>采用 标记-清除算法 mark-sweep</li>
+</ul>
+
+<p>缺点：</p>
+
+<ul>
+<li>以牺牲CPU资源为代价来提高gc吞吐量</li>
+<li>会产生内存碎片，可能导致频繁的Full GC操作<br/>
+##### Serial Old(MSC)、</li>
+<li>采用Mark-compact算法</li>
+</ul>
+
+<h5 id="toc_7">Parallel Old</h5>
+
+<ul>
+<li>Parallel Scavenge 在老年代的实现</li>
+<li>采用Mark-compact算法</li>
+<li>更注重吞吐量</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15960944458860.html"/>
+    <updated>2020-07-30T15:34:05+08:00</updated>
+    <id>http://www.throne4j.com/15960944458860.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15960944449763.html"/>
+    <updated>2020-07-30T15:34:04+08:00</updated>
+    <id>http://www.throne4j.com/15960944449763.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[二、软引用（SoftReference）和引用队列（ReferenceQueue）]]></title>
+    <link href="http://www.throne4j.com/15960942993253.html"/>
+    <updated>2020-07-30T15:31:39+08:00</updated>
+    <id>http://www.throne4j.com/15960942993253.html</id>
+    <content type="html"><![CDATA[
+<p>软引用可用来实现内存敏感的高速缓存。</p>
+
+<h2 id="toc_0">软引用（SoftReference）</h2>
+
+<p>如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。</p>
+
+<p>SoftReference的特点是它的一个实例保存对一个Java对象的软引用，该软引用的存在不妨碍垃圾收集线程对该Java对象的回收。也就是说，一旦SoftReference保存了对一个Java对象的软引用后，在垃圾线程对这个Java对象回收前，SoftReference类所提供的get()方法返回Java对象的强引用。另外，一旦垃圾线程回收该Java对象之后，get()方法将返回null。</p>
+
+<pre><code class="language-java">MyObject aRef = new MyObject();
+SoftReference  aSoftRef=new SoftReference(aRef);
+</code></pre>
+
+<p>此时，对于这个MyObject对象，有两个引用路径，一个是来自SoftReference对象的软引用，一个来自变量aReference的强引用，所以这个MyObject对象是强可及对象。<br/>
+随即，我们可以结束aReference对这个MyObject实例的强引用: aRef = null;</p>
+
+<p>此后，这个MyObject对象成为了软可及对象。如果垃圾收集线程进行内存垃圾收集，并不会因为有一个SoftReference对该对象的引用而始终保留该对象。Java虚拟机的垃圾收集线程对软可及对象和其他一般Java对象进行了区别对待:软可及对象的清理是由垃圾收集线程根据其特定算法按照内存需求决定的。也就是说，垃圾收集线程会在虚拟机抛出OutOfMemoryError之前回收软可及对象，而且虚拟机会尽可能优先回收长时间闲置不用的软可及对象，对那些刚刚构建的或刚刚使用过的“新”软可反对象会被虚拟机尽可能保留。在回收这些对象之前，我们可以通过:</p>
+
+<pre><code class="language-java">MyObject anotherRef=(MyObject)aSoftRef.get();
+</code></pre>
+
+<p>重新获得对该实例的强引用。而回收之后，调用get()方法就只能得到null了。</p>
+
+<h2 id="toc_1">ReferenceQueue工作机制</h2>
+
+<p>软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。使用ReferenceQueue清除失去了软引用对象的SoftReference。</p>
+
+<p>作为一个Java对象，SoftReference对象除了具有保存软引用的特殊性之外，也具有Java对象的一般性。所以，当软可及对象被回收之后，虽然这个SoftReference对象的get()方法返回null,但这个SoftReference对象已经不再具有存在的价值，需要一个适当的清除机制，避免大量SoftReference对象带来的内存泄漏。在java.lang.ref包里还提供了ReferenceQueue。如果在创建SoftReference对象的时候，使用了一个ReferenceQueue对象作为参数提供给SoftReference的构造方法，如:</p>
+
+<pre><code class="language-java">ReferenceQueue queue = new ReferenceQueue();
+SoftReference ref=new SoftReference(aMyObject, queue);
+</code></pre>
+
+<p>那么当这个SoftReference所软引用的aMyOhject被垃圾收集器回收的同时，ref所强引用的SoftReference对象被列入ReferenceQueue。也就是说，ReferenceQueue中保存的对象是Reference对象，而且是已经失去了它所软引用的对象的Reference对象。另外从ReferenceQueue这个名字也可以看出，它是一个队列，当我们调用它的poll()方法的时候，如果这个队列中不是空队列，那么将返回队列前面的那个Reference对象。<br/>
+在任何时候，我们都可以调用ReferenceQueue的poll()方法来检查是否有它所关心的非强可及对象被回收。如果队列为空，将返回一个null,否则该方法返回队列中前面的一个Reference对象。利用这个方法，我们可以检查哪个SoftReference所软引用的对象已经被回收。于是我们可以把这些失去所软引用的对象的SoftReference对象清除掉。常用的方式为:</p>
+
+<pre><code class="language-java">SoftReference ref = null;
+while ((ref = (EmployeeRef) q.poll()) != null) {
+    // 清除ref
+}
+</code></pre>
+
+<h2 id="toc_2">使用软引用构建敏感数据的缓存</h2>
+
+<h3 id="toc_3">为什么需要使用软引用</h3>
+
+<p>首先，我们看一个雇员信息查询系统的实例。我们将使用一个Java语言实现的雇员信息查询系统查询存储在磁盘文件或者数据库中的雇员人事档案信息。作为一个用户，我们完全有可能需要回头去查看几分钟甚至几秒钟前查看过的雇员档案信息(同样，我们在浏览WEB页面的时候也经常会使用“后退”按钮)。这时我们通常会有两种程序实现方式:一种是把过去查看过的雇员信息保存在内存中，每一个存储了雇员档案信息的Java对象的生命周期贯穿整个应用程序始终;另一种是当用户开始查看其他雇员的档案信息的时候，把存储了当前所查看的雇员档案信息的Java对象结束引用，使得垃圾收集线程可以回收其所占用的内存空间，当用户再次需要浏览该雇员的档案信息的时候，重新构建该雇员的信息。很显然，第一种实现方法将造成大量的内存浪费，而第二种实现的缺陷在于即使垃圾收集线程还没有进行垃圾收集，包含雇员档案信息的对象仍然完好地保存在内存中，应用程序也要重新构建一个对象。我们知道，访问磁盘文件、访问网络资源、查询数据库等操作都是影响应用程序执行性能的重要因素，如果能重新获取那些尚未被回收的Java对象的引用，必将减少不必要的访问，大大提高程序的运行速度。</p>
+
+<h2 id="toc_4">通过软可及对象重获方法实现Java对象的高速缓存</h2>
+
+<p>利用Java平台垃圾收集机制的特性以及前述的垃圾对象重获方法，我们通过一个雇员信息查询系统的小例子来说明如何构建一种高速缓存器来避免重复构建同一个对象带来的性能损失。我们将一个雇员的档案信息定义为一个Employee类:</p>
+
+<pre><code class="language-java">@Data
+public class Employee {
+    private String id;// 雇员的标识号码
+    private String name;// 雇员姓名
+    private String department;// 该雇员所在部门
+    private String Phone;// 该雇员联系电话
+    private int salary;// 该雇员薪资
+    private String origin;// 该雇员信息的来源
+}
+</code></pre>
+
+<p>这个Employee类的构造方法中我们可以预见，如果每次需要查询一个雇员的信息。哪怕是几秒中之前刚刚查询过的，都要重新构建一个实例，这是需要消耗很多时间的。下面是一个对Employee对象进行缓存的缓存器的定义:</p>
+
+<pre><code class="language-java">import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.util.HashTable;
+
+public class EmployeeCache {
+    // 一个Cache实例
+    private static EmployeeCache cache;
+    // 用于Chche内容的存储
+    private HashTable&lt;String,EmployeeRef&gt; employeeRefs;
+    private ReferenceQueue&lt;Employee&gt; q;// 垃圾Reference的队列
+    // 继承SoftReference，使得每一个实例都具有可识别的标识。并且该标识与其在HashMap内的key相同。
+    private class EmployeeRef extends SoftReference&lt;Employee&gt; {
+        private String _key = &quot;&quot;;
+        public EmployeeRef(Employee em, ReferenceQueue&lt;Employee&gt; q) {
+            super(em, q);
+            _key = em.getID();
+        }
+    }
+    // 构建一个缓存器实例
+    private EmployeeCache() {
+        employeeRefs = new HashTable&lt;String,EmployeeRef&gt;();
+        q = new ReferenceQueue&lt;Employee&gt;();
+    }
+    // 取得缓存器实例
+    public static EmployeeCache getInstance() {
+        if (cache == null) {
+            cache = new EmployeeCache();
+        }
+        return cache;
+    }
+    // 以软引用的方式对一个Employee对象的实例进行引用并保存该引用
+    private void cacheEmployee(Employee em) {
+        cleanCache();// 清除垃圾引用
+        EmployeeRef ref = new EmployeeRef(em, q);
+        employeeRefs.put(em.getID(), ref);
+    }
+    // 依据所指定的ID号，重新获取相应Employee对象的实例
+    public Employee getEmployee(String ID) {
+        Employee em = null;
+        // 缓存中是否有该Employee实例的软引用，如果有，从软引用中取得。
+        if (employeeRefs.containsKey(ID)) {
+            EmployeeRef ref = (EmployeeRef) employeeRefs.get(ID);
+            em = (Employee) ref.get();
+        }
+        // 如果没有软引用，或者从软引用中得到的实例是null，重新构建一个实例，
+        // 并保存对这个新建实例的软引用
+        if (em == null) {
+            em = new Employee(ID);
+            System.out.println(&quot;Retrieve From EmployeeInfoCenter. ID=&quot; + ID);
+            this.cacheEmployee(em);
+        }
+        return em;
+    }
+    // 清除那些所软引用的Employee对象已经被回收的EmployeeRef对象
+    private void cleanCache() {
+        EmployeeRef ref = null;
+        while ((ref = (EmployeeRef) q.poll()) != null) {
+            employeeRefs.remove(ref._key);
+        }
+    }
+    // 清除Cache内的全部内容
+    public void clearCache() {
+        cleanCache();
+        employeeRefs.clear();
+        System.gc();
+        System.runFinalization();
+    }
+}
+</code></pre>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[TCP/IP协议]]></title>
@@ -125,13 +665,25 @@ TCP/IP 与 OSI 在分层模块上稍有区别。OSI 参考模型注重“通信�
 
 <p>TCP 与 UDP 的区别相当大。它充分地实现了数据传输时各种控制功能，可以进行丢包时的重发控制，还可以对次序乱掉的分包进行顺序控制。而这些在 UDP 中都没有。此外，TCP 作为一种面向有连接的协议，只有在确认通信对端存在时才会发送数据，从而可以控制通信流量的浪费。</p>
 
-<p>根据 TCP 的这些机制，在 IP 这种无连接的网络上也能够实现高可靠性的通信（ 主要通过检验和、序列号、确认应答、重发控制、连接管理以及窗口控制等机制实现）。</p>
+<p>根据 TCP 的这些机制，在 IP 这种无连接的网络上也能够实现高可靠性的通信，主要通过一下机制来保证：</p>
+
+<ul>
+<li>检验和<br/>
+TCP 将保持它首部和数据的检验和。这是一个端到端的检验和，目的是检测数据在传输过程中的任何变化。如果收到段的检验和有差错，TCP 将丢弃这个报文段和不确认收到此报文段。</li>
+<li>序列号</li>
+<li>确认应答</li>
+<li>重发控制</li>
+<li>连接管理</li>
+<li>窗口控制</li>
+</ul>
 
 <h4 id="toc_13">3.3.1、三次握手</h4>
 
 <p>TCP 提供面向有连接的通信传输。面向有连接是指在数据通信开始之前先做好两端之间的准备工作。</p>
 
 <p>所谓三次握手是指建立一个 TCP 连接时需要客户端和服务器端总共发送三个包以确认连接的建立。在socket编程中，这一过程由客户端执行connect来触发。</p>
+
+<p>三次握手的目的是建立可靠的通信信道，说到通讯，简单来说就是数据的发送与接收，而三次握手最主要的目的就是双方确认自己与对方的发送与接收是正常的。</p>
 
 <p>下面来看看三次握手的流程图：</p>
 
@@ -410,8 +962,6 @@ NAT（NAPT）实际上是为正在面临地址枯竭的 IPv4 而开发的技术�
 <p>如上图的网络环境中，网络 A 与网络 B 之间无法直接进行通信，为了让它们之间正常通信，这时必须得采用 IP 隧道的功能。<br/>
 IP 隧道可以将那些从网络 A 发过来的 IPv6 的包统合为一个数据，再为之追加一个 IPv4 的首部以后转发给网络 C。<br/>
 一般情况下，紧接着 IP 首部的是 TCP 或 UDP 的首部。然而，现在的应用当中“ IP 首部的后面还是 IP 首部”或者“ IP 首部的后面是 IPv6 的首部”等情况与日俱增。这种在网络层的首部后面追加网络层首部的通信方法就叫做“ IP 隧道”。</p>
-
-<p>转载自<a href="https://juejin.im/post/5a069b6d51882509e5432656#heading-6">熟悉 TCP/IP 协议</a></p>
 
 ]]></content>
   </entry>
@@ -2452,7 +3002,7 @@ public class RedisUtils {
 
 <ul>
 <li>分槽（slot）：即如何决定某条数据应该由哪个节点提供服务；</li>
-<li>端如何向集群发起请求（客户端并不知道某个数据应该由哪个节点提供服务，并且如果扩容或者节点发生故障后，不应该影响客户端的访问）？</li>
+<li>端如何向集群发起请求(客户端并不知道某个数据应该由哪个节点提供服务，并且如果扩容或者节点发生故障后，不应该影响客户端的访问)</li>
 <li>某个节点发生故障之后，该节点服务的数据该如何处理？</li>
 <li>扩容，即向集群中添加新节点该如何操作？</li>
 <li>同一条命令需要处理的key分布在不同的节点中（如Redis中集合取并集、交集的相关命令），如何操作？</li>
@@ -2461,6 +3011,8 @@ public class RedisUtils {
 <h2 id="toc_0">redis 节点</h2>
 
 <p>一个 Redis集群通常有多个节点 （node）组成，一个正常工作的Redis集群通常由多个节点构成。连接各个节点的工作可以使用 cluster meet 命令来完成。</p>
+
+<p>节点和单机服务器在数据库方面的一个区别是,节点只能使用0号数据库,而单机Redis服务器则没有这一限制。</p>
 
 <pre><code class="language-shell">cluster meet &lt;ip&gt; &lt;port&gt;
 </code></pre>
@@ -2475,9 +3027,24 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 
 <p>通过 cluster meet 命令将 指定节点添加到集群后，cluster nodes 命令将返回多个节点信息。</p>
 
+<p>收到命令的节点A将与节点B进行握手( handshake),以此来确认彼此的存在,并为将来的进一步通信打好基础: <br/>
+1)节点A会为节点B创建一个c1 osterode结构,并将该结构添加到自己的c1 interstate. nodes字典里面。</p>
+
+<p>2)之后,节点A将根据CLUSTER MEET命令给定的P地址和端口号,向节点B发送一条MET消息( message) </p>
+
+<p>3)如果一切顺利,节点B将接收到节点A发送的MEET消息,节点B会为节点A创建一个c1 osterode结构,并将该结构添加到自己的c1 usterstate. nodes字典里面。</p>
+
+<p>4)之后,节点B将向节点A返回一条PONG消息。</p>
+
+<p>5)如果一切顺利,节点A将接收到节点B返回的PONG消息,通过这条PONG消息节点A可以知道节点B已经成功地接收到了自己发送的MEET消息。</p>
+
+<p>6)之后,节点A将向节点B返回一条PING消息。</p>
+
+<p>7)如果一切顺利,节点B将接收到节点A返回的PING消息,通过这条PING消息节点B可以知道节点A已经成功地接收到了自己返回的PONG消息,握手完成。</p>
+
 <h2 id="toc_1">slot 槽</h2>
 
-<p>redis集群中数据是和槽（slot）挂钩的，Redis将键空间分为了16384个slot，所有的数据根据一致哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上的。</p>
+<p>redis集群中数据是和槽（slot）挂钩的，Redis将键空间分为了16384个slot槽，所有的数据根据一致哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上的。</p>
 
 <p>当数据库中的16384个槽都有节点在处理时,集群处于上线状态(ok);相反地,如果数据库中有任何一个槽没有得到处理,那么集群处于下线状态(fail)。</p>
 
@@ -2511,6 +3078,190 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 <p>当一条命令需要操作的key分属于不同的节点时，Redis会报错。<br/>
 Redis提供了一种称为hash tags的机制，由业务方保证当需要进行多个key的处理时，将所有key分布到同一个节点。<br/>
 该机制实现原理如下：如果一个key包括{substring}这种模式，则计算slot时只计算“{”和“}”之间的子字符串。即keys{sub}1、keys{sub}2、keys{sub}3 计算slot时都会按照sub串进行。这样保证这3个字符串会分布到同一个节点。</p>
+
+<p>使用 CLUSTER KEYSLOT<kegy>命令可以査看一个给定键属于哪个槽:</p>
+
+<pre><code class="language-text">127、0.0。1:7000&gt; CLUSTER KEYSLOT date 
+(integer) 2022 
+127.0.0.1: 7000&gt; CLUSTER KEYSLOT&quot;msgn 
+(integer) 6257 
+127.0.0.1:7000&gt; LUST5 R KEYSLOT&quot;name
+ (integer) 5798 
+127.0.0.1:7000&gt; CLUSTER KEYS &quot;fruits&quot;
+ (integer) 14943
+</code></pre>
+
+<h3 id="toc_2">槽指派</h3>
+
+<p>通过向节点发送 CLUTER ADDSLOS命令,我们可以将一个或多个槽指派( assign) 给节点负责:</p>
+
+<pre><code class="language-text">cluster addslots &lt;slot&gt; [slot]
+</code></pre>
+
+<p>举个例子:</p>
+
+<pre><code class="language-text">127.0.0.1:7000&gt; cluster addslots 0 1 2 3 4 5000 
+127.0.0.1:7000&gt; cluster nodes 
+9dfb4c4e016e627d9769e4c9bb0d4fa208e65c26 127.0.0.1:7002 master - 0 1388316664849  0 connected 
+68eef66df23420a5862208ef5b1a7005b806f2ff  127.0.0.1:7001 mster -0  1388316665850  0 connected  
+51549e625cfda318ad27423a3le7476fe3cd2939 :0  myself, master - 0 0 0 connected   0-5000
+</code></pre>
+
+<h3 id="toc_3">传播节点的槽指派信息</h3>
+
+<p>个节点除了会将自己负责处理的槽记录在clusternode结构的s1ots属性和numslots属性之外,它还会将自己的s1ots数组通过消息发送给集群中的其他节点,以此来告知其他节点自己目前负责处理哪些槽。</p>
+
+<h2 id="toc_4">在集群中执行命令</h2>
+
+<p>在对数据库中的16384个槽都进行了指派之后,集群就会进人上线状态,这时客户端就可以向集群中的节点发送数据命令了。</p>
+
+<p>当客户端向节点发送与数据库键有关的命令时,接收命令的节点会计算出命令要处理的数据库键属于哪个槽,并检査这个槽是否指派给了自己: </p>
+
+<ul>
+<li>如果键所在的槽正好就指派给了当前节点,那么节点直接执行这个命令。</li>
+<li>如果键所在的槽并没有指派给当前节点,那么节点会向客户端返回一个 MOVED错误,指引客户端转向( redirect)至正确的节点,并再次发送之前想要执行的命令。</li>
+</ul>
+
+<p><figure><img src="media/15951723810785/15957684407998.jpg" alt=""/></figure></p>
+
+<h2 id="toc_5">重新分片</h2>
+
+<p>Redis集群的重新分片操作可以将任意数量已经指派给某个节点(源节点)的槽改为指派给另一个节点(目标节点),并且相关槽所属的键值对也会从源节点被移动到目标节点。</p>
+
+<p>重新分片操作可以在线(online)进行,在重新分片的过程中,集群不需要下线,并且源节点和目标节点都可以继续处理命令请求。</p>
+
+<h3 id="toc_6">重新分片的实现原理</h3>
+
+<p>Redis集群的重新分片操作是由 Redis 的集群管理软件 redis-trib负责执行的, Redis提供了进行重新分片所需的所有命令,而 redis-trib则通过向源节点和目标节点发送命令来进行重新分片操作。</p>
+
+<p>redis-trib对集群的单个槽s1ot进行重新分片的步骤如下: </p>
+
+<p>1) redis-trib 对目标节点发送 </p>
+
+<pre><code class="language-text">CLUSTER SETSLOT &lt;s1ot&gt; IMPORTING &lt;source_id&gt; 
+</code></pre>
+
+<p>命令,让目标节点准备好从源节点导人(import)属于槽s1ot的键值对。</p>
+
+<p>2) redis-trib对源节点发送 </p>
+
+<pre><code class="language-text">CLUSTER SETSLOT &lt;s1ot&gt; MIGRATING &lt;target_id&gt; 
+</code></pre>
+
+<p>命令,让源节点准备好将属于槽s1ot的键值对迁移(migrate)至目标节点。</p>
+
+<p>3) redis-trib向源节点发送</p>
+
+<pre><code class="language-text">CLUSTER GETKEYSINSLOT &lt;s1ot&gt; &lt;count&gt;
+</code></pre>
+
+<p>命令, 获得最多 count个属于槽s1t的键值对的键名( key name)。</p>
+
+<p>4)对于步骤3获得的每个键名, redis-trib都向源节点发送一个 </p>
+
+<pre><code class="language-text">MIGRATE &lt;target_ip&gt; &lt;target_port&gt; &lt;key_name&gt; 0 &lt;timeout&gt;
+</code></pre>
+
+<p>命令,将被选中的键原子地从源节点迁移至目标节点</p>
+
+<p>5)重复执行步骤3和步骤4,直到源节点保存的所有属于槽s1ot的健值对都被迁移至目标节点为止。每次迁移键的过程如下图所示。</p>
+
+<p><figure><img src="media/15951723810785/15957690921572.jpg" alt=""/></figure></p>
+
+<p>如果重新分片涉及多个槽,那么 redis-trib将对每个给定的槽分别执行上面给出的步聚。</p>
+
+<p>6) redis-trib向集群中的任意一个节点发送 </p>
+
+<pre><code class="language-text">CLUSTER SETSLOT &lt;slot&gt; NODE &lt;target_id&gt; 
+</code></pre>
+
+<p>命令,将槽 s1ot 指派给目标节点,这一指派信息会通过消息发送至整个集群</p>
+
+<p>对槽s1ot进行重新分片的整个过程:</p>
+
+<p><figure><img src="media/15951723810785/15957692235238.jpg" alt=""/></figure></p>
+
+<h3 id="toc_7">ASK错误</h3>
+
+<p>在进行重新分片期间，源节点向目标节点迁移一个槽的过程中，可能会出现这样一种情况：属于被迁移槽的一部分键值对保存在源节点里面，而另一部分键值对则保存在目标节点里面。</p>
+
+<p>当客户端向源节点发送一个与数据库键有关的命令，并且命令要处理的数据库键恰好就属于正在被迁移的槽时：</p>
+
+<ul>
+<li>源节点会先在自己的数据库里面查找指定的健,如果找到的话,就直接执行客户端发送的命令。</li>
+<li>相反地,如果源节点没能在自己的数据库里面找到指定的键,那么这个键有可能已经被迁移到了目标节点,源节点将向客户端返回一个ASK错误,指引客户端转向正在导入槽的目标节点,并再次发送之前想要执行的命令。</li>
+</ul>
+
+<h2 id="toc_8">复制与故障转移</h2>
+
+<p>Redis集群中的节点分为主节点(master)和从节点(slave),其中主节点用于处理槽,而从节点则用于复制某个主节点, 并在被复制的主节点下线时,代替下线主节点继续处理命令请求。<br/>
+例如下图所示的集群结构：</p>
+
+<p><figure><img src="media/15951723810785/15958629455311.jpg" alt="设置节点7004和节点7005 成为节点7000的从节点"/><figcaption>设置节点7004和节点7005 成为节点7000的从节点</figcaption></figure></p>
+
+<p>此节点的工作状态如下表格所示：<br/>
+<figure><img src="media/15951723810785/15958630271553.jpg" alt=""/></figure></p>
+
+<p>如果这时，节点7000进入下线状态，那么集群中仍在正常运作的几个主节点将在节点7000的两个从节点(7004、7005)中选出一个节点作为新的主节点，加入7004选为新的主节点，7005将切换为7004的从节点，这个新的主节点将接管原来节点7000负责处理的槽，并继续处理客户端发送的命令请求。如果切换之后 7000重新上线，那么它将成为节点7004的从节点。</p>
+
+<h2 id="toc_9">设置从节点</h2>
+
+<p>向一个节点发送命令</p>
+
+<pre><code class="language-text">cluster replicate &lt;node_id&gt;
+</code></pre>
+
+<p>可以让接收命令的节点成为 node_id 所指定节点的从节点,并开始对主节点进行复制。</p>
+
+<ul>
+<li>接收到该命令的节点 首先会在自己的 c1usterstate.nodes 字典中找到 node_id 所对应节点的c1usterNode结构,并将自己的 clusterstate.myself.slaveof 指针指向这个结构, 以此来记录这个节点正在复制的主节点。</li>
+<li>然后节点会修改自己在c1usterState.myse1f.flags中的属性, 关闭原本的REDIS_NODE_MASTER标识,打开 REDIS_NODE_SLAVE标识,表示这个节点已经由原来的主节点变成了从节点。</li>
+<li><p>最后,节点会调用复制代码,并根据c1usterState.myself.s1aveof指向的c1usterNode结构所保存的IP地址和端口号,对主节点进行复制。因为节点的复制功能和单机 Redis服务器的复制功能使用了相同的代码,所以让从节点复制主节点相当于向从节点发送命令 </p>
+<pre><code class="language-text">SLAVEOF &lt;master_ip&gt; &lt;master_port&gt;
+</code></pre></li>
+</ul>
+
+<h3 id="toc_10">故障检测</h3>
+
+<p>集群中的每个节点都会定期的想集群中的其它节点发送 PING 消息，以次来检测对方是否在线，如果接收 ping 消息的节点没有在规定的时间内，想发送 ping 消息的节点返回 pong 消息，那么发送 ping 消息的节点就会将接收 ping 消息的节点标记为<strong>疑似下线（probable fail）</strong>。</p>
+
+<p>集群中的各个节点会通过互相发送消息的方式来交换集群中各个节点的状态信息,例如某个节点是处于在线状态、疑似下线状态(PFAIL),还是已下线状态(FAIL)。</p>
+
+<p>当一个主节点A通过消息得知主节点B认为主节点C进入了疑似下线状态时,主节点A会在自己的c1usterState.nodes字典中找到主节点C所对应的c1usterNode结构, 并将主节点B的下线报告(failure report)添加到c1usterNode 结构的 fai1_reports 链表里面。</p>
+
+<p>如果在一个集群里面,半数以上负责处理槽的主节点都将某个主节点x报告为疑似下线那么这个主节点x将被标记为已下线(FAIL),将主节点x标记为已下线的节点会向集群广播条关于主节点x的FAIL消息,所有收到这条FAIL消息的节点都会立即将主节点x标记为已下线。</p>
+
+<h3 id="toc_11">故障转移</h3>
+
+<p>当一个从节点发现自己正在复制的主节点进入了已下线状态时,从节点将开始对下线主节点进行故障转移,以下是故障转移的执行步骤: </p>
+
+<p>1)复制下线主节点的所有从节点里面,会有一个从节点被选中。</p>
+
+<p>2)被选中的从节点会执行 SLAVEOF no one命令,成为新的主节点。</p>
+
+<p>3)新的主节点会撤销所有对已下线主节点的槽指派,并将这些槽全部指派给自己。</p>
+
+<p>4)新的主节点向集群广播一条PONG消息,这条PONG消息可以让集群中的其他节点立即知道这个节点已经由从节点变成了主节点,并且这个主节点已经接管了原本由已下线节点负责处理的槽。</p>
+
+<p>5)新的主节点开始接收和自己负责处理的槽有关的命令请求,故障转移完成。</p>
+
+<h3 id="toc_12">选举新的主节点</h3>
+
+<p>新的节点是如何通过选举产生的呢？</p>
+
+<ul>
+<li>集群的配置纪元是一个自增计数器，它的初始值为0。</li>
+<li>当集群里的某个节点开始一次故障转移操作时，集群配置纪元的值会被增一。</li>
+<li>对于每个配置纪元，集群里每个负责处理槽的主节点都有一次投票的机会，而第一个向主节点要求投票的从节点将获得主节点的投票。</li>
+<li>当从节点发现自己正在复制的主节点进入已下线状态时，从节点会想集群广播一条clustermsg_type_failover_auth_request 消息，要求所有收到这条消息，并且具有投票权的主节点向这个从节点投票。</li>
+<li>如果一个主节点具有投票权(它正在负责处理槽)，并且这个主节点尚未投票给其他从节点，那么主节点将向要求投票的从节点返回一条cluster_type+failover_auth_ack 消息，表示这个主节点支持从节点成为新的主节点。</li>
+<li>每个参与选举的从节点都会接受 clustermsg_type_failover_auth_ack 消息，并根据自己收到了多少条这种消息来捅进自己获得了多少主节点的支持。</li>
+<li>如果集群里有N个具有投票权的主节点，那么当一个从节点收集到超过半数张支持票时(N/2 +1)，这个从节点就会当选为新的主节点。<br/>
+因为在每一个配置纪元里面,每个具有投票权的主节点只能投一次票,所以如果有N个主节点进行投票,那么具有大于等于N/2+1张支持票的从节点只会有一个,这确保了新的主节点只会有一个。</li>
+<li>如果在一个配置纪元里面没有从节点能收集到足够多的支持票，那么集群进入一个新的配置纪元，并再次进行选举，直到选出新的主节点位置。</li>
+</ul>
+
+<p>集群中的节点通过发送和接收消息来进行通信,常见的消息包括MEET、PING、PONG、 PUBLISH、FAエL五种。</p>
 
 ]]></content>
   </entry>
@@ -3301,1610 +4052,6 @@ Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
 <p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
 
 <p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[八、Redis 持久化--RDB（一）]]></title>
-    <link href="http://www.throne4j.com/15942163464303.html"/>
-    <updated>2020-07-08T21:52:26+08:00</updated>
-    <id>http://www.throne4j.com/15942163464303.html</id>
-    <content type="html"><![CDATA[
-<p>Redis 是一个内存数据库，为了保证数据不丢失，持久化就显得尤为重要了。Redis 有两种持久化方法:RDB方式，RDB保存某一个时间点之前的数据；另一种为AOF方式，AOF保存的是Redis服务器端执行的每一条命令。</p>
-
-<p>通过info命令查看 redis服务端记录的相关持久化状态信息：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt;info
-# Persistence 
-loading:0                               //是否正在加载RDB文件内容
-rdb_changes_since_last_save:2           //最后一次保存之后改变的键的个数
-rdb_bgsave_in_progress:0                //是否正在后台执行RDB保存任务
-rdb_last_save_time:1540371552           //最后一次执行RDB保存任务的时间
-rdb_last_bgsave_status:ok               //最后一次执行RDB保存任务的状态
-rdb_last_bgsave_time_sec:0              //最后一次执行RDB保存任务消耗的时间
-rdb_current_bgsave_time_sec:-1          //如果正在执行RDB保存任务，则为当前RDB任务已经消耗的时间，否则为-1 
-rdb_last_cow_size:6631424               //最后一次执行RDB保存任务消耗的内存
-aof_enabled:0                           //是否开启了AOF功能aof_rewrite_in_progress:0               //是否正在后台执行AOF重写任务
-aof_rewrite_scheduled:0                 //是否等待调度一次AOF重写任务。如果触发了一次AOF重写，                                          但是后台正在执行RDB保存任务时会将该状态置为1 
-aof_last_rewrite_time_sec:-1            //最后一次执行AOF重写任务消耗的时间
-aof_current_rewrite_time_sec:-1         //如果正在执行AOF重写任务，则为当前该任务已经消耗的时间，否则为-1 
-aof_last_bgrewrite_status:ok            //最后一次执行AOF重写任务的状态
-aof_last_write_status:ok                //最后一次执行AOF缓冲区写入的状态（服务端执行命令时会开辟一段内存空间将命令放入其中，然后从该缓冲区中同步到文件。该状态标记最后一次同步到文件的状态
-aof_last_cow_size:0                     //最后一次执行AOF重写任务消耗的内存
-
-</code></pre>
-
-<h2 id="toc_0">RDB 持久化方式</h2>
-
-<p>RDB持久化方式是保存一个时间点的快照。</p>
-
-<p>RDB快照有两种触发方式</p>
-
-<ul>
-<li>配置参数，在配置文件中写入 <code>save 60 1000</code>，则在60秒内如果有1000个key发生变化，就出发一次RDB快照执行。</li>
-<li>通过客户端执行 bgsave 命令显式的触发一次RDB快照的执行。</li>
-</ul>
-
-<p>bgsave执行流程如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942173127342.jpg" alt="bgsave 执行流程"/><figcaption>bgsave 执行流程</figcaption></figure></p>
-
-<p>在客户端输入 bgsave 命令后，Redis调用 bgsaveCommand 函数，该函数fork一个子进程执行 rdbSave 函数进行实际的快照存储工作，而父进程可以继续处理客户端请求。当子进程退出后，父进程调用相关回调函数进行后续处理。</p>
-
-<h3 id="toc_1">RDB文件结构</h3>
-
-<p>RDB 整体文件结构如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942232766455.jpg" alt=""/></figure></p>
-
-<ul>
-<li>头部5字节固定为“REDIS”字符串</li>
-<li>4字节的RDB版本号（RDB_VERSION，注意不是Redis的版本号），当前RDB版本号为9，填充为4字节之后为0008。</li>
-<li><p>辅助字段AUX_FIELD_KEY_VALUE_PAIRS，辅助字段可以标明以下信息</p>
-<table>
-<thead>
-<tr>
-<th>字段名称</th>
-<th>字段值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>redis-ver</td>
-<td>5.0.04</td>
-</tr>
-<tr>
-<td>redis-bits</td>
-<td>64/32</td>
-</tr>
-<tr>
-<td>ctime</td>
-<td>当前时间戳</td>
-</tr>
-<tr>
-<td>used-mem</td>
-<td>redis占用内存</td>
-</tr>
-<tr>
-<td>aof-preamble</td>
-<td>是否开启aof/rdb混合持久化</td>
-</tr>
-<tr>
-<td>repl-stream-db</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-id</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-offset</td>
-<td>主从复制相关</td>
-</tr>
-</tbody>
-</table></li>
-<li><p>数据库序号：指明数据需要存放到哪个数据库</p></li>
-<li><p>当前数据库键值对散列表的大小，这样在加载时可以直接将散列表扩展到指定大小，提升加载速度。</p></li>
-<li><p>当前数据库过期时间散列表的大小</p></li>
-<li><p>Redis中具体键值对的存储</p></li>
-<li><p>RDB文件结束标志</p></li>
-<li><p>8字节校验码</p></li>
-</ul>
-
-<p>加载RDB文件的时候怎么区分加载的是辅助字段还是数据库序号或者是其他类型呢？其实在RDB每一部分之前都有一个类型字节，在Redis中称为opcodes，opcodes如下所示：</p>
-
-<pre><code class="language-c">#define RDB_OPCODE_MODULE_AUX    247        //module相关辅助字段
-#define RDB_OPCODE_IDLE          248        //lru空闲时间
-#define RDB_OPCODE_FREQ          249        //lfu频率
-#define RDB_OPCODE_AUX           250        //辅助字段类型
-#define RDB_OPCODE_RESIZEDB      251        //RESIZEDB，即上文中介绍的5和6两项
-#define RDB_OPCODE_EXPIRETIME_MS 252        //毫秒级别过期时间
-#define RDB_OPCODE_EXPIRETIME    253        //秒级别过期时间
-#define RDB_OPCODE_SELECTDB      254        //数据库序号，即第4项
-#define RDB_OPCODE_EOF           255        //结束标志，即第8项
-</code></pre>
-
-<p>带opcodes 的RDB 结构表显形式</p>
-
-<p><figure><img src="media/15942163464303/15942254144953.jpg" alt=""/></figure></p>
-
-<p>下面我们看下 键值对的结构，如下图所示<br/>
-<figure><img src="media/15942163464303/15942257282611.jpg" alt=""/></figure></p>
-
-<ul>
-<li>EXPIRE_TIME: 可选。根据具体的键是否有过期时间决定，该字段固定为8个字节。</li>
-<li>LRU或者LFU：可选。根据配置的内存淘汰算法决定。LRU算法保存秒级别的时间戳，LFU算法只保存counter的计数（0～255，1 字节）</li>
-<li><p>VALUE_TYPE：值类型。Redis数据类型和底层编码结构<br/>
-<figure><img src="media/15942163464303/15942258850154.jpg" alt=""/></figure></p></li>
-<li><p>KEY：键。键保存为字符串，下文会详细介绍字符串的保存形式。</p></li>
-<li><p>VALUE：值。值根据数据类型和编码结构保存为不同的形式</p></li>
-</ul>
-
-<h3 id="toc_2">RDB键的保存形式</h3>
-
-<p>redis中键都是字符串，比较常见的保存方法如下图所示：<br/>
-<figure><img src="media/15942163464303/15943123637192.jpg" alt=""/></figure></p>
-
-<p>前边LENGTH字段表示字符串长度，后边STRING即具体的字符串内容。</p>
-
-<p>Redis中的LENGTH是个变长字段，通过首字节能够知道LENGTH字段有多长，然后读取LENGTH字段可以知道具体的STRING长度。LENGTH字段类型如下:</p>
-
-<pre><code class="language-shell">00xxxxxx   #表示LENGTH字段占用1个字节，STRING的长度保存在后6个比特中，最长为63。
-01xxxxxx xxxxxxxx  #表示LENGTH字段占用2个字节，而STRING的长度保存在后14个字节中，最长为16383 
-10000000 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  表示LENGTH字段共占用5个字节，正好是一个无符号整型，STRING的长度最长为UINT32_MAX。 
-10000001 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx #如果STRING长度大于UINT32_MAX，则首字节表示为10000001，LENGTH字段共占用9个字节。后8字节表示实际长度，为一个LONG类型。
-</code></pre>
-
-<p>RDB中对字符串的保存还有两种优化形式：</p>
-
-<ul>
-<li><p>一种是尝试将字符串按整型保存<br/>
-<figure><img src="media/15942163464303/15943127989186.jpg" alt="字符串按整型保存"/><figcaption>字符串按整型保存</figcaption></figure> </p>
-<p>TYPE字段其实类似图20-5中的LENGTH字段，LENGTH字段首字节头两个比特取值为00、01、10这种类型，TYPE字段首字节头两个比特取值为11，后6个比特表明存储的整型类型，如下所示：</p>
-<pre><code class="language-text">11000000 xxxxxxxx  INT8   取值范围[-128,127] 
-11000001 xxxxxxxx xxxxxxxx INT16 取值范围[-32768,32767] <br/>
-11000010 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  INT32 取值范围[-2147483648 ,  2147483647] 
-</code></pre></li>
-<li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
-<figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
-</ul>
-
-<h3 id="toc_3">RDB 值保存形式</h3>
-
-<p>值类型有如下图所示：<br/>
-<figure><img src="media/15942163464303/15943894568628.jpg" alt=""/></figure></p>
-
-<p>其中字符串类型的保存于 上面的《键的保存形式》相同，其余几种值的保存形式各不相同</p>
-
-<h4 id="toc_4">列表类型的保存</h4>
-
-<p>列表在Redis中编码为 quicklist结构，从整体看是一个双向链表，但链表的每个节点在Redis中编码为zipList结构，ziplist结构在一块连续的内存中保存，并且保存时可以选择进行LZF压缩或者不压缩。据此，RDB 保存列表类型的结构如图所示：</p>
-
-<p>ziplist未压缩<br/>
-<figure><img src="media/15942163464303/15943897652665.jpg" alt=""/></figure></p>
-
-<p>ziplist压缩：</p>
-
-<p><figure><img src="media/15942163464303/15943898009527.jpg" alt=""/></figure></p>
-
-<p>如果ziplist未压缩，每个ziplist按照字符串保存，如果ziplist进行了压缩，则按照下图方式进行保存<br/>
-<figure><img src="media/15942163464303/15943899607716.jpg" alt="" style="width:544px;"/></figure></p>
-
-<h4 id="toc_5">集合类型的保存</h4>
-
-<p>集合类型在Redis中有两种编码方式：一种为intset，另一种为Hash。<br/>
-intset在Redis中也是一块连续的内存，所以intset的保存比较简单，直接将intset按字符串保存。</p>
-
-<p>如果编码为Hash，保存结构如下图所示：<br/>
-<figure><img src="media/15942163464303/15943908892309.jpg" alt=""/></figure><br/>
-第一个字段为字典的大小，接下来逐字段保存字典的键。为什么只保存键呢？其实集合类型使用散列表保存时只使用了键，所有的值都保存为NULL，所以此处只需要保存散列表的键。</p>
-
-<h4 id="toc_6">有序集合类型的保存</h4>
-
-<p>有序集合类型在Redis中也有两种编码方式：一种为ziplist，另一种为skiplist。如果编码为ziplist，即将ziplist整体作为一个字符串保存。所以我们重点看编码为skiplist的保存方式</p>
-
-<p><figure><img src="media/15942163464303/15943913158909.jpg" alt=""/></figure><br/>
-第一个字段为skiplist包含的元素个数，接着分别按元素和元素的分值依次保存。元素保存为字符串，元素分值保存为一个双精度浮点数类型（固定为8个字节）</p>
-
-<h4 id="toc_7">散列类型的保存</h4>
-
-<p>散列类型也有两种编码方式：一种为ziplist，一种为Hash。ziplist 编码方式的保存同有序集合。重点看散列类型按Hash编码时的保存方式。<br/>
-<figure><img src="media/15942163464303/15943913962043.jpg" alt=""/></figure><br/>
-第一个字段为散列表的大小，然后依次保存键值对，键值都保存为字符串类型。</p>
-
-<h4 id="toc_8">Stream类型的保存</h4>
-
-<p>Stream保存为RDB文件时整体格式如图所示：<br/>
-<figure><img src="media/15942163464303/15943914536802.jpg" alt=""/></figure><br/>
-其中具体的结构体介绍，如listpack，消费组等的介绍参考<a href="15938782048225.html">六、Redis 数据流 stream </a>。其中保存消费组的PEL时并没有保存相关消费者的信息，而是在加载完消费者之后，从消费者的PEL中查找并更新消费组PEL的相关信息。</p>
-
-<h3 id="toc_9">RDB 实例</h3>
-
-<p>我们查看一下空的 redis 库是怎样的</p>
-
-<pre><code class="language-text">127.0.0.1:6379&gt;flushall
-ok
-127.0.0.1:6379&gt;bgsave
-Background saving started
-</code></pre>
-
-<pre><code class="language-text">➜  redis xxd dump.rdb
-00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis
-00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi
-00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.
-00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..
-00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl
-00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;
-➜  redis od -cx dump.rdb
-0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s
-             4552    4944    3053    3030    fa39    7209    6465    7369
-0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i
-             762d    7265    3505    302e    382e    0afa    6572    6964
-0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032
-             2d73    6962    7374    40c0    05fa    7463    6d69    c265
-0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020
-             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2
-0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l
-             1009    fa00    610c    666f    702d    6572    6d61    6c62
-0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;
-             c065    ff00    39fe    d9f4    3227    222a
-0000134
-</code></pre>
-
-<ul>
-<li>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</li>
-<li>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</li>
-<li>bgsave由紫禁城执行保存操作，不会阻塞服务器</li>
-<li>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</li>
-<li>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</li>
-<li>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[七、Redis 事务]]></title>
-    <link href="http://www.throne4j.com/15940318259166.html"/>
-    <updated>2020-07-06T18:37:05+08:00</updated>
-    <id>http://www.throne4j.com/15940318259166.html</id>
-    <content type="html"><![CDATA[
-<p>Redis 中的事务能够保证一批命令的原子性操作，redis提供了 事务的命令有 watch、unwatch、multi、exec、discard 。<br/>
-事务从开始到结束经历以下三个阶段：</p>
-
-<ul>
-<li><p>multi 开启事务<br/>
-Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。<br/>
-multi命令源码：</p>
-<pre><code class="language-redis">void multiCommand(client *c) {     
-    //如果已经执行过multi命令，则不能再次执行<br/>
-    if (c-&gt;flags &amp; CLIENT_MULTI) {        <br/>
-        addReplyError(c,&quot;MULTI calls can not be nested&quot;);         <br/>
-        return;     <br/>
-    }     <br/>
-    //client结构体置CLIENT_MULTI标志<br/>
-    c-&gt;flags |= CLIENT_MULTI;                            <br/>
-    addReply(c,shared.ok); <br/>
-}
-</code></pre></li>
-<li><p>所有的命令会首先入队而不是直接执行</p>
-<ul>
-<li>当一个客户端处于非事务状态时，这个客户端发送的命令会立即被服务器执行。</li>
-<li>当一个客户端处于事务状态后，服务器会根据客户端发来的不同命令执行不同的操作
-<ul>
-<li>发送命令 exec、discard、watch、unwatch，服务器会立即执行此命令</li>
-<li>发送非exec、discard、watch、unwatch 命令，将这个命令放入一个事务队列里面，然后向客户端返回QUEUED回复。</li>
-</ul></li>
-</ul>
-<pre><code class="language-text">int processCommand(client *c) {
-    ...<br/>
-        if (c-&gt;flags &amp; CLIENT_MULTI <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand <br/>
-            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {<br/>
-            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            <br/>
-            queueMultiCommand(c);        //放入队列            <br/>
-            addReply(c,shared.queued);         <br/>
-        } else {                        <br/>
-            //否则调用call命令            <br/>
-            call(c,CMD_CALL_FULL);         <br/>
-            ...<br/>
-        } <br/>
- ...<br/>
-}
-</code></pre></li>
-<li><p>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</p></li>
-</ul>
-
-<p>watch命令提供了一种乐观锁机制。watch命令可以监听多个key，只有当被监听的key未修改时，事务才会执行。当一个事务发送exec或者discard命令后，所有watch的key会自动unwatch。</p>
-
-<p>unwatch 命令其实就是删除相应client端和server端的监听状态。首先从client端的链表中取出key和对应的db，然后删除server端相应的监听信息，删除成功后再将client端的对应链表节点删除。执行完毕后，该连接所有被监听的key都会恢复到未监听状态。</p>
-
-<p>discard命令放弃事务。放弃一个事务时首先会将所有入队命令清空，然后将client上事务相关的flags清空，最后将所有监听的keys取消监听。</p>
-
-<p><strong><em>Redis 事务不支持事务回滚机制</em></strong>，即使事务队列中的某个命令在执行期间发生错误，整个事务也会继续执行下去，直到将事务队列中的所有命令都执行完毕为止。</p>
-
-<h2 id="toc_0">事务队列</h2>
-
-<p>每个redis 客户端都有自己的事务状态，这个事务状态保存在客户端状态的mstate属性中</p>
-
-<pre><code class="language-c">typedef struct client {
-    multiState mstate;   //命令队列，会将所有的命令按照顺序排列好并保存
-} client;
-
-typedef struct multiState {
-    multiCmd *commands;//命令队列，FIFO顺序
-    int count;// 已入队命令计数
-}
-
-typedef struct multiCmd {
-
-    robj **argv;//参数
-    int argc;//参数数量
-    struct redisCommand *cmd;//命令指针
-</code></pre>
-
-<p>事务队列以先进先出(FIFO)的方式保存入队命令。</p>
-
-<h2 id="toc_1">判断事务是否安全</h2>
-
-<p>当客户端 执行 exec 提交事务的时候，服务器会根据这个客户端是否打开了 REDIS_DIRTY_CAS 标识来决定是否执行事务。</p>
-
-<ul>
-<li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识已经被打开，那么说明客户端所监视的键当中，至少有一个键已经被修改过，这种情况，客户端提交的事务已经不再安全，这是服务器拒绝执行客户端提交的事务。</li>
-<li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识没有被打开，说明客户端监视的所有键都没有被修改过，事务仍然安全，服务器将执行客户端提交的事务。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[限流]]></title>
-    <link href="http://www.throne4j.com/15938782054278.html"/>
-    <updated>2020-07-04T23:56:45+08:00</updated>
-    <id>http://www.throne4j.com/15938782054278.html</id>
-    <content type="html"><![CDATA[
-<p>保证系统能正常稳定的运行</p>
-
-<ul>
-<li>限制总并发数<br/>
-数据库连接池、线程池</li>
-<li>限制瞬时并发数<br/>
-如nginx的limit_conn 模块，用来限制瞬时并发连接数</li>
-<li>限制时间窗口内的平均速率<br/>
-如guava的 RateLimiter、nginx的limit_req 模块，限制每秒平均速率</li>
-<li>其它限制<br/>
-如限制远程接口调用速率、限制mq的消费速率</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[六、Redis 数据流 stream]]></title>
-    <link href="http://www.throne4j.com/15938782048225.html"/>
-    <updated>2020-07-04T23:56:44+08:00</updated>
-    <id>http://www.throne4j.com/15938782048225.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">1、stream 实现</h2>
-
-<p>消息队列是分布式系统中不可缺少的组件之一，主要有异步处理、应用解耦、限流削峰的功能。目前应用较为广泛的消息队列有RabbitMQ、RocketMQ、Kafka等。Redis在最新的5.0.0版本中也加入了消息队列的功能，这就是Stream。</p>
-
-<p>Redis Stream 它主要由消息、生产者、消费者、消费组4部分组成。可以通过如下指令创建一个消息流并项其中加入一条消息<br/>
-<figure><img src="media/15938782048225/15939414214436.jpg" alt="" style="width:800px;"/></figure></p>
-
-<pre><code class="language-text">xadd mystream * name zhangsan age 10
-</code></pre>
-
-<p>上面的命令中</p>
-
-<ul>
-<li>mystream 为 Stream 的名称；</li>
-<li>* 代表由Redis自行生成消息ID；</li>
-<li>name、age为该消息的field；hb、20则为对应的field的值。</li>
-</ul>
-
-<p>每个消息都由以下两部分组成:</p>
-
-<ul>
-<li>每个消息有唯一的消息ID，消息ID严格递增。</li>
-<li>消息内容由多个field-value对组成。</li>
-</ul>
-
-<p>生产者负责向消息队列中生产消息，消费者消费某个消息流。消费者可以归属某个消费组，也可以不归属任何消费组。当消费者不归属于任何消费组时，该消费者可以消费消息队列中的任何消息。</p>
-
-<p>消费组是Stream 具有如下特点</p>
-
-<ul>
-<li>每个消费组通过组名称唯一标识，每个消费组都可以消费该消息队列的全部消息，多个消费组之间相互独立。</li>
-<li>每个消费组可以有多个消费者，消费者通过名称唯一标识，消费者之间的关系是竞争关系，也就是说一个消息只能由该组的一个成员消费。</li>
-<li>组内成员消费消息后需要确认，每个消息组都有一个待确认消息队列（pending entry list，pel），用以维护该消费组已经消费但没有确认的消息。</li>
-<li>消费组中的每个成员也有一个待确认消息队列，维护着该消费者已经消费尚未确认的消息。</li>
-</ul>
-
-<p>Redis Stream的底层实现主要使用了listpack以及Rax树</p>
-
-<h3 id="toc_1">1.1、stream 底层结构 listpack</h3>
-
-<p>listpack 是一个字符串列表的序列化格式，也就是将一个字符串列表进行序列化存储。Redis listpack可用于存储字符串或者整型。</p>
-
-<p><figure><img src="media/15938782048225/15938831394252.jpg" alt="listpack结构图"/><figcaption>listpack结构图</figcaption></figure></p>
-
-<p>listpack由4部分组成：</p>
-
-<ul>
-<li>Total Bytes：整个listpack的空间大小，占用4个字节，每个listpack最多占用4294967295Bytes。</li>
-<li>Num Elem：listpack中的元素个数，即Entry的个数，占用2个字节<br/>
-虽然占用2个字节，但是并不意味着listpack最多只能存放65535个Entry，当Entry个数大于等于65535时，Num Elem被设置为65535，此时如果需要获取元素个数，需要遍历整个listpack</li>
-<li>End：listpack结束标志，占用1个字节，内容为0xFF。</li>
-<li>Entry： 每个具体的元素，其内容可以为字符串或者整型。
-<ul>
-<li>encode： 该entry元素的编码，占用1个字节</li>
-<li>content：entry元素内容</li>
-<li>backlen： 记录了这个Entry的长度（Encode+content）</li>
-</ul></li>
-</ul>
-
-<h3 id="toc_2">1.2、Stream底层结构Rax</h3>
-
-<p>前缀树是字符串查找时，经常使用的一种数据结构，能够在一个字符串集合中快速查找到某个字符串, 但是由于前缀树中每个节点只存储字符串中的一个字符，故而有时会造成空间的浪费。Rax的出现就是为了解决这一问题，Rax中不仅可以存储字符串，同时还可以为这个字符串设置一个值，也就是key-value。</p>
-
-<p><figure><img src="media/15938782048225/15939279706367.jpg" alt="含有两个压缩节点的rax"/><figcaption>含有两个压缩节点的rax</figcaption></figure></p>
-
-<p><figure><img src="media/15938782048225/15939288033339.jpg" alt="含有foobar,footer两个key的Rax"/><figcaption>含有foobar,footer两个key的Rax</figcaption></figure></p>
-
-<pre><code class="language-c">typedef struct rax {    
-     raxNode *head;     //指向头节点的指针
-     uint64_t numele;     //key的个数
-     uint64_t numnodes; //节点个数
-} rax;
-
-typedef struct raxNode {     
-    uint32_t iskey:1;   /* 当前节点是否包含一个key，占用1bit*/     
-    uint32_t isnull:1;  /* 当前key对应的value是否为空，占用1bit */     
-    uint32_t iscompr:1; /* 当前节点是否为压缩节点，占用1bit */     
-    uint32_t size:29;   /* 压缩节点压缩的字符串长度或者非压缩节点的子节点个数，占用29bit */
-    unsigned char data[];  /*包含填充字段，同时存储了当前节点包含的字符串以及子节点的指针、key对应的value指针。*/
-} raxNode;
-</code></pre>
-
-<p>raxNode分为2类，压缩节点和非压缩节点</p>
-
-<ul>
-<li>压缩节点 。我们假设该节点存储的内容为字符串ABC
-<figure><img src="media/15938782048225/15939314326955.jpg" alt=""/></figure>
-<ul>
-<li>·iskey为1且isnull为0时，value-ptr存在，否则value-ptr不存在；</li>
-<li>·iscompr为1代表当前节点是压缩节点，size为3代表存储了3个字符；</li>
-<li>紧随size的是该节点存储的字符串，根据字符串的长度确定是否需要填充字段（填充必要的字节，使得后面的指针地址放到合适的位置上）；</li>
-<li>由于是压缩字段，故而只有最后一个字符有子节点。</li>
-</ul></li>
-<li>非压缩节点 。我们假设其内容为XY
-<figure><img src="media/15938782048225/15939394205610.jpg" alt=""/></figure>
-每个字符都有一个子节点，值得一提的是，字符个数小于2时，都是非压缩节点。</li>
-</ul>
-
-<h2 id="toc_3">2、stream 结构</h2>
-
-<p>Redis Stream的实现依赖于Rax结构以及listpack结构，每个消息的具体信息存储在这个listpack中。Rax用于快速索引；listpack用于存储具体的消息</p>
-
-<p>每个listpack都有一个master entry，该结构中存储了创建这个listpack时待插入消息的所有field，这主要是考虑同一个消息流，消息内容通常具有相似性，如果后续消息的field与master entry内容相同，则不需要再存储其field。</p>
-
-<p>每个listpack中可能存储多条消息</p>
-
-<p><figure><img src="media/15938782048225/15939395823945.jpg" alt="Stream结构"/><figcaption>Stream结构</figcaption></figure></p>
-
-<p>Stream结构如下</p>
-
-<pre><code class="language-c">/*
-*每个Stream会有多个消费组，每个消费组通过组名称进行唯一标识，
-*同时关联一个streamCG结构，
-*/
-typedef struct stream {     
-   /*
-   存储消息生产者生产的具体消息，每个消息有唯一的ID。
-   以消息ID为键，消息内容为值存储在rax中，
-   值得注意的是，rax中的一个节点可能存储多个消息， 
-   */     
-    rax *rax;             
-    /*当前stream中的消息个数（不包括已经删除的消息）*/
-    uint64_t length;     
-    /*当前stream中最后插入的消息的ID，stream为空时，设置为0*/   
-    streamID last_id;
-    /*存储了当前stream相关的消费组，以消费组的组名为键，streamCG为值存储在rax中*/
-    rax *cgroups;
-} stream;
-
-/*消费组结构定义*/
-typedef struct streamCG {
-    /*last_id为该消费组已经确认的最后一个消息的ID*/
-    streamID last_id; 
-    /*该消费组尚未确认的消息，并以消息ID为键，streamNACK（代表一个尚未确认的消息）为值*/
-    rax *pel;
-    /*为该消费组中所有的消费者，并以消费者的名称为键，streamConsumer（代表一个消费者）为值。*/
-    rax *consumers; 
-} streamCG;
-
-/*消费者，每个消费者通过streamConsumer唯一标识*/
-typedef struct streamConsumer {     
-    mstime_t seen_time;     //该消费者最后一次活跃的时间
-    sds name;     //消费者的名称
-    rax *pel;   //该消费者尚未确认的消息，以消息ID为键，streamNACK 为值。
-} streamConsumer;
-
-
-/*未确认消息，维护了消费组或者消费者尚未确认的消息，
-值得注意的是，消费组中的pel的元素与每个消费者的pel中的元素是共享的，
-即该消费组消费了某个消息，这个消息会同时放到消费组以及该消费者的pel队列中，并且二者是同一个streamNACK结构。*/
-typedef struct streamNACK {     
-    mstime_t delivery_time;     //该消息最后发送给消费方的时间
-    uint64_t delivery_count;     //该消息已经发送的次数
-    streamConsumer *consumer;  //该消息当前归属的消费者。
-} streamNACK;
-</code></pre>
-
-<hr/>
-
-<h2 id="toc_4">3、Stream 命令</h2>
-
-<h3 id="toc_5">xadd 命令</h3>
-
-<p>将指定消息数据追加到指定的Stream队列中或裁减列中数据长度。</p>
-
-<pre><code class="language-bash">xadd key [MAXLEN [~|=] &lt;count&gt;] &lt;ID or *&gt; [field value] [field value] ...
-</code></pre>
-
-<p>每条消息由一或多个阈值对组成，消息插入Stream队列中后会返回唯一的消息ID。xadd是唯一可以向Stream队列添加数据的命令</p>
-
-<ul>
-<li>MAXLEN<br/>
-当Stream中数据量过大时，可通过此关键字来裁剪长度，删除stream中旧数据至指定的值；当数据量小于等于指定值时，不进行剪切。其中裁剪模式有两种。
-<ul>
-<li>~：模糊裁剪，优化精确裁剪，一般用此模式，效率更高。</li>
-<li>=：精确裁剪，我们知道，在数据存储的listpack结构体中，裁剪长度的所有阈值是依照数据从老到新的方式，依次把listpack释放掉，但在此模式下，删除最后一个listpack中的数据比较费时，所以推荐用模糊裁剪。</li>
-</ul></li>
-<li>ID：添加消息可指定具体值或用 <code>*</code>代替，<strong>指定的值必须大于当前Stream队列中最大的消息ID</strong>，为<code>*</code>时则默认生成一个最新的ID，ID值取的是当前时间+序列号。</li>
-</ul>
-
-<pre><code class="language-shell"># 添加一条数据，使用系统生成的最新ID
-&gt; xadd mystream * name doubi age 18
-1593943429128-0
-# 如果发现添加新元素后的Stream有超过100W+条消息，则删除旧消息，使长度大约缩减至100W个元素
-&gt; xadd mystream MAXLEN ~ 1000000 * name tim age 29
-</code></pre>
-
-<h3 id="toc_6">xrange命令</h3>
-
-<p>读取给定ID范围内的消息数据，并可以设置返回数据的条数。</p>
-
-<pre><code class="language-shell">&gt; xrange key start end [COUNT count]
-</code></pre>
-
-<p>范围起始值分别由start和end字段指定，将返回两个ID之间（闭区间）的所有消息，消息排序为ID递增排序。</p>
-
-<ul>
-<li>start: 开始消息ID，指定具体值或通过“-”特殊符号来表示最小ID。</li>
-<li>end：结束消息ID，指定具体值或通过“+”特殊符号来表示最大ID。</li>
-<li>COUNT：设定返回的消息数量</li>
-</ul>
-
-<pre><code class="language-text">127.0.0.1:6379&gt; xrange mystream - + count 2
-1) 1) &quot;1593943573938-0&quot;
-   2) 1) &quot;name&quot;
-      2) &quot;doubi&quot;
-      3) &quot;age&quot;
-      4) &quot;18&quot;
-2) 1) &quot;1593957391373-0&quot;
-   2) 1) &quot;name&quot;
-      2) &quot;doubi1&quot;
-      3) &quot;age&quot;
-      4) &quot;19&quot;
-</code></pre>
-
-<h3 id="toc_7">xrevrange命令</h3>
-
-<p>xrevrange命令与xrange用法完全一致，唯一区别是返回数据的顺序为消息ID的递减序，正好与xrange返回的数据顺序相反。</p>
-
-<h3 id="toc_8">xdel 命令</h3>
-
-<p>用于删除Stream队列中指定的一或多个消息ID对应的数据。</p>
-
-<pre><code class="language-text">xdel key ID [ID ...]
-</code></pre>
-
-<p>key 类型必须为OBJ_STREAM，否则报错。</p>
-
-<h3 id="toc_9">xgroup 命令</h3>
-
-<p>用于队列的消费组管理，包含对消费组的创建、删除、修改等操作。</p>
-
-<pre><code class="language-text">xgroup [CREATE key groupname id-or-$]  [SETID key id-or-$]        [DESTROY key groupname]  [DELCONSUMER key groupname consumername] [HELP]
-</code></pre>
-
-<ul>
-<li>CREATE：创建一个新消费组。</li>
-<li>SETID：修改某个消费组消费的消息last_id。</li>
-<li>DESTROY：删除指定消费组。</li>
-<li>DELCONSUMER：删除指定消费组中某个消费者。</li>
-<li>HELP：查看使用帮助。</li>
-</ul>
-
-<pre><code class="language-shell"># 创建一个消费组mmp，从消息id为1593943573938-0的消息开始消费
-127.0.0.1:6379&gt; xgroup CREATE mystream mmp 1593943573938-0
-OK
-</code></pre>
-
-<p>最后一个参数是指定该消费组开始消费的消息ID，其中“0”或“0- 0”，表示从头开始消费，如果使用特殊符“$”，则表示队列中最后一项ID，只读取消息队列中新到的消息。</p>
-
-<h3 id="toc_10">xreadgroup 命令</h3>
-
-<p>用于从消费组中可靠地消费n条消息，如果指定的消费者不存在，则创建之。</p>
-
-<pre><code class="language-text">XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]
-</code></pre>
-
-<ul>
-<li>group：消费组名称</li>
-<li>consumer：消费者名称。</li>
-<li>COUNT：消费多少条数据。</li>
-<li>BLOCK：是否为阻塞模式，milliseconds为阻塞多少毫秒</li>
-<li>STREAMS：Stream队列名称，可指定多个。若指定多个，则ID 也要对应指定相同个数。</li>
-<li>ID：读取只大于指定消息ID后未确认的消息；特殊符号“&gt;”，读取未传递给其他任何消费者的消息，也就是新消息。</li>
-<li>NOACK：该消息不需要确认。</li>
-</ul>
-
-<p>客户端必须使用XACK确认消息处理，以便从待处理条目列表中删除待处理条目。可以使用XPENDING命令检查待处理条目列表。</p>
-
-<h3 id="toc_11">xread 命令</h3>
-
-<p>用于从Stream队列中读取N条消息，一般用作遍历队列中的消息。</p>
-
-<p>从一个或者多个流中读取数据，仅返回ID大于调用者报告的最后接收ID的条目。此命令有一个阻塞选项，用于等待可用的项目，类似于BRPOP或者BZPOPMIN等等。</p>
-
-<pre><code class="language-text">XREAD [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]
-</code></pre>
-
-<ul>
-<li>COUNT: 读取多少条数据</li>
-<li>BLOCK：是否为阻塞模式，milliseconds为阻塞多少毫秒</li>
-<li>STREAMS：Stream队列名称</li>
-<li>ID：指定从哪个消息ID开始读取，也就是消息ID大于指定的ID 的消息，可为“$”特殊符号，代表从最后一条开始读取。</li>
-</ul>
-
-<p>此命令读取消息后无须通过XACK确认，也不需要强制指定消费组名称与消费者名称</p>
-
-<h3 id="toc_12">xacx 命令</h3>
-
-<p>xack命令用于确认一或多个指定ID的消息，使其从待确认列表中删除。</p>
-
-<pre><code class="language-text">xack key groupName ID [ID ...]
-</code></pre>
-
-<ul>
-<li>group：消费组名称；</li>
-<li>ID：确认的消息ID。</li>
-</ul>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; xack mystream mmp 1593957391373-0 1593943573938-0
-(integer) 1
-</code></pre>
-
-<h3 id="toc_13">xpending 命令</h3>
-
-<p>xpending命令用于读取某消费组或者某个消费者的未确认消息，返回未确认的消息ID、空闲时间、被读取次数。</p>
-
-<pre><code class="language-text">xpending key group [start end count] [consumer]
-</code></pre>
-
-<p>group：指定的消费组；·start：范围开始ID，可以为特殊符“-”表示开始或指定ID；·end：范围结束ID，可以为特殊符“+”标识结尾或指定ID；·count：读取条数；·consumer：指定的消费者。</p>
-
-<p>读取消费组cg1中消费者c1的所有待确认消息。</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; xadd mystream * name doubi1 age 19
-&quot;1593962280326-0&quot;
-127.0.0.1:6379&gt; XREADGROUP GROUP mmp c1 COUNT 2 STREAMS mystream &gt;
-1) 1) &quot;mystream&quot;
-   2) 1) 1) &quot;1593962280326-0&quot;
-         2) 1) &quot;name&quot;
-            2) &quot;doubi1&quot;
-            3) &quot;age&quot;
-            4) &quot;19&quot;
-127.0.0.1:6379&gt; xpending mystream mmp - + 2 c1
-1) 1) &quot;1593962280326-0&quot;
-   2) &quot;c1&quot;
-   3) (integer) 3616  # 间隔多长时间没有确认
-   4) (integer) 1
-</code></pre>
-
-<h3 id="toc_14">xinfo命令</h3>
-
-<p>用于读取消息队列、消费组、消费者等的信息。</p>
-
-<pre><code class="language-text">xinfo [CONSUMERS key groupname] [GROUPS key] [STREAM key] [HELP]
-</code></pre>
-
-<p>CONSUMERS：用于查看某个消费组下的消费者信息；·GROUPS：用于查看某个Stream队列下的消费组信息；·STREAM：用于查看某个Stream队列的整体组信息</p>
-
-<pre><code class="language-shell"># 查看消费组c1中消费者消费信息：
-127.0.0.1:6379&gt; xinfo consumers mystream mmp
-1) 1) &quot;name&quot;
-   2) &quot;c1&quot;
-   3) &quot;pending&quot;
-   4) (integer) 0
-   5) &quot;idle&quot;
-   6) (integer) 238485
-   
-   
-   # 查看Stream队列信息
-   127.0.0.1:6379&gt; xinfo stream mystream
- 1) &quot;length&quot;
- 2) (integer) 3
- 3) &quot;radix-tree-keys&quot;
- 4) (integer) 1
- 5) &quot;radix-tree-nodes&quot;
- 6) (integer) 2
- 7) &quot;groups&quot;
- 8) (integer) 1
- 9) &quot;last-generated-id&quot;
-10) &quot;1593962280326-0&quot;
-11) &quot;first-entry&quot;
-12) 1) &quot;1593961742431-0&quot;
-    2) 1) &quot;name&quot;
-       2) &quot;doubi&quot;
-       3) &quot;age&quot;
-       4) &quot;18&quot;
-13) &quot;last-entry&quot;
-14) 1) &quot;1593962280326-0&quot;
-    2) 1) &quot;name&quot;
-       2) &quot;doubi1&quot;
-       3) &quot;age&quot;
-       4) &quot;19&quot;
-</code></pre>
-
-<h3 id="toc_15">xlen 命令</h3>
-
-<p>用于获取Stream队列的数据长度</p>
-
-<pre><code class="language-text">xlen key ID [ID ...]
-</code></pre>
-
-<pre><code class="language-text">127.0.0.1:6379&gt; xlen mystream
-(integer) 3
-</code></pre>
-
-<h3 id="toc_16">xtrim 命令</h3>
-
-<p>缩减消息队列。</p>
-
-<pre><code class="language-text">xtrim key MAXLEN [~] count
-</code></pre>
-
-<p>参照  xadd 命令</p>
-
-<h3 id="toc_17">xclaim命令</h3>
-
-<p>改变一或多个未确认消息的所有权，新的所有者是在命令参数中指定。</p>
-
-<pre><code class="language-text">XCLAIM  key group consumer min-idle-time ID [ID ...] [IDLE ms] [TIME ms-unix-time] [RETRYCOUNT count] [FORCE] [JUSTID]
-</code></pre>
-
-<ul>
-<li>consumer：指定新的消费者</li>
-<li>min-idle-time：指定消息最小空闲数；</li>
-<li>ID：指定消息ID；</li>
-<li>IDLE <ms>: 设置消息的空闲时间（自最后一次交付到目前的时间）。如果没有指定IDLE，则假设IDLE值为0，即时间计数被重置，因为消息现在有新的所有者来尝试处理它。</li>
-<li>TIME <ms-unix-time>: 这个命令与IDLE相同，但它不是设置相对的毫秒数，而是将空闲时间设置为一个指定的Unix时间（以毫秒为单位）。这对于重写生成XCLAIM命令的AOF文件很有用。</li>
-<li>RETRYCOUNT <count>: 将重试计数器设置为指定的值。这个计数器在每一次消息被交付的时候递增。通常，XCLAIM不会更改这个计数器，它只在调用XPENDING命令时提供给客户端：这样客户端可以检测到异常，例如在大量传递尝试后由于某种原因从未处理过的消息。</li>
-<li>FORCE: 在待处理条目列表（PEL）中创建待处理消息条目，即使某些指定的ID尚未在分配给不同客户端的待处理条目列表（PEL）中。但是消息必须存在于流中，否则不存在的消息ID将会被忽略。</li>
-<li>JUSTID: 只返回成功认领的消息ID数组，不返回实际的消息。</li>
-</ul>
-
-<p>在流的消费者组上下文中，此命令改变待处理消息的所有权， 因此新的所有者是在命令参数中指定的消费者。通常是这样的：</p>
-
-<ul>
-<li>假设有一个具有关联消费者组的流。</li>
-<li>某个消费者A在消费者组的上下文中通过XREADGROUP从流中读取一条消息。</li>
-<li>作为读取消息的副作用，消费者组的待处理条目列表（PEL）中创建了一个待处理消息条目：这意味着这条消息已传递给给定的消费者，但是尚未通过XACK确认。</li>
-<li>突然这个消费者出现故障，且永远无法恢复。</li>
-<li>其他消费者可以使用XPENDING检查已经过时很长时间的待处理消息列表，为了继续处理这些消息，他们使用XCLAIM来获得消息的所有权，并继续处理。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[五、Redis 基本数据类型与其命令]]></title>
-    <link href="http://www.throne4j.com/15937003019170.html"/>
-    <updated>2020-07-02T22:31:41+08:00</updated>
-    <id>http://www.throne4j.com/15937003019170.html</id>
-    <content type="html"><![CDATA[
-<p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
-
-<p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
-
-<h2 id="toc_0">1、Redis基本数据类型</h2>
-
-<p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
-
-<table>
-<thead>
-<tr>
-<th>结构类型</th>
-<th>编码类型</th>
-<th>结构存储的值</th>
-<th>结构的读写能力</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>string</td>
-<td>raw、int、embstr</td>
-<td>可以使字符串、整数或者浮点数</td>
-<td>对整个字符串或字符串的一部分执行操作；对证书和浮点数执行自增、自减操作</td>
-</tr>
-<tr>
-<td>list</td>
-<td>quicklist</td>
-<td>底层由链表实现，每个节点都包含一个字符串</td>
-<td>从列表的两端推入或者弹出元素；根据偏移量对列表进行修改；读取单个或多个元素；根据值查询或者移除元素</td>
-</tr>
-<tr>
-<td>set</td>
-<td>intset、dict</td>
-<td>不重复的无序集合，但当底层实现是intset的时候则是有序的</td>
-<td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
-</tr>
-<tr>
-<td>zset</td>
-<td>ziplist、skiplist+dict</td>
-<td>不可重复的有序集合，字符串成员(member)于浮点数分支(score)之间的有序映射，元素的排列顺序由分值的大小决定</td>
-<td>添加、获取、移除单个元素；根据分值范围(range)或者成员来获取元素</td>
-</tr>
-<tr>
-<td>hash</td>
-<td>dict、ziplist</td>
-<td>包含键值对的无序散列表</td>
-<td>添加、获取、移除单个键值对；获取所有键值对</td>
-</tr>
-</tbody>
-</table>
-
-<p><strong>关于key的几条建议</strong></p>
-
-<ul>
-<li>不建议太长的键值，原因：1、消耗内存；2、这类键值计算成本很高</li>
-<li>不建议太短的键值，设计键值要有良好的可读性，太短的话，看不懂就有点尴尬了</li>
-<li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
-</ul>
-
-<h2 id="toc_1">Redis 中的 string 字符串</h2>
-
-<p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
-
-<p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。</p>
-
-<p>字符串值robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
-
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>设置</td>
-<td>SET key value [NX] [XX] [EX seconds] [PX milliseconds]</td>
-<td>设置存储在给定键中的值</td>
-<td>set mykey  myvalue</td>
-<td>·NX： 当数据库中key不存在时，可以将key-value添加到数据库。·XX： 当数据库中key存在时，可以将key-value设置到数据库，与NX参数互斥。·EX： key的超时秒数。·PX： key的超时毫秒数，与EX参数互斥。</td>
-</tr>
-<tr>
-<td>设置</td>
-<td>mset key value [key value ...]</td>
-<td>设置多个key-value，如果key之前存在，则使用新的value进行覆盖</td>
-<td>mset idear1 eat idear2 play</td>
-<td>设置键值对 idear1 : ear 、 idear2  : play</td>
-</tr>
-<tr>
-<td>设置</td>
-<td>setex key second value</td>
-<td>设置key-value并设置过期时间(单位：秒)</td>
-<td>setex mykey 10  hungry</td>
-<td>设置的mykey : hungry 10秒钟后过期，10秒后get mykey 返回 nil；</td>
-</tr>
-<tr>
-<td>设置</td>
-<td>psetex　key　milliseconds　value</td>
-<td>设置key-value并设置过期时间(单位：毫秒)</td>
-<td>setex mykey 10  hungry</td>
-<td>设置的mykey : hungry 10毫秒钟后过期，10毫秒后get mykey 返回 nil；</td>
-</tr>
-<tr>
-<td>设置</td>
-<td>setnx key value</td>
-<td>只有key不存在时才会设置key-value</td>
-<td>setnx mykey myvalue</td>
-<td>如果mykey不存在则设置，如果存在不执行覆盖操作</td>
-</tr>
-<tr>
-<td>设置</td>
-<td>msetnx key value [key value ...]</td>
-<td>当所有的key都不存在时才会设置这些key-value</td>
-<td>msetnx mykey1 myvalue1 mykey2 myvalue2</td>
-<td>所有的key都不存在设置这些个key-value</td>
-</tr>
-<tr>
-<td>获取</td>
-<td>get key</td>
-<td>获取存储在给定键中的值</td>
-<td>get mykey</td>
-<td>返回myvalue</td>
-</tr>
-<tr>
-<td>获取</td>
-<td>getset key value</td>
-<td>将给定keuy的值设置为value，并返回key的旧值</td>
-<td>getset mykey newValue</td>
-<td>返回mykey的旧值myvalue，并设置mykey为新值 newValue</td>
-</tr>
-<tr>
-<td>获取</td>
-<td>mget key [key...]</td>
-<td>获取多个key</td>
-<td>mget mykey1 mykey2</td>
-<td>获取mykey1、mykey2的值</td>
-</tr>
-<tr>
-<td>获取</td>
-<td>getrange key start end</td>
-<td>获取存储在给定键中的值的某一段</td>
-<td>get mykey 0 -2</td>
-<td>返回myvalue 值递第一位置至倒数第二位置的value 值</td>
-</tr>
-<tr>
-<td>获取</td>
-<td>strlen</td>
-<td>获取指定key的长度</td>
-<td>strlen mykey</td>
-<td>复杂度为O(1)</td>
-</tr>
-<tr>
-<td>修改</td>
-<td>append key value</td>
-<td>追加一个值到key上</td>
-<td>append mykey tony</td>
-<td>添加完tony之后运行get mykey 得到结果 myvalue tony</td>
-</tr>
-<tr>
-<td>计数</td>
-<td>decr key</td>
-<td>整数原子减 1</td>
-<td>decr mykey</td>
-<td>如果mykey原先不存在，在减1之前，age会被置为0</td>
-</tr>
-<tr>
-<td>计数</td>
-<td>decrby key decrement</td>
-<td>整数原子减指定整数</td>
-<td>decrby mykey</td>
-<td>如果mykey原先不存在，在减decrement之前，mykey会被置为0</td>
-</tr>
-<tr>
-<td>计数</td>
-<td>incr key</td>
-<td>整数原子加1</td>
-<td>incr mykey</td>
-<td>如果mykey原先不存在，在加1之前mykey会被置为0</td>
-</tr>
-<tr>
-<td>计数</td>
-<td>incrby key increment</td>
-<td>整数原子加指定整数</td>
-<td>incrby mykey 10</td>
-<td>如果mykey原先不存在，在加increment之前mykey会被置为0</td>
-</tr>
-<tr>
-<td>修改</td>
-<td>setrange key offset value</td>
-<td>覆盖key的value的offset之后的字符串</td>
-<td>setrange mykey 2 qu</td>
-<td>mykey之前的值是woca，执行此命令之后的结果就是woqu</td>
-</tr>
-<tr>
-<td>通用</td>
-<td>del key</td>
-<td>删除存储在给定键中的值</td>
-<td>del mykey</td>
-<td>删除 mykey 键</td>
-</tr>
-</tbody>
-</table>
-
-<p>此外还有一种字符串的位操作：<br/>
-位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。抽空在补这部分内容  TODO。</p>
-
-<p>Q：追加字符串时，需要判断追加后的字符串长度必须小于512MB，否则会报错，那么在set命令时为什么没有限制最大长度呢？<br/>
-A:在服务端接收到命令的时候，就已经判断了命令的最大长度不能大于512 MB，所以set命令不需要再次判断了</p>
-
-<p>字符串追加会修改原字符串的值，所以必须保证字符串是非共享的。如果字符串是共享的，则需要解除共享，新创建一个值对象。</p>
-
-<h2 id="toc_2">Redis 中的 list 列表</h2>
-
-<p>在 Redis 引入 quicklist之前，Redis采用压缩链表（ziplist）以及双向链表（adlist）作为List的底层实现。当元素个数比较少并且元素长度比较小时，Redis 采用 ziplist 作为其底层存储；当任意一个条件不满足时，Redis采用adlist作为底层存储结构。这么做的主要原因是，当元素长度较小时，采用ziplist可以有效节省存储空间，但ziplist的存储空间是连续的，当元素个数比较多时，修改元素时，必须重新分配存储空间，这无疑会影响Redis的执行效率，故而采用一般的双向链表。</p>
-
-<p>Redis3.2版本之后，列表底层使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
-
-<p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>blpop key [key ...] timeout</td>
-<td>lpop的阻塞版本</td>
-<td>blpop myList 0</td>
-<td>调用返回key和左边第一个元素的组合 myList、list3</td>
-</tr>
-<tr>
-<td>brpop key [key ...] timeout</td>
-<td>rpop的阻塞版本</td>
-<td>brpop myList</td>
-<td>没元素的话阻塞在key的列表上</td>
-</tr>
-<tr>
-<td>lindex key index</td>
-<td>通过列表索引获取key列表的value值, index  0：表示第一个元素； -1：表示最后一个元素；-2 ：表示倒数第二个原始</td>
-<td>lindex myList 0</td>
-<td>返回list3</td>
-</tr>
-<tr>
-<td>linsert key before/after pivot value</td>
-<td>把value插入myList 列表中在元素的的前面或后面</td>
-<td>linsert myList before  list2 beauty</td>
-<td>返回[list3,beauty,list2,list1]</td>
-</tr>
-<tr>
-<td>llen key</td>
-<td>获得列表的长度</td>
-<td>llen myList</td>
-<td>返回3</td>
-</tr>
-<tr>
-<td>lpop key</td>
-<td>从队列的左边出队并返回一个元素，列表为空时返回nil</td>
-<td>lpop myList</td>
-<td>返回并删除了第一个元素list3</td>
-</tr>
-<tr>
-<td>lpush key value [value ...]</td>
-<td>从队列的左边入队一个或多个元素</td>
-<td>lpush myList list4 list 5</td>
-<td>value按照先后顺序插入到列表头，最后列表元素[list5,list4,list3,beauty,list2,list1]</td>
-</tr>
-<tr>
-<td>lpushx key vlaue</td>
-<td>当列表存在时，从列表左边入队一个元素</td>
-<td>lpushx myList1  hello</td>
-<td>myList1 不存在 元素插入不成功</td>
-</tr>
-<tr>
-<td>lrange key startIndex stopIndex</td>
-<td>从列表中获取指定位置范围内的元素</td>
-<td>lrange myList 0 1</td>
-<td>结果[list3,list2]</td>
-</tr>
-<tr>
-<td>lrem key count value</td>
-<td>从存于key的列表中移除前count个的值为value的元素，count&gt;0 :从头向尾移除置为value的元素；count&lt;0: 从尾向头移除置为value的元素；count=0： 移除所有值为value的元素</td>
-<td>lrem myList 1 list2</td>
-<td>[list3,list1]</td>
-</tr>
-<tr>
-<td>lset key index value</td>
-<td>设置列表里面的index位置的元素值</td>
-<td>lset myList 2 ghost</td>
-<td>列表更新为[list3,list2,ghost]</td>
-</tr>
-<tr>
-<td>ltrim key start stop</td>
-<td>修剪并保留指定范围内的元素</td>
-<td>ltrim myList 1 2</td>
-<td>列表被编辑为 [list2,list1]</td>
-</tr>
-<tr>
-<td>rpop key</td>
-<td>从列表右边出队并返回一个元素，列表为空时返回nil</td>
-<td>rpop myList</td>
-<td>列表被编辑为 [list3,list2]</td>
-</tr>
-<tr>
-<td>rpush key value [value ...]</td>
-<td>从列表右边入队一个或多个元素</td>
-<td>rpush myList niu</td>
-<td>列表被编辑为 [list3,list2,list1,niu]</td>
-</tr>
-<tr>
-<td>rpushx key value</td>
-<td>列表如果存在，则从列表右边入队一个元素</td>
-<td>rpushx myList leng</td>
-<td>列表被编辑为 [list3,list2,list1,leng]，如果myList不存在，啥都不干</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_3">栈和队列命令列表</h3>
-
-<p>栈与队列是操作受限制的线性表</p>
-
-<p>栈只允许在线性表的同一侧执行插入或删除操作，具有先进后出的特性；</p>
-
-<p>队列只允许在一侧插入另一侧删除，具有先进先出的特性。</p>
-
-<table>
-<thead>
-<tr>
-<th>命令类型</th>
-<th>左侧</th>
-<th>右侧</th>
-<th>左侧阻塞</th>
-<th>右侧阻塞</th>
-<th>左侧必须键存在</th>
-<th>右侧必须键存在</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>push类</td>
-<td>lpush</td>
-<td>rpush</td>
-<td>无</td>
-<td>无</td>
-<td>lpushx</td>
-<td>rpushx</td>
-</tr>
-<tr>
-<td>pop类</td>
-<td>lpop</td>
-<td>rpop</td>
-<td>blpop</td>
-<td>brpop</td>
-<td>无</td>
-<td>无</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_4">Redis 中的 set 集合</h2>
-
-<p>在Redis中，集合元素为字符串和数字，分别用dict和intset存储。对于单个集合，Redis 实现了元素的新增、删除、遍历等操作；对于多个集合，Redis实现了集合间求交集、并集和差集等操作。</p>
-
-<p>set集合中添加元素的时候分两种情况：</p>
-
-<ul>
-<li><p>当encoding方式为OBJ_ENCODING_HT时，set的底层用的是字典，将key直接添加进dict。需要注意的是，用dict存储集合元素时，元素值存储于字典的key中，字典的value值为null。</p></li>
-<li><p>当encoding方式为OBJ_ENCODING_INTSET时，又有两种情况：</p>
-<ul>
-<li>若新增的元素本身非数字（value转long long失败），需要通过setTypeConvert转化后再存储；</li>
-<li>若新增的元素本身是数字，则用intsetAdd新增元素。且当新增成功，但intset的元素个数过多（个数大于server.set_max_intset_entries时。该参数可配置，默认为512），同样会触发setTypeConvert，将OBJ_ENCODING_INTSET转化为OBJ_ENCODING_HT，为避免转化过程中发生字典的rehash操作，代码中用 dictExpand主动扩容。</li>
-</ul></li>
-</ul>
-
-<p>移除元素的时候同样分两种情况进行处理：</p>
-
-<ul>
-<li>若encoding为OBJ_ENCODING_HT时，则调用dictDelete处理删除元素时，会检查字典容量，字典容量不足也会触发扩容操作。</li>
-<li>当encoding为OBJ_ENCODING_INTSET时，调用intsetRemove处理</li>
-</ul>
-
-<p>Set集合相关命令如下表：</p>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>sadd key member [member ...]</td>
-<td>添加一个或多个指定的member元素到集合key中.</td>
-<td>sadd myset &quot;hello&quot;</td>
-<td>返回新成功添加到集合里元素的数量，不包括已经存在于集合中的元素.指定的一个或者多个元素member 如果已经在集合key中存在则忽略.如果集合key 不存在，则新建集合key,并添加member元素到集合key中。如果key 的类型不是集合则返回错误。</td>
-</tr>
-<tr>
-<td>scard key</td>
-<td>返回集合存储的key的基数 (集合元素的数量).</td>
-<td>SCARD myset</td>
-<td>集合的基数(元素的数量),如果key不存在,则返回 0.</td>
-</tr>
-<tr>
-<td>sdiff key [key ...]</td>
-<td>返回一个集合与给定集合的差集的元素.</td>
-<td>sdiff  myset1 myset2</td>
-<td>返回myset1和myset2的差集元素，不存在的key认为是空集.</td>
-</tr>
-<tr>
-<td>sdiffstore destination key [key ...]</td>
-<td>返回一个集合与给定集合的差集元素的个数，并将结果放入destination中</td>
-<td>sdiffstore myset myset1 myset2</td>
-<td>将myset1和myset2的差集存储在myset中</td>
-</tr>
-<tr>
-<td>sinter key [key ...]</td>
-<td>返回所有集合的元素交集列表</td>
-<td>sinter myset1 myset2</td>
-<td>如果key不存在则被认为是一个空的集合,当给定的集合为空的时候,结果也为空.(一个集合为空，结果一直为空).</td>
-</tr>
-<tr>
-<td>sinterstore destination key [key ...]</td>
-<td>返回所有集合的元素交集的元素数目，并存储到 destination中</td>
-<td>sinterstore myset myset1 myset2</td>
-<td>myset1和myset2的交集存储到 myset集合中，并返回集合元素的数目，如果destination 集合存在, 则会被重写.</td>
-</tr>
-<tr>
-<td>sismember key member</td>
-<td>判断member是否存在于key集合中，存在返回1，不存在返回0</td>
-<td>sismember myset &quot;121&quot;</td>
-<td>判断121是否存在于myset集合中，myset不存在或121不是myset集合元素返回0，否则返回 1</td>
-</tr>
-<tr>
-<td>smembers key</td>
-<td>返回集合所有元素</td>
-<td>smembers myset</td>
-<td>该命令的作用与使用一个参数的 sinter 命令作用相同.</td>
-</tr>
-<tr>
-<td>smove source destination member</td>
-<td>将member 从source集合移动到destination集合中</td>
-<td>smove myset1 myset2 &quot;sb&quot;</td>
-<td>将sb元素从 myset1 集合 移动到 myset2 集合中</td>
-</tr>
-<tr>
-<td>spop key [count]</td>
-<td>从存储在key的集合中移除并返回一个或多个随机元素</td>
-<td>spop myset 3</td>
-<td>从myset中删除并返回3个元素，被删除的元素，或者当key不存在时返回nil。</td>
-</tr>
-<tr>
-<td>srandmember key [count]</td>
-<td>随机返回集合key中count个数元素</td>
-<td>srandmember myset 3</td>
-<td>随机返回myset集合中的3个元素</td>
-</tr>
-<tr>
-<td>srem key member [member ...]</td>
-<td>移除key 集合中指定的元素</td>
-<td>srem myset &quot;sb1&quot; &quot;sb2&quot;</td>
-<td>从myset中删除sb1 和 sb2，如果集合中不存在 sb1则忽略，myset集合不存在则被视为一个空集合，返回 0</td>
-</tr>
-<tr>
-<td>sscan key cursor [match pattern] [count count]</td>
-<td>遍历集合中所有的元素</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>sunion key [key ...]</td>
-<td>返回给定的多个集合的并集中的所有成员</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>sunionstore destination key [key ...]</td>
-<td>将多个集合的并集存储到destination集合中</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_5">Redis 中的 zset  有序集合</h2>
-
-<p>有序集合中，用到的关键数据结构是ziplist以及dict和skiplist，当服务器属性server.zset_max_ziplist_entries的值大于0且元素的member 长度小于服务器属性server.zset_max_ziplist_value的值（默认为64）时，使用的是ziplist，否则使用的是dict和skiplist。</p>
-
-<p>有序集合里面的成员是不能重复的都是唯一的，但是，不同成员间有可能有相同的分数。当多个成员有相同的分数时，相同分数的成员按照字典规则相对排序，字典顺序排序用的是二进制，它比较的是字符串的字节数组。</p>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>zadd key [nx|xx] [ch] [incr] score member [score member]</td>
-<td>将一个或多个member元素及其分值score加入到有序集合对应的key当中。其中，分值score可以是整数值或双精度浮点数。XX：只更新已经存在的元素，不添加元素。NX：不更新已经存在的元素，总是添加新的元素。CH：将返回值从添加的新元素数量修改为更改的元素总数。INCR：对成员的分数进行递增操作。</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrem key member [member]</td>
-<td>删除有序集合 key中的一个或者多个member</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zcard key</td>
-<td>获取有序集合key中的技基数</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zcount key min max</td>
-<td>返回有序集合 key 中 scroe 值在 [min,max]区间的成员数量</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zincrby key increment member</td>
-<td>在有序集合 key 的 member 的分值上增加 increment</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrank key member</td>
-<td>按照分值从小到大返回有序集合成员member的排名，其中排名从0开始计算</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrevrank key member</td>
-<td>按照分值从大到小返回有序集合成员member的排名</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zscore key member</td>
-<td>获取有序集合key中成员member的分值</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zscan key cursor [match parttern] [count count]</td>
-<td>迭代有序集合中的元素和分值，match可以通过正则匹配元素，count 是返回的元素数量</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrange key start stop [withscores]</td>
-<td>获取有序集合key中指定区间的成员，成员按照分值递增排序，如果分值相同，成员按照字典序排序</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrevrange key start stop [withscores]</td>
-<td>获取有序集合key中指定区间的成员，成员按照分值递减排序，如果分值相同，成员按照字典序排序</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrangebyscore key min max [withscores] [limit offset count]</td>
-<td>返回有序集key中，所有score值介于min和max之间（包括等于min或max）的成员。有序集成员按score值递增（从小到大）次序排列。具有相同score值的成员按字典序排列。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrevrangebyscore key min max [withscores] [limit offset count]</td>
-<td>除了有序集合按score值递减之外，跟zrangebyscore完全一样。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zrangebylex key min max [limit offset count]</td>
-<td>分数必须相同，返回给定的有序集合键key中值介于min和max之间的成员，根据成员的字典序排序。limit 表示分页，offset(起始位置)和count(结果数量)必须输入</td>
-<td></td>
-<td>合法的min和max参数必须包含“(”或者“[”，其中“(”表示开区间，“[”表示闭区间；可以使用 “-“ 和 “+” 表示得分最小值和最大值；成员字符串作为二进制数组的字节数进行比较；</td>
-</tr>
-<tr>
-<td>zlexcount key min max</td>
-<td>返回给定的有序集合键key中值介于min和max之间的成员数量。</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zremrangebyrank key start stop</td>
-<td>移除有序集合key 中指定排名区间的所有成员</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zremrangebyscore key min max</td>
-<td>移除有序集合key中所有score值介于[min,max]之间的成员</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zremrangebylex key min max</td>
-<td>移除该集合中成员字典序介于min和max范围的所有元素</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zunionstore destination numkeys key [key ...] [weights weight] [sumiminimax]</td>
-<td>计算给定的numkeys个有序集合的并集，并且把结果放到destination中。WEIGHTS选项可以在使用聚合函数时为每个有序集分别指定一个乘法因子</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zinterstore destination numkeys key [key ...] [WEIGHTS weight] [SUMIMINIMAX]</td>
-<td>计算给定的numkeys个有序集合的交集，并且把结果放到destination中。</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zpopmax key [count]</td>
-<td>删除并返回有序集合key中的最多count个具有最高得分的成员。</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zpopmin key [count]</td>
-<td>删除并返回有序集合key中的最多count个具有最少得分的成员。</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>bzpopmax key [key ...] timeout</td>
-<td>删除并返回 有序集合 key 中分值最高的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
-<td>bzpopmax zset2 zset1 0</td>
-<td>按照zset的key前后顺序，删除并返回zset2的分值最高的成员</td>
-</tr>
-<tr>
-<td>bzpopmin key [key ..] timeout</td>
-<td>删除并返回 有序集合 key 中分值最低的成员，在参数中的所有有序集合均为空的情况下，阻塞连接</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_6">Redis 中的 hash 散列表</h2>
-
-<p>Redis散列存储有 ziplist 和 散列表(hashtable) 2种，有时我们需要从ziplist编码转换为散列表编码。值得注意的是，即使后期满足条件，也不会从散列表编码转换为ziplist编码。</p>
-
-<p>当需要存储的key-value结构同时满足下面两个条件时，采用ziplist作为底层存储：</p>
-
-<ul>
-<li>key-value结构的所有键值对的字符串长度都小于hash-max- ziplist-value（默认值64），该值可以通过配置文件配置</li>
-<li>散列对象保存的键值对的个数（一个键值对记为1个）小于hash-max-ziplist-entries（默认值512），该值也可以通过配置文件配置。</li>
-</ul>
-
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>行为</th>
-<th>示例</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>hset key field value</td>
-<td>设置 key 指定的哈希集中指定字段的值</td>
-<td></td>
-<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段在哈希集中存在，它将被重写。</td>
-</tr>
-<tr>
-<td>hmset key field value [field value]</td>
-<td>设置 key 指定的哈希集中指定字段的值</td>
-<td></td>
-<td>设置 key 指定的哈希集中指定字段的值</td>
-</tr>
-<tr>
-<td>hsetnx key field value</td>
-<td>只在 key 指定的哈希集中不存在指定的字段时，设置字段的值</td>
-<td></td>
-<td>如果 key 指定的哈希集不存在，会创建一个新的哈希集并与 key 关联。如果字段已存在，该操作无效果。</td>
-</tr>
-<tr>
-<td>hexists key field</td>
-<td>查看某个field是否存在，可以用于标识某个操作之前是否已经执行过</td>
-<td>xxx</td>
-<td>查看field是否存在，存在返回1，key不存在或者field不存在返回0。</td>
-</tr>
-<tr>
-<td>hget key field</td>
-<td>获取单个field对应的value值</td>
-<td></td>
-<td>该字段所关联的值。当字段不存在或者 key 不存在时返回nil。</td>
-</tr>
-<tr>
-<td>hmget key field [field...]</td>
-<td>获取多个field对应的value值</td>
-<td></td>
-<td>当字段不存在或者 key 不存在时返回nil</td>
-</tr>
-<tr>
-<td>hkeys key</td>
-<td>获取某个key下的所有field信息</td>
-<td></td>
-<td>当 key 指定的哈希集不存在时返回空列表</td>
-</tr>
-<tr>
-<td>hvals key</td>
-<td>获取某个key下的所有value信息</td>
-<td></td>
-<td>哈希集中的值的列表，当 key 指定的哈希集不存在时返回空列表</td>
-</tr>
-<tr>
-<td>hgetall key</td>
-<td>获取某个key下的所有key-field信息</td>
-<td></td>
-<td>哈希集中字段和值的列表。当 key 指定的哈希集不存在时返回空列表。</td>
-</tr>
-<tr>
-<td>hlen key</td>
-<td>获取散列表中field的个数，主要用于数据统计。</td>
-<td></td>
-<td>哈希集中字段的数量，当 key 指定的哈希集不存在时返回 0</td>
-</tr>
-<tr>
-<td>hscan key cursor [match pattern] [COUNT count]</td>
-<td>遍历散列表中所有的field-value对</td>
-<td></td>
-<td>cursor指向当前的位置，0代表新一轮的迭代，返回0代表本轮迭代结束；count是需要返回的field 个数，默认值是10，当底层编码为ziplist时，该值无效，Redis会将ziplist中所有field-value返回，当编码为散列表时，返回的元素个数不一定，可能大于，也可能小于或等于此值；pattern是需要匹配的模式，这一步是读取完数据之后，发送数据之前执行的</td>
-</tr>
-<tr>
-<td>hdel key field [field ...]</td>
-<td>将key对应的散列表中的field删除，key为空时返回0，key 不为空时返回成功删除的field个数</td>
-<td></td>
-<td>直接调用ziplist或者散列表的接口将数据删除。散列表中field全部被删除时，key也会被删除。</td>
-</tr>
-<tr>
-<td>hincrby key field increment</td>
-<td>将field对应的value增加increment</td>
-<td></td>
-<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
-</tr>
-<tr>
-<td>hincrbyfloat key field increment</td>
-<td>将field对应的value增加increment</td>
-<td></td>
-<td>如果key不存在则直接新建key，field不存在则直接新建field，设置其值为0，命令返回增加后的新值</td>
-</tr>
-<tr>
-<td>hstrlen key field</td>
-<td>返回hash指定field的value的字符串长度</td>
-<td></td>
-<td>如果hash或field不存在，返回0</td>
-</tr>
-</tbody>
-</table>
 
 ]]></content>
   </entry>

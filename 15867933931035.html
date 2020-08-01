@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    细说java 显式锁 Lock - 大爷来玩儿啊~
+    细说 JAVA 显式锁 Lock - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            细说java 显式锁 Lock   
+                            细说 JAVA 显式锁 Lock   
                       </h1>
                      
                     
@@ -121,7 +121,7 @@
 <p>问:java中有了synchronized，为什么又会出现java显式锁呢？<br/>
 答：Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
 
-<p>使用synchronized方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
+<p>使用 synchronized 方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
 
 <p>lock的使用应使用如下的惯用写法:</p>
 
@@ -134,8 +134,10 @@ try{
 }
 </code></pre>
 
+<p>Lock 接口理解：</p>
+
 <pre><code class="language-text">public interface Lock {
-    // 获得锁资源
+    // 枷锁获得锁资源
     void lock();
     // 尝试获得锁，如果当前线程被调用了interrupted则中断，并抛出异常，否则就获得锁
     void lockInterruptibly() throws InterruptedException;
@@ -143,16 +145,20 @@ try{
     boolean tryLock();
     // 保持给定的等待时间，如果期间能拿到锁，则获得锁，同样如果期间被中断，则抛异常
     boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
-    // 释放锁
+    // 解锁，释放锁资源
     void unlock();
-    // 返回与此Lock对象绑定Condition实例
+    // 获取等待通知组件，该组件与当前锁绑定，当前线程只有获得了锁，才能调用该组件的wait()方法，而调用后，当前线程将释放锁。
     Condition newCondition();
 }
 </code></pre>
 
 <hr/>
 
-<h2 id="toc_0">ReentrantLock重入锁，内部实现有公平锁和非公平锁。</h2>
+<h2 id="toc_0">ReentrantLock重入锁</h2>
+
+<p><figure><img src="media/15867933931035/15960168863131.jpg" alt="" style="width:645px;"/></figure></p>
+
+<p>ReentrantLock内部存在3个实现类，分别是Sync、NonfairSync、FairSync，其中Sync继承自AQS实现了解锁tryRelease()方法，而NonfairSync(非公平锁)、 FairSync(公平锁)则继承自Sync，实现了获取锁的tryAcquire()方法，ReentrantLock的所有方法调用都通过间接调用AQS和Sync类及其子类来完成的。</p>
 
 <h3 id="toc_1">可重入</h3>
 
@@ -178,68 +184,166 @@ try{
 
 <p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
 
-<pre><code class="language-java">final boolean nonfairTryAcquire(int acquires) {
-    final Thread current = Thread.currentThread();
-    int c = getState();
-    if (c == 0) {
-        if (compareAndSetState(0, acquires)) {
-            setExclusiveOwnerThread(current);
+<pre><code class="language-java">/** ReentrantLock 锁的基础同步器，实现有公平和非公平两种同步器 */
+abstract static class Sync extends AbstractQueuedSynchronizer {
+    abstract void lock();
+    
+    /**内部使用的是CAS原子性操作设置state值，可以保证state的更改是线程安全的*/
+    final boolean nonfairTryAcquire(int acquires) {
+        final Thread current = Thread.currentThread();
+        int c = getState();
+        //判断同步状态是否为0，并尝试再次获取同步状态
+        if (c == 0) {
+            if (compareAndSetState(0, acquires)) {
+                setExclusiveOwnerThread(current);
+                return true;
+            }
+        } 
+        //如果当前线程已获取锁，属于重入锁，再次获取锁后将status值加1
+        else if (current == getExclusiveOwnerThread()) {
+            int nextc = c + acquires;
+            if (nextc &lt; 0) // overflow
+                throw new Error(&quot;Maximum lock count exceeded&quot;);
+            //设置当前同步状态，当前只有一个线程持有锁，因为不会发生线程安全问题，可以直接执行 setState(nextc);
+            setState(nextc);
             return true;
         }
-    } else if (current == getExclusiveOwnerThread()) {
-        int nextc = c + acquires;
-        if (nextc &lt; 0) // overflow
-            throw new Error(&quot;Maximum lock count exceeded&quot;);
-        setState(nextc);
-        return true;
+        return false;
     }
-    return false;
-}
 
-protected final boolean tryAcquire(int acquires) {
-    final Thread current = Thread.currentThread();
-    int c = getState();
-    if (c == 0) {
-        if (!hasQueuedPredecessors() &amp;&amp;
+    protected final boolean tryRelease(int releases) {
+        int c = getState() - releases;
+        if (Thread.currentThread() != getExclusiveOwnerThread())
+            throw new IllegalMonitorStateException();
+        boolean free = false;
+        if (c == 0) {
+            free = true;
+            setExclusiveOwnerThread(null);
+        }
+        setState(c);
+        return free;
+    }
+
+    protected final boolean isHeldExclusively() {
+        return getExclusiveOwnerThread() == Thread.currentThread();
+    }
+
+    final ConditionObject newCondition() {
+        return new ConditionObject();
+    }
+    
+    final Thread getOwner() {
+        return getState() == 0 ? null : getExclusiveOwnerThread();
+    }
+
+    final int getHoldCount() {
+        return isHeldExclusively() ? getState() : 0;
+    }
+
+    final boolean isLocked() {
+        return getState() != 0;
+    }
+
+    private void readObject(java.io.ObjectInputStream s)
+        throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        setState(0); // reset to unlocked state
+    }
+}
+</code></pre>
+
+<pre><code class="language-java">/** 公平锁实现，在判断!hasQueuedPredecessors() */
+static final class FairSync extends Sync {
+    final void lock() {
+        acquire(1);
+    }
+
+    protected final boolean tryAcquire(int acquires) {
+        final Thread current = Thread.currentThread();
+        int c = getState();
+        if (c == 0) {
+            //注意！！这里先判断同步队列是否存在结点
+            if (!hasQueuedPredecessors() &amp;&amp;
                 compareAndSetState(0, acquires)) {
-            setExclusiveOwnerThread(current);
+                setExclusiveOwnerThread(current);
+                return true;
+            }
+        }
+        else if (current == getExclusiveOwnerThread()) {
+            int nextc = c + acquires;
+            if (nextc &lt; 0)
+                throw new Error(&quot;Maximum lock count exceeded&quot;);
+            setState(nextc);
             return true;
         }
-    } else if (current == getExclusiveOwnerThread()) {
-        int nextc = c + acquires;
-        if (nextc &lt; 0)
-            throw new Error(&quot;Maximum lock count exceeded&quot;);
-        setState(nextc);
-        return true;
+        return false;
     }
-    return false;
 }
 
-protected final boolean tryRelease(int releases) {
-    int c = getState() - releases;
-    if (Thread.currentThread() != getExclusiveOwnerThread())
-        throw new IllegalMonitorStateException();
-    boolean free = false;
-    if (c == 0) {
-        free = true;
-        setExclusiveOwnerThread(null);
+/** 非公平锁实现 */
+static final class NonfairSync extends Sync {
+    final void lock() {
+        // 执行CAS操作，获取同步状态
+        if (compareAndSetState(0, 1))
+            // 成功则将独占多线程设置为当前线程
+            setExclusiveOwnerThread(Thread.currentThread());
+        else
+            acquire(1); // 再次请求同步状态
     }
-    setState(c);
-    return free;
+
+    protected final boolean tryAcquire(int acquires) {
+        return nonfairTryAcquire(acquires);
+    }
 }
+
 </code></pre>
 
 <hr/>
 
 <h3 id="toc_3">condition接口</h3>
 
-<p>Condition与Lock要结合使用，使用Condition可以用来实现wait()和notify()/notifyAll()类似的等待/通知模式。与Object对象里不同的是，Condition更加灵活，可以在一个Lock对象里创建多个Condition实例，有选择的进行线程通知，在线程调度上更加灵活。<br/>
-Condition接口的通过<br/>
-java.util.concurrent.locks.AbstractQueuedSynchronizer.ConditionObject <br/>
-<a href="15867863097702.html">细说AbstractQueuedSynchronizer(AQS)</a><br/>
-来实现。</p>
+<p>Condition与Lock要结合使用，使用Condition可以用来实现wait()和notify()/notifyAll()类似的等待/通知模式。与Object对象不同的是，Condition更加灵活，可以在一个Lock对象里创建多个Condition实例，有选择的进行线程通知，在线程调度上更加灵活。</p>
 
-<p>使用Condition注释上的栗子：</p>
+<ul>
+<li><p>通过Condition能够精细的控制多线程的休眠与唤醒。</p></li>
+<li><p>对于一个锁，我们可以为多个线程间建立不同的Condition</p></li>
+</ul>
+
+<pre><code class="language-text">public interface Condition {
+
+ /**
+  * 使当前线程进入等待状态直到被通知(signal)或中断
+  * 当其他线程调用singal()或singalAll()方法时，该线程将被唤醒
+  * 当其他线程调用interrupt()方法中断当前线程
+  * await()相当于synchronized等待唤醒机制中的wait()方法
+  */
+ void await() throws InterruptedException;
+
+ //当前线程进入等待状态，直到被唤醒，该方法不响应中断要求
+ void awaitUninterruptibly();
+
+ //调用该方法，当前线程进入等待状态，直到被唤醒或被中断或超时
+ //其中nanosTimeout指的等待超时时间，单位纳秒
+ long awaitNanos(long nanosTimeout) throws InterruptedException;
+
+  //同awaitNanos，但可以指明时间单位
+  boolean await(long time, TimeUnit unit) throws InterruptedException;
+
+ //调用该方法当前线程进入等待状态，直到被唤醒、中断或到达某个时
+ //间期限(deadline),如果没到指定时间就被唤醒，返回true，其他情况返回false
+  boolean awaitUntil(Date deadline) throws InterruptedException;
+
+ //唤醒一个等待在Condition上的线程，该线程从等待方法返回前必须
+ //获取与Condition相关联的锁，功能与notify()相同
+  void signal();
+
+ //唤醒所有等待在Condition上的线程，该线程从等待方法返回前必须
+ //获取与Condition相关联的锁，功能与notifyAll()相同
+  void signalAll();
+}
+</code></pre>
+
+<h4 id="toc_4">使用Condition的阻塞的有界队列</h4>
 
 <pre><code class="language-java">/**
  * 阻塞的有界队列
@@ -285,8 +389,11 @@ public class BoundedBuffer {
 }
 </code></pre>
 
-<p>可以通过多个线程来调用put和take方法，来模拟生产者和消费者。<br/>
-我们来换成常规的wait/notify的实现方式：</p>
+<h4 id="toc_5">生产者和消费者</h4>
+
+<p>可以通过多个线程来调用put和take方法，来模拟生产者和消费者。</p>
+
+<p>我们来换成常规的wait/notify的实现方式：</p>
 
 <pre><code class="language-java">public class BoundedBuffer {
     private final Object lock;
@@ -332,29 +439,73 @@ public class BoundedBuffer {
 }
 </code></pre>
 
-<p>如果将items.notifyAll()换成items.notify()，在多生产者和多消费者模式情况下，可能出现take唤醒了take的情况，导致生产者在等待消费者消费，而消费者等待生产者生产，最终导致程序无限等待，而用notifyAll()，则唤醒所有的生产者和消费者，不像Condition可以选择性的通知。下面我们来看一下它的源码：</p>
+<p>如果将items.notifyAll()换成items.notify()，在多生产者和多消费者模式情况下，可能出现take唤醒了take的情况，导致生产者在等待消费者消费，而消费者等待生产者生产，最终导致程序无限等待，而用notifyAll()，则唤醒所有的生产者和消费者，不像Condition可以选择性的通知。</p>
 
-<pre><code class="language-java">public interface Condition {
-    // 让当前线程等待，直到被通知或者被中断
-    void await() throws InterruptedException;
-    // 与前者的区别是，当等待过程中被中断时，仍会继续等待，直到被唤醒，才会设置中断状态
-    void awaitUninterruptibly();
-    // 让当前线程等待，直到它被告知或中断，或指定的等待时间已经过。
-    boolean await(long time, TimeUnit unit) throws InterruptedException;
-    // 与上面的类似，让当前线程等待，不过时间单位是纳秒
-    long awaitNanos(long nanosTimeout) throws InterruptedException;
-    // 让当前线程等待到确切的指定时间，而不是时长
-    boolean awaitUntil(Date deadline) throws InterruptedException;
-    // 唤醒一个等待当前condition的线程，有多个则随机选一个
-    void signal();
-    // 唤醒所有等待当前condition的线程
-    void signalAll();
+<p>Condition的生产与消费模式实现</p>
+
+<pre><code class="language-java">public class ResourceByCondition {
+    private String name;
+    private int count = 1;
+    private boolean flag = false;
+
+    //创建一个锁对象。
+    Lock lock = new ReentrantLock();
+
+    //通过已有的锁获取两组监视器，一组监视生产者，一组监视消费者。
+    Condition producer_con = lock.newCondition();
+    Condition consumer_con = lock.newCondition();
+
+    /**
+     * 生产
+     * @param name
+     */
+    public  void product(String name)
+    {
+        lock.lock();
+        try
+        {
+            while(flag){
+                try{producer_con.await();}catch(InterruptedException e){}
+            }
+            this.name = name + count;
+            count++;
+            System.out.println(Thread.currentThread().getName()+&quot;...生产者5.0...&quot;+this.name);
+            flag = true;
+            consumer_con.signal();//直接唤醒消费线程
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 消费
+     */
+    public  void consume()
+    {
+        lock.lock();
+        try
+        {
+            while(!flag){
+                try{consumer_con.await();}catch(InterruptedException e){}
+            }
+            System.out.println(Thread.currentThread().getName()+&quot;...消费者.5.0.......&quot;+this.name);//消费
+            flag = false;
+            producer_con.signal();//直接唤醒生产线程
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
 }
+
 </code></pre>
 
 <hr/>
 
-<h2 id="toc_4">ReadWriteLock</h2>
+<h2 id="toc_6">ReadWriteLock</h2>
 
 <p>读写锁接口只定义了两个获取读锁和写锁的接口方法，需要具体实现类ReentrantReadWriteLock实现</p>
 
@@ -364,16 +515,16 @@ public class BoundedBuffer {
 }
 </code></pre>
 
-<h3 id="toc_5">ReentrantReadWriteLock</h3>
+<h3 id="toc_7">ReentrantReadWriteLock</h3>
 
-<h4 id="toc_6">读写状态的设计</h4>
+<h4 id="toc_8">读写状态的设计</h4>
 
 <p>读写锁同样依赖自定义同步器来实现同步功能，而读写状态就是其同步器的 同步状态。<br/>
 回想 ReentrantLock 中自定义同步器的实现，同步状态表示锁被一个线程重 复获取的次数，而读写锁的自定义同步器需要在同步状态(一个整型变量)上维 护多个读线程和一个写线程的状态，使得该状态的设计成为读写锁实现的关键。<br/>
 如果在一个整型变量上维护多种状态，就一定需要“按位切割使用”这个变 量，读写锁将变量切分成了两个部分，高 16 位表示读，低 16 位表示写，读写锁 是如何迅速确定读和写各自的状态呢?<br/>
 答案是通过位运算。假设当前同步状态值为 S，写状态等于 S&amp;0x0000FFFF (将高 16 位全部抹去)，读状态等于 S&gt;&gt;&gt;16(无符号补 0 右移 16 位)。当写 状态增加 1 时，等于 S+1，当读状态增加 1 时，等于 S+(1&lt;<16)，也就是 S+0x00010000。 根据状态的划分能得出一个推论:S 不等于 0 时，当写状态(S&0x0000FFFF)等 于 0 时，则读状态(S>&gt;&gt;16)大于 0，即读锁已被获取。</p>
 
-<h4 id="toc_7">写锁的获取与释放</h4>
+<h4 id="toc_9">写锁的获取与释放</h4>
 
 <p>写锁是一个支持重进入的排它锁。如果当前线程已经获取了写锁，则增加写 状态。如果当前线程在获取写锁时，读锁已经被获取(读状态不为 0)或者该线 程不是已经获取写锁的线程，则当前线程进入等待状态。</p>
 
@@ -381,13 +532,13 @@ public class BoundedBuffer {
 
 <p>写锁的释放与ReentrantLock的释放过程基本类似，每次释放均减少写状态， 当写状态为 0 时表示写锁已被释放，从而等待的读写线程能够继续访问读写锁， 同时前次写线程的修改对后续读写线程可见</p>
 
-<h4 id="toc_8">读锁的获取与释放</h4>
+<h4 id="toc_10">读锁的获取与释放</h4>
 
 <p>读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他 写线程访问(或者写状态为 0)时，读锁总会被成功地获取，而所做的也只是(线 程安全的)增加读状态。如果当前线程已经获取了读锁，则增加读状态。</p>
 
 <p>如果当前线程在获取读锁时，写锁已被其他线程获取，则进入等待状态。读 状态是所有线程获取读锁次数的总和，而每个线程各自获取读锁的次数只能选择 保存在 ThreadLocal 中，由线程自身维护。在 tryAcquireShared(int unused)方法中， 如果其他线程已经获取了写锁，则当前线程获取读锁失败，进入等待状态。如果 当前线程获取了写锁或者写锁未被获取，则当前线程(线程安全，依靠 CAS 保证) 增加读状态，成功获取读锁。读锁的每次释放(线程安全的，可能有多个读线程 同时释放读锁)均减少读状态。</p>
 
-<h4 id="toc_9">锁的升降级</h4>
+<h4 id="toc_11">锁的升降级</h4>
 
 <p>锁降级指的是写锁降级成为读锁。如果当前线程拥有写锁，然后将其释放， 最后再获取读锁，这种分段完成的过程不能称之为锁降级。</p>
 
@@ -397,7 +548,7 @@ public class BoundedBuffer {
 ReadLock<br/>
 WriteLock </p>
 
-<h3 id="toc_10">StampedLock</h3>
+<h3 id="toc_12">StampedLock</h3>
 
 <p>JDK1.8增加的一种新的锁实现</p>
 

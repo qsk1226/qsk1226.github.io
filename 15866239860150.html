@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    四、JVM 中 java 对象 - 大爷来玩儿啊~
+    软引用（SoftReference）实现内存敏感的高速缓存 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            四、JVM 中 java 对象   
+                            软引用（SoftReference）实现内存敏感的高速缓存   
                       </h1>
                      
                     
@@ -116,157 +116,139 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>在java程序运行的过程中，无时无刻都有对象被不断的创建出来。我们创建一个对象通常都是通过new关键字，但是jvm是怎么把一个对象给整出来的呢？</p>
+                    <p>软引用可用来实现内存敏感的高速缓存。</p>
 
-<h2 id="toc_0">对象的创建</h2>
+<h2 id="toc_0">软引用（SoftReference）</h2>
 
-<p>Java中有5种创建对象的方式：</p>
+<p>如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。</p>
 
-<table>
-<thead>
-<tr>
-<th>创建方式</th>
-<th>是否调用构造函数</th>
-</tr>
-</thead>
+<p>SoftReference的特点是它的一个实例保存对一个Java对象的软引用，该软引用的存在不妨碍垃圾收集线程对该Java对象的回收。也就是说，一旦SoftReference保存了对一个Java对象的软引用后，在垃圾线程对这个Java对象回收前，SoftReference类所提供的get()方法返回Java对象的强引用。另外，一旦垃圾线程回收该Java对象之后，get()方法将返回null。</p>
 
-<tbody>
-<tr>
-<td>new关键字</td>
-<td>调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Class.forName().instance()、Object.class.newInstance()</td>
-<td>Class.forName加载并连接类，newInstance()调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Constructor类的NewInstance()</td>
-<td>调用构造函数进行初始化</td>
-</tr>
-<tr>
-<td>Clone()</td>
-<td>没有调用构造函数</td>
-</tr>
-<tr>
-<td>反序列化</td>
-<td>没有调用构造函数</td>
-</tr>
-</tbody>
-</table>
-
-<p>这里我们只对new关键字进行分析<br/>
-当JVM遇到new关键字创建普通的java对象(不包括数组和Class对象等)时，<strong><em>首先</em></strong>检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过，如果没有那么必须执行相应的加载过程()。</p>
-
-<p>在类加载检查通过后，接下来虚拟机为新生对象分配内存(类加载完成后即可知其大小)，jvm将一块确定大小的内存块从java堆中划拨出来。在划拨堆内存出来的时候，会涉及到如何分配的问题，下面有两种分配方式</p>
-
-<ul>
-<li><p>指针碰撞 <br/>
-定义： 假设堆内存是规整的，所有使用过的堆内存放在一边，空闲的内存被放在另一边，中间放着一个指针作为分界点的指示器，那所分配内存就是是把这个指针向空闲空间方向移动一段与对象大小相等的的距离。<br/>
-<figure><img src="media/15866239860150/15869624345720.jpg" alt="" style="width:869px;"/></figure></p></li>
-<li><p>空闲列表<br/>
-如果堆内存是不规整的，已使用和未被使用的内存是交错在一起的，那就没办法简简单单地进行“指针碰撞”了，虚拟机就必须维护一个用来记录那些内存块是可用的列表，在分配对象的时候找一个内存大小适中的内存空间划分给对象，并更新列表上的记录，这种分配方式被称为空闲列表<br/>
-<figure><img src="media/15866239860150/15869639142729.jpg" alt="" style="width:877px;"/></figure></p></li>
-</ul>
-
-<p>选择哪种分配方式有java堆是否规整决定，堆是否规整取决于jvm采用哪种垃圾回收器(<a href="mweblib://15869610752834">垃圾收集器</a>)来决定。</p>
-
-<p>因此采用复制算法、标记整理算法的收集器时，系统采用“指针碰撞“，而采用CMS这种基于清除算法的收集器时，采用”空闲列表“来分配。</p>
-
-<p>但是在并发情况下，即使是”指针碰撞“这种仅仅是移动指针所指向位置的操作，也并不是线程安全的，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况。</p>
-
-<p>解决上面所说的问题有两种可选方案</p>
-
-<ul>
-<li>分配内存空间的动作进行同步处理（JVM是采用CAS配上失败重试的方式保证更新操作的原子性）</li>
-<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在java堆中预先分配一小块内存，称为本地线程分配缓冲(Thread Local Allocation Buffer， TLAB)，哪个线程要分分配内存就在哪个线程的TLAB中分配，TLAB使用完了，分配新的缓存区时才需要同步锁定</li>
-</ul>
-
-<p>内存分配完成之后， JVM必须将分配到的内存空间(不包括对象头)都进行初始化，这样保证了在代码中可以不赋初值就可以直接使用。</p>
-
-<p>接下来JVM还要对对象进行必要的设置，例如对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄、是否使用偏向锁等信息，这些信息存放在java的对象头中。</p>
-
-<p>接下来对象的创建猜刚刚开始----构造函数，即Class文件中的<init>()方法还没执行，所有的对象字段还是初始的默认值，执行完<init>()之后对象才会想我们程序中所希望的那样赋予相应的变量值。</p>
-
-<h2 id="toc_1">对象的内存布局</h2>
-
-<p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。<br/>
-<figure><img src="media/15866239860150/15953364937726.jpg" alt=""/></figure></p>
-
-<h3 id="toc_2">对象头</h3>
-
-<p>对象头分两部分：Mark Word、class pointer(类型指针)<br/>
-Mark Word用于存储对象自身的运行时数据，如哈希码，GC分代年龄，锁状态标志，线程持有的锁，偏向线程ID，偏向时间戳等。<br/>
-类型指针即对象指向它的类元数据的指针。并不是所有的虚拟机实现都必须在对象数据上保留类型指针（用句柄实现）。</p>
-
-<ul>
-<li>Mark Word的组成以及布局情况</li>
-</ul>
-
-<p>下图是在64位虚拟机上的对象头的堆内存布局：<br/>
-<figure><img src="media/15866239860150/15889568831679.jpg" alt=""/></figure></p>
-
-<p>通过Jol工具可以查看对象信息,例如查看Object对象的信息如下：</p>
-
-<pre><code class="language-text">Object a = new Object();
-System.out.println(ClassLayout.parseInstance(a).toPrintable());
-
------------------------------------------------------------------------
-java.lang.Object object internals:
- OFFSET  SIZE   TYPE DESCRIPTION                               VALUE
-      0     4        (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
-      4     4        (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
-      8     4        (object header)                           e5 01 00 f8 (11100101 00000001 00000000 11111000) (-134217243)
-     12     4        (loss due to the next object alignment)
-Instance size: 16 bytes
-Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+<pre><code class="language-java">MyObject aRef = new MyObject();
+SoftReference  aSoftRef=new SoftReference(aRef);
 </code></pre>
 
-<p>从输出结果可以看到Object对象的大小总共占用 4 bytes的内存</p>
+<p>此时，对于这个MyObject对象，有两个引用路径，一个是来自SoftReference对象的软引用，一个来自变量aReference的强引用，所以这个MyObject对象是强可及对象。<br/>
+随即，我们可以结束aReference对这个MyObject实例的强引用: aRef = null;</p>
 
-<ul>
-<li>类型指针<br/>
-对象指向它的类型元数据指针，java虚拟机通过这个指针来确定对象是哪个类的实例。</li>
-</ul>
+<p>此后，这个MyObject对象成为了软可及对象。如果垃圾收集线程进行内存垃圾收集，并不会因为有一个SoftReference对该对象的引用而始终保留该对象。Java虚拟机的垃圾收集线程对软可及对象和其他一般Java对象进行了区别对待:软可及对象的清理是由垃圾收集线程根据其特定算法按照内存需求决定的。也就是说，垃圾收集线程会在虚拟机抛出OutOfMemoryError之前回收软可及对象，而且虚拟机会尽可能优先回收长时间闲置不用的软可及对象，对那些刚刚构建的或刚刚使用过的“新”软可反对象会被虚拟机尽可能保留。在回收这些对象之前，我们可以通过:</p>
 
-<h3 id="toc_3">实例数据</h3>
+<pre><code class="language-java">MyObject anotherRef=(MyObject)aSoftRef.get();
+</code></pre>
 
-<p>用来存储真正的有效信息，即我们在程序代码里面所定义的各种类型的字段内容。</p>
+<p>重新获得对该实例的强引用。而回收之后，调用get()方法就只能得到null了。</p>
 
-<h3 id="toc_4">对齐填充</h3>
+<h2 id="toc_1">ReferenceQueue工作机制</h2>
 
-<p>这部分仅仅是起到占位符的作用。由于jvm的自动内存管理系统要求任何对象的大小必须是8字节的整数倍，如果对象实例数据没有对齐的话，则通过对齐填充来进行补全，使其大小是8字节的整数倍(对象头已经被设计成正好是8字节的整数倍的结构了)</p>
+<p>软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。使用ReferenceQueue清除失去了软引用对象的SoftReference。</p>
 
-<h2 id="toc_5">对象访问定位</h2>
+<p>作为一个Java对象，SoftReference对象除了具有保存软引用的特殊性之外，也具有Java对象的一般性。所以，当软可及对象被回收之后，虽然这个SoftReference对象的get()方法返回null,但这个SoftReference对象已经不再具有存在的价值，需要一个适当的清除机制，避免大量SoftReference对象带来的内存泄漏。在java.lang.ref包里还提供了ReferenceQueue。如果在创建SoftReference对象的时候，使用了一个ReferenceQueue对象作为参数提供给SoftReference的构造方法，如:</p>
 
-<p>创建完对象之后，就到了使用对象的时候了。JVM会通过虚拟机栈上的reference（指向对象的引用）数据来操作堆上的具体对象。</p>
+<pre><code class="language-java">ReferenceQueue queue = new ReferenceQueue();
+SoftReference ref=new SoftReference(aMyObject, queue);
+</code></pre>
 
-<p>jvm主要有两种访问对象的方式：</p>
+<p>那么当这个SoftReference所软引用的aMyOhject被垃圾收集器回收的同时，ref所强引用的SoftReference对象被列入ReferenceQueue。也就是说，ReferenceQueue中保存的对象是Reference对象，而且是已经失去了它所软引用的对象的Reference对象。另外从ReferenceQueue这个名字也可以看出，它是一个队列，当我们调用它的poll()方法的时候，如果这个队列中不是空队列，那么将返回队列前面的那个Reference对象。<br/>
+在任何时候，我们都可以调用ReferenceQueue的poll()方法来检查是否有它所关心的非强可及对象被回收。如果队列为空，将返回一个null,否则该方法返回队列中前面的一个Reference对象。利用这个方法，我们可以检查哪个SoftReference所软引用的对象已经被回收。于是我们可以把这些失去所软引用的对象的SoftReference对象清除掉。常用的方式为:</p>
 
-<ul>
-<li><p>使用句柄访问<br/>
-java堆内存中将可能划分出一块内存作为句柄池，reference中存储的就是对象的句柄地址，句柄中包含了对象的实例数据与类型数据各自具体的地址信息。<br/>
-当对象改变之后，只需要改变句柄中的实例数据的指针地址，而句柄本身的地址这不会改变，那么reference的引用也不会改变。<br/>
-<figure><img src="media/15866239860150/15953360466927.jpg" alt=""/></figure></p></li>
-<li><p>使用直接指针访问<br/>
-reference中存储的直接就是对象的地址，直接访问对象的话，一步到位，访问速度会更加迅速。<br/>
-<figure><img src="media/15866239860150/15953360587854.jpg" alt=""/></figure></p></li>
-</ul>
-
-<pre><code class="language-text">public void method () {
-    Object obj = new Object();
+<pre><code class="language-java">SoftReference ref = null;
+while ((ref = (EmployeeRef) q.poll()) != null) {
+    // 清除ref
 }
 </code></pre>
 
-<p>以上代码生成两部分的内存区域：1：Obj这个引用变量，因为是方法的内部变量，放在java 虚拟机栈里面  2:真正的Object class的实例放在java堆里面。</p>
+<h2 id="toc_2">使用软引用构建敏感数据的缓存</h2>
 
-<p><strong>上面的new Object()一共消耗12个字节，JVM 规定引用占4个字节bytes(在JVM Stack)，而空对象占用8个字节bytes(在java heap space)。</strong></p>
+<h3 id="toc_3">为什么需要使用软引用</h3>
 
-<p>方法结束后，jvm stack中的变量马上进行回收，但是Heap space中的对象要等GC(垃圾收集器)进行回收</p>
+<p>首先，我们看一个雇员信息查询系统的实例。我们将使用一个Java语言实现的雇员信息查询系统查询存储在磁盘文件或者数据库中的雇员人事档案信息。作为一个用户，我们完全有可能需要回头去查看几分钟甚至几秒钟前查看过的雇员档案信息(同样，我们在浏览WEB页面的时候也经常会使用“后退”按钮)。这时我们通常会有两种程序实现方式:一种是把过去查看过的雇员信息保存在内存中，每一个存储了雇员档案信息的Java对象的生命周期贯穿整个应用程序始终;另一种是当用户开始查看其他雇员的档案信息的时候，把存储了当前所查看的雇员档案信息的Java对象结束引用，使得垃圾收集线程可以回收其所占用的内存空间，当用户再次需要浏览该雇员的档案信息的时候，重新构建该雇员的信息。很显然，第一种实现方法将造成大量的内存浪费，而第二种实现的缺陷在于即使垃圾收集线程还没有进行垃圾收集，包含雇员档案信息的对象仍然完好地保存在内存中，应用程序也要重新构建一个对象。我们知道，访问磁盘文件、访问网络资源、查询数据库等操作都是影响应用程序执行性能的重要因素，如果能重新获取那些尚未被回收的Java对象的引用，必将减少不必要的访问，大大提高程序的运行速度。</p>
 
-<p>java对象创建(new关键字)的三个步骤：<br/>
-1、在堆内存中创建类的实例<br/>
-2、为对象实例的成员变量赋初值<br/>
-3、将对象的引用返回</p>
+<h2 id="toc_4">通过软可及对象重获方法实现Java对象的高速缓存</h2>
+
+<p>利用Java平台垃圾收集机制的特性以及前述的垃圾对象重获方法，我们通过一个雇员信息查询系统的小例子来说明如何构建一种高速缓存器来避免重复构建同一个对象带来的性能损失。我们将一个雇员的档案信息定义为一个Employee类:</p>
+
+<pre><code class="language-java">@Data
+public class Employee {
+    private String id;// 雇员的标识号码
+    private String name;// 雇员姓名
+    private String department;// 该雇员所在部门
+    private String Phone;// 该雇员联系电话
+    private int salary;// 该雇员薪资
+    private String origin;// 该雇员信息的来源
+}
+</code></pre>
+
+<p>这个Employee类的构造方法中我们可以预见，如果每次需要查询一个雇员的信息。哪怕是几秒中之前刚刚查询过的，都要重新构建一个实例，这是需要消耗很多时间的。下面是一个对Employee对象进行缓存的缓存器的定义:</p>
+
+<pre><code class="language-java">import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.util.HashTable;
+
+public class EmployeeCache {
+    // 一个Cache实例
+    private static EmployeeCache cache;
+    // 用于Chche内容的存储
+    private HashTable&lt;String,EmployeeRef&gt; employeeRefs;
+    private ReferenceQueue&lt;Employee&gt; q;// 垃圾Reference的队列
+    // 继承SoftReference，使得每一个实例都具有可识别的标识。并且该标识与其在HashMap内的key相同。
+    private class EmployeeRef extends SoftReference&lt;Employee&gt; {
+        private String _key = &quot;&quot;;
+        public EmployeeRef(Employee em, ReferenceQueue&lt;Employee&gt; q) {
+            super(em, q);
+            _key = em.getID();
+        }
+    }
+    // 构建一个缓存器实例
+    private EmployeeCache() {
+        employeeRefs = new HashTable&lt;String,EmployeeRef&gt;();
+        q = new ReferenceQueue&lt;Employee&gt;();
+    }
+    // 取得缓存器实例
+    public static EmployeeCache getInstance() {
+        if (cache == null) {
+            cache = new EmployeeCache();
+        }
+        return cache;
+    }
+    // 以软引用的方式对一个Employee对象的实例进行引用并保存该引用
+    private void cacheEmployee(Employee em) {
+        cleanCache();// 清除垃圾引用
+        EmployeeRef ref = new EmployeeRef(em, q);
+        employeeRefs.put(em.getID(), ref);
+    }
+    // 依据所指定的ID号，重新获取相应Employee对象的实例
+    public Employee getEmployee(String ID) {
+        Employee em = null;
+        // 缓存中是否有该Employee实例的软引用，如果有，从软引用中取得。
+        if (employeeRefs.containsKey(ID)) {
+            EmployeeRef ref = (EmployeeRef) employeeRefs.get(ID);
+            em = (Employee) ref.get();
+        }
+        // 如果没有软引用，或者从软引用中得到的实例是null，重新构建一个实例，
+        // 并保存对这个新建实例的软引用
+        if (em == null) {
+            em = new Employee(ID);
+            System.out.println(&quot;Retrieve From EmployeeInfoCenter. ID=&quot; + ID);
+            this.cacheEmployee(em);
+        }
+        return em;
+    }
+    // 清除那些所软引用的Employee对象已经被回收的EmployeeRef对象
+    private void cleanCache() {
+        EmployeeRef ref = null;
+        while ((ref = (EmployeeRef) q.poll()) != null) {
+            employeeRefs.remove(ref._key);
+        }
+    }
+    // 清除Cache内的全部内容
+    public void clearCache() {
+        cleanCache();
+        employeeRefs.clear();
+        System.gc();
+        System.runFinalization();
+    }
+}
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    三、JVM自动内存管理 - 大爷来玩儿啊~
+    三、JVM自动内存管理--垃圾收集 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            三、JVM自动内存管理   
+                            三、JVM自动内存管理--垃圾收集   
                       </h1>
                      
                     
@@ -116,244 +116,268 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>java 技术体系的自动内存管理的最根本的目标就是要自动化的解决两个问题：</p>
+                    <p>GC- Garbage Collection 垃圾回收，在 JVM 中是自动化的垃圾回收机制，我们一般不用去关注，在 JVM 中 GC 的重要区域是堆空间。</p>
+
+<p>我们也可以通过一些额外方式主动发起它，比如 System.gc(),主动发起,但是项目中切记不要使用 System.gc()。</p>
+
+<h2 id="toc_0">1、如何识别垃圾对象</h2>
+
+<p>既然是要回收内存中的垃圾，那么怎么判断一个对象变成垃圾了呢？</p>
 
 <ul>
-<li>自动给对象分配内存</li>
-<li>自动回收分配给对象的内存</li>
+<li>引用计数算法</li>
+<li>可达性分析算法</li>
 </ul>
 
-<p>我们在进行java开发的过程中，我们根本不用去为每一个对象申请以及释放内存空间，这是是由于JVM帮我们完成了对象的内存管理，如果我们不了解JVM是怎么使用内存的，一旦发生内存泄漏或者溢出方面的问题，那只能火急火燎的找大牛过来帮忙处理了。</p>
+<h3 id="toc_1">1.1、引用计数算法</h3>
 
-<h2 id="toc_0">运行时数据区域</h2>
-
-<p>JVM在运行过程中，会把内存分为多个不同的数据区，他们各有各的用途，我们通过下图看下JVM是如何对内存结构进行划分的：<br/>
-<figure><img src="media/15866079598905/15866802670837.jpg" alt="" style="width:1082px;"/></figure></p>
-
-<h2 id="toc_1">程序计数器</h2>
-
-<p>字节码解释器工作室就是通过改变这个计数器的值来选取吓一跳需要执行的字节码指令，他是程序控制流的指示器(分支、循环、跳转、异常处理、线程回复等基础功能都需要程序计数器)。<br/>
-由于jvm多线程是通过线程轮流切、分配处理器执行时间(cpu时间片轮转机制)来实现，因此为了线程在切换后能恢复到正确的执行位置，每条线程需要一个独立的程序计数器，各条线程的程序计数器互不影响，独立存储，因此<strong>程序计数器是线程私有的</strong>。此块区域也是唯一一个没有OOM的内存区。</p>
-
-<h2 id="toc_2">java虚拟机栈</h2>
-
-<ul>
-<li><p>栈分为3个部分：基本数据类型的变量区、执行环境上下文、操作指令区(存放操作指令)。</p></li>
-<li><p>每个栈中的数据(原始类型和对象引用)都是私有的，其他栈不能访问。</p></li>
-<li><p>每个线程包含一个栈区，栈中只保存基本数据类型的数据和自定义对象的引用(不是对象的实例)，对象实例都存放在堆区中</p></li>
-</ul>
-
-<p>JVM栈描述的是java方法执行的线程内存模型：每个方法被执行的时候，JVM都会同步创建一个栈帧用于存储局部变量表、操作数栈、动态连接、方法出口等信息。</p>
-
-<ul>
-<li>栈帧<br/>
-一个线程中，每调用一个方法就创建一个栈帧（stack frame），方法结束栈帧销毁
-<ul>
-<li>局部变量表 <br/>
-存放了编译期可知的各种java虚拟机基本数据类型、对象引用(方法参数、局部变量等)和returnAddress类型(指向了一条字节码指令的地址)，这些数据类型在局部变量表中的存储空间以局部变量槽（Slot）来表示，局部变量表的容量以变量槽（Variable Slot）为最小单位。<br/>
-其中64位的double和long类型的数据会占用2个局部变量空间(slot),其他基本数据类型只占用1个。局部变量空间所需的内存空间在编译期间完成分配。</li>
-<li>操作数栈</li>
-<li>动态连接</li>
-<li>方法出口</li>
-</ul></li>
-</ul>
-
-<p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。<br/>
-OutOfMemoryError：</p>
+<p>给对象添加一个引用计数器，当一个地方引用它，则计数器加1，引用失效，计数器减1，任何时候 计数器为0 的对象就是不可在此使用的对象。<br/>
+它很难解决对象直减的相互循环引用的问题。  </p>
 
 <pre><code class="language-java">/**
- * jvm栈OOM(此操作可能拖垮cpu，请谨慎执行)
- * -Xss256k
- **/
-public class StackOOMErrorMock {
-    public static void main(String[] args) {
-        for (int i = 0; ; i++) {
-            new Thread(()-&gt;{
-                while (true) {
-
-                }
-            }).start();
-        }
-    }
-}
-</code></pre>
-
-<p>StackOverFlowError：</p>
-
-<pre><code class="language-java">/**
- * StackOverFlowError
- * -Xss256k 栈大小
- */
-public class StackOverFlowMock {
-    private static int index = 1;
-
-    public void call() {
-        index++;
-        call();
-    }
-
-    public static void main(String[] args) {
-        StackOverFlowMock mock = new StackOverFlowMock();
-        try {
-            mock.call();
-        } catch (Throwable e) {
-            System.out.println(&quot;Stack deep : &quot; + index);
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<h2 id="toc_3">本地方法栈</h2>
-
-<p>与java虚拟机栈的作用相似，不同的是此块区域是为本地方(native)法服务的。<br/>
-可引起OutOfMemoryError、StackOverFlowError</p>
-
-<h2 id="toc_4">java堆内存</h2>
-
-<p>java堆内存是所有线程共享的一块内存区域，用于存储对象的实例数据。在JVM启动的时候创建。Java堆空间只是在逻辑上是连续的，在物理上并不一定是连续的内存空间。堆所占内存的大小由-Xmx指令和-Xms指令来调节。</p>
-
-<ul>
-<li>线程共享区域</li>
-<li>用于存放对象实例和数组</li>
-<li>堆是java虚拟机管理的内存中最大的一块。</li>
-<li>垃圾收集器的管理的主要区域,为了现在垃圾收集收集器都是采用分代收集算法，所以把堆细分为多个子区域：
-<ul>
-<li>新生代 <br/>
-默认情况下，新生代中Eden空间与Survivor空间的比例是8:1,可以使用参数-XX:SurvivorRatio进行设置
-<ul>
-<li>伊甸区(eden)</li>
-<li>from survivor</li>
-<li>to survivor</li>
-</ul></li>
-<li>老年代  主要存放应用程序中生命周期长的内存对象</li>
-</ul></li>
-</ul>
-
-<p>从分配内存的角度看的话，所有线程共享的java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer, TLAB）,可以提升对象分配时的效率。</p>
-
-<p>可引起OutOfMemoryError异常</p>
-
-<pre><code class="language-java">
-/**
- * OOM 异常 -Xms5m -Xmx5m
- */
-public class HeapOomMock {
-    public static void main(String[] args) {
-        List&lt;byte[]&gt; list = new ArrayList&lt;byte[]&gt;();
-        int i = 0;
-        boolean flag = true;
-        while (flag) {
-            try {
-                i++;
-                list.add(new byte[1024 * 1024]);//每次增加一个1M大小的数组对象
-            } catch (Throwable e) {
-                e.printStackTrace();
-                flag = false;
-                System.out.println(&quot;count=&quot; + i);//记录运行的次数
-            }
-        }
-    }
-}
-</code></pre>
-
-<h2 id="toc_5">方法区</h2>
-
-<p>方法区是所有线程共享的一块内存区域，用于存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。</p>
-
-<p>jdk7之前采用永久代来实现，占用jvm的堆内存不说，还可能会OOM: PermGen space,<br/>
-jdk8之后移除永久代而采用了元数据区（本地内存）来实现方法区，理论上来说，只要物理条件允许，这个区域要多大有多大。</p>
-
-<h3 id="toc_6">元数据区</h3>
-
-<p>元数据区是自jdk8才出现的一个新的内存区域用来取代之前的永久区，用本地内存来存储类元数据信息</p>
-
-<p>可引起OutOfMemoryError异常：</p>
-
-<pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-
-/**
- * jdk8之前： -XX:PermSize=10M -XX:MaxPermSize=10M
- * jdk8及之后： -XX:MaxMetaspaceSize=20m
+ * 这个示例展示两个对象相互引用，程序计数器不会为0的，
+ * 如果gc采用引用计数算法，这两个对象将不会得到回收。
+ * 但实际情况是，这两个对象得到了回收，hospital jvm采用的不是引用计数垃圾回收算法。
+ * -XX:+PrintGCDetails -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:SurvivorRatio=8
  *
  */
-public class MetaSpaceMemory {
-    public static void main(String[] args) {
-        for (; ; ) {
-            Enhancer enhancer = new Enhancer();
-            enhancer.setSuperclass(MetaSpaceMemory.class);
-            enhancer.setUseCache(false);
-            enhancer.setCallback((MethodInterceptor) (obj, method, args1, proxy) -&gt; proxy.invokeSuper(obj, args1));
-            System.out.println(&quot;metaspace oom&quot;);
-            enhancer.create();
-        }
+public class ReferenceCountingGC {
+
+    public Object instance = null;
+
+    private static final int _1MB = 1024 * 1024;
+
+    private byte[] bigSize = new byte[2 * _1MB];
+
+    public static void testGC() {
+        ReferenceCountingGC objA = new ReferenceCountingGC();
+        ReferenceCountingGC objB = new ReferenceCountingGC();
+        objA.instance = objB;
+        objB.instance = objA;
+
+        objA = null;
+        objB = null;
+
+        System.gc();
     }
-
-    private Object person;
-
-    public Object getPerson() {
-        return person;
-    }
-
-    public void setPerson(Object person) {
-        this.person = person;
-    }
-
-}
-</code></pre>
-
-<h2 id="toc_7">运行时常量池</h2>
-
-<p>运行时常量池是方法区的一部分，Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到运行时常量池中。</p>
-
-<p>运行时常量池相对于Class文件常量池的另外一个重要特征是具备动态性。java语言并不要求常量一定只在编译器产生。</p>
-
-<p>例如 String类的intern()方法就是在JVM运行期间将新的常量放入到常量池中。</p>
-
-<p><strong>注意：</strong> jdk6之前字符串常量池是放在永久区中的，第一次创建字符串实例的时候讲字符串复制到常量池中，intern()返回常量池中的引用地址，而jdk6之后字符串常量池被移动到了java堆内存中,所以直接将字符串首次出现的引用地址记录到常量池就可以了，这是intern()方法返回的和堆中字符串实例是同一个引用地址。</p>
-
-<p>可引起OutOfMemoryError异常：</p>
-
-<pre><code class="language-java">/**
- * jdk1.6之前 -XX:PermSize=6M -XX:MaxPermSize=6M
- * jdk1.6之后 -Xmx6M
- **/
-public class ConstantPoolOOMMock {
 
     public static void main(String[] args) {
-        Set&lt;String&gt; stringSet = new HashSet&lt;&gt;();
-        int i = 0;
-        while (true) {
-            stringSet.add(String.valueOf(i++).intern());
-        }
+        testGC();
     }
 }
+垃圾回收结果
+[GC (System.gc()) [PSYoungGen: 8028K-&gt;624K(76288K)] 8028K-&gt;632K(251392K), 0.0016257 secs] [Times: user=0.01 sys=0.00, real=0.00 secs] 
+[Full GC (System.gc()) [PSYoungGen: 624K-&gt;0K(76288K)] [ParOldGen: 8K-&gt;418K(175104K)] 632K-&gt;418K(251392K), [Metaspace: 3153K-&gt;3153K(1056768K)], 0.0134161 secs] [Times: user=0.03 sys=0.00, real=0.01 secs] 
+Heap
+ PSYoungGen      total 76288K, used 1966K [0x000000076ab00000, 0x0000000770000000, 0x00000007c0000000)
+  eden space 65536K, 3% used [0x000000076ab00000,0x000000076aceb9e0,0x000000076eb00000)
+  from space 10752K, 0% used [0x000000076eb00000,0x000000076eb00000,0x000000076f580000)
+  to   space 10752K, 0% used [0x000000076f580000,0x000000076f580000,0x0000000770000000)
+ ParOldGen       total 175104K, used 418K [0x00000006c0000000, 0x00000006cab00000, 0x000000076ab00000)
+  object space 175104K, 0% used [0x00000006c0000000,0x00000006c0068b30,0x00000006cab00000)
+ Metaspace       used 3173K, capacity 4496K, committed 4864K, reserved 1056768K
+  class space    used 356K, capacity 388K, committed 512K, reserved 1048576K
 </code></pre>
 
-<h2 id="toc_8">直接内存</h2>
+<h3 id="toc_2">1.2、可达性算法</h3>
 
-<p><strong>直接内存不是虚拟机运行时数据区的一部分</strong><br/>
-NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可以使用native函数库直接分配堆外内存，然后通过一个存储在java堆里面的 DirectByteBuffer 作为这块直接内存的引用进行操作。使用直接内存避免了java堆与Native堆来回复制数据，一些场景下，能显著提高运行性能。</p>
+<p>可达性算法是通过一系列被称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”（Reference Chain），如果某个对象到GC Roots间没有任何引用链相连，或者用图论的话来说就是从GC Roots到这个对象不可达时，则证明此对象是不可能再被使用的。</p>
 
-<p>jdk中直接内存的回收就用到虚引用，由于jvm自动内存管理的范围是堆内存，而直接内存是在堆内存之外（其实是内存映射文件，自行去理解虚拟内存空间的相关概念），所以直接内存的分配和回收都是有Unsafe类去操作，java在申请一块直接内存之后，会在堆内存分配一个对象保存这个堆外内存的引用，这个对象被垃圾收集器管理，一旦这个对象被回收，相应的用户线程会收到通知并对直接内存进行清理工作。见 sun.misc.Cleaner类</p>
+<p>可作为GC Roots的对象包括下面几种：</p>
 
-<p>OOM异常：</p>
+<ul>
+<li>在虚拟机栈（栈帧中的本地变量表）中引用的对象，譬如各个线程被调用的方法堆栈中使用到的参数、局部变量、临时变量等。</li>
+<li>在方法区中类静态属性引用的对象，譬如Java类的引用类型静态变量</li>
+<li>在方法区中常量引用的对象，譬如字符串常量池（String Table）里的引用。</li>
+<li>在本地方法栈中JNI（即通常所说的Native方法）引用的对象。</li>
+<li>Java虚拟机内部的引用，如基本数据类型对应的Class对象，一些常驻的异常对象（比如NullPointExcepiton、OutOfMemoryError）等，还有系统类加载器。</li>
+<li>所有被同步锁（synchronized关键字）持有的对象。</li>
+<li>反映Java虚拟机内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等。</li>
+</ul>
 
-<pre><code class="language-java">/**
- * -XX:MaxDirectMemorySize=5M -Xmx20M
- **/
-public class DirectMemoryOOMMock {
-    private static final int _1MB = 1024*1024*10;
-    public static void main(String[] args) throws IllegalAccessException {
-        Field declaredField = Unsafe.class.getDeclaredFields()[0];
-        declaredField.setAccessible(true);
-        Unsafe unsafe = (Unsafe)declaredField.get(null);
-        while (true)
-            unsafe.allocateMemory(_1MB);
-    }
-}
-</code></pre>
+<p>除了这些固定的GC Roots集合以外，根据用户所选用的垃圾收集器以及当前回收的内存区域不同，还可以有其他对象“临时性”地加入，共同构成完整GC Roots集合。</p>
+
+<h2 id="toc_3">2、JVM 对象的四大引用</h2>
+
+<p>java引用分为强引用、软引用、弱引用，虚引用四种。</p>
+
+<ul>
+<li>强引用是程序代码中最普遍一种引用，只要强引用关系存在，垃圾收集器永远不会回收调被引用的对象。</li>
+<li>软引用（SoftReference）描述的是一些还有用，但非必须的对象，只被软引用关联着的对象，在系统发生内存溢出异常前，会把这些对象列进回收范围进行回收。 <a href="15866239860150.html">软引用（SoftReference）实现内存敏感的高速缓存</a></li>
+<li>弱引用（WeakReference）描述非必须对象，对象的重要性比软引用更加低，被弱引用关联的对象，下一次垃圾收集发生的时候，就会被回收掉。</li>
+<li>虚引用（PhantomReference）基本没什么用，一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</li>
+</ul>
+
+<h2 id="toc_4">3、方法区的回收</h2>
+
+<p>方法区并不是垃圾回收的主要区域，但是方法区也可以回收以下两部分的内容： 废弃常量和无用类。</p>
+
+<p>类回收需要满足如下3个条件：</p>
+
+<ul>
+<li>该类所有的实例都已经被GC,也就是JVM中不存在该Class的任何实例</li>
+<li>加载该类的ClassLoader已经被GC</li>
+<li>该类对应的java.lang.Class对象没有在任何地方被引用，不能在任何地方通过反射访问该类的方法。</li>
+</ul>
+
+<h2 id="toc_5">4、垃圾收集算法</h2>
+
+<p>常见的垃圾收集算法有</p>
+
+<ul>
+<li>标记-清除算法 mark-sweep</li>
+<li>标记整理算法 mark-compact</li>
+<li>复制算法 copying</li>
+<li>分代算法 generational</li>
+</ul>
+
+<h3 id="toc_6">4.1、 标记清除算法</h3>
+
+<p>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象，也可以反过来，标记存活的对象，统一回收所有未被标记的对象。</p>
+
+<p>过程:</p>
+
+<ul>
+<li>首先标记所有需要回收的对象</li>
+<li>统一回收被标记的对象<br/>
+缺点:<br/>
+1.效率问题，标记和清除效率都不高 2.标记清除之后会产生大量不连续的内存碎片，空间碎片太多可能会导致以后在程序运行过程中需要分配较大对象时，无法找到足够的连续内存而不得不 提前触发另一次垃圾收集动作。</li>
+</ul>
+
+<p><figure><img src="media/15866079598905/15961870545090.jpg" alt="标记清除算法示意图"/><figcaption>标记清除算法示意图</figcaption></figure></p>
+
+<h3 id="toc_7">4.2、标记整理算法</h3>
+
+<p>首先标记出所有需要回收的对象，在标记完成后，后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端<br/>
+边界以外的内存</p>
+
+<p><figure><img src="media/15866079598905/15961895612170.jpg" alt=""/></figure></p>
+
+<h3 id="toc_8">4.3、复制算法</h3>
+
+<p>复制算法将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
+
+<p>在大部分对象需要回收的情况下这种方式的效率非常高，但是对于大部分对象存活的情况，效率就大打折扣了，另外内存空间浪费严重。</p>
+
+<p><figure><img src="media/15866079598905/15961872702735.jpg" alt="复制算法示意图"/><figcaption>复制算法示意图</figcaption></figure></p>
+
+<h3 id="toc_9">4.4、堆内存采用的垃圾收集算法</h3>
+
+<h4 id="toc_10">4.4.1、新生代采用算法</h4>
+
+<ul>
+<li>新生成的对象都放在新生代，<strong>新生代用复制算法进行gc</strong>(理论上，年轻代对象的生命周期非常短，是复制算法)</li>
+<li>年轻代分为3个区域，Eden区、from survivor、 to survivor，Eden区满的时候，还存活的对象将被复制到一个from survivor，当from survivor区域满了之后，依然存活的对象被移动到to survivor 区域，to survivor区域满了之后，依然存活的对象会被复制到老年代。</li>
+<li>Eden和两个survivor的缺省比例是8:1:1</li>
+</ul>
+
+<p>新生代的垃圾回收被称为 minor gc 或者 young gc ，发生的频率高、执行速度快。</p>
+
+<p>新生代中的对象 90% 是“朝生夕死”的，所以一般来说回收占据 10%的空间够用了，所以并不需要按照 1:1 的比例来划分内存空间，而是 将内存分为一块较大的 Eden 空间和两块较小的 Survivor 空间，每次使用 Eden 和其中一块 Survivor[1]。当回收时，将 Eden 和 Survivor 中还存活着的对象一 次性地复制到另外一块 Survivor 空间上，最后清理掉 Eden 和刚才用过的 Survivor 空间。</p>
+
+<h4 id="toc_11">4.4.2、老年代采用算法</h4>
+
+<ul>
+<li>一般采用Mark-Sweep或者Mark-Compact算法进行GC</li>
+<li>存放了经过一个或多次GC还存活的对象</li>
+<li>有多种垃圾收集器可以选择。每种垃圾收集器可以看做一个GC算法的具体实现。</li>
+</ul>
+
+<p>可以根据具体应用的需求选用何时的垃圾收集器(追求吞吐量还是追求最短的湘阴那个时间？)</p>
+
+<h2 id="toc_12">5、垃圾收集器</h2>
+
+<h3 id="toc_13">5.1、GC的时机</h3>
+
+<ul>
+<li>在分代模型的基础上，GC从时机上分为两种: Scavenge GC 和 Full GC</li>
+<li>Scavenge GC(Minor GC)
+<ul>
+<li>触发时机: 新对象生成时，Eden空间满了</li>
+<li>理论上Eden区域大多数对象会在Scavenge GC 回收，复制算法的执行效率会非常高，Scavenge GC时间比较短。</li>
+</ul></li>
+<li>Full GC 
+<ul>
+<li>对整个JVM进行整理吗，包括Young、old和Perm/MetaSpace</li>
+<li>主要的触发时机: <br/>
+a) Old满了 <br/>
+b) Perm/MetaSpace满了<br/>
+c) System.gc()</li>
+<li>效率低，尽量减少Full GC。</li>
+</ul></li>
+</ul>
+
+<h4 id="toc_14">安全点</h4>
+
+<p>程序的代码指令流并不是在任意位置都能停顿下来开始垃圾收集，而是强制要求必须执行到达指定的位置才能够暂停下来进行垃圾回收，这个指定位置被称为 安全点。</p>
+
+<p>安全点的选定既不能太少以至于让收集器等待时间过长，也不能太过频繁以至于过分增大运行时的内存负荷。例如方法调用、循环跳转、异常跳转等都属于指令序列复用，所以只有具有这些功能的指令才会产生安全点。</p>
+
+<p>另外一个需要考虑的问题是，如何在垃圾收集发生时让所有线程（这里其实不包括执行JNI调用的线程）都跑到最近的安全点，然后停顿下来。</p>
+
+<p>这里有两种方案可供选择：抢先式中断（Preemptive Suspension）和主动式中断（V oluntary Suspension），抢先式中断不需要线程的执行代码主动去配合，在垃圾收集发生时，系统首先把所有用户线程全部中断，如果发现有用户线程中断的地方不在安全点上，就恢复这条线程执行，让它一会再重新中断，直到跑到安全点上。现在几乎没有虚拟机实现采用抢先式中断来暂停线程响应GC事件。</p>
+
+<p>而主动式中断的思想是当垃圾收集需要中断线程的时候，不直接对线程操作，仅仅简单地设置一个标志位，各个线程执行过程时会不停地主动去轮询这个标志，一旦发现中断标志为真时就自己在最近的安全点上主动中断挂起。轮询标志的地方和安全点是重合的，另外还要加上所有创建对象和其他需要在Java堆上分配内存的地方，这是为了检查是否即将要发生垃圾收集，避免没有足够内存分配新对象。</p>
+
+<h4 id="toc_15">安全区域</h4>
+
+<h3 id="toc_16">5.2、垃圾回收器</h3>
+
+<p><figure><img src="media/15866079598905/15961903062948.jpg" alt="" style="width:727px;"/></figure></p>
+
+<p>年轻代的垃圾收集算法有 Serial、ParNew、Parallel Scavenge<br/>
+老年代的垃圾收集算法有 CMS、Serial Old(MSC)、Parallel Old</p>
+
+<h5 id="toc_17">Serial</h5>
+
+<p>单线程收集器，收集时会暂停所有的工作线程</p>
+
+<ul>
+<li>最早的收集器，单线程执行</li>
+<li>New和Old Generation都可以使用</li>
+<li>在新生代采用复式算法；在老年代使用Mark-Compact算法</li>
+<li>虚拟机运行在client模式时的默认新生代垃圾收集器。</li>
+</ul>
+
+<h5 id="toc_18">ParNew收集器</h5>
+
+<ul>
+<li>ParNew收集器是Serial收集器的多线程版本</li>
+<li>虚拟机运行在Server模式的默认新生代收集器</li>
+<li>通过-XX:ParallelGCThreads来控制GC线程数的多少</li>
+</ul>
+
+<h5 id="toc_19">Parallel Scavenge 收集器</h5>
+
+<ul>
+<li>多线程收集器</li>
+<li>采用复制算法</li>
+<li>实现以吞吐量最大化为目标(允许较长时间内的STOP THE WORLD)</li>
+</ul>
+
+<h5 id="toc_20">CMS (Concurrent mark sweep)</h5>
+
+<ul>
+<li>以最短停顿时间为目标的垃圾收集器</li>
+<li>采用 标记-清除算法 mark-sweep</li>
+</ul>
+
+<p>缺点：</p>
+
+<ul>
+<li>以牺牲CPU资源为代价来提高gc吞吐量</li>
+<li>会产生内存碎片，可能导致频繁的Full GC操作<br/>
+##### Serial Old(MSC)、</li>
+<li>采用Mark-compact算法</li>
+</ul>
+
+<h5 id="toc_21">Parallel Old</h5>
+
+<ul>
+<li>Parallel Scavenge 在老年代的实现</li>
+<li>采用Mark-compact算法</li>
+<li>更注重吞吐量</li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">

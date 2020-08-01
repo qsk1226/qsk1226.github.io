@@ -137,17 +137,13 @@ robj结构体如下所示：</p>
 </code></pre>
 
 <ul>
-<li>结构体robj的type字段表示对象类型，由 encoding 字段决定。</li>
-</ul>
-
+<li><p>结构体robj的type字段表示对象类型，由 encoding 字段决定。</p>
 <pre><code class="language-c">#define OBJ_STRING 0
-#define OBJ_LIST 1
-#define OBJ_SET 2
-#define OBJ_ZSET 3
+#define OBJ_LIST 1<br/>
+#define OBJ_SET 2<br/>
+#define OBJ_ZSET 3<br/>
 #define OBJ_HASH 4
-</code></pre>
-
-<ul>
+</code></pre></li>
 <li><p>结构体 robj 的ptr<br/>
 ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
 <li><p>结构体 robj 的 refcount <br/>
