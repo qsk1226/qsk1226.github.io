@@ -273,6 +273,44 @@ reference类型:一是从根据引用直接或间接地查找到对象在Java堆
 
 <p>但是随着即时编译技术的进步，尤其是逃逸分析技术的日渐强大，出现了栈上分配、标量替换优化手段，因此要说所有对象实例都分配在堆上就没那么严谨了。</p>
 
+<p>逃逸分析的原理：分析对象动态作用域，当一个对象在方法中定义后，它可能被外部方法所引用。比如：调用参数传递到其他方法中，这种称之为方法逃逸。甚至还有可能被外部线程访问到，例如：赋值给其他线程中访问的变量，这个称之为线程逃逸。从不逃逸到方法逃逸到线程逃逸，称之为对象由低到高的不同逃逸程度。</p>
+
+<pre><code class="language-java">/**
+ * -XX:-DoEscapeAnalysis 关闭逃逸分析，jvm默认是开启逃逸分析的。
+ */
+public class EscapeAnalysisMock {
+
+    public static void main(String[] args) throws Exception {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i &lt; 5000000; i++) {
+            allocate();
+        }
+        System.out.println(System.currentTimeMillis() - start + &quot; ms&quot;);
+        Thread.sleep(600000);
+    }
+
+    static void allocate() {
+        MyObject myObject = new MyObject(2000, 2000.6);
+    }
+
+    static class MyObject {
+        int a;
+        double b;
+
+        public MyObject(int a, double b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
+}
+
+-------------------------
+开启时本地执行 4ms 
+关闭太一分析本执行 45ms
+</code></pre>
+
+<p>如果是逃逸分析出来的对象可以在栈上分配的话，那么该对象的生命周期就跟随线程了，就不需要垃圾回收，如果是频繁的调用此方法则可以得到很大的性能提高。采用了逃逸分析后，满足逃逸的对象在栈上分配。</p>
+
 <p>在JVM启动的时候创建。Java堆空间只是在逻辑上是连续的，在物理上并不一定是连续的内存空间。堆所占内存的大小由-Xmx指令和-Xms指令来调节。</p>
 
 <p>在《Java虚拟机规范》中对Java堆的描述是: 所有的对象实例以及数组都应当在堆上分配。</p>
@@ -475,7 +513,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 <li><p>长期存活对象进入老年区<br/>
 如果对象在 Eden 出生并经过第一次 Minor GC 后仍然存活，并且能被 Survivor 容纳的话，将被移动到 Survivor 空间中，并将对象年龄设为 1，对象在 Survivor区中每熬过一次 Minor GC，年龄就增加 1，当它的年龄增加到一定程度(默认为 15)_时，就会被晋升到老年代中。</p></li>
 <li><p>对象年龄动态判定<br/>
-如果在 Survivor 空间中相同年龄所有对象大小的综合大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代。</p></li>
+为了能更好地适应不同程序的内存状况，虚拟机并不是永远地要求对象的年龄必须达到了 MaxTenuringThreshold 才能晋升老年代，如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代。</p></li>
 <li><p>空间分配担保<br/>
 在发生 Minor GC 之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么 Minor GC 可以确保是安全的。如果不成立，则虚拟机会查看 HandlePromotionFailure 设置值是否允许担保失败。如果允许，那么会继续检查老年代最大可用的连续空间是否大于历 次晋升到老年代对象的平均大小，如果大于，将尝试着进行一次 Minor GC，尽管这次 Minor GC 是有风险的，如果担保失败则会进行一次 Full GC;如果小 于，或者 HandlePromotionFailure 设置不允许冒险，那这时也要改为进行一次 Full GC。</p></li>
 </ul>
@@ -484,6 +522,9 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 
 <p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。<br/>
 <figure><img src="media/15865981620428/15962978615532.jpg" alt=""/></figure></p>
+
+<p>通过hotspot虚拟机源码查看可查看<br/>
+<figure><img src="media/15865981620428/15962989936134.jpg" alt="" style="width:1594px;"/></figure></p>
 
 <h4 id="toc_24">2.1、 对象头</h4>
 

@@ -179,7 +179,7 @@ Heap
   class space    used 356K, capacity 388K, committed 512K, reserved 1048576K
 </code></pre>
 
-<h3 id="toc_2">1.2、可达性算法</h3>
+<h3 id="toc_2">1.2、可达性算法（✨）</h3>
 
 <p>可达性算法是通过一系列被称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”（Reference Chain），如果某个对象到GC Roots间没有任何引用链相连，或者用图论的话来说就是从GC Roots到这个对象不可达时，则证明此对象是不可能再被使用的。</p>
 
@@ -195,22 +195,7 @@ Heap
 <li>反映Java虚拟机内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等。</li>
 </ul>
 
-<p>除了这些固定的GC Roots集合以外，根据用户所选用的垃圾收集器以及当前回收的内存区域不同，还可以有其他对象“临时性”地加入，共同构成完整GC Roots集合。</p>
-
-<h2 id="toc_3">2、JVM 对象的四大引用</h2>
-
-<p>java引用分为强引用、软引用、弱引用，虚引用四种。</p>
-
-<ul>
-<li>强引用是程序代码中最普遍一种引用，只要强引用关系存在，垃圾收集器永远不会回收调被引用的对象。</li>
-<li>软引用（SoftReference）描述的是一些还有用，但非必须的对象，只被软引用关联着的对象，在系统发生内存溢出异常前，会把这些对象列进回收范围进行回收。 <a href="15866239860150.html">软引用（SoftReference）实现内存敏感的高速缓存</a></li>
-<li>弱引用（WeakReference）描述非必须对象，对象的重要性比软引用更加低，被弱引用关联的对象，下一次垃圾收集发生的时候，就会被回收掉。</li>
-<li>虚引用（PhantomReference）基本没什么用，一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</li>
-</ul>
-
-<h2 id="toc_4">3、方法区的回收</h2>
-
-<p>方法区并不是垃圾回收的主要区域，但是方法区也可以回收以下两部分的内容： 废弃常量和无用类。</p>
+<p>重点是前面4种GC Roots对象，除了这些固定的GC Roots集合以外，根据用户所选用的垃圾收集器以及当前回收的内存区域不同，还可以有其他对象“临时性”地加入，共同构成完整GC Roots集合。</p>
 
 <p>类回收需要满足如下3个条件：</p>
 
@@ -218,9 +203,97 @@ Heap
 <li>该类所有的实例都已经被GC,也就是JVM中不存在该Class的任何实例</li>
 <li>加载该类的ClassLoader已经被GC</li>
 <li>该类对应的java.lang.Class对象没有在任何地方被引用，不能在任何地方通过反射访问该类的方法。</li>
+<li>能让我等滚蛋的参数控制 -Xnoclassgc：禁用类的垃圾收集(GC)。</li>
 </ul>
 
+<h2 id="toc_3">2、JVM 对象的四大引用</h2>
+
+<p>java引用分为强引用、软引用、弱引用，虚引用四种。</p>
+
+<ul>
+<li>强引用是程序代码中最普遍一种引用，只要强引用关系存在，垃圾收集器永远不会回收调被引用的对象。</li>
+<li><p>软引用（SoftReference）描述的是一些还有用，但非必须的对象，只被软引用关联着的对象，在系统发生内存溢出异常前，会把这些对象列进回收范围进行回收。 <a href="15866239860150.html">软引用（SoftReference）实现内存敏感的高速缓存</a></p>
+<pre><code class="language-text">public class TestSoftRef {
+    @Data<br/>
+    @AllArgsConstructor<br/>
+    @ToString<br/>
+    public static class User {<br/>
+        public int id = 0;<br/>
+        public String name = &quot;&quot;;<br/>
+    }<br/>
+    //<br/>
+    public static void main(String[] args) {<br/>
+        User u = new User(1, &quot;通天道人&quot;); //new是强引用<br/>
+        SoftReference&lt;User&gt; userSoft = new SoftReference&lt;User&gt;(u);//软引用<br/>
+        u = null;//干掉强引用，确保这个实例只有userSoft的软引用<br/>
+        System.out.println(userSoft.get()); //看一下这个对象是否还在<br/>
+        System.gc();//进行一次GC垃圾回收  千万不要写在业务代码中。<br/>
+        System.out.println(&quot;After gc&quot;);<br/>
+        System.out.println(userSoft.get());<br/>
+        //往堆中填充数据，导致OOM<br/>
+        List&lt;byte[]&gt; list = new LinkedList&lt;&gt;();<br/>
+        try {<br/>
+            for (int i = 0; i &lt; 100; i++) {<br/>
+                //System.out.println(&quot;*************&quot;+userSoft.get());<br/>
+                list.add(new byte[1024 * 1024 * 1]); //1M的对象 100m<br/>
+            }<br/>
+        } catch (Throwable e) {<br/>
+            //抛出了OOM异常时打印软引用对象<br/>
+            System.out.println(&quot;Exception*************&quot; + userSoft.get());<br/>
+        }<br/>
+    }<br/>
+}
+</code></pre></li>
+<li><p>弱引用（WeakReference）描述非必须对象，对象的重要性比软引用更加低，被弱引用关联的对象，下一次垃圾收集发生的时候，就会被回收掉。</p>
+<pre><code class="language-text">/**
+ * 弱引用示例<br/>
+ * -XX:+PrintGCDetails -XX:+PrintGC -Xms20m -Xmx20m<br/>
+ **/<br/>
+public class TestWeakRef {<br/>
+    @Data<br/>
+    public static class User {<br/>
+        public int id = 0;<br/>
+        public String name = &quot;&quot;;<br/>
+        public User(int id, String name) {<br/>
+            super();<br/>
+            this.id = id;<br/>
+            this.name = name;<br/>
+        }<br/>
+        @Override<br/>
+        public String toString() {<br/>
+            return &quot;User [id=&quot; + id + &quot;, name=&quot; + name + &quot;]&quot;;<br/>
+        }<br/>
+    }<br/>
+    public static void main(String[] args) {<br/>
+        User u = new User(1, &quot;通天道人&quot;);<br/>
+        WeakReference&lt;User&gt; userWeak = new WeakReference&lt;User&gt;(u);<br/>
+        u = null;//干掉强引用，确保这个实例只有userWeak的弱引用<br/>
+        System.out.println(userWeak.get());<br/>
+        System.gc();//进行一次GC垃圾回收,千万不要写在业务代码中。<br/>
+        System.out.println(&quot;After gc&quot;);<br/>
+        System.out.println(userWeak.get());<br/>
+    }<br/>
+}
+</code></pre></li>
+<li><p>虚引用（PhantomReference）基本没什么用，一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p></li>
+</ul>
+
+<h2 id="toc_4">3、方法区的回收</h2>
+
+<p>方法区并不是垃圾回收的主要区域，但是方法区也可以回收以下两部分的内容： 废弃常量和无用类。</p>
+
 <h2 id="toc_5">4、垃圾收集算法</h2>
+
+<h3 id="toc_6">分代回收理论</h3>
+
+<p>当前商业虚拟机的垃圾回收器，大多遵循“分代收集”的理论来进行设计，这个理论大体上是这么描述的：</p>
+
+<ul>
+<li>绝大部分的对象都是朝生夕死。</li>
+<li>熬过多次垃圾回收的对象就越难回收。</li>
+<li>跨代引用相对于同代引用来说仅占极少数。<br/>
+根据以上理论，朝生夕死的对象放一个区域，难回收的对象放另外一个区域，这个就构成了新生代和老年代</li>
+</ul>
 
 <p>常见的垃圾收集算法有</p>
 
@@ -231,7 +304,7 @@ Heap
 <li>分代算法 generational</li>
 </ul>
 
-<h3 id="toc_6">4.1、 标记清除算法</h3>
+<h3 id="toc_7">4.1、 标记清除算法</h3>
 
 <p>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象，也可以反过来，标记存活的对象，统一回收所有未被标记的对象。</p>
 
@@ -246,14 +319,14 @@ Heap
 
 <p><figure><img src="media/15866079598905/15961870545090.jpg" alt="标记清除算法示意图"/><figcaption>标记清除算法示意图</figcaption></figure></p>
 
-<h3 id="toc_7">4.2、标记整理算法</h3>
+<h3 id="toc_8">4.2、标记整理算法</h3>
 
 <p>首先标记出所有需要回收的对象，在标记完成后，后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端<br/>
 边界以外的内存</p>
 
 <p><figure><img src="media/15866079598905/15961895612170.jpg" alt=""/></figure></p>
 
-<h3 id="toc_8">4.3、复制算法</h3>
+<h3 id="toc_9">4.3、复制算法</h3>
 
 <p>复制算法将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
 
@@ -261,9 +334,9 @@ Heap
 
 <p><figure><img src="media/15866079598905/15961872702735.jpg" alt="复制算法示意图"/><figcaption>复制算法示意图</figcaption></figure></p>
 
-<h3 id="toc_9">4.4、堆内存采用的垃圾收集算法</h3>
+<h3 id="toc_10">4.4、JVM 堆内存采用的垃圾收集算法</h3>
 
-<h4 id="toc_10">4.4.1、新生代采用算法</h4>
+<h4 id="toc_11">4.4.1、新生代采用算法</h4>
 
 <ul>
 <li>新生成的对象都放在新生代，<strong>新生代用复制算法进行gc</strong>(理论上，年轻代对象的生命周期非常短，是复制算法)</li>
@@ -275,7 +348,7 @@ Heap
 
 <p>新生代中的对象 90% 是“朝生夕死”的，所以一般来说回收占据 10%的空间够用了，所以并不需要按照 1:1 的比例来划分内存空间，而是 将内存分为一块较大的 Eden 空间和两块较小的 Survivor 空间，每次使用 Eden 和其中一块 Survivor[1]。当回收时，将 Eden 和 Survivor 中还存活着的对象一 次性地复制到另外一块 Survivor 空间上，最后清理掉 Eden 和刚才用过的 Survivor 空间。</p>
 
-<h4 id="toc_11">4.4.2、老年代采用算法</h4>
+<h4 id="toc_12">4.4.2、老年代采用算法</h4>
 
 <ul>
 <li>一般采用Mark-Sweep或者Mark-Compact算法进行GC</li>
@@ -285,9 +358,13 @@ Heap
 
 <p>可以根据具体应用的需求选用何时的垃圾收集器(追求吞吐量还是追求最短的湘阴那个时间？)</p>
 
-<h2 id="toc_12">5、垃圾收集器</h2>
+<h2 id="toc_13">5、垃圾收集器</h2>
 
-<h3 id="toc_13">5.1、GC的时机</h3>
+<h3 id="toc_14">4.4.3、根节点枚举</h3>
+
+<p>所有收集器在根节点枚举这一步骤时都是必须暂停用户线程的，因此毫无疑问根节点枚举与之前提及的整理内存碎片一样会面临相似的“Stop The World”的困扰。</p>
+
+<h3 id="toc_15">5.1、GC的时机</h3>
 
 <ul>
 <li>在分代模型的基础上，GC从时机上分为两种: Scavenge GC 和 Full GC</li>
@@ -307,7 +384,7 @@ c) System.gc()</li>
 </ul></li>
 </ul>
 
-<h4 id="toc_14">安全点</h4>
+<h4 id="toc_16">安全点</h4>
 
 <p>程序的代码指令流并不是在任意位置都能停顿下来开始垃圾收集，而是强制要求必须执行到达指定的位置才能够暂停下来进行垃圾回收，这个指定位置被称为 安全点。</p>
 
@@ -319,16 +396,28 @@ c) System.gc()</li>
 
 <p>而主动式中断的思想是当垃圾收集需要中断线程的时候，不直接对线程操作，仅仅简单地设置一个标志位，各个线程执行过程时会不停地主动去轮询这个标志，一旦发现中断标志为真时就自己在最近的安全点上主动中断挂起。轮询标志的地方和安全点是重合的，另外还要加上所有创建对象和其他需要在Java堆上分配内存的地方，这是为了检查是否即将要发生垃圾收集，避免没有足够内存分配新对象。</p>
 
-<h4 id="toc_15">安全区域</h4>
+<h4 id="toc_17">安全区域</h4>
 
-<h3 id="toc_16">5.2、垃圾回收器</h3>
+<p>安全点机制保证了程序执行时，在不太长的时间内就会遇到可进入垃圾收集过程的安全点。但是，程序“不执行”的时候呢？所谓的程序不执行就是没有分配处理器时间，典型的场景便是用户线程处于Sleep状态或者Blocked状态，这时候线程无法响应虚拟机的中断请求，不能再走到安全的地方去中断挂起自己，虚拟机也显然不可能持续等待线程重新被激活分配处理器时间。对于这种情况，就必须引入安全区域（Safe Region）来解决。</p>
+
+<p>安全区域是指能够确保在某一段代码片段之中，引用关系不会发生变化，因此，在这个区域中任意地方开始垃圾收集都是安全的。我们也可以把安全区域看作被扩展拉伸了的安全点。</p>
+
+<h4 id="toc_18">记忆集与卡表</h4>
+
+<p>为解决对象跨代引用所带来的问题，垃圾收集器在新生代中建立了名为记忆集（Remembered Set）的数据结构，用以避免把整个老年代加进GC Roots扫描范围。</p>
+
+<p>所有涉及部分区域收集（Partial GC）行为的垃圾收集器，典型的如G1、ZGC和Shenandoah收集器，都会面临对象跨代引用所带来的问题。</p>
+
+<p>记忆集是一种用于记录从非收集区域指向收集区域的指针集合的抽象数据结构。</p>
+
+<h3 id="toc_19">5.2、垃圾回收器</h3>
 
 <p><figure><img src="media/15866079598905/15961903062948.jpg" alt="" style="width:727px;"/></figure></p>
 
 <p>年轻代的垃圾收集算法有 Serial、ParNew、Parallel Scavenge<br/>
 老年代的垃圾收集算法有 CMS、Serial Old(MSC)、Parallel Old</p>
 
-<h5 id="toc_17">Serial</h5>
+<h5 id="toc_20">Serial</h5>
 
 <p>单线程收集器，收集时会暂停所有的工作线程</p>
 
@@ -339,7 +428,7 @@ c) System.gc()</li>
 <li>虚拟机运行在client模式时的默认新生代垃圾收集器。</li>
 </ul>
 
-<h5 id="toc_18">ParNew收集器</h5>
+<h5 id="toc_21">ParNew收集器</h5>
 
 <ul>
 <li>ParNew收集器是Serial收集器的多线程版本</li>
@@ -347,7 +436,7 @@ c) System.gc()</li>
 <li>通过-XX:ParallelGCThreads来控制GC线程数的多少</li>
 </ul>
 
-<h5 id="toc_19">Parallel Scavenge 收集器</h5>
+<h5 id="toc_22">Parallel Scavenge 收集器</h5>
 
 <ul>
 <li>多线程收集器</li>
@@ -355,7 +444,7 @@ c) System.gc()</li>
 <li>实现以吞吐量最大化为目标(允许较长时间内的STOP THE WORLD)</li>
 </ul>
 
-<h5 id="toc_20">CMS (Concurrent mark sweep)</h5>
+<h5 id="toc_23">CMS (Concurrent mark sweep)</h5>
 
 <ul>
 <li>以最短停顿时间为目标的垃圾收集器</li>
@@ -371,7 +460,7 @@ c) System.gc()</li>
 <li>采用Mark-compact算法</li>
 </ul>
 
-<h5 id="toc_21">Parallel Old</h5>
+<h5 id="toc_24">Parallel Old</h5>
 
 <ul>
 <li>Parallel Scavenge 在老年代的实现</li>
