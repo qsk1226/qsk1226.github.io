@@ -241,6 +241,10 @@ reference类型:一是从根据引用直接或间接地查找到对象在Java堆
 
 <p>当一个方法刚刚开始执行的时候，这个方法的操作数栈是空的，在方法的执行过程中，会有各种字节码指令往操作数栈中写入和提取内容，也就是出栈和入栈操作。</p>
 
+<p>两个不同栈帧作为不同方法的虚拟机栈的元素，是完全相互独立的。但是在大多虚拟机的实现里都会进行一些优化处理，令两个栈帧出现一部分重叠。</p>
+
+<p><figure><img src="media/15865981620428/15966856928254.jpg" alt=""/></figure></p>
+
 <h5 id="toc_6">2.3、动态连接</h5>
 
 <p>每个栈帧都包含一个指向运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态连接（Dynamic Linking）。</p>
@@ -383,17 +387,22 @@ public class EscapeAnalysisMock {
 首先在编译类文件时， &quot;sb&quot;常量字符串将会放入到常量结构中， 在类加载时， “sb&quot;将会在常量池中创建； 其次， 在调用 new 时， JVM 命令将会调用 String 的构造函数，同时引用常量池中的&quot;sb” 字符串，在堆内存中创建一个 String 对象；最后，str 将引用 String 对象。</p></li>
 <li><p>使用 new，对象会创建在堆中，同时赋值的话，会在常量池中创建一个字符串对象，复制到堆中。<br/>
 具体的复制过程是先将常量池中的字符串压入栈中，在使用 String 的构造方法时，会拿到栈中的字符串作为构方法的参数。<br/>
-这个构造函数是一个 char 数组的赋值过程，而不是 new 出来的，所以是引用了常量池中的字符串对象。</p>
+这个构造函数是一个 char 数组的赋值过程，而不是 new 出来的，所以是引用了常量池中的字符串对象。</p></li>
+</ul>
+
 <pre><code class="language-java">@Data
-public class Stu {<br/>
-    private String name;<br/>
-    public static void main(String[] args)  {<br/>
-        Stu stu = new Stu();<br/>
-        //字符串sb会在堆中也会存在于字符串常量池中<br/>
-        stu.setName(&quot;sb&quot;);<br/>
-    }<br/>
+public class Stu {
+    private String name;
+    
+    public static void main(String[] args)  {
+        Stu stu = new Stu();
+        //字符串sb会在堆中也会存在于字符串常量池中
+        stu.setName(&quot;sb&quot;);
+    }
 }
-</code></pre></li>
+</code></pre>
+
+<ul>
 <li><p>String str2= &quot;ab&quot;+ &quot;cd&quot;+ &quot;ef&quot;;<br/>
 编程过程中，字符串的拼接很常见。前面我讲过 String 对象是不可变的，如果我们使用 String 对象相加，拼接我们想要的字符串，是不是就会产生多个对象呢？例如以下代码：分析代码可知：首先会生成 ab 对象，再生成 abcd 对象，最后生成 abcdef 对象，从理论上来说，这段代码是低效的。<br/>
 编译器自动优化了这行代码，编译后的代码，你会发现编译器自动优化了这行代码，如下String str= &quot;abcdef&quot;;</p></li>

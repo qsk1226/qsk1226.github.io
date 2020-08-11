@@ -116,7 +116,128 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    
+                    <p>Netstat -ano findstr 3658</p>
+
+<h2 id="toc_0">jstat 统计用</h2>
+
+<pre><code class="language-text">➜  ~ jstat -gcutil 13432
+13432 not found
+➜  ~ jstat -gcutil 7825
+  
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+  0.00   0.00  44.57  37.49  95.41  88.10     17    1.281    10   35.638   36.918
+</code></pre>
+
+<pre><code class="language-text">➜  ~ jstat -gc 7825
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT
+85184.0 85184.0  0.0    0.0   681600.0 351141.3 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+
+EC EU eden区容量
+</code></pre>
+
+<pre><code class="language-text">➜  ~ jstat -gc 7825 1000 10
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+85184.0 85184.0  0.0    0.0   681600.0 359868.8 1245184.0   466767.1  394100.0 376019.7 53496.0 47130.3     17    1.281  10     35.638   36.918
+➜  ~
+</code></pre>
+
+<h2 id="toc_1">vm 参数</h2>
+
+<p>java -XX:+PrintFlagsFinal -version  查看所有高级参数的当前情况</p>
+
+<p>jinfo -flags PrintGC 7825 查看PrintGC 是否开启<br/>
+jinfo -flags +PrintGC 7825 开启PrintGC</p>
+
+<p>jmap -heap 20488  显示堆信息 </p>
+
+<pre><code class="language-text">➜  ~ jmap -heap 20488
+Attaching to process ID 20488, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.121-b13
+
+using thread-local object allocation.
+Parallel GC with 10 thread(s)
+
+Heap Configuration:
+   MinHeapFreeRatio         = 0
+   MaxHeapFreeRatio         = 100
+   MaxHeapSize              = 4294967296 (4096.0MB)
+   NewSize                  = 89128960 (85.0MB)
+   MaxNewSize               = 1431306240 (1365.0MB)
+   OldSize                  = 179306496 (171.0MB)
+   NewRatio                 = 2
+   SurvivorRatio            = 8
+   MetaspaceSize            = 21807104 (20.796875MB)
+   CompressedClassSpaceSize = 1073741824 (1024.0MB)
+   MaxMetaspaceSize         = 17592186044415 MB
+   G1HeapRegionSize         = 0 (0.0MB)
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity = 67108864 (64.0MB)
+   used     = 8067512 (7.693778991699219MB)
+   free     = 59041352 (56.30622100830078MB)
+   12.02152967453003% used
+From Space:
+   capacity = 11010048 (10.5MB)
+   used     = 0 (0.0MB)
+   free     = 11010048 (10.5MB)
+   0.0% used
+To Space:
+   capacity = 11010048 (10.5MB)
+   used     = 0 (0.0MB)
+   free     = 11010048 (10.5MB)
+   0.0% used
+PS Old Generation
+   capacity = 179306496 (171.0MB)
+   used     = 0 (0.0MB)
+   free     = 179306496 (171.0MB)
+   0.0% used
+
+2295 interned Strings occupying 161832 bytes.
+</code></pre>
+
+<p>jmap -histo 20488  按照数量排名对象<br/>
+jmap -histo:live 20488  按照数量排名存活的对象<br/>
+jmap -histo:live  20488 | head -10 前十行</p>
+
+<pre><code class="language-text">➜  ~ jmap -histo 20488
+
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:           711        5225088  [I
+   2:          2151        1535568  [B
+   3:          6572         796664  [C
+   4:          5022         120528  java.lang.String
+   5:           727          82720  java.lang.Class
+   6:          1328          60912  [Ljava.lang.Object;
+   7:           661          26440  java.util.LinkedHashMap$Entry
+   8:           326          16624  [Ljava.lang.String;
+   9:           391          12512  java.util.HashMap$Node
+  10:            43          12432  [Ljava.util.HashMap$Node;
+  11:           152          10944  java.lang.reflect.Field
+  12:           328          10496  java.io.File
+  13:           405           9720  java.lang.StringBuilder
+  14:           138           8832  java.net.URL
+  15:           266           8512  java.util.Hashtable$Entry
+  16:           135           5400  java.lang.ref.Finalizer
+  17:           120           4800  java.lang.ref.SoftReference
+  18:           179           4296  java.lang.StringBuffer
+  19:            31           4224  [Ljava.util.Hashtable$Entry;
+  20:           258           4128  java.lang.Integer
+</code></pre>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
@@ -159,6 +280,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

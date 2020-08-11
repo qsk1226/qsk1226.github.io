@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    六、类的生命周期 - 大爷来玩儿啊~
+    六、java 虚拟机执行子系统---字节码执行引擎 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            六、类的生命周期   
+                            六、java 虚拟机执行子系统---字节码执行引擎   
                       </h1>
                      
                     
@@ -116,258 +116,244 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>从类被加载到虚拟机内存中开始，到卸载出内存为止，类的生命周期包括加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段，其中验证、准备和解析三部分称为连接。类的加载、连接、初始化过程都是在程序运行期间进行的</p>
+                    <p>执行引擎是Java虚拟机核心的组成部分之一。</p>
 
-<p>在如下几种情况下，Java虚拟机将结束生命周期</p>
+<p>“虚拟机”是一个相对于“物理机”的概念，这两种机器都有代码执行能力，其区别是物理机的执行引擎是直接建立在处理器、缓存、指令集和操作系统层面上的，而虚拟机的执行引擎则是由软件自行实现的，因此可以不受物理条件制约地定制指令集与执行引擎的结构体系，能够执行那些不被硬件直接支持的指令集格式。</p>
 
-<pre><code class="language-text">– 执行了System.exit()方法
+<p>Java虚拟机的解释执行引擎被称为“基于栈的执行引擎”，里面的“栈”就是操作数栈。</p>
 
-– 程序正常执行结束
+<p>这里需要对java虚拟机栈有一个了解 <a href="15865981620428.html">二、JVM自动内存管理--java内存区域与内存溢出异常</a></p>
 
-– 程序在执行过程中遇到了异常或错误而异常终止
+<h2 id="toc_0">1、方法调用</h2>
 
-– 由于操作系统出现错误而导致Java虚拟机进程终止
-</code></pre>
+<h3 id="toc_1">1.1、解析调用</h3>
 
-<p>JVM 类加载机制分为五个部分<br/>
-<figure><img src="media/15922073766854/15922110200798.jpg" alt=""/></figure></p>
+<p>方法调用并不等同于方法中的代码被执行，方法调用阶段唯一的任务就是确定被调用方法的版本（即调用哪一个方法），暂时还未涉及方法内部的具体运行过程。</p>
 
-<p>虚拟机把描述类的数据从Class文件加载到内存， 并对数据进行校验、转换解析和初始化， 最终形成可以被虚拟机直接使用的Java类型， 这就是虚拟机的类加载机制。</p>
-
-<h2 id="toc_0">加载</h2>
-
-<p>在内存中生成一个代表这个类的java.lang.Class对象，作为方法去这个类的各种数据的入口。<br/>
-此阶段完成三件事。</p>
+<p>调用不同类型的方法，字节码指令集里面设计了不同的指令。java虚拟机支持一下5条方法调用字节码指令：</p>
 
 <ul>
-<li>通过一个类的全限定名来获取定义此类的二进制字节流(可以来自zip、war等压缩包，网络，动态生成，数据库等)。</li>
-<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
-<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口。</li>
+<li>invokestatic 用于调用静态方法</li>
+<li>invokespecial 用于调用实例构造器<init>()方法，私有方法和父类中的方法。</li>
+<li>invokevirtual 用于调用所有的虚方法</li>
+<li>invokeinterface 用于调用接口方法，会在运行时在确定一个实现该接口的对象</li>
+<li>invokedynamic 现在运行时动态解析出调用点限定符所引用的方法，然后再执行该方法。</li>
 </ul>
 
-<p>加载阶段既可以使用Java虚拟机里内置的引导类加载器来完成，也可以由用户自定义的类加载器去完成。</p>
+<p>些方法统称为“非虚方法”（Non-Virtual Method）： 要能被 invokestatic 和 invokespecial 指令调用的方法，都可以在解析阶段中确定唯一的调用版本，Java语言里符合这个条件的方法共有静态方法、私有方法、实例构造器、父类方法4种，再加上被final 修饰的方法（尽管它使用invokevirtual指令调用），这5种方法调用会在类加载的时候就可以把符号引用解析为该方法的直接引用。</p>
 
-<p>对于数组类而言，情况就有所不同，数组类本身不通过类加载器创建，它是由Java虚拟机直接在 内存中动态构造出来的。但是数组的元素类型还是需要通过类加载器来完成加载。</p>
+<p>解析调用一定是个静态的过程，在编译期间就完全确定，在类加载的解析阶段就会把涉及的符号引用全部转变为明确的直接引用，不必延迟到运行期再去完成。</p>
 
-<ul>
-<li>如果数组的组件类型是引用类型，那就递归采用本节中定义的加载过程去加载这个组件类型，数组C将被标 识在加载该组件类型的类加载器的类名称空间上(一个类型必须与类加 载器一起确定唯一性)</li>
-<li>如果数组的组件类型不是引用类型(例如int[]数组的组件类型为int)，Java虚拟机将会把数组C标记为与引导类加载器关联。</li>
-<li>数组类的可访问性与它的组件类型的可访问性一致，如果组件类型不是引用类型，它的数组类的可访问性将默认为public，可被所有的类和接口访问到。</li>
-</ul>
+<h3 id="toc_2">1.2、分派</h3>
 
-<h2 id="toc_1">验证</h2>
+<p>而另一种主要的方法调用形式：分派（Dispatch）调用则要复杂许多，它可能是静态的也可能是动态的，按照分派依据的宗量数可分为单分派和多分派。这两类分派方式两两组合就构成了静态单分派、静态多分派、动态单分派、动态多分派4种分派组合情况。</p>
 
-<p>确保Class文件的字节流中包含的信息是否符合当前虚拟机要求.</p>
+<p>因为Java具备面向对象的3个基本特征：继承、封装和多态。本节讲解的分派调用过程将会揭示多态性特征的一些最基本的体现，如“重载”和“重写”在Java虚拟机之中是如何实现的，这里的实现当然不是语法上该如何写，我们关心的依然是虚拟机如何确定正确的目标方法。</p>
 
-<ul>
-<li>class文件格式验证</li>
-<li><p>元数据验证</p>
-<ul>
-<li>这个类是否有父类(除了java.lang.Object之外，所有的类都应当有父类)。</li>
-<li>这个类的父类是否继承了不允许被继承的类(被final修饰的类)。</li>
-<li>如果这个类不是抽象类，是否实现了其父类或接口之中要求实现的所有方法。</li>
-<li>类中的字段、方法是否与父类产生矛盾(例如覆盖了父类的final字段，或者出现不符合规则的方 法重载，例如方法参数都一致，但返回值类型却不同等)。</li>
-</ul></li>
-<li><p>字节码验证<br/>
-主要目的是通过数据流分析和控制流分析，确定 程序语义是合法的、符合逻辑的</p></li>
-<li><p>符号引用验证</p>
-<ul>
-<li>符号引用中通过字符串描述的全限定名是否能找到对应的类。</li>
-<li>在指定类中是否存在符合方法的字段描述符及简单名称所描述的方法和字段。</li>
-<li>符号引用中的类、字段、方法的可访问性(private、protected、public、<package>)是否可被当 前类访问。<br/>
-阶段的校验行为发生在虚拟机将符号引用转化为直接引用[3]的时候，这个转化动作将在 连接的第三阶段——解析阶段中发生,此阶段的目的是保证解析能够正常执行。</li>
-</ul></li>
-</ul>
+<h4 id="toc_3">1.2.1、静态分派</h4>
 
-<h2 id="toc_2">准备</h2>
+<p>所有依赖静态类型来决定方法执行版本的分派动作，都称为静态分派。静态分派解决了方法的重载问题。</p>
 
-<p>准备阶段是正式为类中定义的<strong>变量(即静态变量，被static修饰的变量)分配内存并设置类变量初始值</strong>的阶段。</p>
+<p>从定义中我们需要了解什么事静态类型，首先先看一段如下代码：</p>
 
-<p><strong><em>注意</em></strong> ： 关于准备阶段，还有两个容易产生混淆的概念笔者需要着重强调，首先是这时候进行内存分配的 仅包括类变量，而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。其次是这里所说的初始值“通常情况”下是数据类型的零值，</p>
+<pre><code class="language-java">public class StaticDispatch {
 
-<h2 id="toc_3">解析</h2>
-
-<p>虚拟机将常量池中的符号引用替换为直接引用的过程</p>
-
-<ul>
-<li><p>符号引用<br/>
-符号引用以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可（class文件中的CONSTANT_CLASS_INFO、CONSTANT_FIELD_INFO、CONSTANT_METHOD_INFO等类型的常量），符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。<br/>
-各种虚拟机实现的内存布局可以各不相同，但是他们能接受的符号引用必须是一致的，因为符号引用的字面量形式明确定义在java虚拟机规范的Class文件格式中</p></li>
-<li><p>直接引用：可以是执行目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那么引用的目标必定已经存在于内存中。</p></li>
-</ul>
-
-<h2 id="toc_4">初始化</h2>
-
-<p>初始化是指执行<strong><em>静态代码块，静态变量</em></strong>的初始化操作，它是类加载阶段的最后一个阶段，前面的类加载阶段之后，除了在加载阶段可以自定义类加载器以外，其它操作都有jvm主导，到了初始化阶段，才开始真正执行类中定义的java程序代码。</p>
-
-<p>初始化阶段是执行类构造器<client>方法的过程。<client>方法是由编译器自动收集类中的类变 量的赋值操作和静态语句块中的语句合并而成的。<strong>虚拟机会保证子<client>方法执行之前，父类 的<client>方法已经执行完毕</strong></p>
-
-<h3 id="toc_5">有且只有以下<strong>六种对类型进行主动引用的情况需要立即对类进行初始化</strong>：</h3>
-
-<ul>
-<li><p>遇到new、getstatic、putstatic或invokestatic这四条字节码指令时，如果类型没有进行过初始化，则需要先出法器初始化阶段。</p>
-<ul>
-<li>使用new关键字实例化对象的时候</li>
-<li>读取或设置一个类型的静态字段(被final修饰、已在编译器把结果放入常量池的静态字段除外)的时候</li>
-<li><strong>调用一个类型的静态方法的时候</strong></li>
-</ul></li>
-<li><p>使用java.lang.reflect包的方法对类型进行反射调用的时候，如果类型没有进行过初始化，则需要先触发器初始化</p></li>
-<li><p>当初始化类的时候，如果发现其父类没有进行过初始化，则需要先触发其父类的初始化</p></li>
-<li><p>当虚拟机启动时，用户需要制定一个要执行的主类(包含main()方法的哪个类)，虚拟机会先初始化这个主类</p></li>
-<li><p>当使用 jdk7 新加入的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_p utStatic、REF_invokeStatic、REF_newInvokeSpecial四种类型的方法句柄，并且这个方法句柄对应的类没有进行过初始化，需要先触发其初始化</p></li>
-<li><p>当一个接口中定义了jdk8新加入的默认方法(被default关键字修饰的接口方法)时，如果有这个接口的实现类发生了初始化，那该接口在其之前被初始化。</p></li>
-</ul>
-
-<hr/>
-
-<h3 id="toc_6">以下几种 对类型的被动引用情况不会执行类初始化：</h3>
-
-<ul>
-<li>通过子类引用父类的静态字段，只会触发父类的初始化，而不会触发子类的初始化</li>
-<li>通过对象数组，不会触发该类的初始化</li>
-<li>常量在编译期间会存入调用类的常量池中，本质上并没有直接引用定义常量的类，不会触发定义常量所在的类</li>
-<li>通过类名获取Class对象，不会触发类的初始化</li>
-<li>通过Class.forName加载指定类是，如果指定参数 initialize 为 false 时，也不会触发类初始化，其实这个参数是告诉虚拟机，是否要对类进行初始化</li>
-<li>通过ClassLoader 默认的 loadClass 方法，也不会触发初始化动作。</li>
-</ul>
-
-<p><strong><em>静态变量、静态代码块的初始化是按照上到下的顺序执行的</em></strong></p>
-
-<p><strong><em>类与接口的初始化不同，如果一个类被初始化，则其父类或父接口也会被初始化，但如果一个接口初始化，则不会引起其父接口的初始化。</em></strong></p>
-
-<p><strong><em>被static final限定的常量叫做编译时常量，对于这种常量，不需要初始化就可以读取。在编译阶段这个常量被放入被调用这个方法所在的类的常量池当中。当一个常量的值并非在编译期间可以确定的情况，那么其值就不会别放到调用类的常量池中，这时在程序运行时会导致主动使用这个常量所在的类，这时就会触发别调用类的初始化</em></strong></p>
-
-<pre><code class="language-text">/**
-* -XX:+TraceClassLoading,用于追踪类的加载信息并打印出来
-* -XX:+&lt;option&gt; 表示开启option操作
-* -XX:-&lt;option&gt; 表示关闭option操作
-* -XX:&lt;option&gt;=&lt;value&gt; 表示将option选项的值设置为value
-*/
-public class ClassInit {
-
-    public static void main(String[] args) throws Exception{
-        //System.out.println(MyParent.name);
-        System.out.println(MyDaddy.str);
+    static abstract class Human {
     }
-}
 
-interface ParentInterface {
-    public static final String name = &quot;lucky&quot;;
-}
-
-class MyParent implements ParentInterface {
-
-    public static String str = &quot;Hello world&quot;;
-
-    public MyParent() {
-        System.out.println(&quot;MyParent constructor&quot;);
+    static class Man extends Human {
     }
-    static {
-        System.out.println(&quot;myParent static block&quot;);
+
+    static class Woman extends Human {
     }
-}
 
-class MyDaddy extends MyParent {
-    public static String str1 = &quot;Welcome to the world!&quot;;
-    static {
-        System.out.println(&quot;MyDaddy static block&quot;);
+    public void sayHello(Human human) {
+        System.out.println(&quot;Hello human&quot;);
     }
-}
 
-</code></pre>
-
-<pre><code class="language-text">/**
-* 常量在编译阶段会存入到调用这个常量的方法所在类的常量池中
-* 本质上，调用类的那方并没有直接引用到定义常量的类，因此并不会触发定义常量的类
-* 的初始化
-* ClassInit1 调用了Parent2.str, 这个str就会放入到调用方ClassInit1的常量池中
-*/
-public class ClassInit1 {
-
-    public static void main(String[] args) throws Exception{
-        System.out.println(MyParent2.str);
+    public void sayHello(Man man) {
+        System.out.println(&quot;Hello man&quot;);
     }
-}
 
-class Parent2{
-    public static final String str = &quot;what&quot;;
-}
+    public void sayHello(Woman woman) {
+        System.out.println(&quot;Hello woman&quot;);
+    }
 
-</code></pre>
-
-<p>反编译一下class文件 com.dragon.jvm.ClassInit1</p>
-
-<pre><code class="language-text">&gt; javap -c com.dragon.jvm.ClassInit1
-public class com.dragon.jvm.ClassInit1 {
-  public com.dragon.jvm.ClassInit();
-    Code:
-       0: aload_0
-       1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
-       4: return
-
-  public static void main(java.lang.String[]) throws java.lang.Exception;
-    Code:
-       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
-       3: ldc           #4                  // String Hello world
-       5: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
-       8: return
-}
-</code></pre>
-
-<p>助记符</p>
-
-<ul>
-<li>- dlc 表示int，float或string类型的常量值从常量池中推送至栈顶</li>
-<li>- bipush 表示将单字节(-128-127) 的常量值推送至栈顶</li>
-<li>- sipush 表示将一个短整型常量值(-32768 ~ 32767) 的常量值推送至栈顶</li>
-<li>- iconst_1 表示将int类型的 1 推送至栈顶 (iconst_m1 ~ iconst_5)</li>
-</ul>
-
-<pre><code class="language-text">/**
- * 当一个常量的值并非在编译期间可以确定的情况，那么其值就不会别放到调用类的常量池中，这时在程序运行时会导致主动使用这个常量所在的类，这时就会触发别调用类的初始化
- *
- * @author qinshengke
- * @date Create at 2019/12/9
- */
-public class StaticFinalOfRandom {
     public static void main(String[] args) {
-        System.out.println(Example.str);
+        // 这里Human 被称为静态类型，man被称为实际类型
+        Human man = new Man();
+        Human woman = new Woman();
+
+        StaticDispatch staticDispatch = new StaticDispatch();
+        staticDispatch.sayHello(man);
+        staticDispatch.sayHello(woman);
     }
 }
-
-class Example{
-    public static final String str = UUID.randomUUID().toString();
-
-    static {
-        System.out.println(&quot;Example static block&quot;);
-    }
-}
-
-&gt;Example static block
-&gt;15bbbe0a-7e43-43dc-a87d-c1be82867d13
 </code></pre>
 
-<pre><code class="language-text">// 数组并不会触发Example的初始化
-public class ArrayInit {
+<p>上例中 Human 被称为变量的 ”静态类型“ 后面的Man 被称为变量的“实际类型”。</p>
+
+<p>静态类型和实际类型在程序中都可能会发生变化，区别是静态类型的变化仅仅在使用时发生，变量本身的静态类型不会被改变，并且最终的静态类型是在编译期可知的；而实际类型变化的结果在运行期才可确定，编译器在编译程序的时候并不知道一个对象的实际类型是什么。</p>
+
+<p>编译期间选择静态分派目标的过程，这个过程也是Java语言实现方法重载的本质。</p>
+
+<h4 id="toc_4">1.2.2、动态分派</h4>
+
+<p>动态分派的实现过程与java语言多态性的另一个重要体现---重写 有着密切关系。</p>
+
+<pre><code class="language-java">public class DynamicDispatch {
+
+    abstract static class Human {
+        public abstract void sayHello();
+    }
+
+    static class Man extends Human {
+        public void sayHello() {
+            System.out.println(&quot;Hello man&quot;);
+        }
+    }
+
+    static class Woman extends Human {
+        public void sayHello() {
+            System.out.println(&quot;Hello woman&quot;);
+        }
+    }
+
     public static void main(String[] args) {
-        Example[] examples = new Example[1];
-        System.out.println(examples.getClass());
+        Human man = new Man();
+        Human woman = new Woman();
+        man.sayHello();
+        woman.sayHello();
     }
+}
+
+----------------------
+
+Hello man
+Hello woman
+
+</code></pre>
+
+<p>关于方法的重写，java虚拟机是怎么判断应该调用哪个方法的呢？</p>
+
+<p>我们看下上面方法的字节码</p>
+
+<pre><code class="language-java">  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: new           #2                  // class com/goddess/base/classloader/DynamicDispatch$Man
+         3: dup
+         4: invokespecial #3                  // Method com/goddess/base/classloader/DynamicDispatch$Man.&quot;&lt;init&gt;&quot;:()V
+         7: astore_1
+         8: new           #4                  // class com/goddess/base/classloader/DynamicDispatch$Woman
+        11: dup
+        12: invokespecial #5                  // Method com/goddess/base/classloader/DynamicDispatch$Woman.&quot;&lt;init&gt;&quot;:()V
+        15: astore_2
+        16: aload_1
+        17: invokevirtual #6                  // Method com/goddess/base/classloader/DynamicDispatch$Human.sayHello:()V
+        20: aload_2
+        21: invokevirtual #6                  // Method com/goddess/base/classloader/DynamicDispatch$Human.sayHello:()V
+        24: return
+      LineNumberTable:
+        line 29: 0
+        line 30: 8
+        line 31: 16
+        line 32: 20
+        line 33: 24
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      25     0  args   [Ljava/lang/String;
+            8      17     1   man   Lcom/goddess/base/classloader/DynamicDispatch$Human;
+           16       9     2 woman   Lcom/goddess/base/classloader/DynamicDispatch$Human;
 }
 
 </code></pre>
 
-<blockquote>
-<p>class [Lcom.dragon.jvm.Example;<br/>
-[ 开头的对象名称是数组 </p>
-</blockquote>
+<p>0～15行的字节码是准备动作，作用是建立man和woman的内存空间、调用Man和Woman类型的实例构造器，将这两个实例的引用存放在第1、2个局部变量表的变量槽中。</p>
 
-<h2 id="toc_7">类的卸载</h2>
+<p>16～21行是关键部分，16和20行的aload指令分别把刚刚创建的两个对象的引用压到栈顶，这两个对象是将要执行的sayHello()方法的所有者，称为接收者（Receiver）；17和21行是方法调用指令，这两条调用指令单从字节码角度来看，无论是指令（都是invokevirtual）还是参数（都是常量池中第22项的常量，注释显示了这个常量是Human.sayHello()的符号引用）都完全一样，但是这两句指令最终执行的目标方法并不相同。</p>
 
-<p>当类A被加载、连接、初始胡之后、它的生命周期就开始了，当代表类A的Class对象不再被引用，即类不可达的时候，Class对象就会结束生命周期，类A在方法区内的数据就会被卸载，从而结束类A的生命周期。 <br/>
-一个类何时结束生命周期，取决于代表它的class对象何时结束生命周期。</p>
+<p>那看来解决问题的关键还必须从invokevirtual指令本身入手，要弄清楚它是如何确定调用方法版本、如何实现多态查找来着手分析才行。</p>
 
-<p>有java虚拟机自带的类加载器加载的类，在虚拟机的生命周期中，始终不会被卸载。而又用户自定义的类加载器所加载的类是可以被卸载的。</p>
+<p>invokevirtual指令的运行时解析过程：</p>
+
+<ul>
+<li>找到操作数栈顶的第一个元素所指向的对象的实际类型，记做 C</li>
+<li>如果在类型 C 中找到与常量 中的描述符和简单名称都有相符的方法，则进行访问权限校验，如果通过则返回这个方法的直接引用，查找过程结束；不通过则返回java.lang.IllegalAccessError异常。</li>
+<li>否则，按照继承关系从下往上依次对 C 的各个父类进行第二步的搜索和验证过程。</li>
+<li>如果始终没有找到合适的方式，则抛出 java.lang.AbstractMethodError异常。</li>
+</ul>
+
+<p>正是因为 invokevirtual 指令执行的第一步就是在运行期确定接受者的实际类型，所以两次调用中的 invokevirtual 指令并不是把常量池中方法的符号引用解析到直接引用上就结束了，还会根据方法接受者的实际类型来选择方法版本，这个过程就是java 语言中方法重写的本质。</p>
+
+<p>我们把这种在运行期根据实际类型确定方法执行版本的过程称为动态分派。</p>
+
+<p>这种多台行的根源在于虚方法调用指令 invokevirtual 的执行逻辑，那自然得出的结论就只对方法有效，对字段无效，因为字段不适用这条指令。</p>
+
+<p>使用如下代码说明动态派生中的虚方法与字段的区别：</p>
+
+<pre><code class="language-java">public class FieldHasNoPolymorphic {
+    static class BigBrother {
+        public int money = 1;
+
+        public BigBrother() {
+            money = 2;
+            showMeTheMoney();
+        }
+
+        public void showMeTheMoney() {
+            System.out.println(&quot;BigBrother had ￥&quot; + money);
+        }
+    }
+
+
+    static class LittleBrother extends BigBrother {
+        public int money = 3;
+
+        public LittleBrother() {
+            money = 4;
+            showMeTheMoney();
+        }
+
+        public void showMeTheMoney() {
+            System.out.println(&quot;LittleBrother had ￥&quot; + money);
+        }
+    }
+
+    public static void main(String[] args) {
+        BigBrother brother = new LittleBrother();
+        System.out.println(&quot;brother had ￥&quot; + brother.money);
+    }
+}
+
+------ 
+
+LittleBrother had ￥0
+LittleBrother had ￥4
+brother had ￥2
+</code></pre>
+
+<p>两句输出都是 “LittleBrother,” 这是因为 LittleBrother 类在创建的时候回隐式的调用 BigBrother 的构造函数，而 BigBrother 构造函数中的对showMetheMoney 的调用是一次虚方法调用，实际执行的版本是 LittleBrother::showMetheModey()方法，而这时虽然父类的money字段别初始化为了2，但是子类 LittleBrother 中的money 还未被程序初始化，因为，子类中的money要等到子类的构造函数执行时才会被初始化，所以此main函数打印出来的结果才会如上例所示。</p>
+
+<h4 id="toc_5">1.2.3、单分派和多分派</h4>
+
+<p>方法的接受者与方法的参数统称为方法的宗量，根据分派给予多少种宗量，可以将分派划分为单分派和多分派两种。单分派是根据一个宗量对目标方法进行选择，多分派则是根据多于一个宗量对目标方法进行选择。</p>
+
+<p>如今的Java语言是一门静态多分派、动态单分派的语言。</p>
+
+<h3 id="toc_6">虚拟机的动态分派实现</h3>
+
+<p>动态分派是执行非常频繁的动作，而且动态分派的方法版本选择过程需要运行时在接收者类型的方法元数据中搜索合适的目标方法，因此，Java虚拟机实现基于执行性能的考虑，真正运行时一般不会如此频繁地去反复搜索类型元数据。面对这种情况，一种基础而且常见的优化手段是为类型在方法区中建立一个虚方法表（Virtual Method Table，也称为vtable，与此对应的，在invokeinterface执行时也会用到接口方法表——Interface Method Table，简称itable），使用虚方法表索引来代替元数据查找以提高性能。</p>
+
+<p><figure><img src="media/15760522223546/15969817696559.jpg" alt=""/></figure></p>
+
+<p>虚方法表中存放着各个方法的实际入口地址。如果某个方法在子类中没有被重写，那子类的虚方法表中的地址入口和父类相同方法的地址入口是一致的，都指向父类的实现入口。如果子类中重写了这个方法，子类虚方法表中的地址也会被替换为指向子类实现版本的入口地址。</p>
+
+<p>虚方法表一般在类加载的连接阶段进行初始化，准备了类的变量初始值后，虚拟机会把该类的虚方法表也一同初始化完毕。</p>
+
+<p>虚拟机除了使用虚方法表之外，为了进一步提高性能，还会使用类型继承关系分析（Class Hierarchy Analysis，CHA）、守护内联（Guarded Inlining）、内联缓存（Inline Cache）等多种非稳定的激进优化来争取更大的性能空间。</p>
 
                   </article>
                   <div class="comments-wrap">
