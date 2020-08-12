@@ -343,7 +343,7 @@ brother had ￥2
 
 <p>如今的Java语言是一门静态多分派、动态单分派的语言。</p>
 
-<h3 id="toc_6">虚拟机的动态分派实现</h3>
+<h3 id="toc_6">2、虚拟机的动态分派实现</h3>
 
 <p>动态分派是执行非常频繁的动作，而且动态分派的方法版本选择过程需要运行时在接收者类型的方法元数据中搜索合适的目标方法，因此，Java虚拟机实现基于执行性能的考虑，真正运行时一般不会如此频繁地去反复搜索类型元数据。面对这种情况，一种基础而且常见的优化手段是为类型在方法区中建立一个虚方法表（Virtual Method Table，也称为vtable，与此对应的，在invokeinterface执行时也会用到接口方法表——Interface Method Table，简称itable），使用虚方法表索引来代替元数据查找以提高性能。</p>
 
@@ -354,6 +354,166 @@ brother had ￥2
 <p>虚方法表一般在类加载的连接阶段进行初始化，准备了类的变量初始值后，虚拟机会把该类的虚方法表也一同初始化完毕。</p>
 
 <p>虚拟机除了使用虚方法表之外，为了进一步提高性能，还会使用类型继承关系分析（Class Hierarchy Analysis，CHA）、守护内联（Guarded Inlining）、内联缓存（Inline Cache）等多种非稳定的激进优化来争取更大的性能空间。</p>
+
+<h4 id="toc_7">2.1、java.lang.invoke包</h4>
+
+<p>JDK7 新加入到饿java.lang.invoke包 是JSR292 的一个重要组成部分,这个包的主要目的是在之前单纯靠符号引用来确定调用的目标方法这条路之外,提供一种新的动态确定目标方法的机制,成为 &quot;方法句柄&quot;。</p>
+
+<p>方法句柄使 java语言也可以拥有类似于函数指针或者委托的方法别名这样的工具了。如下例所示的方法句柄的基本用法:</p>
+
+<pre><code class="language-java">/**
+ * MethodHandle基础用法演示
+ */
+public class MethodHandleTest {
+    static class ClassA {
+        public void println(String s) {
+
+            System.out.println(&quot;ClassA: &quot;+s);
+        }
+    }
+
+    private static MethodHandle getPrintlnMH(Object reveiver) throws Throwable {
+        // MethodType：代表“方法类型”，包含了方法的返回值（methodType()的第一个参数）和具体参数（methodType()第二个及以后的参数）。
+        MethodType mt = MethodType.methodType(void.class, String.class);
+        // lookup()方法来自于MethodHandles.lookup，这句的作用是在指定类中查找符合给定的方法名称、方法类型，并且符合调用权限的方法句柄。
+        // 因为这里调用的是一个虚方法，按照Java语言的规则，方法第一个参数是隐式的，代表该方法的接
+        // 收者，也即this指向的对象，这个参数以前是放在参数列表中进行传递，现在提供了bindTo() 方法来完成这件事情。
+        return lookup().findVirtual(reveiver.getClass(), &quot;println&quot;, mt).bindTo(reveiver);
+    }
+
+    public static void main(String[] args) throws Throwable {
+        Object obj = System.currentTimeMillis() % 2 == 0 ? System.out : new ClassA();
+        // 无论obj最终是哪个实现类，下面这句都能正确调用到println方法。
+        getPrintlnMH(obj).invokeExact(&quot;icyfenix&quot;);
+    }
+}
+</code></pre>
+
+<p>方法getPrintlnMH()中实际上是模拟了invokevirtual指令的执行过程，只不过它的分派逻辑并非固化在Class文件的字节码上，而是通过一个由用户设计的Java方法来实现。而这个方法本身的返回值（MethodHandle对象），可以视为对最终调用方法的一个“引用”。</p>
+
+<p>通过代码我们发现这样的事情通过反射也可以很容易的实现，但是他们有一下一些区别：</p>
+
+<ul>
+<li><p>Reflection和MethodHandle机制本质上都是在模拟方法调用，但是Reflection是在模拟Java代码层次的方法调用，而MethodHandle是在模拟字节码层次的方法调用。<br/>
+在MethodHandles.Lookup上的3个方法findStatic()、findVirtual()、findSpecial()正是为了对应于invokestatic、invokevirtual（以及invokeinterface）和invokespecial这几条字节码指令的执行权限校验行为，而这些底层细节在使用Reflection API时是不需要关心的。</p></li>
+<li><p>Reflection中的java.lang.reflect.Method对象远比MethodHandle机制中的java.lang.invoke.MethodHandle对象所包含的信息来得多。前者是方法在Java端的全面映像，包含了方法的签名、描述符以及方法属性表中各种属性的Java端表示方式，还包含执行权限等的运行期信息。而后者仅包含执行该方法的相关信息。用开发人员通俗的话来讲，Reflection 是重量级，而 MethodHandle 是轻量级。</p></li>
+<li><p>由于MethodHandle是对字节码的方法指令调用的模拟，那理论上虚拟机在这方面做的各种优化（如方法内联），在MethodHandle上也应当可以采用类似思路去支持（但目前实现还在继续完善中），而通过反射去调用方法则几乎不可能直接去实施各类调用点优化措施。</p></li>
+<li><p>Reflection API的设计目标是只为Java语言服务的，而MethodHandle 则设计为可服务于所有Java虚拟机之上的语言。</p></li>
+</ul>
+
+<h4 id="toc_8">2.2、invokedynamic 指令</h4>
+
+<p>JDK 7为了更好地支持动态类型语言，引入了第五条方法调用的字节码指令invokedynamic，那么invokedynamic到底有什么应用呢？</p>
+
+<p>某种意义上可以说invokedynamic指令与MethodHandle机制的作用是一样的，都是为了解决原有4 条“invoke*”指令方法分派规则完全固化在虚拟机之中的问题，把如何查找目标方法的决定权从虚拟机转嫁到具体用户代码之中，让用户（广义的用户，包含其他程序语言的设计者）有更高的自由度。而且，它们两者的思路也是可类比的，都是为了达成同一个目的，只是一个用上层代码和API来实现，另一个用字节码和Class中其他属性、常量来完成。</p>
+
+<p>每一处含有invokedynamic指令的位置都被称作“动态调用点（Dynamically-Computed Call Site）”，这条指令的第一个参数不再是代表方法符号引用的CONSTANT_Methodref_info常量，而是变为JDK 7 时新加入的CONSTANT_InvokeDynamic_info常量，从这个新常量中可以得到3项信息：引导方法（Bootstrap Method，该方法存放在新增的BootstrapMethods属性中）、方法类型（MethodType）和名称。引导方法是有固定的参数，并且返回值规定是java.lang.invoke.CallSite对象，这个对象代表了真正要执行的目标方法调用。根据CONSTANT_InvokeDynamic_info常量中提供的信息，虚拟机可以找到并且执行引导方法，从而获得一个CallSite对象，最终调用到要执行的目标方法上。</p>
+
+<p>JDK8 引入了Lambda表达式和接口默认方法后，Java语言使用到了invokedynamic指令。</p>
+
+<pre><code class="language-java">import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
+
+public class GrandFather {
+    void thinking() {
+        System.out.println(&quot;i am grandfather&quot;);
+    }
+
+    public static void main(String[] args) {
+        Son son = new Son();
+        son.thinking();
+    }
+}
+
+class Father extends GrandFather {
+    void thinking() {
+        System.out.println(&quot;i am father&quot;);
+    }
+}
+
+class Son extends Father {
+    void thinking() {
+        try {
+            // 请读者在这里填入适当的代码（不能修改其他地方的代码）
+            // 实现调用祖父类的thinking()方法，打印&quot;i am grandfather&quot;
+            MethodType methodType = MethodType.methodType(void.class);
+            Field lookupImpl = MethodHandles.Lookup.class.getDeclaredField(&quot;IMPL_LOOKUP&quot;);
+            lookupImpl.setAccessible(true);
+            MethodHandle thinking = ((MethodHandles.Lookup) lookupImpl.get(null)).findSpecial(GrandFather.class, &quot;thinking&quot;, methodType, GrandFather.class);
+            thinking.invoke(this);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<h3 id="toc_9">3、基于栈的字节码解释执行引擎</h3>
+
+<p>javac 编译器输出的字节码指令流基本上是一种基于栈的指令集架构(Instruction Set Architecture，ISA)字节码指令流里面的指令大部分是零地址指令，他们一来操作数栈进行工作。</p>
+
+<p>现在我们主流PC机中物理硬件直接支持的指令集架构，这些指令依赖寄存器进行工作，这些指令流是基于寄存器的指令集。</p>
+
+<p>举个例子来看下基于栈的指令集与基于寄存器的指令集有什么不同</p>
+
+<pre><code class="language-text">iconst_1
+iconst_1
+iadd 
+istore_0
+</code></pre>
+
+<p>两条iconst_1指令连续把两个常量 1 压入栈， iadd 指令吧站定的两个值出栈、相加，然后把结果放回栈顶，最后istore_0 把栈顶的值放到局部变量表的第 0 个变量槽。</p>
+
+<p>这种指令流中的指令通常是不带参数的，使用操作数栈中的数据作为指令的运算输入，指令的运算结果也存储在操作数栈中。</p>
+
+<p>基于寄存器的指令集，程序可能是这样的：</p>
+
+<pre><code class="language-text">mov eax, 1
+add eax, 1
+</code></pre>
+
+<p>mov指令吧EAX寄存器的值设置为 1，然后add指令再把这个值加 1，结果就保存在EAX寄存器里面。</p>
+
+<p>基于栈的指令集及主要优点是可移植，而基于寄存器的指令集则依赖于硬件寄存器，不可避免的受到硬件的约束；如果使用栈架构的指令集，用户程序不会直接用到这些寄存器，那就可以由虚拟机实现来自行决定把一些访问最频繁的数据（程序计数器、栈顶缓存等）放到寄存器中以获取尽量好的性能，这样实现起来也更简单一些；代码相对更加紧凑（字节码中每个字节就对应一条指令，而多地址指令集中还需要存放参数）、编译器实现更加简单（不需要考虑空间分配的问题，所需空间都在栈上操作）等。</p>
+
+<p>栈架构指令集的主要缺点是理论上执行速度相对来说会稍慢一些，不过这里的执行速度是要局限在解释执行的状态下，如果经过即时编译器输出成物理机上的汇编指令流，那就与虚拟机采用哪种指令集架构没有什么关系了。</p>
+
+<h3 id="toc_10">基于栈的解释器执行过程</h3>
+
+<p>准备了一段Java代码，以便向读者实际展示在虚拟机里字节码是如何执行的。</p>
+
+<pre><code class="language-java">public int calc(){
+    int a = 100;     
+    int b = 200;     
+    int c = 300;     
+    return (a + b) * c; 
+}
+</code></pre>
+
+<p>使用javap 查看他的字节码指令：</p>
+
+<pre><code class="language-java">public int calc();     
+    Code:         
+        Stack=2, Locals=4, Args_size=1   // 这段代码需要深度为2的操作数栈和4个变量槽的局部变量空间。        
+        0:   bipush  100   // 将单字节的整型常量值（-128～127）推入操作数栈顶，跟随有一个参数，指明推送的常量值，这里是100。       
+        2:   istore_1       // 将操作数栈顶的整型值出栈并存放到第1个局部变量槽中。
+        3:   sipush  200    //将200推入栈顶   
+        6:   istore_2       // 将操作数栈顶的整型值出栈并保存在第2个局部变量槽中。
+        7:   sipush  300    //将300推入栈顶 
+        10:  istore_3       // 将操作数栈顶的整型值出栈并保存在第3个局部变量槽中。 
+        11:  iload_1        // 将局部变量表第1个变量槽中的整型值复制到操作数栈顶。
+        12:  iload_2        // 把第2个变量槽的整型值入栈。
+        13:  iadd           // 将操作数栈中头两个栈顶元素出栈，做整型加法，然后把结果重新入栈。在iadd指令执行完毕后，栈中原有的100和200被出栈，它们相加的和300被重新入栈。
+        14:  iload_3        // 把存放在第3个局部变量槽中的300入栈到操作数栈中
+        15:  imul           // 将操作数栈中头两个栈顶元素出栈，做整型乘法，然后把结果重新入栈
+        16:  ireturn       // 方法返回指令之一，它将结束方法执行并将操作数栈顶的整型值返回给该方法的调用者
+}
+``
+
+虚拟机最终会对执行过程做出一系列优化来提高性能，实际的运作过程并不会完全符合概念模型的描述。
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">
