@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    MySql 杂记 - 大爷来玩儿啊~
+    初识 MySql数据库 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            MySql 杂记   
+                            初识 MySql数据库   
                       </h1>
                      
                     
@@ -94,7 +94,7 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/06/23</span>
+                                 <span class="date">2020/08/13</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
                                       <span class="posted-in"><a href='mysql.html'>mysql</a></span>
@@ -114,16 +114,24 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>mysql --help | grep my.cnf 此命令会告诉我们会在哪些位置查找配置文件</p>
+                    <h2 id="toc_0">MySql 体系结构</h2>
 
-<pre><code class="language-text">&gt; show engines 查看当前使用的MySql数据库锁支持的存储引擎。也可以通过查找information_schema架构下的ENGINES表
-&gt; mysql -h host -u user -p pwd -P port
-&gt; show engine innodb status 观察innodb的过去某个时间范围内的状态
-&gt; show variables like &#39;innodb_buffer_pool_size&#39;  查看缓冲池大小
-&gt; show variables like &#39;innodb_buffer_pool_instances&#39; 查看有几个缓冲池实例
-&gt; set global innodb_old_block_time=1000; 设置多长时间之后热点页被放入LRU列表前端
-&gt; show variables like &#39;innodb_log_buffer_size&#39; 查看重做日志缓冲池大小
-</code></pre>
+<p>要了解 MySql 必须牢牢记住器体系结构，如下图所示</p>
+
+<p><figure><img src="media/15973285844161/15973287823877.jpg" alt=""/></figure></p>
+
+<p>从上图中发现，MySql 有一下几部分组成：</p>
+
+<ul>
+<li>连接池组件</li>
+<li>管理服务和工具组件</li>
+<li>SQL接口组件</li>
+<li>查询分析器组件</li>
+<li>优化器组件</li>
+<li>缓冲组件</li>
+<li>插件式存储引擎</li>
+<li>物理文件</li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">
@@ -167,8 +175,6 @@
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 

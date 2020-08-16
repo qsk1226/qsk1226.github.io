@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    MySql 杂记 - 大爷来玩儿啊~
+    InnoDB 存储引擎 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            MySql 杂记   
+                            InnoDB 存储引擎   
                       </h1>
                      
                     
@@ -94,7 +94,7 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/06/23</span>
+                                 <span class="date">2020/08/13</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
                                       <span class="posted-in"><a href='mysql.html'>mysql</a></span>
@@ -114,16 +114,107 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>mysql --help | grep my.cnf 此命令会告诉我们会在哪些位置查找配置文件</p>
+                    <p>InnoDB存储引擎支持事务，其设计目标主要面向在线事务处理（OLTP）的应用。</p>
 
-<pre><code class="language-text">&gt; show engines 查看当前使用的MySql数据库锁支持的存储引擎。也可以通过查找information_schema架构下的ENGINES表
-&gt; mysql -h host -u user -p pwd -P port
-&gt; show engine innodb status 观察innodb的过去某个时间范围内的状态
-&gt; show variables like &#39;innodb_buffer_pool_size&#39;  查看缓冲池大小
-&gt; show variables like &#39;innodb_buffer_pool_instances&#39; 查看有几个缓冲池实例
-&gt; set global innodb_old_block_time=1000; 设置多长时间之后热点页被放入LRU列表前端
-&gt; show variables like &#39;innodb_log_buffer_size&#39; 查看重做日志缓冲池大小
+<p>其特点是</p>
+
+<ul>
+<li>行锁设计</li>
+<li>支持外检- 支持外键</li>
+<li>非锁定读（默认读取操作不会产生锁）</li>
+</ul>
+
+<p>InnoDB存储引擎将数据放在一个逻辑的表空间中，这块空间有它自己进行管理。</p>
+
+<p>InnoDB使用多版本并发控制（MVCC）来获得高并发性，并且实现了sql的标准的4中隔离级别，默认 repeatable级别。</p>
+
+<p>使用一种被称为next-key locking的策略来避免幻读现象的产生。</p>
+
+<p>InnoDB关键特性提供高性能和高可用性：</p>
+
+<ul>
+<li>插入缓冲 </li>
+<li>二次写</li>
+<li>自适应哈希索引</li>
+<li>异步IO</li>
+<li>刷新临近页</li>
+<li>预读</li>
+</ul>
+
+<p>InnoDB存储引擎是基于磁盘存储的，并将其中的记录按照页的方式进行管理。</p>
+
+<p>InnoDB的整体架构包括多个内存组成的多个后台线程和缓冲池。</p>
+
+<h2 id="toc_0">InnoDB 多后台线程</h2>
+
+<p>InnoDB存储引擎是多线程模型，其后台线程执行不同的任务</p>
+
+<ul>
+<li>Master Thread：负责将缓冲池中的数据异步刷新到硬盘</li>
+<li>IO Thread：负责InnoDB存储引擎中的大量的AIO的请求回调处理</li>
+<li>Purge thread：事务提交后，其所使用的的undolog可能不在需要，此线程是回收已经使用并分配的undo页</li>
+<li>Page cleaner thread：刷新脏页</li>
+</ul>
+
+<h2 id="toc_1">缓冲池</h2>
+
+<p>InnoDB是基于磁盘存储的，为了提高数据库的整体性能，引入了缓冲池技术。</p>
+
+<p>在数据库中进行读取页的操作首先将从磁盘读取到的页存放在缓冲池中，这个过程称为“FIX”在缓冲池中，下次读取相同页的时候，首先判断页是否在缓冲池中，若在，称该页在缓冲池中被命中，否则从磁盘上读取该页数据。</p>
+
+<p>对数据库中的页进行修改操作，首先修改缓冲池中的页，在以一定频路刷新到磁盘，但是并不是每次页发生改变的时候就进行刷新，而是通过一种称为 Checkpoint的机制刷新回磁盘。</p>
+
+<p>因此缓冲池的大小直接影响着数据库的整体性能。</p>
+
+<p>缓冲池中缓冲的数据页类型主要有如下几种：</p>
+
+<ul>
+<li>索引页</li>
+<li>数据页</li>
+<li>undo页</li>
+<li>插入缓冲页（insert buffer）</li>
+<li>自适应哈希索引（adaptive hash index）</li>
+<li>InnoDB 存储的锁信息（lock info）</li>
+<li>数据字典信息</li>
+</ul>
+
+<p>允许有多个缓冲池实例，每个页根据hash值平均分派到不同的缓冲池实例中，可以减少数据库内部资源的竞争，增加数据库的并发处理能力。</p>
+
+<p>缓冲池中的页通过LRU（Latest recent used，最近最少使用）算法来进行管理的。使用最频繁的页放在 LRU 列表的前端。</p>
+
+<p>缓冲池的默认大小是16KB,也可能将页进行压缩然后存放到unzip_LRU列表进行管理。</p>
+
+<p>在LRU列表中的页被修改后，称该页为 脏页，即缓冲池中的页和磁盘中的页数据不一致了。这是数据库通过checkpoint机制将脏页刷新会磁盘。Flush列表中的页即为脏页列表。</p>
+
+<p>通过 show engine innodb status命令查看innodb的状态</p>
+
+<pre><code class="language-text">&gt; show engine innodb status;
+.....
+BUFFER POOL AND MEMORY
+----------------------
+Total large memory allocated 137363456
+Dictionary memory allocated 415854
+Buffer pool size   8191  缓冲池大小
+Free buffers       6922  剩余缓存
+Database pages     1264 页数量
+Old database pages 486  
+Modified db pages  0    脏页数量
+Pending reads      0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 0, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 1122, created 142, written 150
+0.00 reads/s, 0.00 creates/s, 0.00 writes/s
+No buffer pool page gets since the last printout
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 1264, unzip_LRU len: 0
+I/O sum[0]:cur[0], unzip sum[0]:cur[0]
+
 </code></pre>
+
+<h3 id="toc_2">重做日志缓冲</h3>
+
+<p>InnoDB 存储引擎的内存区域除了有缓冲池外，还有重做日志缓冲（redo log buffer）。innodb存储引擎首先将重做日志信息放入这个缓冲区，然后按照一定频率将其刷新到重做日志文件。这个区域不用设置很大，基本是每秒产生的事务量在这个缓冲大小之内即可(innodb_log_buffer_size参数设置其大小，通常8MB可以满足大部分应用)。</p>
 
                   </article>
                   <div class="comments-wrap">
