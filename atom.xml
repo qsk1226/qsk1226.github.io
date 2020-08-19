@@ -4,13 +4,373 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-08-18T01:21:49+08:00</updated>
+  <updated>2020-08-20T00:03:40+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[Arthas]]></title>
+    <link href="http://www.throne4j.com/15978529329852.html"/>
+    <updated>2020-08-20T00:02:12+08:00</updated>
+    <id>http://www.throne4j.com/15978529329852.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">简介</h2>
+
+<p>Arthas 是 Alibaba 开源的 Java 诊断工具,在线排查问题，无需重启；动态跟踪Java代码；实时监控JVM状态。</p>
+
+<p><a href="https://alibaba.github.io/arthas/">官方文档参考</a><br/>
+<a href="https://arthas.aliyun.com/doc/quick-start.html">快速入门</a></p>
+
+<p>当你遇到以下类似问题而束手无策时，Arthas可以帮助你解决：</p>
+
+<p>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？<br/>
+我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？<br/>
+遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？<br/>
+线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！<br/>
+是否有一个全局视角来查看系统的运行状况？<br/>
+有什么办法可以监控到JVM的实时运行状态？<br/>
+怎么快速定位应用的热点，生成火焰图？</p>
+
+<h2 id="toc_1">下载和安装</h2>
+
+<p>不需要安装，就是一个 jar 包</p>
+
+<pre><code class="language-text">curl -O https://alibaba.github.io/arthas/arthas-boot.jar 
+
+java -jar arthas-boot.jar
+</code></pre>
+
+<p>启动 arthas 的 jar 包是 arthas-boot.jar</p>
+
+<p>直接 java -jar arthas-boot.jar。选择 attach 的进程绑定<br/>
+<figure><img src="media/15773440983590/15976833500370.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">arthas 命令</h2>
+
+<p>输入help查看 arthas 支持的命令</p>
+
+<pre><code class="language-shell">[arthas@29087]$ help
+ NAME         DESCRIPTION
+ help         Display Arthas Help
+ keymap       Display all the available keymap for the specified connection.
+ sc           Search all the classes loaded by JVM
+ sm           Search the method of classes loaded by JVM
+ classloader  Show classloader info
+ jad          Decompile class
+ getstatic    Show the static field of a class
+ monitor      Monitor method execution statistics, e.g. total/success/failure count, average rt, fail rate, etc.
+ stack        Display the stack trace for the specified class and method
+ thread       Display thread info, thread stack
+ trace        Trace the execution time of specified method invocation.
+ watch        Display the input/output parameter, return object, and thrown exception of specified method invocation
+ tt           Time Tunnel
+ jvm          Display the target JVM information
+ perfcounter  Display the perf counter infornation.
+ ognl         Execute ognl expression.
+ mc           Memory compiler, compiles java files into bytecode and class files in memory.
+ redefine     Redefine classes. @see Instrumentation#redefineClasses(ClassDefinition...)
+ dashboard    Overview of target jvm&#39;s thread, memory, gc, vm, tomcat info.
+ dump         Dump class byte array from JVM
+ heapdump     Heap dump
+ options      View and change various Arthas options
+ cls          Clear the screen
+ reset        Reset all the enhanced classes
+ version      Display Arthas version
+ session      Display current session information
+ sysprop      Display, and change the system properties.
+ sysenv       Display the system env.
+ vmoption     Display, and update the vm diagnostic options.
+ logger       Print logger info, and update the logger level
+ history      Display command history
+ cat          Concatenate and print files
+ echo         write arguments to the standard output
+ pwd          Return working directory name
+ mbean        Display the mbean information
+ grep         grep command for pipes.
+ tee          tee command for pipes.
+ profiler     Async Profiler. https://github.com/jvm-profiling-tools/async-profiler
+ stop         Stop/Shutdown Arthas server and exit the console.
+</code></pre>
+
+<h3 id="toc_3">dashboard</h3>
+
+<p><figure><img src="media/15773440983590/15976836704891.jpg" alt="" style="width:1891px;"/></figure></p>
+
+<h3 id="toc_4">thread</h3>
+
+<p>这个命令和 jstack 很相似，但是功能更加强大，主要是查看当前 JVM 的线程堆栈信息 同时可以结合使用 thread –b 来进行死锁的排查死锁。</p>
+
+<p>参数说明:</p>
+
+<pre><code class="language-text">-n 指定最忙的前 n 个线程并打印堆栈
+-b 找出阻塞当前线程的线程
+-i 指定 cpu 占比统计的采样间隔，单位为毫秒
+</code></pre>
+
+<pre><code class="language-text">[arthas@29087]$ thread -b
+&quot;Thread-0&quot; Id=11 BLOCKED on java.lang.Object@602bace6 owned by &quot;Thread-1&quot; Id=12
+    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
+    -  blocked on java.lang.Object@602bace6
+    -  locked java.lang.Object@12487489 &lt;---- but blocks 1 other threads!
+    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
+    at java.lang.Thread.run(Thread.java:745)
+</code></pre>
+
+<p>thread -i 1000 -n 3 每过 1000 毫秒进行采样，显示最占 CPU 时间的前 3 个线程</p>
+
+<p>thread --state WAITING 查看处于等待状态的线程</p>
+
+<h3 id="toc_5">jvm</h3>
+
+<p>查看jvm信息<br/>
+<figure><img src="media/15773440983590/15976840064874.jpg" alt=""/></figure></p>
+
+<h3 id="toc_6">jad 反编译指定已加载类的源码</h3>
+
+<p><figure><img src="media/15773440983590/15976841522972.jpg" alt="" style="width:1293px;"/></figure></p>
+
+<h3 id="toc_7">trace</h3>
+
+<p>使用 trace 命令可以跟踪统计方法耗时。</p>
+
+<p>例如：trace com.goddess.base.controller.UserController get</p>
+
+<h3 id="toc_8">monitor 方法监控</h3>
+
+<p>监控的维度说明：</p>
+
+<table>
+<thead>
+<tr>
+<th>监控项</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>timestamp</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>class</td>
+<td>Java类</td>
+</tr>
+<tr>
+<td>method</td>
+<td>方法（构造方法、普通方法）</td>
+</tr>
+<tr>
+<td>total</td>
+<td>调用次数</td>
+</tr>
+<tr>
+<td>success</td>
+<td>成功次数</td>
+</tr>
+<tr>
+<td>fail</td>
+<td>失败次数</td>
+</tr>
+<tr>
+<td>rt</td>
+<td>平均RT</td>
+</tr>
+<tr>
+<td>fail-rate</td>
+<td>失败率</td>
+</tr>
+</tbody>
+</table>
+
+<p>每 5 秒统计一次 com.goddess.base.controller.UserController 类的 get 方法执行情况</p>
+
+<pre><code class="language-text">&gt; monitor -c 5 com.goddess.base.controller.UserController get
+timestamp            class          method        total  success  fail  avg-rt(ms)  fail-rate
+-----------------------------------------------------------------------------------------------
+ 2018-12-03 19:06:38  demo.MathGame  primeFactors  5      1        4     1.15        80.00%
+</code></pre>
+
+<h3 id="toc_9">watch</h3>
+
+<p>让你能方便的观察到指定方法的调用情况。能观察到的范围为：返回值、抛出异常、入参，通过编写 OGNL 表达式进行对应变量的查看。</p>
+
+<p>参数说明：</p>
+
+<ul>
+<li>class-pattern 类名表达式</li>
+<li>method-pattern 方法名表达式匹配</li>
+<li>express 观察表达式</li>
+<li>condition-express 条件表达式</li>
+<li>b 在方法调用之前观察</li>
+<li>e 在方法调用之后观察,异常抛出时才触发</li>
+<li>s 在方法返回之后观察</li>
+<li>f 在方法结束之后观察</li>
+<li>E 开启正则表达式匹配，默认为通配符匹配</li>
+<li>[x:] 指定输出结果的属性遍历深度，默认为1</li>
+</ul>
+
+<p>特别说明：</p>
+
+<ul>
+<li><p>watch 命令定义了4个观察事件点，即 -b 方法调用前，-e 方法异常后，-s 方法返回后，-f 方法结束后</p></li>
+<li><p>4个观察事件点 -b、-e、-s 默认关闭，-f 默认打开，当指定观察点被打开后，在相应事件点会对观察表达式进行求值并输出</p></li>
+<li><p>这里要注意方法入参和方法出参的区别，有可能在中间被修改导致前后不一致，除了 -b 事件点 params 代表方法入参外，其余事件都代表方法出参</p></li>
+<li><p>当使用 -b 时，由于观察事件点是在方法调用前，此时返回值或异常均不存在</p></li>
+</ul>
+
+<p>变量说明：</p>
+
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>变量解释</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>loader</td>
+<td>本次调用类所在的 ClassLoader</td>
+</tr>
+<tr>
+<td>clazz</td>
+<td>本次调用类的 Class 引用</td>
+</tr>
+<tr>
+<td>method</td>
+<td>本次调用方法反射引用</td>
+</tr>
+<tr>
+<td>target</td>
+<td>本次调用类的实例</td>
+</tr>
+<tr>
+<td>params</td>
+<td>本次调用参数列表，这是一个数组，如果方法是无参方法则为空数组</td>
+</tr>
+<tr>
+<td>returnObj</td>
+<td><code>本次调用返回的对象。当且仅当 isReturn==true 成立时候有效，表明方法调用是以正常返回的方式结束。如果当前方法无返回值 void，则值为 null</code></td>
+</tr>
+<tr>
+<td>throwExp</td>
+<td><code>本次调用抛出的异常。当且仅当 isThrow==true 成立时有效，表明方法调用是以抛出异常的方式结束。</code></td>
+</tr>
+<tr>
+<td>isBefore</td>
+<td><code>辅助判断标记，当前的通知节点有可能是在方法一开始就通知，此时 isBefore==true 成立，同时 isThrow==false 和 isReturn==false，因为在方法刚开始时，还无法确定方法调用将会如何结束。</code></td>
+</tr>
+<tr>
+<td>isThrow</td>
+<td>辅助判断标记，当前的方法调用以抛异常的形式结束。</td>
+</tr>
+<tr>
+<td>isReturn</td>
+<td>辅助判断标记，当前的方法调用以正常返回的形式结束。</td>
+</tr>
+</tbody>
+</table>
+
+<pre><code class="language-shell"># 查看get方法的入参和出参
+&gt; watch com.goddess.base.controller.UserController get &#39;{params[0],returnObj}&#39; -x 2
+
+# 按照耗时进行过滤,#cost&gt;200(单位是ms)表示只有当耗时大于200ms时才会输出，过滤掉执行时间小于200ms的调用
+&gt; watch com.goddess.base.controller.UserController get &#39;{params[0],returnObj}&#39; &#39;#cost&gt;200&#39; -x 2
+&gt; 
+</code></pre>
+
+<h3 id="toc_10">stack 输出当前方法被调用的调用路径</h3>
+
+<p>参数说明：</p>
+
+<ul>
+<li>class-pattern 类名表达式匹配</li>
+<li>method-pattern 方法名表达式匹配</li>
+<li>condition-express 条件表达式</li>
+<li>[n:] 执行次数限制</li>
+<li>[E] 开启正则表达式匹配，默认为通配符匹配</li>
+</ul>
+
+<p>据执行时间来过滤：<br/>
+stack demo.MathGame primeFactors &#39;#cost&gt;5&#39;</p>
+
+<h3 id="toc_11">tt</h3>
+
+<p>方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测</p>
+
+<h3 id="toc_12">vmoption 查看，更新JVM 诊断相关参数</h3>
+
+<p>查看JVM诊断相关参数：</p>
+
+<pre><code class="language-shell">[arthas@56963]$ vmoption
+ KEY                    VALUE                   ORIGIN                 WRITEABLE
+---------------------------------------------------------------------------------------------
+ HeapDumpBeforeFullGC   false                   DEFAULT                true
+ HeapDumpAfterFullGC    false                   DEFAULT                true
+ HeapDumpOnOutOfMemory  false                   DEFAULT                true
+ Error
+ HeapDumpPath                                   DEFAULT                true
+ CMSAbortablePrecleanW  100                     DEFAULT                true
+ aitMillis
+ CMSWaitDuration        2000                    DEFAULT                true
+ CMSTriggerInterval     -1                      DEFAULT                true
+ PrintGC                false                   DEFAULT                true
+ PrintGCDetails         true                    MANAGEMENT             true
+ PrintGCDateStamps      false                   DEFAULT                true
+ PrintGCTimeStamps      false                   DEFAULT                true
+ PrintGCID              false                   DEFAULT                true
+ PrintClassHistogramBe  false                   DEFAULT                true
+ foreFullGC
+ PrintClassHistogramAf  false                   DEFAULT                true
+ terFullGC
+ PrintClassHistogram    false                   DEFAULT                true
+ MinHeapFreeRatio       0                       DEFAULT                true
+ MaxHeapFreeRatio       100                     DEFAULT                true
+ PrintConcurrentLocks   false                   DEFAULT                true
+</code></pre>
+
+<p>查看指定option</p>
+
+<pre><code class="language-shell">[arthas@56963]$ vmoption PrintGCDetails
+ KEY                    VALUE                   ORIGIN                 WRITEABLE
+---------------------------------------------------------------------------------------------
+ PrintGCDetails         false                   MANAGEMENT             true
+
+</code></pre>
+
+<p>更新指定option：</p>
+
+<pre><code class="language-shell">[arthas@56963]$ vmoption PrintGCDetails true
+Successfully updated the vm option.
+PrintGCDetails=true
+</code></pre>
+
+<h3 id="toc_13">sc 查看jvm已加载的类信息</h3>
+
+<p>参数说明：<br/>
+<figure><img src="media/15773440983590/15978503405145.jpg" alt=""/></figure></p>
+
+<pre><code class="language-text">#模糊搜索
+$ sc demo.*
+demo.MathGame
+Affect(row-cnt:1) cost in 55 ms.
+
+</code></pre>
+
+<h3 id="toc_14">sm 查看已加载类的方法信息</h3>
+
+<h3 id="toc_15">classloader 查看 classloader的继承树，urls，类加载信息</h3>
+
+<h3 id="toc_16">heapdum 类似jmap命令的heap dump功能</h3>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[InnoDB 存储引擎]]></title>
@@ -3671,266 +4031,6 @@ Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
 <p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
 
 <p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[八、Redis 持久化--RDB（一）]]></title>
-    <link href="http://www.throne4j.com/15942163464303.html"/>
-    <updated>2020-07-08T21:52:26+08:00</updated>
-    <id>http://www.throne4j.com/15942163464303.html</id>
-    <content type="html"><![CDATA[
-<p>Redis 是一个内存数据库，为了保证数据不丢失，持久化就显得尤为重要了。Redis 有两种持久化方法:RDB方式，RDB保存某一个时间点之前的数据；另一种为AOF方式，AOF保存的是Redis服务器端执行的每一条命令。</p>
-
-<p>通过info命令查看 redis服务端记录的相关持久化状态信息：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt;info
-# Persistence 
-loading:0                               //是否正在加载RDB文件内容
-rdb_changes_since_last_save:2           //最后一次保存之后改变的键的个数
-rdb_bgsave_in_progress:0                //是否正在后台执行RDB保存任务
-rdb_last_save_time:1540371552           //最后一次执行RDB保存任务的时间
-rdb_last_bgsave_status:ok               //最后一次执行RDB保存任务的状态
-rdb_last_bgsave_time_sec:0              //最后一次执行RDB保存任务消耗的时间
-rdb_current_bgsave_time_sec:-1          //如果正在执行RDB保存任务，则为当前RDB任务已经消耗的时间，否则为-1 
-rdb_last_cow_size:6631424               //最后一次执行RDB保存任务消耗的内存
-aof_enabled:0                           //是否开启了AOF功能aof_rewrite_in_progress:0               //是否正在后台执行AOF重写任务
-aof_rewrite_scheduled:0                 //是否等待调度一次AOF重写任务。如果触发了一次AOF重写，                                          但是后台正在执行RDB保存任务时会将该状态置为1 
-aof_last_rewrite_time_sec:-1            //最后一次执行AOF重写任务消耗的时间
-aof_current_rewrite_time_sec:-1         //如果正在执行AOF重写任务，则为当前该任务已经消耗的时间，否则为-1 
-aof_last_bgrewrite_status:ok            //最后一次执行AOF重写任务的状态
-aof_last_write_status:ok                //最后一次执行AOF缓冲区写入的状态（服务端执行命令时会开辟一段内存空间将命令放入其中，然后从该缓冲区中同步到文件。该状态标记最后一次同步到文件的状态
-aof_last_cow_size:0                     //最后一次执行AOF重写任务消耗的内存
-
-</code></pre>
-
-<h2 id="toc_0">RDB 持久化方式</h2>
-
-<p>RDB持久化方式是保存一个时间点的快照。</p>
-
-<p>RDB快照有两种触发方式</p>
-
-<ul>
-<li>配置参数，在配置文件中写入 <code>save 60 1000</code>，则在60秒内如果有1000个key发生变化，就出发一次RDB快照执行。</li>
-<li>通过客户端执行 bgsave 命令显式的触发一次RDB快照的执行。</li>
-</ul>
-
-<p>bgsave执行流程如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942173127342.jpg" alt="bgsave 执行流程"/><figcaption>bgsave 执行流程</figcaption></figure></p>
-
-<p>在客户端输入 bgsave 命令后，Redis调用 bgsaveCommand 函数，该函数fork一个子进程执行 rdbSave 函数进行实际的快照存储工作，而父进程可以继续处理客户端请求。当子进程退出后，父进程调用相关回调函数进行后续处理。</p>
-
-<h3 id="toc_1">RDB文件结构</h3>
-
-<p>RDB 整体文件结构如下图所示：</p>
-
-<p><figure><img src="media/15942163464303/15942232766455.jpg" alt=""/></figure></p>
-
-<ul>
-<li>头部5字节固定为“REDIS”字符串</li>
-<li>4字节的RDB版本号（RDB_VERSION，注意不是Redis的版本号），当前RDB版本号为9，填充为4字节之后为0008。</li>
-<li><p>辅助字段AUX_FIELD_KEY_VALUE_PAIRS，辅助字段可以标明以下信息</p>
-<table>
-<thead>
-<tr>
-<th>字段名称</th>
-<th>字段值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>redis-ver</td>
-<td>5.0.04</td>
-</tr>
-<tr>
-<td>redis-bits</td>
-<td>64/32</td>
-</tr>
-<tr>
-<td>ctime</td>
-<td>当前时间戳</td>
-</tr>
-<tr>
-<td>used-mem</td>
-<td>redis占用内存</td>
-</tr>
-<tr>
-<td>aof-preamble</td>
-<td>是否开启aof/rdb混合持久化</td>
-</tr>
-<tr>
-<td>repl-stream-db</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-id</td>
-<td>主从复制相关</td>
-</tr>
-<tr>
-<td>repl-offset</td>
-<td>主从复制相关</td>
-</tr>
-</tbody>
-</table></li>
-<li><p>数据库序号：指明数据需要存放到哪个数据库</p></li>
-<li><p>当前数据库键值对散列表的大小，这样在加载时可以直接将散列表扩展到指定大小，提升加载速度。</p></li>
-<li><p>当前数据库过期时间散列表的大小</p></li>
-<li><p>Redis中具体键值对的存储</p></li>
-<li><p>RDB文件结束标志</p></li>
-<li><p>8字节校验码</p></li>
-</ul>
-
-<p>加载RDB文件的时候怎么区分加载的是辅助字段还是数据库序号或者是其他类型呢？其实在RDB每一部分之前都有一个类型字节，在Redis中称为opcodes，opcodes如下所示：</p>
-
-<pre><code class="language-c">#define RDB_OPCODE_MODULE_AUX    247        //module相关辅助字段
-#define RDB_OPCODE_IDLE          248        //lru空闲时间
-#define RDB_OPCODE_FREQ          249        //lfu频率
-#define RDB_OPCODE_AUX           250        //辅助字段类型
-#define RDB_OPCODE_RESIZEDB      251        //RESIZEDB，即上文中介绍的5和6两项
-#define RDB_OPCODE_EXPIRETIME_MS 252        //毫秒级别过期时间
-#define RDB_OPCODE_EXPIRETIME    253        //秒级别过期时间
-#define RDB_OPCODE_SELECTDB      254        //数据库序号，即第4项
-#define RDB_OPCODE_EOF           255        //结束标志，即第8项
-</code></pre>
-
-<p>带opcodes 的RDB 结构表显形式</p>
-
-<p><figure><img src="media/15942163464303/15942254144953.jpg" alt=""/></figure></p>
-
-<p>下面我们看下 键值对的结构，如下图所示<br/>
-<figure><img src="media/15942163464303/15942257282611.jpg" alt=""/></figure></p>
-
-<ul>
-<li>EXPIRE_TIME: 可选。根据具体的键是否有过期时间决定，该字段固定为8个字节。</li>
-<li>LRU或者LFU：可选。根据配置的内存淘汰算法决定。LRU算法保存秒级别的时间戳，LFU算法只保存counter的计数（0～255，1 字节）</li>
-<li><p>VALUE_TYPE：值类型。Redis数据类型和底层编码结构<br/>
-<figure><img src="media/15942163464303/15942258850154.jpg" alt=""/></figure></p></li>
-<li><p>KEY：键。键保存为字符串，下文会详细介绍字符串的保存形式。</p></li>
-<li><p>VALUE：值。值根据数据类型和编码结构保存为不同的形式</p></li>
-</ul>
-
-<h3 id="toc_2">RDB键的保存形式</h3>
-
-<p>redis中键都是字符串，比较常见的保存方法如下图所示：<br/>
-<figure><img src="media/15942163464303/15943123637192.jpg" alt=""/></figure></p>
-
-<p>前边LENGTH字段表示字符串长度，后边STRING即具体的字符串内容。</p>
-
-<p>Redis中的LENGTH是个变长字段，通过首字节能够知道LENGTH字段有多长，然后读取LENGTH字段可以知道具体的STRING长度。LENGTH字段类型如下:</p>
-
-<pre><code class="language-shell">00xxxxxx   #表示LENGTH字段占用1个字节，STRING的长度保存在后6个比特中，最长为63。
-01xxxxxx xxxxxxxx  #表示LENGTH字段占用2个字节，而STRING的长度保存在后14个字节中，最长为16383 
-10000000 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  表示LENGTH字段共占用5个字节，正好是一个无符号整型，STRING的长度最长为UINT32_MAX。 
-10000001 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx #如果STRING长度大于UINT32_MAX，则首字节表示为10000001，LENGTH字段共占用9个字节。后8字节表示实际长度，为一个LONG类型。
-</code></pre>
-
-<p>RDB中对字符串的保存还有两种优化形式：</p>
-
-<ul>
-<li><p>一种是尝试将字符串按整型保存<br/>
-<figure><img src="media/15942163464303/15943127989186.jpg" alt="字符串按整型保存"/><figcaption>字符串按整型保存</figcaption></figure> </p>
-<p>TYPE字段其实类似图20-5中的LENGTH字段，LENGTH字段首字节头两个比特取值为00、01、10这种类型，TYPE字段首字节头两个比特取值为11，后6个比特表明存储的整型类型，如下所示：</p>
-<pre><code class="language-text">11000000 xxxxxxxx  INT8   取值范围[-128,127] 
-11000001 xxxxxxxx xxxxxxxx INT16 取值范围[-32768,32767] <br/>
-11000010 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  INT32 取值范围[-2147483648 ,  2147483647] 
-</code></pre></li>
-<li><p>一种是通过将字符串进行LZF压缩之后保存。<br/>
-<figure><img src="media/15942163464303/15943130001731.jpg" alt="RDB LZF保存形式"/><figcaption>RDB LZF保存形式</figcaption></figure></p>
-<p>TYPE首字节头两个比特仍然为11，后六个比特是000011。COMPRESS_LEN表明压缩之后的长度，该字段保存形式同图20-5中LENGTH字段的保存。LZF还保存了一个ORIGINAL_LEN字段，该字段记录压缩之前原始字符串的长度，保存形式也与图20-5中LENGTH字段的保存相同。最后一个DATA字段保存具体的LZF压缩之后的数据，数据长度从COMPRESS_LEN字段取得。</p></li>
-</ul>
-
-<h3 id="toc_3">RDB 值保存形式</h3>
-
-<p>值类型有如下图所示：<br/>
-<figure><img src="media/15942163464303/15943894568628.jpg" alt=""/></figure></p>
-
-<p>其中字符串类型的保存于 上面的《键的保存形式》相同，其余几种值的保存形式各不相同</p>
-
-<h4 id="toc_4">列表类型的保存</h4>
-
-<p>列表在Redis中编码为 quicklist结构，从整体看是一个双向链表，但链表的每个节点在Redis中编码为zipList结构，ziplist结构在一块连续的内存中保存，并且保存时可以选择进行LZF压缩或者不压缩。据此，RDB 保存列表类型的结构如图所示：</p>
-
-<p>ziplist未压缩<br/>
-<figure><img src="media/15942163464303/15943897652665.jpg" alt=""/></figure></p>
-
-<p>ziplist压缩：</p>
-
-<p><figure><img src="media/15942163464303/15943898009527.jpg" alt=""/></figure></p>
-
-<p>如果ziplist未压缩，每个ziplist按照字符串保存，如果ziplist进行了压缩，则按照下图方式进行保存<br/>
-<figure><img src="media/15942163464303/15943899607716.jpg" alt="" style="width:544px;"/></figure></p>
-
-<h4 id="toc_5">集合类型的保存</h4>
-
-<p>集合类型在Redis中有两种编码方式：一种为intset，另一种为Hash。<br/>
-intset在Redis中也是一块连续的内存，所以intset的保存比较简单，直接将intset按字符串保存。</p>
-
-<p>如果编码为Hash，保存结构如下图所示：<br/>
-<figure><img src="media/15942163464303/15943908892309.jpg" alt=""/></figure><br/>
-第一个字段为字典的大小，接下来逐字段保存字典的键。为什么只保存键呢？其实集合类型使用散列表保存时只使用了键，所有的值都保存为NULL，所以此处只需要保存散列表的键。</p>
-
-<h4 id="toc_6">有序集合类型的保存</h4>
-
-<p>有序集合类型在Redis中也有两种编码方式：一种为ziplist，另一种为skiplist。如果编码为ziplist，即将ziplist整体作为一个字符串保存。所以我们重点看编码为skiplist的保存方式</p>
-
-<p><figure><img src="media/15942163464303/15943913158909.jpg" alt=""/></figure><br/>
-第一个字段为skiplist包含的元素个数，接着分别按元素和元素的分值依次保存。元素保存为字符串，元素分值保存为一个双精度浮点数类型（固定为8个字节）</p>
-
-<h4 id="toc_7">散列类型的保存</h4>
-
-<p>散列类型也有两种编码方式：一种为ziplist，一种为Hash。ziplist 编码方式的保存同有序集合。重点看散列类型按Hash编码时的保存方式。<br/>
-<figure><img src="media/15942163464303/15943913962043.jpg" alt=""/></figure><br/>
-第一个字段为散列表的大小，然后依次保存键值对，键值都保存为字符串类型。</p>
-
-<h4 id="toc_8">Stream类型的保存</h4>
-
-<p>Stream保存为RDB文件时整体格式如图所示：<br/>
-<figure><img src="media/15942163464303/15943914536802.jpg" alt=""/></figure><br/>
-其中具体的结构体介绍，如listpack，消费组等的介绍参考<a href="15938782048225.html">六、Redis 数据流 stream </a>。其中保存消费组的PEL时并没有保存相关消费者的信息，而是在加载完消费者之后，从消费者的PEL中查找并更新消费组PEL的相关信息。</p>
-
-<h3 id="toc_9">RDB 实例</h3>
-
-<p>我们查看一下空的 redis 库是怎样的</p>
-
-<pre><code class="language-text">127.0.0.1:6379&gt;flushall
-ok
-127.0.0.1:6379&gt;bgsave
-Background saving started
-</code></pre>
-
-<pre><code class="language-text">➜  redis xxd dump.rdb
-00000000: 5245 4449 5330 3030 39fa 0972 6564 6973  REDIS0009..redis
-00000010: 2d76 6572 0535 2e30 2e38 fa0a 7265 6469  -ver.5.0.8..redi
-00000020: 732d 6269 7473 c040 fa05 6374 696d 65c2  s-bits.@..ctime.
-00000030: 1a45 075f fa08 7573 6564 2d6d 656d c210  .E._..used-mem..
-00000040: 0910 00fa 0c61 6f66 2d70 7265 616d 626c  .....aof-preambl
-00000050: 65c0 00ff fe39 f4d9 2732 2a22            e....9..&#39;2*&quot;
-➜  redis od -cx dump.rdb
-0000000    R   E   D   I   S   0   0   0   9 372  \t   r   e   d   i   s
-             4552    4944    3053    3030    fa39    7209    6465    7369
-0000020    -   v   e   r 005   5   .   0   .   8 372  \n   r   e   d   i
-             762d    7265    3505    302e    382e    0afa    6572    6964
-0000040    s   -   b   i   t   s 300   @ 372 005   c   t   i   m   e 032
-             2d73    6962    7374    40c0    05fa    7463    6d69    c265
-0000060  032   E  \a   _ 372  \b   u   s   e   d   -   m   e   m 302 020
-             451a    5f07    08fa    7375    6465    6d2d    6d65    10c2
-0000100   \t 020  \0 372  \f   a   o   f   -   p   r   e   a   m   b   l
-             1009    fa00    610c    666f    702d    6572    6d61    6c62
-0000120    e 300  \0 377 376   9 364 331   &#39;   2   *   &quot;
-             c065    ff00    39fe    d9f4    3227    222a
-0000134
-</code></pre>
-
-<ul>
-<li>RDB 文件用于保存和还原Redis服务器所有的数据库中的所有的键值对数据</li>
-<li>save命令有服务器进行直接执行保存操作，但是会阻塞服务器</li>
-<li>bgsave由紫禁城执行保存操作，不会阻塞服务器</li>
-<li>服务器状态中会保存所有用save选项设置的保存条件，当人以一个保存条件被满足时，服务器会自动执行 bgsave 命令</li>
-<li>RDB 文件是一个经过压缩的二进制文件，由多个部分组成</li>
-<li>对于不同类型的键值对，RDB文件会使用不同的方式来保存它们。</li>
-</ul>
 
 ]]></content>
   </entry>

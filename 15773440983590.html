@@ -730,9 +730,18 @@ Java stack information for the threads listed above:
 Found 1 deadlock.
 </code></pre>
 
-<h2 id="toc_17">可视化工具</h2>
+<h3 id="toc_17">jhsdb 基于服务性代理的调试工具</h3>
 
-<h3 id="toc_18">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
+<p>JDK9及以上版本中提供了JCMD和JHSDB两个集成式的多功能工具箱，它们不仅整合了上一节介绍到的所有基础工具所能提供的专项功能，而且由于有着“后发优势”，能够做得往往比之前的老工具们更好、更强大</p>
+
+<p><figure><img src="media/15773440983590/15976856213870.jpg" alt="JCMD、JHSDB和基础工具的对比"/><figcaption>JCMD、JHSDB和基础工具的对比</figcaption></figure></p>
+
+<p>使用以下命令进入JHSDB的图形化模式:<br/>
+jhsdb hsdb --pid 29087</p>
+
+<h2 id="toc_18">可视化工具</h2>
+
+<h3 id="toc_19">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
 
 <p>JMX 是一个为应用程序、设备、系统等植入管理功能的框架。</p>
 
@@ -743,7 +752,7 @@ Found 1 deadlock.
 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
 </code></pre>
 
-<h3 id="toc_19">Jconsole</h3>
+<h3 id="toc_20">Jconsole</h3>
 
 <p><figure><img src="media/15773440983590/15976826355683.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976826842222.jpg" alt=""/></figure><br/>
@@ -751,7 +760,7 @@ Found 1 deadlock.
 <figure><img src="media/15773440983590/15976827131457.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976827354222.jpg" alt=""/></figure></p>
 
-<h3 id="toc_20">visualvm</h3>
+<h3 id="toc_21">visualvm</h3>
 
 <p><figure><img src="media/15773440983590/15976829051342.jpg" alt=""/></figure></p>
 
@@ -760,124 +769,6 @@ Found 1 deadlock.
 <p><figure><img src="media/15773440983590/15976828463285.jpg" alt=""/></figure></p>
 
 <p><figure><img src="media/15773440983590/15976828688260.jpg" alt=""/></figure></p>
-
-<h2 id="toc_21">Arthas</h2>
-
-<p>Arthas 是 Alibaba 开源的 Java 诊断工具,在线排查问题，无需重启；动态跟踪Java代码；实时监控JVM状态。</p>
-
-<p><a href="https://alibaba.github.io/arthas/">官方文档参考</a><br/>
-<a href="https://arthas.aliyun.com/doc/quick-start.html">快速入门</a></p>
-
-<h3 id="toc_22">下载和安装</h3>
-
-<p>不需要安装，就是一个 jar 包</p>
-
-<pre><code class="language-text">curl -O https://alibaba.github.io/arthas/arthas-boot.jar 
-
-java -jar arthas-boot.jar
-</code></pre>
-
-<p>启动 arthas 的 jar 包是 arthas-boot.jar</p>
-
-<p>直接 java -jar arthas-boot.jar。选择 attach 的进程绑定<br/>
-<figure><img src="media/15773440983590/15976833500370.jpg" alt=""/></figure></p>
-
-<p>输入help查看 arthas 支持的命令</p>
-
-<pre><code class="language-text">[arthas@29087]$ help
- NAME         DESCRIPTION
- help         Display Arthas Help
- keymap       Display all the available keymap for the specified connection.
- sc           Search all the classes loaded by JVM
- sm           Search the method of classes loaded by JVM
- classloader  Show classloader info
- jad          Decompile class
- getstatic    Show the static field of a class
- monitor      Monitor method execution statistics, e.g. total/success/failure count, average rt, fail rate, etc.
- stack        Display the stack trace for the specified class and method
- thread       Display thread info, thread stack
- trace        Trace the execution time of specified method invocation.
- watch        Display the input/output parameter, return object, and thrown exception of specified method invocation
- tt           Time Tunnel
- jvm          Display the target JVM information
- perfcounter  Display the perf counter infornation.
- ognl         Execute ognl expression.
- mc           Memory compiler, compiles java files into bytecode and class files in memory.
- redefine     Redefine classes. @see Instrumentation#redefineClasses(ClassDefinition...)
- dashboard    Overview of target jvm&#39;s thread, memory, gc, vm, tomcat info.
- dump         Dump class byte array from JVM
- heapdump     Heap dump
- options      View and change various Arthas options
- cls          Clear the screen
- reset        Reset all the enhanced classes
- version      Display Arthas version
- session      Display current session information
- sysprop      Display, and change the system properties.
- sysenv       Display the system env.
- vmoption     Display, and update the vm diagnostic options.
- logger       Print logger info, and update the logger level
- history      Display command history
- cat          Concatenate and print files
- echo         write arguments to the standard output
- pwd          Return working directory name
- mbean        Display the mbean information
- grep         grep command for pipes.
- tee          tee command for pipes.
- profiler     Async Profiler. https://github.com/jvm-profiling-tools/async-profiler
- stop         Stop/Shutdown Arthas server and exit the console.
-</code></pre>
-
-<h3 id="toc_23">dashboard</h3>
-
-<p><figure><img src="media/15773440983590/15976836704891.jpg" alt="" style="width:1891px;"/></figure></p>
-
-<h3 id="toc_24">thread</h3>
-
-<p>这个命令和 jstack 很相似，但是功能更加强大，主要是查看当前 JVM 的线程堆栈信息 同时可以结合使用 thread –b 来进行死锁的排查死锁。<br/>
-参数解释:</p>
-
-<pre><code class="language-text">-n 指定最忙的前 n 个线程并打印堆栈
--b 找出阻塞当前线程的线程
--i 指定 cpu 占比统计的采样间隔，单位为毫秒
-</code></pre>
-
-<pre><code class="language-text">[arthas@29087]$ thread -b
-&quot;Thread-0&quot; Id=11 BLOCKED on java.lang.Object@602bace6 owned by &quot;Thread-1&quot; Id=12
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
-    -  blocked on java.lang.Object@602bace6
-    -  locked java.lang.Object@12487489 &lt;---- but blocks 1 other threads!
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
-    at java.lang.Thread.run(Thread.java:745)
-</code></pre>
-
-<p>thread -i 1000 -n 3 每过 1000 毫秒进行采样，显示最占 CPU 时间的前 3 个线程</p>
-
-<p>thread --state WAITING 查看处于等待状态的线程</p>
-
-<h3 id="toc_25">jvm</h3>
-
-<p>查看jvm信息<br/>
-<figure><img src="media/15773440983590/15976840064874.jpg" alt=""/></figure></p>
-
-<h3 id="toc_26">jad 反编译指定已加载类的源码</h3>
-
-<p><figure><img src="media/15773440983590/15976841522972.jpg" alt="" style="width:1293px;"/></figure></p>
-
-<h3 id="toc_27">trace</h3>
-
-<p>使用 trace 命令可以跟踪统计方法耗时。</p>
-
-<p>例如：trace com.goddess.base.controller.UserController get</p>
-
-<h3 id="toc_28">monitor</h3>
-
-<p>每 5 秒统计一次 com.goddess.base.controller.UserController 类的 get 方法执行情况</p>
-
-<p>monitor -c 5 com.goddess.base.controller.UserController get</p>
-
-<h3 id="toc_29">watch</h3>
-
-<p>让你能方便的观察到指定方法的调用情况。能观察到的范围为：返回值、抛出异常、入参，通过编写 OGNL 表达式进行对应变量的查看。</p>
 
                   </article>
                   <div class="comments-wrap">
