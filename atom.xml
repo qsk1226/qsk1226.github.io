@@ -4,13 +4,36 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-08-20T00:03:46+08:00</updated>
+  <updated>2020-08-25T21:00:46+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[线程]]></title>
+    <link href="http://www.throne4j.com/15981846149666.html"/>
+    <updated>2020-08-23T20:10:14+08:00</updated>
+    <id>http://www.throne4j.com/15981846149666.html</id>
+    <content type="html"><![CDATA[
+<p>java 线程的本质--Thread--jvm--os</p>
+
+<p>java 线程模型</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[幂等方案]]></title>
+    <link href="http://www.throne4j.com/15979251824377.html"/>
+    <updated>2020-08-20T20:06:22+08:00</updated>
+    <id>http://www.throne4j.com/15979251824377.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Arthas]]></title>
@@ -527,6 +550,114 @@ I/O sum[0]:cur[0], unzip sum[0]:cur[0]
     <updated>2020-08-02T00:07:07+08:00</updated>
     <id>http://www.throne4j.com/15962980278783.html</id>
     <content type="html"><![CDATA[
+<h2 id="toc_0">gc优化</h2>
+
+<p>首先把优化策略发出来：</p>
+
+<ul>
+<li><p>新生代大小选择</p>
+<ul>
+<li>响应时间优先的应用:尽可能设大,直到接近系统的最低响应时间限制(根据实际情况选择)。在此种情况下,新生代收集发生的频率也是最小的。同时,减少到达老年代的对象。</li>
+<li>吞吐量优先的应用:尽可能的设置大,可能到达 Gbit 的程度.因为对响应时间没有要求,垃圾收集可以并行进行,一般适合 8CPU 以上的应用。</li>
+<li>避免设置过小.当新生代设置过小时会导致:1.MinorGC 次数更加频繁 2.可能导致 MinorGC 对象直接进入老年代,如果此时老年代满了,会触发FullGC. </li>
+</ul></li>
+<li><p>老年代大小选择</p>
+<ul>
+<li>响应时间优先的应用:老年代使用并发收集器,所以其大小需要小心设置,一般要考虑并发会话率和会话持续时间等一些参数.如果堆设置小了,可能会造成内存碎片,高回收频率以及应用暂停而使用传统的标记清除方式; 如果堆大了,则需要较长的收集时间。<br/>
+最优化的方案,一般需要参考以下数据获得:并发垃圾收集信息、持久代并发收集次数、传统 GC 信息、花在新生代和老年代回收上的时间比例。</li>
+<li>吞吐量优先的应用:一般吞吐量优先的应用都有一个很大的新生代和一个较小的老年代.原因是,这样可以尽可能回收掉大部分短期对象,减少中期的对象,而 老年代尽存放长期存活对象。</li>
+</ul></li>
+</ul>
+
+<h3 id="toc_1">gc性能指标</h3>
+
+<ul>
+<li><p>吞吐量:这里的衡量吞吐量是指应用程序所花费的时间和系统总运行时间的比值。<br/>
+我们可以按照这个公式来计算 GC 的吞吐量:系统总运行时间 = 应用程序耗时 +GC 耗时。如果系统运行了 100 分钟，GC 耗时 1 分钟，则系统吞吐量为 99%。GC 的吞吐量一般不能低于 95%。</p></li>
+<li><p>停顿时间: 指垃圾回收器正在运行时，应用程序的暂停时间。<br/>
+对于串行回收器而言，停顿时间可能会比较长;而使用并发回收器，由于垃圾收集器和应用程序交替 运行，程序的停顿时间就会变短，但其效率很可能不如独占垃圾收集器，系统的吞吐量也很可能会降低。</p></li>
+<li><p>垃圾回收频率: 通常垃圾回收的频率越低越好，增大堆内存空间可以有效降低垃圾回收发生的频率，但同时也意味着堆积的回收对象越多，最终也会增加回收时的停顿 时间。所以我们需要适当地增大堆内存空间，保证正常的垃圾回收频率即可。</p></li>
+</ul>
+
+<h3 id="toc_2">GC 调优策略</h3>
+
+<h4 id="toc_3">降低 Minor GC 频率</h4>
+
+<p>由于新生代空间较小，Eden 区很快被填满，就会导致频繁 Minor GC，因此我们可以通过增大新生代空间来降低 Minor GC 的频率。 单次 Minor GC 时间是由两部分组成:T1(扫描新生代)和 T2(复制存活对象)。</p>
+
+<p>情况 1: 假设一个对象在 Eden 区的存活时间为 500ms，Minor GC 的时间间隔是 300ms，因为这个对象存活时间 &gt; 间隔时间，那么正常情况下，Minor GC 的时间为 :T1+T2。</p>
+
+<p>情况 2:当我们增大新生代空间，Minor GC 的时间间隔可能会扩大到 600ms，此时一个存活 500ms 的对象就会在 Eden 区中被回收掉，此时就不 存在复制存活对象了，所以再发生 Minor GC 的时间为:即 <code>T1*2(空间大了)+T2*0</code><br/>
+可见，扩容后，Minor GC 时增加了 T1，但省去了 T2 的时间。</p>
+
+<p>在 JVM 中，复制对象的成本要远高于扫描成本。如果在堆内存中存在较多的长期存活的对象，此时增加年轻代空间，反而会增加 Minor GC 的时间。如 果堆中的短期对象很多，那么扩容新生代，单次 Minor GC 时间不会显著增加。因此，单次 Minor GC 时间更多取决于 GC 后存活对象的数量，而非 Eden 区的大小。</p>
+
+<h4 id="toc_4">降低 Full GC 的频率</h4>
+
+<p>由于堆内存空间不足或老年代对象太多，会触发 Full GC，频繁的 Full GC 会带来上下文切换，增加系统的性能开销。 </p>
+
+<p>减少创建大对象: 在平常的业务场景中，我们一次性从数据库中查询出一个大对象用于 web 端显示。比如，一次性查询出 60 个字段的业务操作，这种大对象如果超过年轻代最大对象阈值，会被直接创建在老年代; 即使被创建在了年轻代，由于年轻代的内存空间有限，通过 Minor GC 之后也会进入到老年代。</p>
+
+<p>这种大对象很容易产生较多的 Full GC。 增大堆内存空间:在堆内存不足的情况下，增大堆内存空间，且设置初始化堆内存为最大堆内存，也可以降低 Full GC 的频率。</p>
+
+<h2 id="toc_5">预调优</h2>
+
+<ul>
+<li>GC 频率： 高频的 FullGC 会给系统带来非常大的性能消耗，虽然 MinorGC 相对 FullGC 来说好了许多，但过多的 MinorGC 仍会给系统带来压力</li>
+<li>内存： 这里的内存指的是堆内存大小，堆内存又分为年轻代内存和老年代内存。堆内存不足，会增加 MinorGC ，影响系统性能。</li>
+<li>吞吐量： 频繁的 GC 将会引起线程的上下文切换，增加系统的性能开销，从而影响每次处理的线程请求，最终导致系统的吞吐量下降。</li>
+<li>延迟： JVM 的 GC 持续时间也会影响到每次请求的响应时间</li>
+</ul>
+
+<pre><code class="language-text">&gt; ab -c 10 -n 100 url
+
+....
+
+Server Software:        BWS/1.1
+Server Hostname:        www.baidu.com
+Server Port:            443
+SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES128-GCM-SHA256,2048,128
+Server Temp Key:        ECDH P-256 256 bits
+TLS Server Name:        www.baidu.com
+
+Document Path:          /
+Document Length:        227 bytes
+
+Concurrency Level:      100
+Time taken for tests:   0.849 seconds
+Complete requests:      100
+Failed requests:        0
+Total transferred:      108197 bytes
+HTML transferred:       22700 bytes
+Requests per second:    117.76 [#/sec] (mean)
+Time per request:       849.153 [ms] (mean)
+Time per request:       8.492 [ms] (mean, across all concurrent requests)
+Transfer rate:          124.43 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       62  541 150.3    662     666
+Processing:    15  148 120.4     61     295
+Waiting:       11  146 118.8     61     291
+Total:         76  689  66.5    704     773
+
+Percentage of the requests served within a certain time (ms)
+  50%    704
+  66%    710
+  75%    714
+  80%    716
+  90%    723
+  95%    725
+  98%    731
+  99%    773
+ 100%    773 (longest request)
+</code></pre>
+
+<p>性能指标：</p>
+
+<p>吞吐量<br/>
+平均处理时间<br/>
+gc耗时</p>
 
 ]]></content>
   </entry>
@@ -3702,335 +3833,6 @@ long long second_replid_offset;
 <p>当从服务器支持eof 功能时 主服务器可以直接将数据库中数据以RDB协议格式通过socket发送给从服务器，免去了本地磁盘文件不必要的读写操作；</p>
 
 <p>通过配置参数repl-diskless-sync进行设置完整同步是生成RDB文件持久化到磁盘发送还是直接通过socket进行发送，默认为0；即默认情况下，主服务器都是先持久化数据到本地文件，再将该文件发送给从服务器。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[九、Redis 持久化--AOF（二）]]></title>
-    <link href="http://www.throne4j.com/15943917797824.html"/>
-    <updated>2020-07-10T22:36:19+08:00</updated>
-    <id>http://www.throne4j.com/15943917797824.html</id>
-    <content type="html"><![CDATA[
-<p>AOF是Redis的另外一种持久化方式。简单来说，AOF就是将Redis服务端执行过的每一条命令都保存到一个文件，这样当Redis重启时只要按顺序回放这些命令就会恢复到原始状态。</p>
-
-<hr/>
-
-<p><strong>问</strong>：既然已经有了RDB为什么还需要AOF呢？</p>
-
-<p>答：RDB保存的是一个时间点的快照，那么如果Redis出现了故障，丢失的就是从最后一次RDB执行的时间点到故障发生的时间间隔之内产生的数据。如果Redis数据量很大，QPS很高，那么执行一次RDB需要的时间会相应增加，发生故障时丢失的数据也会增多。</p>
-
-<p>而AOF保存的是一条条命令，理论上可以做到发生故障时只丢失一条命令。但由于操作系统中执行写文件操作代价很大，Redis提供了配置参数，通过对安全性和性能的折中，我们可以设置不同的策略。</p>
-
-<hr/>
-
-<p><strong>问</strong>：既然AOF数据安全性更高，是否可以只使用AOF呢？为什么Redis推荐RDB和AOF同时开启呢？</p>
-
-<p>答：RDB保存的是最终的数据，是一个最终状态，而AOF保存的是达到这个最终状态的过程。很明显，如果Redis有大量的修改操作，RDB中一个数据的最终态可能会需要大量的命令才能达到，这会造成AOF文件过大并且加载时速度过慢（Redis提供了一种AOF重写的策略来解决上述问题，后文会详细描述其实现原理）。</p>
-
-<p>再来考虑一下AOF和RDB文件的加载过程。RDB只需要把相应数据加载到内存并生成相应的数据结构（有些结构如intset、ziplist，保存时直接按字符串保存，所以加载时速度会更快），而AOF文件的加载需要先创建一个伪客户端，然后把命令一条条发送给Redis服务端，服务端再完整执行一遍相应的命令。根据Redis作者做的测试，RDB 10s～20s能加载1GB的文件，AOF的速度是RDB速度的一半（如果做了AOF重写会加快）。因为AOF和RDB各有优缺点，因此Redis一般会同时开启AOF和RDB。</p>
-
-<hr/>
-
-<p>但假设线上同时配置了RDB和AOF，那么会带来如下的两难选择：重启时如果优先加载RDB，加载速度更快，但是数据不是很全；如果优先加载AOF，加载速度会变慢，但是数据会比RDB中的要完整。</p>
-
-<p>能不能结合这两者的优点呢？答案是AOF和RDB的混合持久化方案，</p>
-
-<hr/>
-
-<h2 id="toc_0">1、AOF的执行流程</h2>
-
-<p>先介绍Redis服务端执行命令时如何同步到AOF文件以及AOF文件的格式，然后介绍Redis不同的配置对性能和安全性的影响。</p>
-
-<h3 id="toc_1">1.1、AOF命令同步</h3>
-
-<p>通过《<a href="15934396305281.html">三、redis命令处理生命周期</a> 》的执行流程，我们看到每一条命令的执行都会processCommand命令，processCommand命令的执行都会调用 call 函数，AOF命令的同步就是在 call命令中实现的。</p>
-
-<p><figure><img src="media/15943917797824/15943937599696.jpg" alt="AOF命令同步"/><figcaption>AOF命令同步</figcaption></figure></p>
-
-<p>如果开启了AOF，则每条命令执行完毕后都会同步写入aof_buf 中，aof_buf是个全局的SDS类型的缓冲区。</p>
-
-<p>那么命令是按什么格式写入缓冲区中的呢？</p>
-
-<p>Redis通过catAppendOnlyGenericCommand函数将命令转换为保存在缓冲区中的数据结构，</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; SET redis-key value1
-# 保存在缓冲区中的格式
-*3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
-</code></pre>
-
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
-
-<p>那么命令写入缓冲区后何时同步到文件中呢？</p>
-
-<h3 id="toc_2">1.2、AOF文件写入</h3>
-
-<p>为了提高文件的写入效率,在现代操作系中,当用户调用 write函数,将一些数据写入到文件的时候,操作系统通常会将写入数据暂时保存在一个内存冲区里面, 等到缓冲区的空间被填满、或者超过了指定的时限之后,才真正地将缓冲区中的数据写入到磁盘里面。</p>
-
-<p>这种做法虽然提高了效率,但也为写入数据带来了安全问题,因为如果计算机发生停机,那么保存在内存缓冲区里面的写入数据将会丢失。<br/>
-为此,系统提供了 fsync和 fdatasync两个同步函数,它们可以强制让操作系统立即将缓冲区中的数据写入到项盘里面,从而确保写入数据的安全性。</p>
-
-<p>AOF持久化最终需要将缓冲区中的内容写入一个文件，写文件通过操作系统提供的write函数执行。但是write之后数据只是保存在kernel的缓冲区中，真正写入磁盘还需要调用 fsync 函数。fsync是一个阻塞并且缓慢的操作，所以Redis通过appendfsync配置控制执行fsync 的频次。具体有如下3种模式：</p>
-
-<ul>
-<li>no ：不执行fsync，将aof_buf 缓冲区中的所有内容写入到AOF文件，但不对AOF文件进行同步，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</li>
-<li>always：每执行一次写入就会执行一次fsync。数据安全性最高但会导致Redis性能降低。</li>
-<li>everysec： 每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡。</li>
-</ul>
-
-<p>生产环境一般配置为appendfsync everysec，即每秒执行一次fsync 操作。</p>
-
-<h3 id="toc_3">1.3、AOF 重写</h3>
-
-<p>随着Redis服务的运行，AOF文件会越来越大，并且当Redis服务有大量的修改操作时，对同一个键可能有成百上千条执行命令。AOF 重写通过fork出一个子进程来执行，重写不会对原有文件进行任何修改和读取，子进程对所有数据库中所有的键各自生成一条相应的执行命令，最后将重写开始后父进程继续执行的命令进行回放，生成一个新的AOF文件。</p>
-
-<p>示例如下：</p>
-
-<pre><code class="language-shell">127.0.0.1:6379&gt; rpush list 1 2 3         //list中增加1,2,3三个元素
-(integer)3 
-127.0.0.1:6379&gt; rpush list 4             //list中增加4 
-(integer)4 
-127.0.0.1:6379&gt; rpush list 5         //list中增加5
-(integer)5 
-127.0.0.1:6379&gt; lpop list            //弹出第一个元素
-&quot;1&quot;
-</code></pre>
-
-<p>AOF重写就是直接按当前list中的内容写为“rpush list 2345”。4条命令变为了一条命令，既可以减小文件大小，又可以提高加载速度。</p>
-
-<h3 id="toc_4">1.4、AOF重写触发方式</h3>
-
-<p>AOF重写有两种触发方式：一种为通过配置自动触发，一种为手动执行bgrewriteaof命令显式触发。</p>
-
-<ul>
-<li><p>看自动触发方式，做如下配置：</p>
-<pre><code class="language-text">auto-aof-rewrite-percentage 100 
-auto-aof-rewrite-min-size 64mb
-</code></pre>
-<p>当AOF文件大于64MB时，并且AOF文件当前大小比基准大小增长了100%时会触发一次AOF重写。那么基准大小如何确定呢？起始的基准大小为Redis重启并加载完AOF文件之后，aof_buf的大小。当执行完一次AOF重写之后，基准大小相应更新为重写之后AOF文件的大小。当做了如上配置之后， Redis服务器会根据配置自动触发AOF重写。</p></li>
-<li><p>手动触发AOF<br/>
-下面我们看下手动触发AOF重写，即通过AOF客户端输入 bgrewriteaof 之后的执行流程。 </p></li>
-</ul>
-
-<p><figure><img src="media/15943917797824/15945412157461.jpg" alt="" style="width:1273px;"/></figure></p>
-
-<p>子进程执行重写时可能会有成千上万条命令继续在父进程中执行，那么如何保证重写完成后的文件也包括这些命令呢？</p>
-
-<p>首先需要在父进程中将重写过程中执行的命令进行保存，其次需要将这些命令在重写后的文件中进行回放。</p>
-
-<p>Redis为了尽量减少主进程的阻塞时间，通过管道按批次将父进程累积的命令发送给子进程，由子进程重写完成后进行回放。</p>
-
-<p>那么如何通过管道同步给子进程呢？分析下下图<br/>
-<figure><img src="media/15943917797824/15945418134506.jpg" alt=""/></figure></p>
-
-<p>父进程在fork之前会建立3对管道：fd0/fd1、fd2/fd3、fd4/fd5，它们各自配对执行。父进程通过fd1将执行aof重写时累积的命令发送给子进程，子进程通过fd0进行接收并保存。当子进程执行完重写之后，向fd3写入一个“！”号通知父进程不需要继续通过管道发送累积命令，父进程通过fd2接收到“！”号之后向fd5也写入一个“！”号进行确认。子进程通过fd4同步阻塞接收到“！”号后才可进行后续的退出操作。退出时首先会将接收到的累积命令进行回放，然后执行fsync。</p>
-
-<h3 id="toc_5">1.5、混合持久化</h3>
-
-<p>混合持久化指进行AOF重写时子进程将当前时间点的数据快照保存为RDB文件格式，而后将父进程累积命令保存为AOF格式。最终形成 RDB file和 AOF file共存的保存形式。</p>
-
-<p>加载时，首先会识别AOF文件是否以REDIS字符串开头，如果是，就按RDB格式加载，加载完RDB后继续按AOF格式加载剩余部分。</p>
-
-<p>是否开启混合持久化由如下配置设置</p>
-
-<pre><code class="language-text">aof-use-rdb-preamble yes
-</code></pre>
-
-<h3 id="toc_6">总结</h3>
-
-<ul>
-<li>AOF文件通过保存所有修改数据库的写命令来记录服务器的数据库状态</li>
-<li>AOF文件中的所有命令都以Redis命令请求协议的格式保存</li>
-<li>命令请求会先保存到AOF缓冲区里面，之后再定期写入并同步到AOF文件</li>
-<li>appendfsync选项的不同值对AOF持久化功能的安全性以及 Redis服务器的性能有很大的影响</li>
-<li>服务器只要载入并重新执行保存在 AOF文件中的命令，就可以还原数据库本来的状态</li>
-<li>AOF重写可以产生一个新的 AOF文件，这个新的 AOF文件和原有的AOF文件保存的数据库状态一样，但体积更小</li>
-<li>AOF重写功能是通过读取数据库中的键值对来实现的，程序无需对现有的AOF文件进行任何读入、分析或者写入操作</li>
-<li>执行 bgrewriteaof命令的时候，redis 服务器会维护一个AOF重写缓冲区,该缓冲区会在子进程创建新的 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新AOF文件工作之后，服务器会将重写缓冲区中的所有内容追加到 新AOF文件的末尾，使新旧两个AOF文件所保存的数据库状态一致。最后，服务器使用新的 AOF 文件替换旧的AOF文件，来完成AOF文件的重写操作。</li>
-</ul>
-
-<hr/>
-
-<h2 id="toc_7">2、RDB 与 AOF 相关配置指令</h2>
-
-<table>
-<thead>
-<tr>
-<th>配置项</th>
-<th>可选值</th>
-<th>功能</th>
-<th>作用</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>save</td>
-<td><code>&lt;secondes&gt; &lt;changes&gt;</code> 默认：save 900 1、save 300 10、save 60 10000</td>
-<td>RDB</td>
-<td>自动触发配置</td>
-</tr>
-<tr>
-<td>stop-writes-on-bgsave-error</td>
-<td>yes/no(默认yes)</td>
-<td>RBD</td>
-<td>开启该参数后，如果开启了RDB 快照（即配置了save指令），并且最近一次快照执行失败，则Redis 将停止接收写相关的请求。</td>
-</tr>
-<tr>
-<td>rdbcompression</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>执行RDB快照时是否将 string类型的数据进行LZF压缩。</td>
-</tr>
-<tr>
-<td>rdbchecksum</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>是否开启RDB文件内容的校验</td>
-</tr>
-<tr>
-<td>dbfilename</td>
-<td>文件名称(默认 dump.rdb)</td>
-<td>RDB</td>
-<td>RDB文件名称</td>
-</tr>
-<tr>
-<td>dir</td>
-<td>文件路径(默认./)</td>
-<td>RDB</td>
-<td>RDB和AOF文件存放路径</td>
-</tr>
-<tr>
-<td>rdb-save-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>RDB</td>
-<td>开启该参数后，生成RDB文件时每产生32MB数据就执行一次fsync。</td>
-</tr>
-<tr>
-<td>appendonly</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>是否开启 AOF 功能</td>
-</tr>
-<tr>
-<td>appendfilename</td>
-<td>文件名称(默认 appendonly.aof)</td>
-<td>AOF</td>
-<td>AOF 文件名称</td>
-</tr>
-<tr>
-<td>appendfsync</td>
-<td>always/everysec/no (默认 everysec)</td>
-<td>AOF</td>
-<td>fsync执行频次,always：将aof_buf缓冲区中的所有内容写入并同步到AOF文件；everysec:每1秒执行一次fsync操作。属于折中方案，在数据安全性和性能之间达到一个平衡;no:  不执行fsync，由操作系统负责数据的刷盘。数据安全性最低但Redis性能最高。</td>
-</tr>
-<tr>
-<td>no-appendfsync-on-rewrite</td>
-<td>yes/no(默认no)</td>
-<td>AOF</td>
-<td>开启该参数后，如果后台正在执行一次RDB快照或者AOF重写，则主进程不再进行fsync操作（即使将appendfsync配置为always或者everysec）</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-percentage</td>
-<td>百分比(默认100)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于auto-aof-rewrite-min-size 配置的大小 并且比基准文件增长此百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>auto-aof-rewrite-min-size</td>
-<td>文件大小(默认64MB)</td>
-<td>AOF</td>
-<td>自动重写配置项，当前AOF文件大于此配置值，并且当前AOF文件 比基准文件增长auto-aof-rewrite-percentage配置的百分比时触发AOF重写</td>
-</tr>
-<tr>
-<td>aof-load-truncated</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>AOF文件以追加日志的方式生成，所以服务端发生故障时可能会有尾部命令不完整的情况。开启该参数后，在此种情况下，AOF文件会截断尾部不完整的命令然后继续加载，并且会在日志中进行提示。如果不开启该参数，则加载AOF文件时会打印错误日志，然后直接退出</td>
-</tr>
-<tr>
-<td>aof-use-rdb-preamble</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>是否开启混合持久化</td>
-</tr>
-<tr>
-<td>aof-rewrite-incremental-fsync</td>
-<td>yes/no(默认yes)</td>
-<td>AOF</td>
-<td>开启该参数后，AOF重写时没产生32MB数据执行一次fsync</td>
-</tr>
-</tbody>
-</table>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[软件设计上的基本知识]]></title>
-    <link href="http://www.throne4j.com/15943756601312.html"/>
-    <updated>2020-07-10T18:07:40+08:00</updated>
-    <id>http://www.throne4j.com/15943756601312.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">API与SPI分离</h2>
-
-<p>框架或组件通常有两类客户，一个是使用者，一个是扩展者，API(Application Programming Interface)是给使用者用的，而SPI(Service Provide Interface)是给扩展者用的，在设计时，尽量把它们隔离开，而不要混在一起，也就是说，使用者是看不到扩展者写的实现的，比如：一个Web框架，它有一个API接口叫Action，里面有个execute()方法，是给使用者用来写业务逻辑的，然后，Web框架有一个SPI接口给扩展者控制输出方式，比如用velocity模板输出还是用json输出等，如果这个Web框架使用一个都继承Action的VelocityAction和一个JsonAction做为扩展方式，要用velocity模板输出的就继承VelocityAction，要用json输出的就继承JsonAction，这就是API和SPI没有分离的反面例子，SPI接口混在了API接口中，合理的方式是，有一个单独的Renderer接口，有VelocityRenderer和JsonRenderer实现，Web框架将Action的输出转交给Renderer接口做渲染输出。</p>
-
-<pre><code class="language-text">![](media/15943756601312/15943757095695.jpg)
-
-![](media/15943756601312/15943757185485.jpg)
-</code></pre>
-
-<h2 id="toc_1">服务域/实体域/会话域分离</h2>
-
-<p>任何框架或组件，总会有核心领域模型，比如：<br/>
-Spring的Bean，Struts的Action，Dubbo的Service，Napoli的Queue等等<br/>
-这个核心领域模型及其组成部分称为实体域，它代表着我们要操作的目标本身，实体域通常是线程安全的，不管是通过不变类，同步状态，或复制的方式，服务域也就是行为域，它是组件的功能集，同时也负责实体域和会话域的生命周期管理，比如Spring的ApplicationContext，Dubbo的ServiceManager等，服务域的对象通常会比较重，而且是线程安全的，并以单一实例服务于所有调用，什么是会话？就是一次交互过程，会话中重要的概念是上下文，什么是上下文？</p>
-
-<p>比如我们说：“老地方见”，这里的“老地方”就是上下文信息，为什么说“老地方”对方会知道，因为我们前面定义了“老地方”的具体内容，所以说，上下文通常持有交互过程中的状态变量等，会话对象通常较轻，每次请求都重新创建实例，请求结束后销毁。</p>
-
-<p>简而言之：<br/>
-把元信息交由实体域持有，把一次请求中的临时状态由会话域持有，由服务域贯穿整个过程。</p>
-
-<p><figure><img src="media/15943756601312/15943757281530.jpg" alt=""/></figure>       <figure><img src="media/15943756601312/15943757329746.jpg" alt=""/></figure></p>
-
-<h2 id="toc_2">在重要的过程上设置拦截接口</h2>
-
-<p>如果你要写个远程调用框架，那远程调用的过程应该有一个统一的拦截接口，如果你要写一个ORM框架，那至少SQL的执行过程，Mapping过程要有拦截接口，如果你要写一个Web框架，那请求的执行过程应该要有拦截接口，等等，没有哪个公用的框架可以Cover住所有需求，允许外置行为，是框架的基本扩展方式，这样，如果有人想在远程调用前，验证下令牌，验证下黑白名单，统计下日志，如果有人想在SQL执行前加下分页包装，做下数据权限控制，统计下SQL执行时间，如果有人想在请求执行前检查下角色，包装下输入输出流，统计下请求量，等等，就可以自行完成，而不用侵入框架内部，拦截接口，通常是把过程本身用一个对象封装起来，传给拦截器链，</p>
-
-<p>比如：远程调用主过程为invoke()，那拦截器接口通常invoke(Invocation)，Invocation对象封装了本来要执行过程的上下文，并且Invocation里有一个invoke()方法，由拦截器决定什么时候执行，同时，Invocation也代表拦截器行为本身，这样上一拦截器的Invocation其实是包装的下一拦截器的过程，直到最后一个拦截器的Invocation是包装的最终的invoke()过程，同理，SQL主过程为execute()，那拦截器接口通常为execute(Execution)，原理一样，当然，实现方式可以任意，上面只是举例。</p>
-
-<p><figure><img src="media/15943756601312/15943757516458.jpg" alt=""/></figure></p>
-
-<h2 id="toc_3">重要的状态的变更发送事件并留出监听接口</h2>
-
-<p>这里先要讲一个事件和上面拦截器的区别，拦截器是干预过程的，它是过程的一部分，是基于过程行为的，而事件是基于状态数据的，任何行为改变的相同状态，对事件应该是一致的，事件通常是事后通知，是一个Callback接口，方法名通常是过去式的，比如onChanged()，比如远程调用框架，当网络断开或连上应该发出一个事件，当出现错误也可以考虑发出一个事件，这样外围应用就有可能观察到框架内部的变化，做相应适应。</p>
-
-<p><figure><img src="media/15943756601312/15943757591172.jpg" alt=""/></figure></p>
-
-<h2 id="toc_4">扩展接口职责尽可能单一，具有可组合性</h2>
-
-<p>比如，远程调用框架它的协议是可以替换的，如果只提供一个总的扩展接口，当然可以做到切换协议，但协议支持是可以细分为底层通讯，序列化，动态代理方式等等，如果将接口拆细，正交分解，会更便于扩展者复用已有逻辑，而只是替换某部分实现策略，当然这个分解的粒度需要把握好。</p>
-
-<h2 id="toc_5">微核插件式，平等对待第三方</h2>
-
-<p>大凡发展的比较好的框架，都遵守微核的理念，Eclipse的微核是OSGi， Spring的微核是BeanFactory，Maven的微核是Plexus，通常核心是不应该带有功能性的，而是一个生命周期和集成容器，这样各功能可以通过相同的方式交互及扩展，并且任何功能都可以被替换，如果做不到微核，至少要平等对待第三方，即原作者能实现的功能，扩展者应该可以通过扩展的方式全部做到，原作者要把自己也当作扩展者，这样才能保证框架的可持续性及由内向外的稳定性。</p>
-
-<h2 id="toc_6">不要控制外部对象的生命周期</h2>
-
-<p>比如上面说的Action使用接口和Renderer扩展接口，框架如果让使用者或扩展者把Action或Renderer实现类的类名或类元信息报上来，然后在内部通过反射newInstance()创建一个实例，这样框架就控制了Action或Renderer实现类的生命周期，Action或Renderer的生老病死，框架都自己做了，外部扩展或集成都无能为力，好的办法是让使用者或扩展者把Action或Renderer实现类的实例报上来，框架只是使用这些实例，这些对象是怎么创建的，怎么销毁的，都和框架无关，框架最多提供工具类辅助管理，而不是绝对控制。</p>
-
-<h2 id="toc_7">可配置一定可编程，并保持友好的CoC约定</h2>
-
-<p>因为使用环境的不确定因素很多，框架总会有一些配置，一般都会到classpath直扫某个指定名称的配置，或者启动时允许指定配置路径，做为一个通用框架，应该做到凡是能配置文件做的一定要能通过编程方式进行，否则当使用者需要将你的框架与另一个框架集成时就会带来很多不必要的麻烦，另外，尽可能做一个标准约定，如果用户按某种约定做事时，就不需要该配置项。</p>
-
-<p>比如：配置模板位置，你可以约定，如果放在templates目录下就不用配了，如果你想换个目录，就配置下。</p>
-
-<h2 id="toc_8">区分命令与查询，明确前置条件与后置条件</h2>
-
-<p>这个是契约式设计的一部分，尽量遵守有返回值的方法是查询方法，void返回的方法是命令，查询方法通常是幂等性的，无副作用的，也就是不改变任何状态，调n次结果都是一样的，比如get某个属性值，或查询一条数据库记录，命令是指有副作用的，也就是会修改状态，比如set某个值，或update某条数据库记录，如果你的方法即做了修改状态的操作，又做了查询返回，如果可能，将其拆成写读分离的两个方法，</p>
-
-<p>比如：User deleteUser(id)，删除用户并返回被删除的用户，考虑改为getUser()和void的deleteUser()。另外，每个方法都尽量前置断言传入参数的合法性，后置断言返回结果的合法性，并文档化。</p>
 
 ]]></content>
   </entry>

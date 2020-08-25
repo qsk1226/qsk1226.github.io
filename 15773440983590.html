@@ -116,7 +116,14 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">jvm参数一览</h2>
+                    <ul>
+<li><p>GC 频率： 高频的 FullGC 会给系统带来非常大的性能消耗，虽然 MinorGC 相对 FullGC 来说好了许多，但过多的 MinorGC 仍会给系统带来压力</p></li>
+<li><p>内存： 这里的内存指的是堆内存大小，堆内存又分为年轻代内存和老年代内存。堆内存不足，会增加 MinorGC ，影响系统性能。</p></li>
+<li><p>吞吐量： 频繁的 GC 将会引起线程的上下文切换，增加系统的性能开销，从而影响每次处理的线程请求，最终导致系统的吞吐量下降。</p></li>
+<li><p>延迟： JVM 的 GC 持续时间也会影响到每次请求的响应时间</p></li>
+</ul>
+
+<h2 id="toc_0">jvm参数一览</h2>
 
 <table>
 <thead>
@@ -272,7 +279,7 @@
 </tr>
 <tr>
 <td>-Xloggc</td>
-<td>保存gc日志，-Xloggc:gc.log</td>
+<td>保存gc日志，-Xloggc:../logs/gc.log</td>
 </tr>
 <tr>
 <td>verbose:gc</td>
@@ -341,6 +348,15 @@ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU  
 <li>FGCT:老年代垃圾回收消耗时间 </li>
 <li>GCT:垃圾回收消耗总时间</li>
 </ul>
+
+<pre><code class="language-text">➜  ~ jstat -gc 51926 5000 5 |awk &#39;{print $13,$14,$15,$16,$17}&#39;
+YGC YGCT FGC FGCT GCT
+2 0.037 102 4.110 4.147
+2 0.037 102 4.110 4.147
+2 0.037 102 4.110 4.147
+2 0.037 102 4.110 4.147
+2 0.037 102 4.110 4.147
+</code></pre>
 
 <h2 id="toc_7">jinfo：Java配置信息工具</h2>
 
