@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    linux和macOS下top命令区别 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            linux和macOS下top命令区别   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/08/25</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%9C%8D%E5%8A%A1%E5%99%A8.html'>服务器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>top命令是常用的性能分析工具，被广泛用于监视服务器的负载，能够实时显示系统中各个进程的资源占用情况。</p>
+
+<p>前言<br/>
+开发环境使用Mac后，经常使用 活动监视器 查看所有进程CPU、内存等。top命令的快捷键在Mac下的快捷键不生效。一直这样用下来，感觉不是很顺手。整理记录。</p>
+
+<h2 id="toc_0">1、linux top</h2>
+
+<pre><code class="language-text">P 键 按照cpu使用率排序
+M 键 按照内存使用率排序
+l 键 切换显示平均负载和启动时间信息
+m 键 切换显示内存信息
+t 键 切换显示进程和cpu状态信息
+c 键 切换显示命令名称和完成命令行信息
+</code></pre>
+
+<pre><code class="language-text">top - 11:15:45 up 14 min,  1 user,  load average: 0.74, 0.58, 0.31
+Tasks: 143 total,   1 running, 142 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  2.4 us,  2.2 sy,  0.0 ni, 95.3 id,  0.0 wa,  0.0 hi,  0.2 si,  0.0 st
+</code></pre>
+
+<h2 id="toc_1">2、Mac top</h2>
+
+<p>先输入 o 键 ,再输入 cpu 则按cpu使用量排序，输入 rsize 按内存使用量排序。</p>
+
+<h2 id="toc_2">3、 字符含义</h2>
+
+<pre><code class="language-shell">top - 11:25:56 up 25 min,  1 user,  load average: 0.22, 0.36, 0.31
+Tasks: 144 total,   1 running, 143 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  2.2 us,  1.7 sy,  0.0 ni, 95.9 id,  0.0 wa,  0.0 hi,  0.2 si,  0.0 st
+KiB Mem :  1863088 total,    97124 free,   934460 used,   831504 buff/cache
+KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
+
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  2383 root      20   0  481976 274180  39152 S   3.3 14.7   0:48.03 kube-apiserver --advertise-address=172.16.65.134 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/etc/kubernetes/pki/ca.crt --enable-admission-plugins=NodeRestriction --enabl+
+   738 root      20   0 1225828  73716  34748 S   2.0  4.0   0:32.22 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --cgroup-driver=systemd --network-plugi+
+  1002 root      20   0  566956  87928  26144 S   1.0  4.7   0:15.37 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+  2384 root      20   0   10.1g  50352  12152 S   1.0  2.7   0:18.25 etcd --advertise-client-urls=https://172.16.65.134:2379 --cert-file=/etc/kubernetes/pki/etcd/server.crt --client-cert-auth=true --data-dir=/var/lib/etcd --initial-advertise-peer-urls=https://172.16.+
+  2429 root      20   0  221900  65236  30152 S   1.0  3.5   0:18.03 kube-controller-manager --allocate-node-cidrs=true --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf --bind-addre+
+   442 root      20   0       0      0      0 S   0.3  0.0   0:01.02 [xfsaild/dm-0]
+  1000 root      20   0 1155792  44968  14332 S   0.3  2.4   0:00.95 /usr/bin/containerd
+  2188 root      20   0  107688   6524   2700 S   0.3  0.4   0:00.04 containerd-shim -namespace moby -workdir /var/lib/containerd/io.containerd.runtime.v1.linux/moby/4cbd4244ccf55f156b620e442678e20a85fc2f28c4edb5e7f517c3539b5fdea1 -address /run/containerd/containerd.+
+  
+</code></pre>
+
+<p>l 键 切换显示平均负载和启动时间信息:</p>
+
+<table>
+<thead>
+<tr>
+<th>top - 11:12:47</th>
+<th>up 11 min,</th>
+<th>1 user,</th>
+<th>load average: 0.17, 0.23, 0.15</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>当前系统时间</td>
+<td>系统已运行时间</td>
+<td>在线用户，包含系统用户</td>
+<td>系统负载。分别是1，5，15分钟前到潜在的平均值</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>Tasks</th>
+<th>227 total</th>
+<th>1 running</th>
+<th>225 sleeping</th>
+<th>1 stopped</th>
+<th>0 zombie</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-</td>
+<td>总进程数</td>
+<td>正在运行的进程数</td>
+<td>正在睡眠的进程数</td>
+<td>停止的进程数</td>
+<td>僵死进程数</td>
+</tr>
+</tbody>
+</table>
+
+<p>t键，cpu信息：</p>
+
+<table>
+<thead>
+<tr>
+<th>%Cpu(s)</th>
+<th>0.8 us</th>
+<th>1.0 sy</th>
+<th>0.0 ni</th>
+<th>98.2 id</th>
+<th>0.0 wa</th>
+<th>0.0 hi</th>
+<th>0.0 si</th>
+<th>0.0 st</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-</td>
+<td>cpu占用率(%)，用户进程占用cpu百分率</td>
+<td>系统占用cpu百分率</td>
+<td>用户进程空间内改变过优先级的进程占用CPU百分比</td>
+<td>cpu空闲率</td>
+<td>等待IO的CPU时间百分比</td>
+<td>硬中断（Hardware IRQ）占用CPU的百分比</td>
+<td>软中断（Software Interrupts）占用CPU的百分比</td>
+<td>虚拟机占用百分比</td>
+</tr>
+</tbody>
+</table>
+
+<p>m键 内存信息：</p>
+
+<table>
+<thead>
+<tr>
+<th>KiB Mem</th>
+<th>8175028 total</th>
+<th>635844 free</th>
+<th>3024460 used</th>
+<th>4514724 buff/cache</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-</td>
+<td>内存总量</td>
+<td>内存空闲量</td>
+<td>内存使用量</td>
+<td>缓存的内存量</td>
+</tr>
+</tbody>
+</table>
+
+<p>交换区信息：</p>
+
+<table>
+<thead>
+<tr>
+<th>KiB Swap</th>
+<th>15624016 total</th>
+<th>15606756 free</th>
+<th>17260 used</th>
+<th>4678020 avail Mem</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-</td>
+<td>交换区总量</td>
+<td>交换区空闲量</td>
+<td>交换区使用量</td>
+<td>缓冲交换区总量</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>PID</th>
+<th>USER</th>
+<th>PR</th>
+<th>NI</th>
+<th>VIRT</th>
+<th>RES</th>
+<th>SHR</th>
+<th>S</th>
+<th>%CPU</th>
+<th>%MEM</th>
+<th>TIME+</th>
+<th>COMMAND</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>进程号</td>
+<td>进程创建者</td>
+<td>进程优先级</td>
+<td>nice值</td>
+<td>进程使用的虚拟内存总量</td>
+<td>进程使用的、未被换出的物理内存大小</td>
+<td>共享内存大小</td>
+<td>进程状态</td>
+<td>进程占用cpu百分比</td>
+<td>进程占用内存百分比</td>
+<td>进程运行时间</td>
+<td>进程名称</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li>NI nice值。越小优先级越高，最小-20，最大20（用户设置最大19）</li>
+<li>VIRT 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES</li>
+<li>RES 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA</li>
+<li>SHR 共享内存大小，单位kb</li>
+<li>S 进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程</li>
+</ul>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>
