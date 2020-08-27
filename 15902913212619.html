@@ -114,7 +114,10 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>读取缓存步骤一般没有什么问题，但是一旦涉及到数据更新:数据库和缓存更新，就容 易出现缓存(Redis)和数据库(MySQL)间的数据一致性问题</p>
+                    <p>缓存逻辑流程图如下：<br/>
+<figure><img src="media/15902913212619/15985462479510.jpg" alt=""/></figure></p>
+
+<p>读取缓存步骤一般没有什么问题，但是一旦涉及到数据更新:数据库和缓存更新，就容 易出现缓存(Redis)和数据库(MySQL)间的数据一致性问题</p>
 
 <p>讨论一致性问题之前，先来看一个更新的操作顺序问题：</p>
 
@@ -208,8 +211,32 @@
 方案三：将被动失效改为主动失效
 
 ### 缓存穿透
+缓存穿透是指缓存和数据库中都没有的数据，而用户不断发起请求，如发起为 id=xxx的数据 或 id 为特别大不存在的数据。这时的用户很可能是攻击者，攻击会导致数据库压力过大。
 
 方案一：布隆过滤器
+布隆过滤器的使用方法，类似java的SET集合，只不过它能以更小的内存，存储更大的数据
+
+```java
+public void init() {
+    //在bean初始化完成后，实例化bloomFilter,并加载数据
+      List&lt;CacheValue&gt; cacheValues =searchAll();
+
+      //当成一个SET----- 占内存，比hashset占得小很多
+      bf = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), cacheValues.size());
+      for (CacheValue p : cacheValues) {
+        bf.put(p.getKey());
+    }
+}
+
+public CacheValue get(String key) {
+    //先判断布隆过滤器中是否存在该值，值存在才允许访问缓存和数据库
+        if (!bf.mightContain(key)) {
+            System.out.println(&quot;非法访问--------&quot; + System.currentTimeMillis());
+            return null;
+        }
+        // 可以使用上面的get方法，防止缓存雪崩或击穿
+        return getCachedValue(key);
+}
 </code></pre>
 
                   </article>
