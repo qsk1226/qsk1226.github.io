@@ -435,13 +435,31 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 
 <p>jdk中直接内存的回收就用到虚引用，由于jvm自动内存管理的范围是堆内存，而直接内存是在堆内存之外（其实是内存映射文件，自行去理解虚拟内存空间的相关概念），所以直接内存的分配和回收都是有Unsafe类去操作，java在申请一块直接内存之后，会在堆内存分配一个对象保存这个堆外内存的引用，这个对象被垃圾收集器管理，一旦这个对象被回收，相应的用户线程会收到通知并对直接内存进行清理工作。见 sun.misc.Cleaner类</p>
 
-<h2 id="toc_17">揭开 java 虚拟机对象的面纱</h2>
+<h4 id="toc_17">为什么要使用直接内存</h4>
+
+<p>直接内存就是不受 JVM 控制的内存。相比于堆内存有几个优势:</p>
+
+<ul>
+<li>减少了垃圾回收的工作，因为垃圾回收会暂停其他的工作。</li>
+<li>加快了复制的速度。因为堆内在 flush 到远程时，会先复制到直接内存(非堆内存)，然后再发送，而堆外内存相当于省略掉了这个工作。 </li>
+<li>3、可以在进程间共享，减少 JVM 间的对象复制，使得 JVM 的分割部署更容易实现。</li>
+<li>可以扩展至更大的内存空间。比如超过 1TB 甚至比主存还大的空间。</li>
+</ul>
+
+<h4 id="toc_18">直接内存的缺点</h4>
+
+<ul>
+<li>堆外内存难以控制，如果内存泄漏，那么很难排查</li>
+<li>堆外内存相对来说，不适合存储很复杂的对象。一般简单的对象比较适合</li>
+</ul>
+
+<h2 id="toc_19">揭开 java 虚拟机对象的面纱</h2>
 
 <p>通过上面对java 虚拟机内存区域的介绍，我们进一步思考，内存中存储什么东西、它们是如何创建、如何布局、如何访问的呢？接下来我们探讨一下HotSpot虚拟机在Java堆中对象分配、布局和访问的全过程。</p>
 
-<h3 id="toc_18">1、对象的创建</h3>
+<h3 id="toc_20">1、对象的创建</h3>
 
-<h4 id="toc_19">1.1、创建对象的方式</h4>
+<h4 id="toc_21">1.1、创建对象的方式</h4>
 
 <p>Java程序运行过程中无时无刻都有对象被创建出来。在 Java 中有如下5种</p>
 
@@ -477,7 +495,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 </tbody>
 </table>
 
-<h4 id="toc_20">1.2、对象内存分配</h4>
+<h4 id="toc_22">1.2、对象内存分配</h4>
 
 <p>这里我们只对new关键字进行分析，当JVM遇到new关键字创建普通的java对象(不包括数组和Class对象等)时，<strong><em>首先</em></strong> 检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过，如果没有那么必须执行相应的加载过程()。</p>
 
@@ -502,7 +520,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 
 <p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了。但是从Java程序的视角看来，对象创建才刚刚开始---构造函数，即Class文件中的<init>()方法还没执行，所有的对象字段还是初始的默认值，执行完<init>()之后对象才会想我们程序中所希望的那样赋予相应的变量值。</p>
 
-<h4 id="toc_21">1.3、内存分配的并发安全问题</h4>
+<h4 id="toc_23">1.3、内存分配的并发安全问题</h4>
 
 <p>但是在并发情况下，即使是”指针碰撞“这种仅仅是移动指针所指向位置的操作，<strong>也并不是线程安全的</strong>，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况。</p>
 
@@ -513,7 +531,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 <li><p>另一种是把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在 Java 堆中预先分配一小块私有内存，也就是本地线程分配缓冲（Thread Local Allocation Buffer,TLAB），JVM 在线程初始化时，同时也会申请一块指定大小的内存，只给当前线程使用，这样每个线程都单独拥有一个 Buffer，如果需要分配内存，就在自己的 Buffer 上分配，这样就不存在竞争的情况，可以大大提升分配效率，当 Buffer 容量不够的时候，再重新从 Eden 区域申请一块继续使用。可以通过-XX：+/-UseTLAB参数来设定。</p></li>
 </ul>
 
-<h4 id="toc_22">1.4、堆内存分配策略</h4>
+<h4 id="toc_24">1.4、堆内存分配策略</h4>
 
 <ul>
 <li><p>对象优先在 Eden 区分配</p></li>
@@ -527,7 +545,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 在发生 Minor GC 之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么 Minor GC 可以确保是安全的。如果不成立，则虚拟机会查看 HandlePromotionFailure 设置值是否允许担保失败。如果允许，那么会继续检查老年代最大可用的连续空间是否大于历 次晋升到老年代对象的平均大小，如果大于，将尝试着进行一次 Minor GC，尽管这次 Minor GC 是有风险的，如果担保失败则会进行一次 Full GC;如果小 于，或者 HandlePromotionFailure 设置不允许冒险，那这时也要改为进行一次 Full GC。</p></li>
 </ul>
 
-<h3 id="toc_23">2、 对象的内存布局</h3>
+<h3 id="toc_25">2、 对象的内存布局</h3>
 
 <p>对象在堆内存中存储布局可以划分为三部分：对象头(Object Header)、实例数据(Instance Data)、对齐填充(Padding)。<br/>
 <figure><img src="media/15865981620428/15962978615532.jpg" alt=""/></figure></p>
@@ -535,7 +553,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 <p>通过hotspot虚拟机源码查看可查看<br/>
 <figure><img src="media/15865981620428/15962989936134.jpg" alt="" style="width:1594px;"/></figure></p>
 
-<h4 id="toc_24">2.1、 对象头</h4>
+<h4 id="toc_26">2.1、 对象头</h4>
 
 <p>对象头部分包含两类信息：</p>
 
@@ -546,7 +564,7 @@ NIO 使用区域，基于管道(channel)与缓冲区(buffer)的IO方式，它可
 类型指针即对象指向它的类元数据的指针。并不是所有的虚拟机实现都必须在对象数据上保留类型指针（用句柄实现）。</li>
 </ul>
 
-<h5 id="toc_25">2.1.1、指针压缩</h5>
+<h5 id="toc_27">2.1.1、指针压缩</h5>
 
 <p>对象占用的内存大小受到 vm参数 UseCompressedOops 的影响</p>
 
@@ -601,7 +619,7 @@ Instance size: 16 bytes
 Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 </code></pre>
 
-<h4 id="toc_26">2.2、 实例数据</h4>
+<h4 id="toc_28">2.2、 实例数据</h4>
 
 <p>用来存储真正的有效信息，即我们在程序代码里面所定义的各种类型的字段内容。无论是从父类继承下来的，还是在子类中定义的字段都必须记录起来。</p>
 
@@ -609,11 +627,11 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 
 <p>HotSpot虚拟机默认的分配顺序为longs/doubles、ints、shorts/chars、bytes/booleans、oops（Ordinary Object Pointers，OOPs），从以上默认的分配策略中可以看到，相同宽度的字段总是被分配到一起存放，在满足这个前提条件的情况下，在父类中定义的变量会出现在子类之前。如果HotSpot虚拟机的+XX：CompactFields参数值为true（默认就为true），那子类之中较窄的变量也允许插入父类变量的空隙之中，以节省出一点点空间。</p>
 
-<h4 id="toc_27">2.3、 对齐填充</h4>
+<h4 id="toc_29">2.3、 对齐填充</h4>
 
 <p>这部分仅仅是起到占位符的作用。由于jvm的自动内存管理系统要求任何对象的大小必须是8字节的整数倍，如果对象实例数据没有对齐的话，则通过对齐填充来进行补全，使其大小是8字节的整数倍(对象头已经被设计成正好是8字节的整数倍的结构了)</p>
 
-<h3 id="toc_28">3、对象访问定位</h3>
+<h3 id="toc_30">3、对象访问定位</h3>
 
 <p>创建完对象之后，就到了使用对象的时候了。JVM会通过虚拟机栈上的reference（指向对象的引用）数据来操作堆上的具体对象。</p>
 
@@ -629,7 +647,7 @@ reference中存储的直接就是对象的地址，直接访问对象的话，�
 <figure><img src="media/15866239860150/15953360587854.jpg" alt=""/></figure></p></li>
 </ul>
 
-<h2 id="toc_29">JAVA堆栈内存溢出异常</h2>
+<h2 id="toc_31">JAVA堆栈内存溢出异常</h2>
 
 <p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。</p>
 
@@ -637,7 +655,7 @@ reference中存储的直接就是对象的地址，直接访问对象的话，�
 
 <p>如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
 
-<h3 id="toc_30">1、java堆可引起OutOfMemoryError异常</h3>
+<h3 id="toc_32">1、java堆可引起OutOfMemoryError异常</h3>
 
 <pre><code class="language-java">
 /**
@@ -662,7 +680,7 @@ public class HeapOomMock {
 }
 </code></pre>
 
-<h3 id="toc_31">2、java虚拟机栈OutOfMemoryError、StackOverFlowError</h3>
+<h3 id="toc_33">2、java虚拟机栈OutOfMemoryError、StackOverFlowError</h3>
 
 <p>OutOfMemoryError：</p>
 
@@ -711,7 +729,7 @@ public class StackOverFlowMock {
 
 <p>还有一种是占用了过多的局部变量表空间，比如说声明了非常多的局部变量</p>
 
-<h3 id="toc_32">3、方法区运行时常量池引起的OutOfMemoryError异常：</h3>
+<h3 id="toc_34">3、方法区运行时常量池引起的OutOfMemoryError异常：</h3>
 
 <pre><code class="language-java">/**
  * jdk1.8之前 -XX:PermSize=6M -XX:MaxPermSize=6M
@@ -729,7 +747,7 @@ public class ConstantPoolOOMMock {
 }
 </code></pre>
 
-<h3 id="toc_33">4、元数据区可引起OutOfMemoryError异常：</h3>
+<h3 id="toc_35">4、元数据区可引起OutOfMemoryError异常：</h3>
 
 <pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -764,7 +782,7 @@ public class MetaSpaceMemory {
 }
 </code></pre>
 
-<h3 id="toc_34">5、直接内存OOM异常</h3>
+<h3 id="toc_36">5、直接内存OOM异常</h3>
 
 <pre><code class="language-java">/**
  * -XX:MaxDirectMemorySize=5M -Xmx20M

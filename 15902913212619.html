@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    缓存一致性问题如何解决 - 大爷来玩儿啊~
+    缓存一致性问题 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            缓存一致性问题如何解决   
+                            缓存一致性问题   
                       </h1>
                      
                     
@@ -114,7 +114,25 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <ul>
+                    <p>读取缓存步骤一般没有什么问题，但是一旦涉及到数据更新:数据库和缓存更新，就容 易出现缓存(Redis)和数据库(MySQL)间的数据一致性问题</p>
+
+<p>讨论一致性问题之前，先来看一个更新的操作顺序问题：</p>
+
+<pre><code class="language-text">问题:同时有一个请求 A 进行更新操作，一个请求 B 进行查询操作。可能出现:
+(1)请求 A 进行写操作(key = 1 value = 2)，先删除缓存 key = 1 value = 1 
+(2)请求 B 查询发现缓存不存在
+(3)请求 B 去数据库查询得到旧值 key = 1 value = 1
+(4)请求 B 将旧值写入缓存 key = 1 value = 1
+(5)请求 A 将新值写入数据库 key = 1 value = 2
+</code></pre>
+
+<p>缓存中数据永远都是脏数据</p>
+
+<p>比较推荐操作顺序: 先删除缓存，再更新数据库，再删缓存(双删，第二次删可异步延时)</p>
+
+<h2 id="toc_0">缓存同步方案</h2>
+
+<ul>
 <li><p>数据实时同步更新<br/>
 使用缓存工具或AOP，在更新数据库的同时更新缓存，这种方式数据一致性强，</p>
 <ul>
@@ -136,7 +154,63 @@
 <li>有一定延迟，不保证强一致性，但保证最终一致性，存在缓存雪崩的问题</li>
 <li>适合于读多写少的互联网场景，能接受一定的数据延时，比如电商业务、社交业务等</li>
 </ul></li>
+<li><p>定时任务更新</p>
+<ul>
+<li>最终一致性，采用任务调度框架，按照一定频率更新</li>
+<li>不影响业务</li>
+<li>不保证一致性，依赖定时任务</li>
+</ul></li>
 </ul>
+
+<h2 id="toc_1">缓存雪崩、缓存击穿</h2>
+
+<p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压 力过大甚至 down 机。和缓存击穿不同的是，缓存击穿指并发查同一条数据，缓存雪崩 是不同数据都过期了，很多数据都查不到从而查数据库。</p>
+
+<p>缓存击穿是指缓存中没有但数据库中有的数据(一般是缓存时间到期)，这时由于并发用户特别多，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
+
+<p>方案一：加锁</p>
+
+<p>保证只有一个线程到数据库 去查找指定的 key 对应的数据</p>
+
+<p>加锁方式的流程流程：<br/>
+<figure><img src="media/15902913212619/15985435560165.jpg" alt="" style="width:565px;"/></figure></p>
+
+<pre><code class="language-java">public Object get(String key) {
+        // 1.从缓存中取数据
+        Object value = getFromCache(key);
+        if (null != value)
+            return value;
+        //2.加锁排队，阻塞式锁---100个线程走到这里---同一个sql的取同一把锁
+        doLock(key);
+        try {
+            //双重校验，不加也没关系，无非是多刷几次库
+            value = getFromCache(key); //第二个线程，能从缓存里拿到值？
+            if (null != value) {
+                return value;
+            }
+
+            Object dbValue getFromDataBase(key);
+            // 3.从数据库查询的结果不为空，则把数据放入缓存中，方便下次查询
+            if (null != dbValue) {
+                putInCache(key, dbValue);
+            }
+            return dbValue;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            //4.解锁
+            releaseLock(key);
+        }
+    }
+    ```
+方案二：缓存预热
+
+方案三：将被动失效改为主动失效
+
+### 缓存穿透
+
+方案一：布隆过滤器
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">
@@ -180,6 +254,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
