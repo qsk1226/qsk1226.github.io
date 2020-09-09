@@ -619,7 +619,39 @@ Instance size: 16 bytes
 Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 </code></pre>
 
-<h4 id="toc_28">2.2、 实例数据</h4>
+<h5 id="toc_28">Lock Record  锁记录</h5>
+
+<p>1、数据结构及其openjdk实现<br/>
+lock record的数据结构</p>
+
+<pre><code class="language-text">// A BasicObjectLock associates a specific Java object with a BasicLock.
+// It is currently embedded in an interpreter frame.
+class BasicObjectLock VALUE_OBJ_CLASS_SPEC {
+ private:
+  BasicLock _lock;                        // the lock, must be double word aligned
+  oop       _obj;                         // object holds the lock;
+};
+class BasicLock VALUE_OBJ_CLASS_SPEC {
+ private:
+  volatile markOop _displaced_header;
+};
+</code></pre>
+
+<p>2、什么时候被创建？在哪里创建？</p>
+
+<p>当字节码解释器执行monitorenter字节码轻度锁住一个对象时，就会在获取锁的线程的栈上显式或者隐式分配一个lock record。</p>
+
+<p>3、lock record的创建位置</p>
+
+<p>lock record在线程的Interpretered Frame上(解释帧)分配</p>
+
+<p>4、有什么作用？</p>
+
+<p>持有displaced word和锁住对象的元数据；<br/>
+解释器使用lock record来检测非法的锁状态；<br/>
+隐式地充当锁重入机制的计数器；</p>
+
+<h4 id="toc_29">2.2、 实例数据</h4>
 
 <p>用来存储真正的有效信息，即我们在程序代码里面所定义的各种类型的字段内容。无论是从父类继承下来的，还是在子类中定义的字段都必须记录起来。</p>
 
@@ -627,11 +659,11 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 
 <p>HotSpot虚拟机默认的分配顺序为longs/doubles、ints、shorts/chars、bytes/booleans、oops（Ordinary Object Pointers，OOPs），从以上默认的分配策略中可以看到，相同宽度的字段总是被分配到一起存放，在满足这个前提条件的情况下，在父类中定义的变量会出现在子类之前。如果HotSpot虚拟机的+XX：CompactFields参数值为true（默认就为true），那子类之中较窄的变量也允许插入父类变量的空隙之中，以节省出一点点空间。</p>
 
-<h4 id="toc_29">2.3、 对齐填充</h4>
+<h4 id="toc_30">2.3、 对齐填充</h4>
 
 <p>这部分仅仅是起到占位符的作用。由于jvm的自动内存管理系统要求任何对象的大小必须是8字节的整数倍，如果对象实例数据没有对齐的话，则通过对齐填充来进行补全，使其大小是8字节的整数倍(对象头已经被设计成正好是8字节的整数倍的结构了)</p>
 
-<h3 id="toc_30">3、对象访问定位</h3>
+<h3 id="toc_31">3、对象访问定位</h3>
 
 <p>创建完对象之后，就到了使用对象的时候了。JVM会通过虚拟机栈上的reference（指向对象的引用）数据来操作堆上的具体对象。</p>
 
@@ -647,7 +679,7 @@ reference中存储的直接就是对象的地址，直接访问对象的话，�
 <figure><img src="media/15866239860150/15953360587854.jpg" alt=""/></figure></p></li>
 </ul>
 
-<h2 id="toc_31">JAVA堆栈内存溢出异常</h2>
+<h2 id="toc_32">JAVA堆栈内存溢出异常</h2>
 
 <p>java虚拟机规范允许虚拟机自行选择是否支持栈的动态扩容，但Hotspot选择不支持扩容。所以除非在创建线程申请内存时，因无法获取足够内存而出现OOM异常。</p>
 
@@ -655,7 +687,7 @@ reference中存储的直接就是对象的地址，直接访问对象的话，�
 
 <p>如果虚拟机的栈内存允许动态扩展，当扩展栈容量无法申请到足够的内存时，将抛出OutOfMemoryError异常。</p>
 
-<h3 id="toc_32">1、java堆可引起OutOfMemoryError异常</h3>
+<h3 id="toc_33">1、java堆可引起OutOfMemoryError异常</h3>
 
 <pre><code class="language-java">
 /**
@@ -680,7 +712,7 @@ public class HeapOomMock {
 }
 </code></pre>
 
-<h3 id="toc_33">2、java虚拟机栈OutOfMemoryError、StackOverFlowError</h3>
+<h3 id="toc_34">2、java虚拟机栈OutOfMemoryError、StackOverFlowError</h3>
 
 <p>OutOfMemoryError：</p>
 
@@ -729,7 +761,7 @@ public class StackOverFlowMock {
 
 <p>还有一种是占用了过多的局部变量表空间，比如说声明了非常多的局部变量</p>
 
-<h3 id="toc_34">3、方法区运行时常量池引起的OutOfMemoryError异常：</h3>
+<h3 id="toc_35">3、方法区运行时常量池引起的OutOfMemoryError异常：</h3>
 
 <pre><code class="language-java">/**
  * jdk1.8之前 -XX:PermSize=6M -XX:MaxPermSize=6M
@@ -747,7 +779,7 @@ public class ConstantPoolOOMMock {
 }
 </code></pre>
 
-<h3 id="toc_35">4、元数据区可引起OutOfMemoryError异常：</h3>
+<h3 id="toc_36">4、元数据区可引起OutOfMemoryError异常：</h3>
 
 <pre><code class="language-java">import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -782,7 +814,7 @@ public class MetaSpaceMemory {
 }
 </code></pre>
 
-<h3 id="toc_36">5、直接内存OOM异常</h3>
+<h3 id="toc_37">5、直接内存OOM异常</h3>
 
 <pre><code class="language-java">/**
  * -XX:MaxDirectMemorySize=5M -Xmx20M

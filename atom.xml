@@ -4,13 +4,2647 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-08-28T00:28:28+08:00</updated>
+  <updated>2020-09-09T23:11:55+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[LVS  --- ip 链路层负载]]></title>
+    <link href="http://www.throne4j.com/15996615430684.html"/>
+    <updated>2020-09-09T22:25:43+08:00</updated>
+    <id>http://www.throne4j.com/15996615430684.html</id>
+    <content type="html"><![CDATA[
+<p>tcpdump 抓包的</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[zookeeper 入门]]></title>
+    <link href="http://www.throne4j.com/15996345259637.html"/>
+    <updated>2020-09-09T14:55:25+08:00</updated>
+    <id>http://www.throne4j.com/15996345259637.html</id>
+    <content type="html"><![CDATA[
+<p>zkServer start<br/>
+zkCli.sh -server 127.0.0.1:2181</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Object 对象]]></title>
+    <link href="http://www.throne4j.com/15993982232051.html"/>
+    <updated>2020-09-06T21:17:03+08:00</updated>
+    <id>http://www.throne4j.com/15993982232051.html</id>
+    <content type="html"><![CDATA[
+<p>waitSet</p>
+
+<p>entrySet</p>
+
+<h2 id="toc_0">wait 方法</h2>
+
+<h2 id="toc_1">sleep 与 wait 区别</h2>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[redis.conf 详解]]></title>
+    <link href="http://www.throne4j.com/15991189115875.html"/>
+    <updated>2020-09-03T15:41:51+08:00</updated>
+    <id>http://www.throne4j.com/15991189115875.html</id>
+    <content type="html"><![CDATA[
+<pre><code class="language-text"># Redis configuration file example.
+#
+# Note that in order to read the configuration file, Redis must be
+# started with the file path as first argument:
+#
+# ./redis-server /path/to/redis.conf
+#以上--redis启动说明：redis启动指令的第一个参数必须是配置文件路径
+
+# Note on units: when memory size is needed, it is possible to specify
+# it in the usual form of 1k 5GB 4M and so forth:
+#
+# 1k =&gt; 1000 bytes
+# 1kb =&gt; 1024 bytes
+# 1m =&gt; 1000000 bytes
+# 1mb =&gt; 1024*1024 bytes
+# 1g =&gt; 1000000000 bytes
+# 1gb =&gt; 1024*1024*1024 bytes
+#
+# units are case insensitive so 1GB 1Gb 1gB are all the same.
+# 以上--units单位说明：定义了基本度量单位，并且说明不区分单位大小写
+
+################################## INCLUDES ###################################
+
+# Include one or more other config files here.  This is useful if you
+# have a standard template that goes to all Redis servers but also need
+# to customize a few per-server settings.  Include files can include
+# other files, so use this wisely.
+#
+# Notice option &quot;include&quot; won&#39;t be rewritten by command &quot;CONFIG REWRITE&quot;
+# from admin or Redis Sentinel. Since Redis always uses the last processed
+# line as value of a configuration directive, you&#39;d better put includes
+# at the beginning of this file to avoid overwriting config change at runtime.
+#
+# If instead you are interested in using includes to override configuration
+# options, it is better to use include as the last line.
+#
+# include /path/to/local.conf
+# include /path/to/other.conf
+#以上--INCLUDES：redis.conf作为配置总闸，可以在此处关联其它配置文件
+
+################################## NETWORK #####################################
+
+# By default, if no &quot;bind&quot; configuration directive is specified, Redis listens
+# for connections from all the network interfaces available on the server.
+# It is possible to listen to just one or multiple selected interfaces using
+# the &quot;bind&quot; configuration directive, followed by one or more IP addresses.
+#
+# Examples:
+#
+# bind 192.168.1.100 10.0.0.1
+# bind 127.0.0.1 ::1
+#
+# ~~~ WARNING ~~~ If the computer running Redis is directly exposed to the
+# internet, binding to all the interfaces is dangerous and will expose the
+# instance to everybody on the internet. So by default we uncomment the
+# following bind directive, that will force Redis to listen only into
+# the IPv4 lookback interface address (this means Redis will be able to
+# accept connections only from clients running into the same computer it
+# is running).
+#
+# IF YOU ARE SURE YOU WANT YOUR INSTANCE TO LISTEN TO ALL THE INTERFACES
+# JUST COMMENT THE FOLLOWING LINE.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bind 127.0.0.1
+#以上--IP绑定说明，默认绑定本次127.0.0.1，可以设置绑定单个或多个IP，如果不设置，则redis表示对全部IP开放
+
+# Protected mode is a layer of security protection, in order to avoid that
+# Redis instances left open on the internet are accessed and exploited.
+#
+# When protected mode is on and if:
+#
+# 1) The server is not binding explicitly to a set of addresses using the
+#    &quot;bind&quot; directive.
+# 2) No password is configured.
+#
+# The server only accepts connections from clients connecting from the
+# IPv4 and IPv6 loopback addresses 127.0.0.1 and ::1, and from Unix domain
+# sockets.
+#
+# By default protected mode is enabled. You should disable it only if
+# you are sure you want clients from other hosts to connect to Redis
+# even if no authentication is configured, nor a specific set of interfaces
+# are explicitly listed using the &quot;bind&quot; directive.
+protected-mode yes
+#以上--redis3.2版本后新增protected-mode配置，默认是yes，即开启。设置外部网络连接redis服务，设置方式如下：1、关闭protected-mode模式，此时外部网络可以直接访问；2、开启protected-mode保护模式，需配置bind ip或者设置访问密码
+
+# Accept connections on the specified port, default is 6379 (IANA #815344).
+# If port 0 is specified Redis will not listen on a TCP socket.
+port 6379
+#以上--redis默认端口号
+
+# TCP listen() backlog.
+#
+# In high requests-per-second environments you need an high backlog in order
+# to avoid slow clients connections issues. Note that the Linux kernel
+# will silently truncate it to the value of /proc/sys/net/core/somaxconn so
+# make sure to raise both the value of somaxconn and tcp_max_syn_backlog
+# in order to get the desired effect.
+tcp-backlog 511
+#以上--tcp-backlog，设置tcp的backlog，backlog其实是一个连接队列，backlog队列总和=未完成三次握手队列 + 已经完成三次握手队列。在高并发环境下你需要一个高backlog值来避免慢客户端连接问题。注意Linux内核会将这个值减小到/proc/sys/net/core/somaxconn的值，所以需要确认增大somaxconn和tcp_max_syn_backlog两个值来达到想要的效果
+
+# Unix socket.
+#
+# Specify the path for the Unix socket that will be used to listen for
+# incoming connections. There is no default, so Redis will not listen
+# on a unix socket when not specified.
+#
+# unixsocket /tmp/redis.sock
+# unixsocketperm 700
+#以上--Unix socket，没有默认值，即默认不监听Unix socket
+
+# Close the connection after a client is idle for N seconds (0 to disable)
+timeout 0
+#以上-timeout：指一个连接闲置多久后会被关闭，默认0，表示不关闭
+
+# TCP keepalive.
+#
+# If non-zero, use SO_KEEPALIVE to send TCP ACKs to clients in absence
+# of communication. This is useful for two reasons:
+#
+# 1) Detect dead peers.
+# 2) Take the connection alive from the point of view of network
+#    equipment in the middle.
+#
+# On Linux, the specified value (in seconds) is the period used to send ACKs.
+# Note that to close the connection the double of the time is needed.
+# On other kernels the period depends on the kernel configuration.
+#
+# A reasonable value for this option is 300 seconds, which is the new
+# Redis default starting with Redis 3.2.1.
+tcp-keepalive 300
+#以上--TCP keepalive： 单位为秒，如果设置为0，则不会进行Keepalive检测，建议设置成60 
+
+################################# GENERAL #####################################
+
+# By default Redis does not run as a daemon. Use &#39;yes&#39; if you need it.
+# Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
+daemonize no
+#以上--daemonize：redis是否已后台进程的方式运行，默认NO
+
+# If you run Redis from upstart or systemd, Redis can interact with your
+# supervision tree. Options:
+#   supervised no      - no supervision interaction
+#   supervised upstart - signal upstart by putting Redis into SIGSTOP mode
+#   supervised systemd - signal systemd by writing READY=1 to $NOTIFY_SOCKET
+#   supervised auto    - detect upstart or systemd method based on
+#                        UPSTART_JOB or NOTIFY_SOCKET environment variables
+# Note: these supervision methods only signal &quot;process is ready.&quot;
+#       They do not enable continuous liveness pings back to your supervisor.
+supervised no
+#以上--supervised：可以通过upstart和systemd管理Redis守护进程。
+   #supervised no - 没有监督互动
+   #supervised upstart - 通过将Redis置于SIGSTOP模式来启动信号
+   #supervised systemd - signal systemd将READY = 1写入$ NOTIFY_SOCKET
+   #supervised auto - 检测upstart或systemd方法基于 UPSTART_JOB或NOTIFY_SOCKET环境变量
+
+# If a pid file is specified, Redis writes it where specified at startup
+# and removes it at exit.
+#
+# When the server runs non daemonized, no pid file is created if none is
+# specified in the configuration. When the server is daemonized, the pid file
+# is used even if not specified, defaulting to &quot;/var/run/redis.pid&quot;.
+#
+# Creating a pid file is best effort: if Redis is not able to create it
+# nothing bad happens, the server will start and run normally.
+pidfile /var/run/redis_6379.pid
+#以上-pidfile：配置PID文件路径，当redis作为守护进程运行的时候，它会把 pid 默认写到 /var/redis/run/redis_6379.pid 文件里面
+
+# Specify the server verbosity level.
+# This can be one of:
+# debug (a lot of information, useful for development/testing)
+# verbose (many rarely useful info, but not a mess like the debug level)
+# notice (moderately verbose, what you want in production probably)
+# warning (only very important / critical messages are logged)
+loglevel notice
+#以上-loglevel：redis日志级别。  debug（记录大量日志信息，适用于开发、测试阶段）；verbose（较多日志信息）；notice（适量日志信息，使用于生产环境）；warning（仅有部分重要、关键信息才会被记录）
+
+# Specify the log file name. Also the empty string can be used to force
+# Redis to log on the standard output. Note that if you use standard
+# output for logging but daemonize, logs will be sent to /dev/null
+logfile &quot;&quot;
+#以上--logfile:日志文件的位置，当指定为空字符串时，为标准输出，如果redis已守护进程模式运行，那么日志将会输出到/dev/null
+
+# To enable logging to the system logger, just set &#39;syslog-enabled&#39; to yes,
+# and optionally update the other syslog parameters to suit your needs.
+# syslog-enabled no
+#以上--syslog-enabled：要想把日志记录到系统日志，就把它改成 yes，也可以可选择性的更新其他的syslog 参数以达到你的要求
+
+# Specify the syslog identity.
+# syslog-ident redis
+#以上--syslog-ident：设置系统日志的ID
+
+# Specify the syslog facility. Must be USER or between LOCAL0-LOCAL7.
+# syslog-facility local0
+#以上--syslog-facility：指定系统日志设置，必须是 USER 或者是 LOCAL0-LOCAL7 之间的值
+
+# Set the number of databases. The default database is DB 0, you can select
+# a different one on a per-connection basis using SELECT &lt;dbid&gt; where
+# dbid is a number between 0 and &#39;databases&#39;-1
+databases 16
+#以上--databases：设置数据库的数目。默认的数据库是DB 0 ，可以在每个连接上使用select  &lt;dbid&gt; 命令选择一个不同的数据库，dbid是一个介于0到databases - 1 之间的数值。
+
+################################ SNAPSHOTTING  ################################
+#
+# Save the DB on disk:
+#
+#   save &lt;seconds&gt; &lt;changes&gt;
+#
+#   Will save the DB if both the given number of seconds and the given
+#   number of write operations against the DB occurred.
+#
+#   In the example below the behaviour will be to save:
+#   after 900 sec (15 min) if at least 1 key changed
+#   after 300 sec (5 min) if at least 10 keys changed
+#   after 60 sec if at least 10000 keys changed
+#
+#   Note: you can disable saving completely by commenting out all &quot;save&quot; lines.
+#
+#   It is also possible to remove all the previously configured save
+#   points by adding a save directive with a single empty string argument
+#   like in the following example:
+#
+#   save &quot;&quot;
+
+save 900 1
+save 300 10
+save 60 10000
+#以上--Save the DB on disk：
+    #格式：save &lt;间隔时间（秒）&gt; &lt;写入次数&gt;
+    #根据给定的时间间隔和写入次数将数据保存到磁盘
+    #下面的例子的意思是：
+    #900 秒内如果至少有 1 个 key 的值变化，则保存
+    #300 秒内如果至少有 10 个 key 的值变化，则保存
+    #60 秒内如果至少有 10000 个 key 的值变化，则保存
+    #注意：你可以注释掉所有的 save 行来停用保存功能。
+    #也可以直接一个空字符串来实现停用：
+
+# By default Redis will stop accepting writes if RDB snapshots are enabled
+# (at least one save point) and the latest background save failed.
+# This will make the user aware (in a hard way) that data is not persisting
+# on disk properly, otherwise chances are that no one will notice and some
+# disaster will happen.
+#
+# If the background saving process will start working again Redis will
+# automatically allow writes again.
+#
+# However if you have setup your proper monitoring of the Redis server
+# and persistence, you may want to disable this feature so that Redis will
+# continue to work as usual even if there are problems with disk,
+# permissions, and so forth.
+stop-writes-on-bgsave-error yes
+#以上--stop-writes-on-bgsave-error：
+  #如果用户开启了RDB快照功能，那么在redis持久化数据到磁盘时如果出现失败，默认情况下，redis会停止接受所有的写请求。
+  #这样做的好处在于可以让用户很明确的知道内存中的数据和磁盘上的数据已经存在不一致了。
+  #如果redis不顾这种不一致，一意孤行的继续接收写请求，就可能会引起一些灾难性的后果。
+  #如果下一次RDB持久化成功，redis会自动恢复接受写请求。
+  #如果不在乎这种数据不一致或者有其他的手段发现和控制这种不一致的话，可以关闭这个功能，
+  #以便在快照写入失败时，也能确保redis继续接受新的写请求。
+
+# Compress string objects using LZF when dump .rdb databases?
+# For default that&#39;s set to &#39;yes&#39; as it&#39;s almost always a win.
+# If you want to save some CPU in the saving child set it to &#39;no&#39; but
+# the dataset will likely be bigger if you have compressible values or keys.
+rdbcompression yes
+#以上--rdbcompression： 对于存储到磁盘中的快照，可以设置是否进行压缩存储。如果是的话，redis会采用LZF算法进行压缩。如果你不想消耗CPU来进行压缩的话，可以设置为关闭此功能，但是存储在磁盘上的快照会比较大。
+
+# Since version 5 of RDB a CRC64 checksum is placed at the end of the file.
+# This makes the format more resistant to corruption but there is a performance
+# hit to pay (around 10%) when saving and loading RDB files, so you can disable it
+# for maximum performances.
+#
+# RDB files created with checksum disabled have a checksum of zero that will
+# tell the loading code to skip the check.
+rdbchecksum yes
+#以上--rdbchecksum：在存储快照后，我们还可以让redis使用CRC64算法来进行数据校验，但是这样做会增加大约10%的性能消耗，如果希望获取到最大的性能提升，可以关闭此功能。
+
+# The filename where to dump the DB
+dbfilename dump.rdb
+#以上--dbfilename：设置快照的文件名
+
+# The working directory.
+#
+# The DB will be written inside this directory, with the filename specified
+# above using the &#39;dbfilename&#39; configuration directive.
+#
+# The Append Only File will also be created inside this directory.
+#
+# Note that you must specify a directory here, not a file name.
+dir ./
+#以上--dir：设置快照文件的存放路径，这个配置项一定是个目录，而不能是文件名
+
+################################# REPLICATION #################################
+
+# Master-Slave replication. Use slaveof to make a Redis instance a copy of
+# another Redis server. A few things to understand ASAP about Redis replication.
+#
+# 1) Redis replication is asynchronous, but you can configure a master to
+#    stop accepting writes if it appears to be not connected with at least
+#    a given number of slaves.
+# 2) Redis slaves are able to perform a partial resynchronization with the
+#    master if the replication link is lost for a relatively small amount of
+#    time. You may want to configure the replication backlog size (see the next
+#    sections of this file) with a sensible value depending on your needs.
+# 3) Replication is automatic and does not need user intervention. After a
+#    network partition slaves automatically try to reconnect to masters
+#    and resynchronize with them.
+#
+# slaveof &lt;masterip&gt; &lt;masterport&gt;
+#以上--slaveof：  主从复制，使用 slaveof 来让一个 redis 实例成为另一个reids 实例的副本，默认关闭。注意这个只需要在 slave 上配置
+
+# If the master is password protected (using the &quot;requirepass&quot; configuration
+# directive below) it is possible to tell the slave to authenticate before
+# starting the replication synchronization process, otherwise the master will
+# refuse the slave request.
+#
+# masterauth &lt;master-password&gt;
+#以上--masterauth：如果 master 需要密码认证，就在这里设置，默认不设置
+
+# When a slave loses its connection with the master, or when the replication
+# is still in progress, the slave can act in two different ways:
+#
+# 1) if slave-serve-stale-data is set to &#39;yes&#39; (the default) the slave will
+#    still reply to client requests, possibly with out of date data, or the
+#    data set may just be empty if this is the first synchronization.
+#
+# 2) if slave-serve-stale-data is set to &#39;no&#39; the slave will reply with
+#    an error &quot;SYNC with master in progress&quot; to all the kind of commands
+#    but to INFO and SLAVEOF.
+#
+slave-serve-stale-data yes
+#以上--slave-serve-stale-data：
+  #当一个 slave 与 master 失去联系，或者复制正在进行的时候，
+  #slave 可能会有两种表现：
+  #1) 如果为 yes ，slave 仍然会应答客户端请求，但返回的数据可能是过时，
+  #   或者数据可能是空的在第一次同步的时候
+  #2) 如果为 no ，在你执行除了 info he salveof 之外的其他命令时，
+  #   slave 都将返回一个 &quot;SYNC with master in progress&quot; 的错误
+
+# You can configure a slave instance to accept writes or not. Writing against
+# a slave instance may be useful to store some ephemeral data (because data
+# written on a slave will be easily deleted after resync with the master) but
+# may also cause problems if clients are writing to it because of a
+# misconfiguration.
+#
+# Since Redis 2.6 by default slaves are read-only.
+#
+# Note: read only slaves are not designed to be exposed to untrusted clients
+# on the internet. It&#39;s just a protection layer against misuse of the instance.
+# Still a read only slave exports by default all the administrative commands
+# such as CONFIG, DEBUG, and so forth. To a limited extent you can improve
+# security of read only slaves using &#39;rename-command&#39; to shadow all the
+# administrative / dangerous commands.
+slave-read-only yes
+#以上--slave-read-only:   
+  #你可以配置一个 slave 实体是否接受写入操作。
+  #通过写入操作来存储一些短暂的数据对于一个 slave 实例来说可能是有用的，
+  #因为相对从 master 重新同步数而言，据数据写入到 slave 会更容易被删除。
+  #但是如果客户端因为一个错误的配置写入，也可能会导致一些问题。
+  #从 redis 2.6 版起，默认 slaves 都是只读的。
+
+# Replication SYNC strategy: disk or socket.
+#
+# -------------------------------------------------------
+# WARNING: DISKLESS REPLICATION IS EXPERIMENTAL CURRENTLY
+# -------------------------------------------------------
+#
+# New slaves and reconnecting slaves that are not able to continue the replication
+# process just receiving differences, need to do what is called a &quot;full
+# synchronization&quot;. An RDB file is transmitted from the master to the slaves.
+# The transmission can happen in two different ways:
+#
+# 1) Disk-backed: The Redis master creates a new process that writes the RDB
+#                 file on disk. Later the file is transferred by the parent
+#                 process to the slaves incrementally.
+# 2) Diskless: The Redis master creates a new process that directly writes the
+#              RDB file to slave sockets, without touching the disk at all.
+#
+# With disk-backed replication, while the RDB file is generated, more slaves
+# can be queued and served with the RDB file as soon as the current child producing
+# the RDB file finishes its work. With diskless replication instead once
+# the transfer starts, new slaves arriving will be queued and a new transfer
+# will start when the current one terminates.
+#
+# When diskless replication is used, the master waits a configurable amount of
+# time (in seconds) before starting the transfer in the hope that multiple slaves
+# will arrive and the transfer can be parallelized.
+#
+# With slow disks and fast (large bandwidth) networks, diskless replication
+# works better.
+repl-diskless-sync no
+#以上--repl-diskless-sync
+  #主从数据复制是否使用无硬盘复制功能。
+  #新的从站和重连后不能继续备份的从站，需要做所谓的“完全备份”，即将一个RDB文件从主站传送到从站。
+  #这个传送有以下两种方式：
+  #1）硬盘备份：redis主站创建一个新的进程，用于把RDB文件写到硬盘上。过一会儿，其父进程递增地将文件传送给从站。
+  #2）无硬盘备份：redis主站创建一个新的进程，子进程直接把RDB文件写到从站的套接字，不需要用到硬盘。
+  #在硬盘备份的情况下，主站的子进程生成RDB文件。一旦生成，多个从站可以立即排成队列使用主站的RDB文件。
+  #在无硬盘备份的情况下，一次RDB传送开始，新的从站到达后，需要等待现在的传送结束，才能开启新的传送。
+  #如果使用无硬盘备份，主站会在开始传送之间等待一段时间（可配置，以秒为单位），希望等待多个子站到达后并行传送。
+  #在硬盘低速而网络高速（高带宽）情况下，无硬盘备份更好。
+
+# When diskless replication is enabled, it is possible to configure the delay
+# the server waits in order to spawn the child that transfers the RDB via socket
+# to the slaves.
+#
+# This is important since once the transfer starts, it is not possible to serve
+# new slaves arriving, that will be queued for the next RDB transfer, so the server
+# waits a delay in order to let more slaves arrive.
+#
+# The delay is specified in seconds, and by default is 5 seconds. To disable
+# it entirely just set it to 0 seconds and the transfer will start ASAP.
+repl-diskless-sync-delay 5
+#以上--repl-diskless-sync-delay：
+  #当启用无硬盘备份，服务器等待一段时间后才会通过套接字向从站传送RDB文件，这个等待时间是可配置的。
+  #这一点很重要，因为一旦传送开始，就不可能再为一个新到达的从站服务。从站则要排队等待下一次RDB传送。因此服务器等待一段
+  #时间以期更多的从站到达。
+  #延迟时间以秒为单位，默认为5秒。要关掉这一功能，只需将它设置为0秒，传送会立即启动。
+
+# Slaves send PINGs to server in a predefined interval. It&#39;s possible to change
+# this interval with the repl_ping_slave_period option. The default value is 10
+# seconds.
+#
+# repl-ping-slave-period 10
+#以上--repl-ping-slave-period： 从redis会周期性的向主redis发出PING包，你可以通过repl_ping_slave_period指令来控制其周期，默认是10秒。
+
+# The following option sets the replication timeout for:
+#
+# 1) Bulk transfer I/O during SYNC, from the point of view of slave.
+# 2) Master timeout from the point of view of slaves (data, pings).
+# 3) Slave timeout from the point of view of masters (REPLCONF ACK pings).
+#
+# It is important to make sure that this value is greater than the value
+# specified for repl-ping-slave-period otherwise a timeout will be detected
+# every time there is low traffic between the master and the slave.
+#
+# repl-timeout 60
+#以上--repl-timeout：
+  #接下来的选项为以下内容设置备份的超时时间：
+  #1）从从站的角度，同步期间的批量传输的I/O
+  #2）从站角度认为的主站超时（数据，ping）
+  #3）主站角度认为的从站超时（REPLCONF ACK pings)
+  #确认这些值比定义的repl-ping-slave-period要大，否则每次主站和从站之间通信低速时都会被检测为超时。
+
+# Disable TCP_NODELAY on the slave socket after SYNC?
+#
+# If you select &quot;yes&quot; Redis will use a smaller number of TCP packets and
+# less bandwidth to send data to slaves. But this can add a delay for
+# the data to appear on the slave side, up to 40 milliseconds with
+# Linux kernels using a default configuration.
+#
+# If you select &quot;no&quot; the delay for data to appear on the slave side will
+# be reduced but more bandwidth will be used for replication.
+#
+# By default we optimize for low latency, but in very high traffic conditions
+# or when the master and slaves are many hops away, turning this to &quot;yes&quot; may
+# be a good idea.
+repl-disable-tcp-nodelay no
+#以上--repl-disable-tcp-nodelay：
+  #同步之后是否禁用从站上的TCP_NODELAY
+  #如果你选择yes，redis会使用较少量的TCP包和带宽向从站发送数据。但这会导致在从站增加一点数据的延时。
+  #Linux内核默认配置情况下最多40毫秒的延时。
+  #如果选择no，从站的数据延时不会那么多，但备份需要的带宽相对较多。
+  #默认情况下我们将潜在因素优化，但在高负载情况下或者在主从站都跳的情况下，把它切换为yes是个好主意。
+
+# Set the replication backlog size. The backlog is a buffer that accumulates
+# slave data when slaves are disconnected for some time, so that when a slave
+# wants to reconnect again, often a full resync is not needed, but a partial
+# resync is enough, just passing the portion of data the slave missed while
+# disconnected.
+#
+# The bigger the replication backlog, the longer the time the slave can be
+# disconnected and later be able to perform a partial resynchronization.
+#
+# The backlog is only allocated once there is at least a slave connected.
+#
+# repl-backlog-size 1mb
+#以上--repl-backlog-size：
+  #设置备份的工作储备大小。工作储备是一个缓冲区，当从站断开一段时间的情况时，它替从站接收存储数据，
+  #因此当从站重连时，通常不需要完全备份，只需要一个部分同步就可以，即把从站断开时错过的一部分数据接收。
+  #工作储备越大，从站可以断开并稍后执行部分同步的断开时间就越长。
+  #只要有一个从站连接，就会立刻分配一个工作储备。
+
+
+# After a master has no longer connected slaves for some time, the backlog
+# will be freed. The following option configures the amount of seconds that
+# need to elapse, starting from the time the last slave disconnected, for
+# the backlog buffer to be freed.
+#
+# A value of 0 means to never release the backlog.
+#
+# repl-backlog-ttl 3600
+#以上--repl-backlog-ttl：
+  #主站有一段时间没有与从站连接，对应的工作储备就会自动释放。
+  #这个选项用于配置释放前等待的秒数，秒数从断开的那一刻开始计算，值为0表示不释放。
+
+# The slave priority is an integer number published by Redis in the INFO output.
+# It is used by Redis Sentinel in order to select a slave to promote into a
+# master if the master is no longer working correctly.
+#
+# A slave with a low priority number is considered better for promotion, so
+# for instance if there are three slaves with priority 10, 100, 25 Sentinel will
+# pick the one with priority 10, that is the lowest.
+#
+# However a special priority of 0 marks the slave as not able to perform the
+# role of master, so a slave with priority of 0 will never be selected by
+# Redis Sentinel for promotion.
+#
+# By default the priority is 100.
+slave-priority 100
+#以上--slave-priority：
+  #从站优先级是可以从redis的INFO命令输出中查到的一个整数。当主站不能正常工作时
+  #redis sentinel使用它来选择一个从站并将它提升为主站。
+  #优先级的从站被认为更适合于提升，因此如果有三个从站优先级分别是10，
+  #100，25，sentinel会选择优先级为10的从站，因为它的优先级最低。
+  #然而优先级值为0的从站不能执行主站的角色，因此优先级为0的从站永远不会被redis sentinel提升。
+  #默认优先级是100
+
+# It is possible for a master to stop accepting writes if there are less than
+# N slaves connected, having a lag less or equal than M seconds.
+#
+# The N slaves need to be in &quot;online&quot; state.
+#
+# The lag in seconds, that must be &lt;= the specified value, is calculated from
+# the last ping received from the slave, that is usually sent every second.
+#
+# This option does not GUARANTEE that N replicas will accept the write, but
+# will limit the window of exposure for lost writes in case not enough slaves
+# are available, to the specified number of seconds.
+#
+# For example to require at least 3 slaves with a lag &lt;= 10 seconds use:
+#
+# min-slaves-to-write 3
+# min-slaves-max-lag 10
+#
+# Setting one or the other to 0 disables the feature.
+#
+# By default min-slaves-to-write is set to 0 (feature disabled) and
+# min-slaves-max-lag is set to 10.
+#以上
+  #主站可以停止接受写请求，当与它连接的从站少于N个，滞后少于M秒，N个从站必须是在线状态。
+  #延迟的秒数必须&lt;=所定义的值，延迟秒数是从最后一次收到的来自从站的ping开始计算。ping通常是每秒一次。
+  #这一选项并不保证N个备份都会接受写请求，但是会限制在指定秒数内由于从站数量不够导致的写操作丢失的情况。
+  #如果想要至少3个从站且延迟少于10秒，如上配置即可
+
+# A Redis master is able to list the address and port of the attached
+# slaves in different ways. For example the &quot;INFO replication&quot; section
+# offers this information, which is used, among other tools, by
+# Redis Sentinel in order to discover slave instances.
+# Another place where this info is available is in the output of the
+# &quot;ROLE&quot; command of a masteer.
+#
+# The listed IP and address normally reported by a slave is obtained
+# in the following way:
+#
+#   IP: The address is auto detected by checking the peer address
+#   of the socket used by the slave to connect with the master.
+#
+#   Port: The port is communicated by the slave during the replication
+#   handshake, and is normally the port that the slave is using to
+#   list for connections.
+#
+# However when port forwarding or Network Address Translation (NAT) is
+# used, the slave may be actually reachable via different IP and port
+# pairs. The following two options can be used by a slave in order to
+# report to its master a specific set of IP and port, so that both INFO
+# and ROLE will report those values.
+#
+# There is no need to use both the options if you need to override just
+# the port or the IP address.
+#
+# slave-announce-ip 5.5.5.5
+# slave-announce-port 1234
+#以上--
+ #Redis master能够以不同的方式列出所连接slave的地址和端口。
+ #例如，“INFO replication”部分提供此信息，除了其他工具之外，Redis Sentinel还使用该信息来发现slave实例。
+ #此信息可用的另一个地方在masterser的“ROLE”命令的输出中。
+ #通常由slave报告的列出的IP和地址,通过以下方式获得：
+ #IP：通过检查slave与master连接使用的套接字的对等体地址自动检测地址。
+ #端口：端口在复制握手期间由slavet通信，并且通常是slave正在使用列出连接的端口。
+ #然而，当使用端口转发或网络地址转换（NAT）时，slave实际上可以通过(不同的IP和端口对)来到达。 slave可以使用以下两个选项，以便向master报告一组特定的IP和端口，
+ #以便INFO和ROLE将报告这些值。
+ #如果你需要仅覆盖端口或IP地址，则没必要使用这两个选项。
+
+
+################################## SECURITY ###################################
+
+# Require clients to issue AUTH &lt;PASSWORD&gt; before processing any other
+# commands.  This might be useful in environments in which you do not trust
+# others with access to the host running redis-server.
+#
+# This should stay commented out for backward compatibility and because most
+# people do not need auth (e.g. they run their own servers).
+#
+# Warning: since Redis is pretty fast an outside user can try up to
+# 150k passwords per second against a good box. This means that you should
+# use a very strong password otherwise it will be very easy to break.
+#
+# requirepass foobared
+#以上--requirepass：设置redis连接密码
+
+# Command renaming.
+#
+# It is possible to change the name of dangerous commands in a shared
+# environment. For instance the CONFIG command may be renamed into something
+# hard to guess so that it will still be available for internal-use tools
+# but not available for general clients.
+#
+# Example:
+#
+# rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c52
+#
+# It is also possible to completely kill a command by renaming it into
+# an empty string:
+#
+# rename-command CONFIG &quot;&quot;
+#
+# Please note that changing the name of commands that are logged into the
+# AOF file or transmitted to slaves may cause problems.
+#以上--rename-command CONFIG： 将命令重命名，为了安全考虑，可以将某些重要的、危险的命令重命名。当你把某个命令重命名成空字符串的时候就等于取消了这个命令。
+
+################################### LIMITS ####################################
+
+# Set the max number of connected clients at the same time. By default
+# this limit is set to 10000 clients, however if the Redis server is not
+# able to configure the process file limit to allow for the specified limit
+# the max number of allowed clients is set to the current file limit
+# minus 32 (as Redis reserves a few file descriptors for internal uses).
+#
+# Once the limit is reached Redis will close all the new connections sending
+# an error &#39;max number of clients reached&#39;.
+#
+# maxclients 10000
+#以上--maxclients：
+  #设置客户端最大并发连接数，默认无限制，Redis可以同时打开的客户端连接数为Redis进程可以打开的最大文件
+  #描述符数-32（redis server自身会使用一些），如果设置 maxclients为0
+  #表示不作限制。当客户端连接数到达限制时，Redis会关闭新的连接并向客户端返回max number of clients reached错误信息
+
+# Don&#39;t use more memory than the specified amount of bytes.
+# When the memory limit is reached Redis will try to remove keys
+# according to the eviction policy selected (see maxmemory-policy).
+#
+# If Redis can&#39;t remove keys according to the policy, or if the policy is
+# set to &#39;noeviction&#39;, Redis will start to reply with errors to commands
+# that would use more memory, like SET, LPUSH, and so on, and will continue
+# to reply to read-only commands like GET.
+#
+# This option is usually useful when using Redis as an LRU cache, or to set
+# a hard memory limit for an instance (using the &#39;noeviction&#39; policy).
+#
+# WARNING: If you have slaves attached to an instance with maxmemory on,
+# the size of the output buffers needed to feed the slaves are subtracted
+# from the used memory count, so that network problems / resyncs will
+# not trigger a loop where keys are evicted, and in turn the output
+# buffer of slaves is full with DELs of keys evicted triggering the deletion
+# of more keys, and so forth until the database is completely emptied.
+#
+# In short... if you have slaves attached it is suggested that you set a lower
+# limit for maxmemory so that there is some free RAM on the system for slave
+# output buffers (but this is not needed if the policy is &#39;noeviction&#39;).
+#
+# maxmemory &lt;bytes&gt;
+#以上--maxmemory：
+  #指定Redis最大内存限制，Redis在启动时会把数据加载到内存中，达到最大内存后，Redis会先尝试清除已到期或即将到期的Key
+  #当此方法处理 后，仍然到达最大内存设置，将无法再进行写入操作，但仍然可以进行读取操作。Redis新的vm机制，
+  #会把Key存放内存，Value会存放在swap区，格式：maxmemory &lt;bytes&gt;
+
+# MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
+# is reached. You can select among five behaviors:
+#
+# volatile-lru -&gt; remove the key with an expire set using an LRU algorithm
+# allkeys-lru -&gt; remove any key according to the LRU algorithm
+# volatile-random -&gt; remove a random key with an expire set
+# allkeys-random -&gt; remove a random key, any key
+# volatile-ttl -&gt; remove the key with the nearest expire time (minor TTL)
+# noeviction -&gt; don&#39;t expire at all, just return an error on write operations
+#
+# Note: with any of the above policies, Redis will return an error on write
+#       operations, when there are no suitable keys for eviction.
+#
+#       At the date of writing these commands are: set setnx setex append
+#       incr decr rpush lpush rpushx lpushx linsert lset rpoplpush sadd
+#       sinter sinterstore sunion sunionstore sdiff sdiffstore zadd zincrby
+#       zunionstore zinterstore hset hsetnx hmset hincrby incrby decrby
+#       getset mset msetnx exec sort
+#
+# The default is:
+#
+# maxmemory-policy noeviction
+#以上--maxmemory-policy：
+  #当内存使用达到最大值时，redis使用的清楚策略。有以下几种可以选择：
+  #1）volatile-lru   利用LRU算法移除设置过过期时间的key (LRU:最近使用 Least Recently Used )
+  #2）allkeys-lru   利用LRU算法移除任何key
+  #3）volatile-random 移除设置过过期时间的随机key
+  #4）allkeys-random  移除随机ke
+  #5）volatile-ttl   移除即将过期的key(minor TTL)
+  #6）noeviction  noeviction   不移除任何key，只是返回一个写错误 ，默认选项
+
+
+# LRU and minimal TTL algorithms are not precise algorithms but approximated
+# algorithms (in order to save memory), so you can tune it for speed or
+# accuracy. For default Redis will check five keys and pick the one that was
+# used less recently, you can change the sample size using the following
+# configuration directive.
+#
+# The default of 5 produces good enough results. 10 Approximates very closely
+# true LRU but costs a bit more CPU. 3 is very fast but not very accurate.
+#
+# maxmemory-samples 5
+#以上--maxmemory-samples：LRU 和 minimal TTL 算法都不是精准的算法，但是相对精确的算法(为了节省内存)；随意你可以选择样本大小进行检，redis默认选择3个样本进行检测，你可以通过maxmemory-samples进行设置样本数
+
+
+############################## APPEND ONLY MODE ###############################
+
+# By default Redis asynchronously dumps the dataset on disk. This mode is
+# good enough in many applications, but an issue with the Redis process or
+# a power outage may result into a few minutes of writes lost (depending on
+# the configured save points).
+#
+# The Append Only File is an alternative persistence mode that provides
+# much better durability. For instance using the default data fsync policy
+# (see later in the config file) Redis can lose just one second of writes in a
+# dramatic event like a server power outage, or a single write if something
+# wrong with the Redis process itself happens, but the operating system is
+# still running correctly.
+#
+# AOF and RDB persistence can be enabled at the same time without problems.
+# If the AOF is enabled on startup Redis will load the AOF, that is the file
+# with the better durability guarantees.
+#
+# Please check http://redis.io/topics/persistence for more information.
+
+appendonly no
+#以上--appendonly：
+  #默认redis使用的是rdb方式持久化，这种方式在许多应用中已经足够用了。但是redis如果中途宕机，
+  #会导致可能有几分钟的数据丢失，根据save来策略进行持久化，Append Only File是另一种持久化方式，
+  #可以提供更好的持久化特性。Redis会把每次写入的数据在接收后都写入appendonly.aof文件，
+  #每次启动时Redis都会先把这个文件的数据读入内存里，先忽略RDB文件。
+
+# The name of the append only file (default: &quot;appendonly.aof&quot;)
+
+appendfilename &quot;appendonly.aof&quot;
+#以上--appendfilename：aof文件名
+
+# The fsync() call tells the Operating System to actually write data on disk
+# instead of waiting for more data in the output buffer. Some OS will really flush
+# data on disk, some other OS will just try to do it ASAP.
+#
+# Redis supports three different modes:
+#
+# no: don&#39;t fsync, just let the OS flush the data when it wants. Faster.
+# always: fsync after every write to the append only log. Slow, Safest.
+# everysec: fsync only one time every second. Compromise.
+#
+# The default is &quot;everysec&quot;, as that&#39;s usually the right compromise between
+# speed and data safety. It&#39;s up to you to understand if you can relax this to
+# &quot;no&quot; that will let the operating system flush the output buffer when
+# it wants, for better performances (but if you can live with the idea of
+# some data loss consider the default persistence mode that&#39;s snapshotting),
+# or on the contrary, use &quot;always&quot; that&#39;s very slow but a bit safer than
+# everysec.
+#
+# More details please check the following article:
+# http://antirez.com/post/redis-persistence-demystified.html
+#
+# If unsure, use &quot;everysec&quot;.
+
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+#以上--
+  #aof持久化策略的配置
+  #no表示不执行fsync，由操作系统保证数据同步到磁盘，速度最快。
+  #always表示每次写入都执行fsync，以保证数据同步到磁盘。
+  #everysec表示每秒执行一次fsync，可能会导致丢失这1s数据
+
+# When the AOF fsync policy is set to always or everysec, and a background
+# saving process (a background save or AOF log background rewriting) is
+# performing a lot of I/O against the disk, in some Linux configurations
+# Redis may block too long on the fsync() call. Note that there is no fix for
+# this currently, as even performing fsync in a different thread will block
+# our synchronous write(2) call.
+#
+# In order to mitigate this problem it&#39;s possible to use the following option
+# that will prevent fsync() from being called in the main process while a
+# BGSAVE or BGREWRITEAOF is in progress.
+#
+# This means that while another child is saving, the durability of Redis is
+# the same as &quot;appendfsync none&quot;. In practical terms, this means that it is
+# possible to lose up to 30 seconds of log in the worst scenario (with the
+# default Linux settings).
+#
+# If you have latency problems turn this to &quot;yes&quot;. Otherwise leave it as
+# &quot;no&quot; that is the safest pick from the point of view of durability.
+
+no-appendfsync-on-rewrite no
+#以上--no-appendfsync-on-rewrite：
+   #在aof重写或者写入rdb文件的时候，会执行大量IO，此时对于everysec和always的aof模式来说，
+   #执行fsync会造成阻塞过长时间，no-appendfsync-on-rewrite字段设置为默认设置为no。
+   #如果对延迟要求很高的应用，这个字段可以设置为yes，否则还是设置为no，这样对持久化特性来说这是更安全的选择。
+   #设置为yes表示rewrite期间对新写操作不fsync,暂时存在内存中,等rewrite完成后再写入，默认为no，建议yes。
+   #Linux的默认fsync策略是30秒。可能丢失30秒数据。
+
+# Automatic rewrite of the append only file.
+# Redis is able to automatically rewrite the log file implicitly calling
+# BGREWRITEAOF when the AOF log size grows by the specified percentage.
+#
+# This is how it works: Redis remembers the size of the AOF file after the
+# latest rewrite (if no rewrite has happened since the restart, the size of
+# the AOF at startup is used).
+#
+# This base size is compared to the current size. If the current size is
+# bigger than the specified percentage, the rewrite is triggered. Also
+# you need to specify a minimal size for the AOF file to be rewritten, this
+# is useful to avoid rewriting the AOF file even if the percentage increase
+# is reached but it is still pretty small.
+#
+# Specify a percentage of zero in order to disable the automatic AOF
+# rewrite feature.
+
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+#以上--
+  #aof自动重写配置，当目前aof文件大小超过上一次重写的aof文件大小的百分之多少进行重写，
+  #即当aof文件增长到一定大小的时候，Redis能够调用bgrewriteaof对日志文件进行重写。
+  #当前AOF文件大小是上次日志重写得到AOF文件大小的二倍（设置为100）时，自动启动新的日志重写过程。
+  #设置允许重写的最小aof文件大小，避免了达到约定百分比但尺寸仍然很小的情况还要重写
+
+# An AOF file may be found to be truncated at the end during the Redis
+# startup process, when the AOF data gets loaded back into memory.
+# This may happen when the system where Redis is running
+# crashes, especially when an ext4 filesystem is mounted without the
+# data=ordered option (however this can&#39;t happen when Redis itself
+# crashes or aborts but the operating system still works correctly).
+#
+# Redis can either exit with an error when this happens, or load as much
+# data as possible (the default now) and start if the AOF file is found
+# to be truncated at the end. The following option controls this behavior.
+#
+# If aof-load-truncated is set to yes, a truncated AOF file is loaded and
+# the Redis server starts emitting a log to inform the user of the event.
+# Otherwise if the option is set to no, the server aborts with an error
+# and refuses to start. When the option is set to no, the user requires
+# to fix the AOF file using the &quot;redis-check-aof&quot; utility before to restart
+# the server.
+#
+# Note that if the AOF file will be found to be corrupted in the middle
+# the server will still exit with an error. This option only applies when
+# Redis will try to read more data from the AOF file but not enough bytes
+# will be found.
+aof-load-truncated yes
+#以上--aof-load-truncated：
+  #aof文件可能在尾部是不完整的，当redis启动的时候，aof文件的数据被载入内存。
+  #重启可能发生在redis所在的主机操作系统宕机后，尤其在ext4文件系统没有加上data=ordered选项，出现这种现象
+  #redis宕机或者异常终止不会造成尾部不完整现象，可以选择让redis退出，或者导入尽可能多的数据。
+  #如果选择的是yes，当截断的aof文件被导入的时候，会自动发布一个log给客户端然后load。
+  #如果是no，用户必须手动redis-check-aof修复AOF文件才可以。
+
+################################ LUA SCRIPTING  ###############################
+
+# Max execution time of a Lua script in milliseconds.
+#
+# If the maximum execution time is reached Redis will log that a script is
+# still in execution after the maximum allowed time and will start to
+# reply to queries with an error.
+#
+# When a long running script exceeds the maximum execution time only the
+# SCRIPT KILL and SHUTDOWN NOSAVE commands are available. The first can be
+# used to stop a script that did not yet called write commands. The second
+# is the only way to shut down the server in the case a write command was
+# already issued by the script but the user doesn&#39;t want to wait for the natural
+# termination of the script.
+#
+# Set it to 0 or a negative value for unlimited execution without warnings.
+lua-time-limit 5000
+#以上--lua-time-limit：
+  #如果达到最大时间限制（毫秒），redis会记个log，然后返回error。当一个脚本超过了最大时限。
+  #只有SCRIPT KILL和SHUTDOWN NOSAVE可以用。第一个可以杀没有调write命令的东西。
+  #要是已经调用了write，只能用第二个命令杀
+  
+################################ REDIS CLUSTER  ###############################
+#
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# WARNING EXPERIMENTAL: Redis Cluster is considered to be stable code, however
+# in order to mark it as &quot;mature&quot; we need to wait for a non trivial percentage
+# of users to deploy it in production.
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+# Normal Redis instances can&#39;t be part of a Redis Cluster; only nodes that are
+# started as cluster nodes can. In order to start a Redis instance as a
+# cluster node enable the cluster support uncommenting the following:
+#
+# cluster-enabled yes
+#以上--cluster-enabled：集群开关，默认是不开启集群模式
+
+
+# Every cluster node has a cluster configuration file. This file is not
+# intended to be edited by hand. It is created and updated by Redis nodes.
+# Every Redis Cluster node requires a different cluster configuration file.
+# Make sure that instances running in the same system do not have
+# overlapping cluster configuration file names.
+#
+# cluster-config-file nodes-6379.conf
+#以上--cluster-config-file
+ #集群配置文件的名称，每个节点都有一个集群相关的配置文件，持久化保存集群的信息。
+ #这个文件并不需要手动配置，这个配置文件有Redis生成并更新，每个Redis集群节点需要一个单独的配置文件
+ #请确保与实例运行的系统中配置文件名称不冲突
+
+
+# Cluster node timeout is the amount of milliseconds a node must be unreachable
+# for it to be considered in failure state.
+# Most other internal time limits are multiple of the node timeout.
+#
+# cluster-node-timeout 15000
+#以上--cluster-node-timeou： 节点互连超时的阀值，集群节点超时毫秒数
+
+
+
+# A slave of a failing master will avoid to start a failover if its data
+# looks too old.
+#
+# There is no simple way for a slave to actually have a exact measure of
+# its &quot;data age&quot;, so the following two checks are performed:
+#
+# 1) If there are multiple slaves able to failover, they exchange messages
+#    in order to try to give an advantage to the slave with the best
+#    replication offset (more data from the master processed).
+#    Slaves will try to get their rank by offset, and apply to the start
+#    of the failover a delay proportional to their rank.
+#
+# 2) Every single slave computes the time of the last interaction with
+#    its master. This can be the last ping or command received (if the master
+#    is still in the &quot;connected&quot; state), or the time that elapsed since the
+#    disconnection with the master (if the replication link is currently down).
+#    If the last interaction is too old, the slave will not try to failover
+#    at all.
+#
+# The point &quot;2&quot; can be tuned by user. Specifically a slave will not perform
+# the failover if, since the last interaction with the master, the time
+# elapsed is greater than:
+#
+#   (node-timeout * slave-validity-factor) + repl-ping-slave-period
+#
+# So for example if node-timeout is 30 seconds, and the slave-validity-factor
+# is 10, and assuming a default repl-ping-slave-period of 10 seconds, the
+# slave will not try to failover if it was not able to talk with the master
+# for longer than 310 seconds.
+#
+# A large slave-validity-factor may allow slaves with too old data to failover
+# a master, while a too small value may prevent the cluster from being able to
+# elect a slave at all.
+#
+# For maximum availability, it is possible to set the slave-validity-factor
+# to a value of 0, which means, that slaves will always try to failover the
+# master regardless of the last time they interacted with the master.
+# (However they&#39;ll always try to apply a delay proportional to their
+# offset rank).
+#
+# Zero is the only value able to guarantee that when all the partitions heal
+# the cluster will always be able to continue.
+#
+# cluster-slave-validity-factor 10
+#以上--cluster-slave-validity-factor：
+  #在进行故障转移的时候，全部slave都会请求申请为master，但是有些slave可能与master断开连接一段时间了，
+  #导致数据过于陈旧，这样的slave不应该被提升为master。该参数就是用来判断slave节点与master断线的时间是否过长。
+  #判断方法是：
+  #   比较slave断开连接的时间和(node-timeout * slave-validity-factor) + repl-ping-slave-period
+  #   如果节点超时时间为三十秒, 并且slave-validity-factor为10,
+  #   假设默认的repl-ping-slave-period是10秒，即如果超过310秒slave将不会尝试进行故障转移
+
+# Cluster slaves are able to migrate to orphaned masters, that are masters
+# that are left without working slaves. This improves the cluster ability
+# to resist to failures as otherwise an orphaned master can&#39;t be failed over
+# in case of failure if it has no working slaves.
+#
+# Slaves migrate to orphaned masters only if there are still at least a
+# given number of other working slaves for their old master. This number
+# is the &quot;migration barrier&quot;. A migration barrier of 1 means that a slave
+# will migrate only if there is at least 1 other working slave for its master
+# and so forth. It usually reflects the number of slaves you want for every
+# master in your cluster.
+#
+# Default is 1 (slaves migrate only if their masters remain with at least
+# one slave). To disable migration just set it to a very large value.
+# A value of 0 can be set but is useful only for debugging and dangerous
+# in production.
+#
+# cluster-migration-barrier 1
+#以上--cluster-migration-barrier：
+  #master的slave数量大于该值，slave才能迁移到其他孤立master上，如这个参数若被设为2，
+  #那么只有当一个主节点拥有2 个可工作的从节点时，它的一个从节点会尝试迁移。
+
+# By default Redis Cluster nodes stop accepting queries if they detect there
+# is at least an hash slot uncovered (no available node is serving it).
+# This way if the cluster is partially down (for example a range of hash slots
+# are no longer covered) all the cluster becomes, eventually, unavailable.
+# It automatically returns available as soon as all the slots are covered again.
+#
+# However sometimes you want the subset of the cluster which is working,
+# to continue to accept queries for the part of the key space that is still
+# covered. In order to do so, just set the cluster-require-full-coverage
+# option to no.
+#
+# cluster-require-full-coverage yes
+#以上--cluster-require-full-coverage：
+  #默认情况下，集群全部的slot有节点负责，集群状态才为ok，才能提供服务。
+  #设置为no，可以在slot没有全部分配的时候提供服务。
+  #不建议打开该配置，这样会造成分区的时候，小分区的master一直在接受写请求，而造成很长时间数据不一致
+
+# In order to setup your cluster make sure to read the documentation
+# available at http://redis.io web site. 
+
+################################## SLOW LOG ###################################
+
+# The Redis Slow Log is a system to log queries that exceeded a specified
+# execution time. The execution time does not include the I/O operations
+# like talking with the client, sending the reply and so forth,
+# but just the time needed to actually execute the command (this is the only
+# stage of command execution where the thread is blocked and can not serve
+# other requests in the meantime).
+#
+# You can configure the slow log with two parameters: one tells Redis
+# what is the execution time, in microseconds, to exceed in order for the
+# command to get logged, and the other parameter is the length of the
+# slow log. When a new command is logged the oldest one is removed from the
+# queue of logged commands.
+
+# The following time is expressed in microseconds, so 1000000 is equivalent
+# to one second. Note that a negative number disables the slow log, while
+# a value of zero forces the logging of every command.
+slowlog-log-slower-than 10000
+
+# There is no limit to this length. Just be aware that it will consume memory.
+# You can reclaim memory used by the slow log with SLOWLOG RESET.
+slowlog-max-len 128
+#以上--slowlog-log-slower-than： 慢查询日志长度。当一个新的命令被写进日志的时候，最老的那个记录会被删掉，这个长度没有限制。只要有足够的内存就行，你可以通过 SLOWLOG RESET 来释放内存
+
+################################ LATENCY MONITOR ##############################
+
+# The Redis latency monitoring subsystem samples different operations
+# at runtime in order to collect data related to possible sources of
+# latency of a Redis instance.
+#
+# Via the LATENCY command this information is available to the user that can
+# print graphs and obtain reports.
+#
+# The system only logs operations that were performed in a time equal or
+# greater than the amount of milliseconds specified via the
+# latency-monitor-threshold configuration directive. When its value is set
+# to zero, the latency monitor is turned off.
+#
+# By default latency monitoring is disabled since it is mostly not needed
+# if you don&#39;t have latency issues, and collecting data has a performance
+# impact, that while very small, can be measured under big load. Latency
+# monitoring can easily be enabled at runtime using the command
+# &quot;CONFIG SET latency-monitor-threshold &lt;milliseconds&gt;&quot; if needed.
+latency-monitor-threshold 0
+#以上-latency-monitor-threshold:
+  #延迟监控功能是用来监控redis中执行比较缓慢的一些操作，用LATENCY打印redis实例在跑命令时的耗时图表。
+  #只记录大于等于下边设置的值的操作，0的话，就是关闭监视。
+  #默认延迟监控功能是关闭的，如果你需要打开，也可以通过CONFIG SET命令动态设置。
+
+############################# EVENT NOTIFICATION ##############################
+
+# Redis can notify Pub/Sub clients about events happening in the key space.
+# This feature is documented at http://redis.io/topics/notifications
+#
+# For instance if keyspace events notification is enabled, and a client
+# performs a DEL operation on key &quot;foo&quot; stored in the Database 0, two
+# messages will be published via Pub/Sub:
+#
+# PUBLISH __keyspace@0__:foo del
+# PUBLISH __keyevent@0__:del foo
+#
+# It is possible to select the events that Redis will notify among a set
+# of classes. Every class is identified by a single character:
+#
+#  K     Keyspace events, published with __keyspace@&lt;db&gt;__ prefix.
+#  E     Keyevent events, published with __keyevent@&lt;db&gt;__ prefix.
+#  g     Generic commands (non-type specific) like DEL, EXPIRE, RENAME, ...
+#  $     String commands
+#  l     List commands
+#  s     Set commands
+#  h     Hash commands
+#  z     Sorted set commands
+#  x     Expired events (events generated every time a key expires)
+#  e     Evicted events (events generated when a key is evicted for maxmemory)
+#  A     Alias for g$lshzxe, so that the &quot;AKE&quot; string means all the events.
+#
+#  The &quot;notify-keyspace-events&quot; takes as argument a string that is composed
+#  of zero or multiple characters. The empty string means that notifications
+#  are disabled.
+#
+#  Example: to enable list and generic events, from the point of view of the
+#           event name, use:
+#
+#  notify-keyspace-events Elg
+#
+#  Example 2: to get the stream of the expired keys subscribing to channel
+#             name __keyevent@0__:expired use:
+#
+#  notify-keyspace-events Ex
+#
+#  By default all notifications are disabled because most users don&#39;t need
+#  this feature and the feature has some overhead. Note that if you don&#39;t
+#  specify at least one of K or E, no events will be delivered.
+notify-keyspace-events &quot;&quot;
+#以上--notify-keyspace-events &quot;&quot;：
+键空间通知使得客户端可以通过订阅频道或模式，来接收那些以某种方式改动了 Redis 数据集的事件。因为开启键空间通知功能需要消耗一些 CPU ，所以在默认配置下，该功能处于关闭状态。
+ #notify-keyspace-events 的参数可以是以下字符的任意组合，它指定了服务器该发送哪些类型的通知：
+ # K 键空间通知，所有通知以 __keyspace@__ 为前缀
+ # E 键事件通知，所有通知以 __keyevent@__ 为前缀
+ # g DEL 、 EXPIRE 、 RENAME 等类型无关的通用命令的通知
+ # $ 字符串命令的通知
+ # l 列表命令的通知
+ # s 集合命令的通知
+ # h 哈希命令的通知
+ # z 有序集合命令的通知
+ # x 过期事件：每当有过期键被删除时发送
+ # e 驱逐(evict)事件：每当有键因为 maxmemory 政策而被删除时发送
+ # A 参数 g$lshzxe 的别名
+ #输入的参数中至少要有一个 K 或者 E，否则的话，不管其余的参数是什么，都不会有任何 通知被分发。
+
+############################### ADVANCED CONFIG ###############################
+
+# Hashes are encoded using a memory efficient data structure when they have a
+# small number of entries, and the biggest entry does not exceed a given
+# threshold. These thresholds can be configured using the following directives.
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+#以上--hash-max-ziplist-entries：
+ #hash类型的数据结构在编码上可以使用ziplist和hashtable。
+ #ziplist的特点就是文件存储(以及内存存储)所需的空间较小,在内容较小时,性能和hashtable几乎一样。
+ #因此redis对hash类型默认采取ziplist。如果hash中条目的条目个数或者value长度达到阀值,将会被重构为hashtable。
+ #这个参数指的是ziplist中允许存储的最大条目个数，，默认为512，建议为128
+#以上--hash-max-ziplist-value：ziplist中允许条目value值最大字节数，默认为64，建议为1024
+
+# Lists are also encoded in a special way to save a lot of space.
+# The number of entries allowed per internal list node can be specified
+# as a fixed maximum size or a maximum number of elements.
+# For a fixed maximum size, use -5 through -1, meaning:
+# -5: max size: 64 Kb  &lt;-- not recommended for normal workloads
+# -4: max size: 32 Kb  &lt;-- not recommended
+# -3: max size: 16 Kb  &lt;-- probably not recommended
+# -2: max size: 8 Kb   &lt;-- good
+# -1: max size: 4 Kb   &lt;-- good
+# Positive numbers mean store up to _exactly_ that number of elements
+# per list node.
+# The highest performing option is usually -2 (8 Kb size) or -1 (4 Kb size),
+# but if your use case is unique, adjust the settings as necessary.
+list-max-ziplist-size -2
+#以上--list-max-ziplist-size:
+    #当取正值的时候，表示按照数据项个数来限定每个quicklist节点上的ziplist长度。比如，当这个参数配置成5的时候，表示每个quicklist节点的ziplist最多包含5个数据项。
+    #当取负值的时候，表示按照占用字节数来限定每个quicklist节点上的ziplist长度。这时，它只能取-1到-5这五个值，每个值含义如下：
+    #    -5: 每个quicklist节点上的ziplist大小不能超过64 Kb。（注：1kb =&gt; 1024 bytes）
+    #    -4: 每个quicklist节点上的ziplist大小不能超过32 Kb。
+    #    -3: 每个quicklist节点上的ziplist大小不能超过16 Kb。
+    #    -2: 每个quicklist节点上的ziplist大小不能超过8 Kb。（-2是Redis给出的默认值）
+    #    -1: 每个quicklist节点上的ziplist大小不能超过4 Kb。
+
+# Lists may also be compressed.
+# Compress depth is the number of quicklist ziplist nodes from *each* side of
+# the list to *exclude* from compression.  The head and tail of the list
+# are always uncompressed for fast push/pop operations.  Settings are:
+# 0: disable all list compression
+# 1: depth 1 means &quot;don&#39;t start compressing until after 1 node into the list,
+#    going from either the head or tail&quot;
+#    So: [head]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[tail]
+#    [head], [tail] will always be uncompressed; inner nodes will compress.
+# 2: [head]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[tail]
+#    2 here means: don&#39;t compress head or head-&gt;next or tail-&gt;prev or tail,
+#    but compress all nodes between them.
+# 3: [head]-&gt;[next]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[prev]-&gt;[tail]
+# etc.
+list-compress-depth 0
+#以上--list-compress-depth:
+    #这个参数表示一个quicklist两端不被压缩的节点个数。
+    #注：这里的节点个数是指quicklist双向链表的节点个数，而不是指ziplist里面的数据项个数。
+    #实际上，一个quicklist节点上的ziplist，如果被压缩，就是整体被压缩的。
+    #参数list-compress-depth的取值含义如下：
+    #    0: 是个特殊值，表示都不压缩。这是Redis的默认值。
+    #    1: 表示quicklist两端各有1个节点不压缩，中间的节点压缩。
+    #    2: 表示quicklist两端各有2个节点不压缩，中间的节点压缩。
+    #    3: 表示quicklist两端各有3个节点不压缩，中间的节点压缩。
+    #    依此类推…
+    #由于0是个特殊值，很容易看出quicklist的头节点和尾节点总是不被压缩的，以便于在表的两端进行快速存取。
+
+# Sets have a special encoding in just one case: when a set is composed
+# of just strings that happen to be integers in radix 10 in the range
+# of 64 bit signed integers.
+# The following configuration setting sets the limit in the size of the
+# set in order to use this special memory saving encoding.
+set-max-intset-entries 512
+#以上--set-max-intset-entries： 数据量小于等于set-max-intset-entries用intset，大于set-max-intset-entries用set
+
+# Similarly to hashes and lists, sorted sets are also specially encoded in
+# order to save a lot of space. This encoding is only used when the length and
+# elements of a sorted set are below the following limits:
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+#以上--：数据量小于等于zset-max-ziplist-entries用ziplist，大于zset-max-ziplist-entries用zset
+
+# HyperLogLog sparse representation bytes limit. The limit includes the
+# 16 bytes header. When an HyperLogLog using the sparse representation crosses
+# this limit, it is converted into the dense representation.
+#
+# A value greater than 16000 is totally useless, since at that point the
+# dense representation is more memory efficient.
+#
+# The suggested value is ~ 3000 in order to have the benefits of
+# the space efficient encoding without slowing down too much PFADD,
+# which is O(N) with the sparse encoding. The value can be raised to
+# ~ 10000 when CPU is not a concern, but space is, and the data set is
+# composed of many HyperLogLogs with cardinality in the 0 - 15000 range.
+hll-sparse-max-bytes 3000
+#以上--hll-sparse-max-bytes:
+  #value大小小于等于hll-sparse-max-bytes使用稀疏数据结构（sparse）
+  #大于hll-sparse-max-bytes使用稠密的数据结构（dense），一个比16000大的value是几乎没用的，
+  #建议的value大概为3000。如果对CPU要求不高，对空间要求较高的，建议设置到10000左右
+
+# Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
+# order to help rehashing the main Redis hash table (the one mapping top-level
+# keys to values). The hash table implementation Redis uses (see dict.c)
+# performs a lazy rehashing: the more operation you run into a hash table
+# that is rehashing, the more rehashing &quot;steps&quot; are performed, so if the
+# server is idle the rehashing is never complete and some more memory is used
+# by the hash table.
+#
+# The default is to use this millisecond 10 times every second in order to
+# actively rehash the main dictionaries, freeing memory when possible.
+#
+# If unsure:
+# use &quot;activerehashing no&quot; if you have hard latency requirements and it is
+# not a good thing in your environment that Redis can reply from time to time
+# to queries with 2 milliseconds delay.
+#
+# use &quot;activerehashing yes&quot; if you don&#39;t have such hard requirements but
+# want to free memory asap when possible.
+activerehashing yes
+#以上--activerehashing：
+  #Redis将在每100毫秒时使用1毫秒的CPU时间来对redis的hash表进行重新hash，可以降低内存的使用。
+  #当你的使用场景中，有非常严格的实时性需要，不能够接受Redis时不时的对请求有2毫秒的延迟的话，把这项配置为no。
+  #如果没有这么严格的实时性要求，可以设置为yes，以便能够尽可能快的释放内存
+
+# The client output buffer limits can be used to force disconnection of clients
+# that are not reading data from the server fast enough for some reason (a
+# common reason is that a Pub/Sub client can&#39;t consume messages as fast as the
+# publisher can produce them).
+#
+# The limit can be set differently for the three different classes of clients:
+#
+# normal -&gt; normal clients including MONITOR clients
+# slave  -&gt; slave clients
+# pubsub -&gt; clients subscribed to at least one pubsub channel or pattern
+#
+# The syntax of every client-output-buffer-limit directive is the following:
+#
+# client-output-buffer-limit &lt;class&gt; &lt;hard limit&gt; &lt;soft limit&gt; &lt;soft seconds&gt;
+#
+# A client is immediately disconnected once the hard limit is reached, or if
+# the soft limit is reached and remains reached for the specified number of
+# seconds (continuously).
+# So for instance if the hard limit is 32 megabytes and the soft limit is
+# 16 megabytes / 10 seconds, the client will get disconnected immediately
+# if the size of the output buffers reach 32 megabytes, but will also get
+# disconnected if the client reaches 16 megabytes and continuously overcomes
+# the limit for 10 seconds.
+#
+# By default normal clients are not limited because they don&#39;t receive data
+# without asking (in a push way), but just after a request, so only
+# asynchronous clients may create a scenario where data is requested faster
+# than it can read.
+#
+# Instead there is a default limit for pubsub and slave clients, since
+# subscribers and slaves receive data in a push fashion.
+#
+# Both the hard or the soft limit can be disabled by setting them to zero.
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+#以上--client-output-buffer-limit normal：
+ #对客户端输出缓冲进行限制可以强迫那些不从服务器读取数据的客户端断开连接，用来强制关闭传输缓慢的客户端。
+ #对于normal client，第一个0表示取消hard limit，第二个0和第三个0表示取消soft limit，normal client默认取消限制，因为如果没有寻问，他们是不会接收数据的
+#以上--client-output-buffer-limit slave：对于slave client和MONITER client，如果client-output-buffer一旦超过256mb，又或者超过64mb持续60秒，那么服务器就会立即断开客户端连接。
+#以上--client-output-buffer-limit pubsub：对于pubsub client，如果client-output-buffer一旦超过32mb，又或者超过8mb持续60秒，那么服务器就会立即断开客户端连接
+
+# Redis calls an internal function to perform many background tasks, like
+# closing connections of clients in timeout, purging expired keys that are
+# never requested, and so forth.
+#
+# Not all tasks are performed with the same frequency, but Redis checks for
+# tasks to perform according to the specified &quot;hz&quot; value.
+#
+# By default &quot;hz&quot; is set to 10. Raising the value will use more CPU when
+# Redis is idle, but at the same time will make Redis more responsive when
+# there are many keys expiring at the same time, and timeouts may be
+# handled with more precision.
+#
+# The range is between 1 and 500, however a value over 100 is usually not
+# a good idea. Most users should use the default of 10 and raise this up to
+# 100 only in environments where very low latency is required.
+hz 10
+#以上--hz ：redis执行任务的频率为1s除以hz
+
+# When a child rewrites the AOF file, if the following option is enabled
+# the file will be fsync-ed every 32 MB of data generated. This is useful
+# in order to commit the file to the disk more incrementally and avoid
+# big latency spikes.
+aof-rewrite-incremental-fsync yes
+#以上--aof-rewrite-incremental-fsync：
+  #在aof重写的时候，如果打开了aof-rewrite-incremental-fsync开关，系统会每32MB执行一次fsync。
+  #这对于把文件写入磁盘是有帮助的，可以避免过大的延迟峰值
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[redis.conf 详解]]></title>
+    <link href="http://www.throne4j.com/15991181642194.html"/>
+    <updated>2020-09-03T15:29:24+08:00</updated>
+    <id>http://www.throne4j.com/15991181642194.html</id>
+    <content type="html"><![CDATA[
+<pre><code class="language-text">#以上--redis启动说明：redis启动指令的第一个参数必须是配置文件路径
+# ./redis-server /path/to/redis.conf
+
+# 引入配置，可以将公共配置抽取出来，采用引入的方式，存在参数覆盖，注意include放置的位置，覆盖效果不同。
+# include /path/to/local.conf
+
+################################## MODULES #####################################
+
+# 启动时加载so模块，如果服务不能加载指定模块
+# 服务器将忽略该模块
+# loadmodule /path/to/my_module.so
+# loadmodule /path/to/other_module.so
+
+################################## NETWORK #####################################
+# 
+# 如果，bind没有特别指定，redis可以接受任意可访问到该服务IP的请求，
+# 一般来说，只可能只监听一个或者多个IP的请求，不要完全开放。
+#
+#  ~~~ 注意 ~~~ 如果redis服务是运行在互联网可访问的环境下，暴露任意IP可访问是相当危险的。
+# 所以，默认情况下，我们只开放127.0.0.1的可访问IP，那就意味着只有本地才能访问redis服务。
+#
+# 如果你非要开放，你就需要注释下面这段配置。
+bind 127.0.0.1
+
+
+# 保护模式是一个避免redis暴露在公网后可以任意访问的安全层。 
+#
+# 当在如下条件下，保护模式将开启：
+# 1.服务没有明确绑定具体IP
+# 2.服务没有配置密码
+#
+# 保护模式开启后，服务只能接受ipv4/v6的环路路由，或者unix socket。
+#
+# 默认情况下，保护模式是开启的，如果你确信要让客户端可以不需要密码访问
+# redis服务，或者不明确bindIP的化，可以关闭保护模式。
+protected-mode yes
+
+# 监听端口
+port 6379
+
+# TCP listen() backlog.
+# backlog其实是一个连接监听队列，backlog队列总和=未完成三次握手队列 + 已经完成三次握手队列。
+# 在高并发的redis访问场景下，你需要提高tcp的监听队列大小，来避免慢客户端连接问题，否则将出现tcp连接耗尽问题
+# 同时修改此处配置的时候，也要一并修改linux的系统参数/proc/sys/net/core/somaxconn
+# 否则不生效。somaxconn &gt;= tcp-backlog
+tcp-backlog 511
+
+# Unix socket.
+#
+# redis采用unix socket作为客户端的数据传输通道，据说可以提高25%的性能，但是只能用于本机进程间通信，
+# 用处不大
+# 默认不开启
+# unixsocket /tmp/redis.sock
+# unixsocketperm 700
+
+
+# Close the connection after a client is idle for N seconds (0 to disable)
+
+# 客户端连接空闲后自动关闭的等待时间，0表示不关闭。 
+timeout 0
+
+# TCP keepalive， tcp长连接
+# 如果非0，redis的tcp连接将在长时间未通信的情况下发送心跳包给客户端
+# 这样做有两个好处:
+# 1.回收已断开的连接
+# 2.在存在网络中间件，比如路由器，网关的条件下，保证连接的可用
+# 在Linux系统中，这个数值标识TCP发送心跳包的时间间隔，在两次发送心跳包无响应时，将废弃该连接
+# 在其他系统，可能有Kernels的内核参数决定心跳包时间，该参数无效。
+tcp-keepalive 300
+
+################################# GENERAL #####################################
+
+# 默认情况下，redis不在后台运行，如果你需要后台静默运行，设置为yes.
+# 后台运行的状态，redis将pid写入/var/run/redis.pid 文件
+daemonize yes
+
+# 如果redis是通过upstart或者systemd开机自启动，你可以将redis的运行状态，写入开机启动服务的状态数中
+# 有四种选择
+#   supervised no      - no supervision interaction
+#   supervised upstart - signal upstart by putting Redis into SIGSTOP mode
+#   supervised systemd - signal systemd by writing READY=1 to $NOTIFY_SOCKET
+#   supervised auto    - detect upstart or systemd method based on
+#                        UPSTART_JOB or NOTIFY_SOCKET environment variables
+# 注意：redis在开机启动树只有“运行中”这样的状态，没有是否可联通的状态，
+# `个人理解:这块做关联启动，有些开机启动服务需要依赖redis的启动，所以增加这个配置`
+supervised no
+
+
+# 如果pid文件有显式指定，redis在启动后，写入进程号，退出时，删除文件
+# 当服务是非后台模式运行时，如果没有指定pid文件，redis将不会创建该文件，当服务是后台模式运行时，
+# 即使没有指定pid文件，redis也会创建该文件，同时默认值为&quot;/var/run/redis.pid&quot;
+# 创建pid是将会对redis的管理有好处，但是不创建也不会对redis运行有影响。
+pidfile /var/run/redis_6379.pid
+
+# Specify the server verbosity level.
+# This can be one of:
+# debug (a lot of information, useful for development/testing)
+# verbose (many rarely useful info, but not a mess like the debug level)
+# notice (moderately verbose, what you want in production probably)
+# warning (only very important / critical messages are logged)
+# 日志级别
+loglevel notice
+
+# 指定日志文件的名称，如果是空字符串，redis的日志将写入Linux的标准输出，
+# 如果redis是后台模式运行，日志文件为&quot;&quot;,日志将输出到/dev/null，也就是不输出日志
+logfile &quot;&quot;
+
+
+# 要想把日志记录到系统日志，就把它改成 yes，也可以可选择性的更新其他的syslog 参数以达到你的要求
+# syslog-enabled no
+
+
+# Specify the syslog identity.
+# 系统日志的标识
+# syslog-ident redis
+
+
+# 产生系统日志的设施，必须是Linux的用户或者从local0 ~ local7
+# syslog-facility local0
+
+# 设置数据库的数目。默认的数据库是DB 0 ，可以在每个连接上使用select  &lt;dbid&gt; 命令选择一个不同的数据库，dbid是一个介于0到databases - 1 之间的数值
+databases 16
+
+#  控制台显示LOGO
+always-show-logo yes
+
+################################ SNAPSHOTTING  ################################
+#
+# Save the DB on disk:
+#
+#   save &lt;seconds&gt; &lt;changes&gt;
+#
+# 格式：save &lt;间隔时间（秒）&gt; &lt;写入次数&gt;
+# 根据给定的时间间隔和写入次数将数据保存到磁盘
+# 下面的例子的意思是：
+# 900 秒内如果至少有 1 个 key 的值变化，则保存
+# 300 秒内如果至少有 10 个 key 的值变化，则保存
+# 60 秒内如果至少有 10000 个 key 的值变化，则保存
+# 注意：你可以注释掉所有的 save 行来停用保存功能。
+# 也可以直接一个空字符串来实现停用：
+#  数据的持久化的规则
+
+save 900 1
+save 300 10
+save 60 10000
+
+# 如果用户开启了RDB快照功能，那么在redis持久化数据到磁盘时如果出现失败，默认情况下，redis会停止接受所有的写请求。
+# 这样做的好处在于可以让用户很明确的知道内存中的数据和磁盘上的数据已经存在不一致了。
+# 如果redis不顾这种不一致，一意孤行的继续接收写请求，就可能会引起一些灾难性的后果。
+# 如果下一次RDB持久化成功，redis会自动恢复接受写请求。
+# 如果不在乎这种数据不一致或者有其他的手段发现和控制这种不一致的话，可以关闭这个功能，
+# 以便在快照写入失败时，也能确保redis继续接受新的写请求。
+stop-writes-on-bgsave-error yes
+
+
+# dump.rdb数据库采用LZF算法进行字符压缩
+# 默认是开启rdb压缩
+# 如果你想在保存rdb时，节省CPU，可以设置为no
+rdbcompression yes
+
+#
+# 从redis5开始，rdb文件采用CRC64算法校验文件的完整性。
+# 这将保证rdb文件的完整性和不可篡改，但是将保存和加载rdb文件时，多耗费10%的性能损耗。
+# 如果希望发挥REDIS最大性能，可以关闭该请求
+rdbchecksum yes
+
+#
+# The filename where to dump the DB
+# rdb文件的存储文件名
+dbfilename dump.rdb
+
+# The working directory.
+# RDB文件将写入这个目录,文件名就是前面dbfilename定义的。
+# 同时redis的增量文件页也写入这个目录
+# 注意，这个参数必须是一个目录，不能是一个文件
+dir ./
+
+################################# REPLICATION （主从复制）#################################
+
+# Master-Replica replication. Use replicaof to make a Redis instance a copy of
+# another Redis server. A few things to understand ASAP about Redis replication.
+#
+#   +------------------+      +---------------+
+#   |      Master      | ---&gt; |    Replica    |
+#   | (receive writes) |      |  (exact copy) |
+#   +------------------+      +---------------+
+#
+#
+# 1）redis 主从复制是异步的，但是你可以设置，主节点没有一个正常运行的从节点时，禁止主节点写操作
+# 2）redis从节点可以向主节点进行部分同步，这块你需要在下一个配置中指定同步块大小。
+# 3）主从复制是自动进行的，不需要用户介入。
+
+# replicaof &lt;masterip&gt; &lt;masterport&gt;
+
+# 如果主节点设置了requirepass，从节点需要配置主节点的接入密码
+
+# masterauth &lt;master-password&gt;
+
+# 当一个 slave 与 master 失去联系，或者复制正在进行的时候，
+# slave 可能会有两种表现：
+# 1) 如果为 yes ，slave 仍然会应答客户端请求，但返回的数据可能是过时，
+#    或者数据可能是空的在第一次同步的时候
+# 2) 如果为 no ，在你执行除了 info he salveof 之外的其他命令时，
+#    slave 都将返回一个 &quot;SYNC with master in progress&quot; 的错误
+replica-serve-stale-data yes
+
+#你可以配置一个 slave 实体是否接受写入操作。
+#通过写入操作来存储一些短暂的数据对于一个 slave 实例来说可能是有用的，
+#因为相对从 master 重新同步数而言，据数据写入到 slave 会更容易被删除。
+#但是如果客户端因为一个错误的配置写入，也可能会导致一些问题。
+#从 redis 2.6 版起，默认 slaves 都是只读的。
+replica-read-only yes
+
+# 主从同步策略：disk和socket
+#
+# -------------------------------------------------------
+# 注意：socket同步是实验性功能
+# -------------------------------------------------------
+#
+# Disk-backed策略在新同步和重连同步无法进行增量同步，只能进行全量同步。
+# 主从同步有两种方式，默认采用Disk-backed
+#
+# 1) Disk-backed: redis新建一个独立进程，将RDB写入到磁盘，稍后由父进程将数据传输给各个节点。
+# 
+# 2) Diskless: redis创建一个独立进程，直接将数据通过与从节点的socket通道传递，无需写入硬盘。
+#
+# 在disk-backed的策略下，RDB数据是持有化到磁盘的，多个从节点再逐个接收数据，无法同时传输。
+# 在diskless的策略下，从节点一旦接入主节点，在等待指定的时间后，主从开始通过socket传递数据，多个从节点可以同时进行。
+#
+# 如果在磁盘读写慢，网络速度快的环境下，可以采用diskless
+# works better.
+repl-diskless-sync no
+
+# 当采用diskless的同步策略启动时，可以配置从节点接入主节点后，等待多少时间后，进行同步。
+# 当启用无硬盘备份，服务器等待一段时间后才会通过套接字向从站传送RDB文件，这个等待时间是可配置的。
+# 这一点很重要，因为一旦传送开始，就不可能再为一个新到达的从站服务。从站则要排队等待下一次RDB传送。因此服务器等待一段
+# 时间以期更多的从站到达。
+# 延迟时间以秒为单位，默认为5秒。要关掉这一功能，只需将它设置为0秒，传送会立即启动。
+repl-diskless-sync-delay 5
+
+# 从redis会周期性的向主redis发出PING包，你可以通过repl_ping_slave_period指令来控制其周期，默认是10秒
+# repl-ping-replica-period 10
+
+# 接下来的选项为以下内容设置备份的超时时间：
+# 1）从从站的角度，同步期间的批量传输的I/O
+# 2）从站角度认为的主站超时（数据，ping）
+# 3）主站角度认为的从站超时（REPLCONF ACK pings)
+# 确认这些值比定义的repl-ping-slave-period要大，否则每次主站和从站之间通信低速时都会被检测为超时。
+# repl-timeout 60
+
+#同步之后是否禁用从站上的TCP_NODELAY
+#如果你选择yes，redis会使用较少量的TCP包和带宽向从站发送数据。但这会导致在从站增加一点数据的延时。
+#Linux内核默认配置情况下最多40毫秒的延时。
+#如果选择no，从站的数据延时不会那么多，但备份需要的带宽相对较多。
+#默认情况下我们将潜在因素优化，但在高负载情况下或者在主从站都跳的情况下，把它切换为yes是个好主意。
+repl-disable-tcp-nodelay no
+
+
+# 设置备份的工作储备大小。工作储备是一个缓冲区，当从站断开一段时间的情况时，它替从站接收存储数据，
+# 因此当从站重连时，通常不需要完全备份，只需要一个部分同步就可以，即把从站断开时错过的一部分数据接收。
+# 工作储备越大，从站可以断开并稍后执行部分同步的断开时间就越长。
+# 只要有一个从站连接，就会立刻分配一个工作储备。
+# repl-backlog-size 1mb
+
+
+# 主站有一段时间没有与从站连接，对应的工作储备就会自动释放。
+# 这个选项用于配置释放前等待的秒数，秒数从断开的那一刻开始计算，值为0表示不释放。
+# repl-backlog-ttl 3600
+
+#从站优先级是可以从redis的INFO命令输出中查到的一个整数。当主站不能正常工作时
+#redis sentinel使用它来选择一个从站并将它提升为主站。
+#优先级的从站被认为更适合于提升，因此如果有三个从站优先级分别是10，100，25，sentinel会选择优先级为10的从站，因为它的优先级最低。
+#然而优先级值为0的从站不能执行主站的角色，因此优先级为0的从站永远不会被redis sentinel提升。
+#默认优先级是100
+replica-priority 100
+
+# It is possible for a master to stop accepting writes if there are less than
+# N replicas connected, having a lag less or equal than M seconds.
+#
+# The N replicas need to be in &quot;online&quot; state.
+#
+# The lag in seconds, that must be &lt;= the specified value, is calculated from
+# the last ping received from the replica, that is usually sent every second.
+#
+# This option does not GUARANTEE that N replicas will accept the write, but
+# will limit the window of exposure for lost writes in case not enough replicas
+# are available, to the specified number of seconds.
+#
+# For example to require at least 3 replicas with a lag &lt;= 10 seconds use:
+#
+# min-replicas-to-write 3
+# min-replicas-max-lag 10
+#
+# Setting one or the other to 0 disables the feature.
+#
+# By default min-replicas-to-write is set to 0 (feature disabled) and
+# min-replicas-max-lag is set to 10.
+
+# A Redis master is able to list the address and port of the attached
+# replicas in different ways. For example the &quot;INFO replication&quot; section
+# offers this information, which is used, among other tools, by
+# Redis Sentinel in order to discover replica instances.
+# Another place where this info is available is in the output of the
+# &quot;ROLE&quot; command of a master.
+#
+# The listed IP and address normally reported by a replica is obtained
+# in the following way:
+#
+#   IP: The address is auto detected by checking the peer address
+#   of the socket used by the replica to connect with the master.
+#
+#   Port: The port is communicated by the replica during the replication
+#   handshake, and is normally the port that the replica is using to
+#   listen for connections.
+#
+# However when port forwarding or Network Address Translation (NAT) is
+# used, the replica may be actually reachable via different IP and port
+# pairs. The following two options can be used by a replica in order to
+# report to its master a specific set of IP and port, so that both INFO
+# and ROLE will report those values.
+#
+# There is no need to use both the options if you need to override just
+# the port or the IP address.
+#
+# replica-announce-ip 5.5.5.5
+# replica-announce-port 1234
+
+################################## SECURITY ###################################
+
+#
+# 要求客户端调用时需要进行auth认证，这个特性用于你开放redis服务给非完全信任的客户端接
+#
+# 警告：由于redis的运行高效性，它可以支持每秒150K次的密码验证，所以你必须设置足够复杂的密码防止暴力破解
+#
+# requirepass foobared
+
+# Command renaming.
+#
+# It is possible to change the name of dangerous commands in a shared
+# environment. For instance the CONFIG command may be renamed into something
+# hard to guess so that it will still be available for internal-use tools
+# but not available for general clients.
+#
+# Example:
+#
+# rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c52
+#
+# It is also possible to completely kill a command by renaming it into
+# an empty string:
+#
+# rename-command CONFIG &quot;&quot;
+#
+# Please note that changing the name of commands that are logged into the
+# AOF file or transmitted to replicas may cause problems.
+
+################################### CLIENTS ####################################
+
+
+# 设置redis最大同时接入的客户端，默认是10000个，如果redis没有设置这个参数，
+# 最大的客户端数量是Linux进程的最大文件句柄数-32，因为redis内部需要占用一定的文件句柄
+#
+# 当连接客户端超过最大数，将提示  &#39;max number of clients reached&#39;
+#
+# maxclients 10000
+
+############################## MEMORY MANAGEMENT ################################
+
+# maxmemory 可以设置redis的最大占用内存，如果redis实际使用达到阈值，
+# 将按照maxmemory-policy策略移除key
+# 如果redis不能通过策略移除，或者策略采用的是noeviction，redis将回报错误，对于一些写的指令
+# 比如SET，LPUSH这些指令，但是读的指令可以正常回报
+#
+# 这个选项一般让redis作为LRU或者LFU的缓存服务，如果策略设置为noeviction，限制将是物理内存大小。
+#
+# WARNING: If you have replicas attached to an instance with maxmemory on,
+# the size of the output buffers needed to feed the replicas are subtracted
+# from the used memory count, so that network problems / resyncs will
+# not trigger a loop where keys are evicted, and in turn the output
+# buffer of replicas is full with DELs of keys evicted triggering the deletion
+# of more keys, and so forth until the database is completely emptied.
+#
+# In short... if you have replicas attached it is suggested that you set a lower
+# limit for maxmemory so that there is some free RAM on the system for replica
+# output buffers (but this is not needed if the policy is &#39;noeviction&#39;).
+#
+# maxmemory &lt;bytes&gt;
+
+# MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
+# is reached. You can select among five behaviors:
+#
+# volatile-lru -&gt; Evict using approximated LRU among the keys with an expire set.
+# allkeys-lru -&gt; Evict any key using approximated LRU.
+# volatile-lfu -&gt; Evict using approximated LFU among the keys with an expire set.
+# allkeys-lfu -&gt; Evict any key using approximated LFU.
+# volatile-random -&gt; Remove a random key among the ones with an expire set.
+# allkeys-random -&gt; Remove a random key, any key.
+# volatile-ttl -&gt; Remove the key with the nearest expire time (minor TTL)
+# noeviction -&gt; Don&#39;t evict anything, just return an error on write operations.
+#
+# LRU means Least Recently Used
+# LFU means Least Frequently Used
+#
+# Both LRU, LFU and volatile-ttl are implemented using approximated
+# randomized algorithms.
+#
+# Note: with any of the above policies, Redis will return an error on write
+#       operations, when there are no suitable keys for eviction.
+#
+#       At the date of writing these commands are: set setnx setex append
+#       incr decr rpush lpush rpushx lpushx linsert lset rpoplpush sadd
+#       sinter sinterstore sunion sunionstore sdiff sdiffstore zadd zincrby
+#       zunionstore zinterstore hset hsetnx hmset hincrby incrby decrby
+#       getset mset msetnx exec sort
+#
+# The default is:
+#
+# maxmemory-policy noeviction
+
+# LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated
+# algorithms (in order to save memory), so you can tune it for speed or
+# accuracy. For default Redis will check five keys and pick the one that was
+# used less recently, you can change the sample size using the following
+# configuration directive.
+#
+# The default of 5 produces good enough results. 10 Approximates very closely
+# true LRU but costs more CPU. 3 is faster but not very accurate.
+#
+# maxmemory-samples 5
+
+# Starting from Redis 5, by default a replica will ignore its maxmemory setting
+# (unless it is promoted to master after a failover or manually). It means
+# that the eviction of keys will be just handled by the master, sending the
+# DEL commands to the replica as keys evict in the master side.
+#
+# This behavior ensures that masters and replicas stay consistent, and is usually
+# what you want, however if your replica is writable, or you want the replica to have
+# a different memory setting, and you are sure all the writes performed to the
+# replica are idempotent, then you may change this default (but be sure to understand
+# what you are doing).
+#
+# Note that since the replica by default does not evict, it may end using more
+# memory than the one set via maxmemory (there are certain buffers that may
+# be larger on the replica, or data structures may sometimes take more memory and so
+# forth). So make sure you monitor your replicas and make sure they have enough
+# memory to never hit a real out-of-memory condition before the master hits
+# the configured maxmemory setting.
+#
+# replica-ignore-maxmemory yes
+
+############################# LAZY FREEING ####################################
+
+# Redis has two primitives to delete keys. One is called DEL and is a blocking
+# deletion of the object. It means that the server stops processing new commands
+# in order to reclaim all the memory associated with an object in a synchronous
+# way. If the key deleted is associated with a small object, the time needed
+# in order to execute the DEL command is very small and comparable to most other
+# O(1) or O(log_N) commands in Redis. However if the key is associated with an
+# aggregated value containing millions of elements, the server can block for
+# a long time (even seconds) in order to complete the operation.
+#
+# For the above reasons Redis also offers non blocking deletion primitives
+# such as UNLINK (non blocking DEL) and the ASYNC option of FLUSHALL and
+# FLUSHDB commands, in order to reclaim memory in background. Those commands
+# are executed in constant time. Another thread will incrementally free the
+# object in the background as fast as possible.
+#
+# DEL, UNLINK and ASYNC option of FLUSHALL and FLUSHDB are user-controlled.
+# It&#39;s up to the design of the application to understand when it is a good
+# idea to use one or the other. However the Redis server sometimes has to
+# delete keys or flush the whole database as a side effect of other operations.
+# Specifically Redis deletes objects independently of a user call in the
+# following scenarios:
+#
+# 1) On eviction, because of the maxmemory and maxmemory policy configurations,
+#    in order to make room for new data, without going over the specified
+#    memory limit.
+# 2) Because of expire: when a key with an associated time to live (see the
+#    EXPIRE command) must be deleted from memory.
+# 3) Because of a side effect of a command that stores data on a key that may
+#    already exist. For example the RENAME command may delete the old key
+#    content when it is replaced with another one. Similarly SUNIONSTORE
+#    or SORT with STORE option may delete existing keys. The SET command
+#    itself removes any old content of the specified key in order to replace
+#    it with the specified string.
+# 4) During replication, when a replica performs a full resynchronization with
+#    its master, the content of the whole database is removed in order to
+#    load the RDB file just transferred.
+#
+# In all the above cases the default is to delete objects in a blocking way,
+# like if DEL was called. However you can configure each case specifically
+# in order to instead release memory in a non-blocking way like if UNLINK
+# was called, using the following configuration directives:
+
+lazyfree-lazy-eviction no
+lazyfree-lazy-expire no
+lazyfree-lazy-server-del no
+replica-lazy-flush no
+
+############################## APPEND ONLY MODE ###############################
+
+# By default Redis asynchronously dumps the dataset on disk. This mode is
+# good enough in many applications, but an issue with the Redis process or
+# a power outage may result into a few minutes of writes lost (depending on
+# the configured save points).
+#
+# The Append Only File is an alternative persistence mode that provides
+# much better durability. For instance using the default data fsync policy
+# (see later in the config file) Redis can lose just one second of writes in a
+# dramatic event like a server power outage, or a single write if something
+# wrong with the Redis process itself happens, but the operating system is
+# still running correctly.
+#
+# AOF and RDB persistence can be enabled at the same time without problems.
+# If the AOF is enabled on startup Redis will load the AOF, that is the file
+# with the better durability guarantees.
+#
+# Please check http://redis.io/topics/persistence for more information.
+
+appendonly no
+
+# The name of the append only file (default: &quot;appendonly.aof&quot;)
+
+appendfilename &quot;appendonly.aof&quot;
+
+# The fsync() call tells the Operating System to actually write data on disk
+# instead of waiting for more data in the output buffer. Some OS will really flush
+# data on disk, some other OS will just try to do it ASAP.
+#
+# Redis supports three different modes:
+#
+# no: don&#39;t fsync, just let the OS flush the data when it wants. Faster.
+# always: fsync after every write to the append only log. Slow, Safest.
+# everysec: fsync only one time every second. Compromise.
+#
+# The default is &quot;everysec&quot;, as that&#39;s usually the right compromise between
+# speed and data safety. It&#39;s up to you to understand if you can relax this to
+# &quot;no&quot; that will let the operating system flush the output buffer when
+# it wants, for better performances (but if you can live with the idea of
+# some data loss consider the default persistence mode that&#39;s snapshotting),
+# or on the contrary, use &quot;always&quot; that&#39;s very slow but a bit safer than
+# everysec.
+#
+# More details please check the following article:
+# http://antirez.com/post/redis-persistence-demystified.html
+#
+# If unsure, use &quot;everysec&quot;.
+
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+
+# When the AOF fsync policy is set to always or everysec, and a background
+# saving process (a background save or AOF log background rewriting) is
+# performing a lot of I/O against the disk, in some Linux configurations
+# Redis may block too long on the fsync() call. Note that there is no fix for
+# this currently, as even performing fsync in a different thread will block
+# our synchronous write(2) call.
+#
+# In order to mitigate this problem it&#39;s possible to use the following option
+# that will prevent fsync() from being called in the main process while a
+# BGSAVE or BGREWRITEAOF is in progress.
+#
+# This means that while another child is saving, the durability of Redis is
+# the same as &quot;appendfsync none&quot;. In practical terms, this means that it is
+# possible to lose up to 30 seconds of log in the worst scenario (with the
+# default Linux settings).
+#
+# If you have latency problems turn this to &quot;yes&quot;. Otherwise leave it as
+# &quot;no&quot; that is the safest pick from the point of view of durability.
+
+no-appendfsync-on-rewrite no
+
+# Automatic rewrite of the append only file.
+# Redis is able to automatically rewrite the log file implicitly calling
+# BGREWRITEAOF when the AOF log size grows by the specified percentage.
+#
+# This is how it works: Redis remembers the size of the AOF file after the
+# latest rewrite (if no rewrite has happened since the restart, the size of
+# the AOF at startup is used).
+#
+# This base size is compared to the current size. If the current size is
+# bigger than the specified percentage, the rewrite is triggered. Also
+# you need to specify a minimal size for the AOF file to be rewritten, this
+# is useful to avoid rewriting the AOF file even if the percentage increase
+# is reached but it is still pretty small.
+#
+# Specify a percentage of zero in order to disable the automatic AOF
+# rewrite feature.
+
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+
+# An AOF file may be found to be truncated at the end during the Redis
+# startup process, when the AOF data gets loaded back into memory.
+# This may happen when the system where Redis is running
+# crashes, especially when an ext4 filesystem is mounted without the
+# data=ordered option (however this can&#39;t happen when Redis itself
+# crashes or aborts but the operating system still works correctly).
+#
+# Redis can either exit with an error when this happens, or load as much
+# data as possible (the default now) and start if the AOF file is found
+# to be truncated at the end. The following option controls this behavior.
+#
+# If aof-load-truncated is set to yes, a truncated AOF file is loaded and
+# the Redis server starts emitting a log to inform the user of the event.
+# Otherwise if the option is set to no, the server aborts with an error
+# and refuses to start. When the option is set to no, the user requires
+# to fix the AOF file using the &quot;redis-check-aof&quot; utility before to restart
+# the server.
+#
+# Note that if the AOF file will be found to be corrupted in the middle
+# the server will still exit with an error. This option only applies when
+# Redis will try to read more data from the AOF file but not enough bytes
+# will be found.
+aof-load-truncated yes
+
+# When rewriting the AOF file, Redis is able to use an RDB preamble in the
+# AOF file for faster rewrites and recoveries. When this option is turned
+# on the rewritten AOF file is composed of two different stanzas:
+#
+#   [RDB file][AOF tail]
+#
+# When loading Redis recognizes that the AOF file starts with the &quot;REDIS&quot;
+# string and loads the prefixed RDB file, and continues loading the AOF
+# tail.
+aof-use-rdb-preamble yes
+
+################################ LUA SCRIPTING  ###############################
+
+# Max execution time of a Lua script in milliseconds.
+#
+# If the maximum execution time is reached Redis will log that a script is
+# still in execution after the maximum allowed time and will start to
+# reply to queries with an error.
+#
+# When a long running script exceeds the maximum execution time only the
+# SCRIPT KILL and SHUTDOWN NOSAVE commands are available. The first can be
+# used to stop a script that did not yet called write commands. The second
+# is the only way to shut down the server in the case a write command was
+# already issued by the script but the user doesn&#39;t want to wait for the natural
+# termination of the script.
+#
+# Set it to 0 or a negative value for unlimited execution without warnings.
+lua-time-limit 5000
+
+################################ REDIS CLUSTER  ###############################
+#
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# WARNING EXPERIMENTAL: Redis Cluster is considered to be stable code, however
+# in order to mark it as &quot;mature&quot; we need to wait for a non trivial percentage
+# of users to deploy it in production.
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+# 一般情况下，redis未开启集群模式，只有开启如下参数，才能开启集群模式。
+#
+# cluster-enabled yes
+
+#
+# 每个集群节点都有集群配置文件，这个文件不是用来提供给使用者编辑，
+# 它将由集群节点自身创建并通过集群通信后修改。
+# 每个集群节点如果在同一个宿主机上都要有不同的文件，否则将会被覆盖。
+# cluster-config-file nodes-6379.conf
+
+
+# 集群节点被认定为不可达的时间阈值，单位是毫秒。
+# 大多数时间节点的阈值都是超时时间的整数倍。
+# cluster-node-timeout 15000
+
+# A replica of a failing master will avoid to start a failover if its data
+# looks too old.
+# 故障主节点的备份将在数据太旧的时候启动失败。
+#
+# 目前没有简易的方法判断数据是否过旧，一般采用如下两种判定：
+# 1）如果有多个故障备份，他们将交换数据对备份数据的时间进行排序，
+#     取最新的故障节点作为主节点。
+# 1) If there are multiple replicas able to failover, they exchange messages
+#    in order to try to give an advantage to the replica with the best
+#    replication offset (more data from the master processed).
+#    Replicas will try to get their rank by offset, and apply to the start
+#    of the failover a delay proportional to their rank.
+# 2）
+# 2) Every single replica computes the time of the last interaction with
+#    its master. This can be the last ping or command received (if the master
+#    is still in the &quot;connected&quot; state), or the time that elapsed since the
+#    disconnection with the master (if the replication link is currently down).
+#    If the last interaction is too old, the replica will not try to failover
+#    at all.
+#
+# The point &quot;2&quot; can be tuned by user. Specifically a replica will not perform
+# the failover if, since the last interaction with the master, the time
+# elapsed is greater than:
+#
+#   (node-timeout * replica-validity-factor) + repl-ping-replica-period
+#
+# So for example if node-timeout is 30 seconds, and the replica-validity-factor
+# is 10, and assuming a default repl-ping-replica-period of 10 seconds, the
+# replica will not try to failover if it was not able to talk with the master
+# for longer than 310 seconds.
+#
+# A large replica-validity-factor may allow replicas with too old data to failover
+# a master, while a too small value may prevent the cluster from being able to
+# elect a replica at all.
+#
+# For maximum availability, it is possible to set the replica-validity-factor
+# to a value of 0, which means, that replicas will always try to failover the
+# master regardless of the last time they interacted with the master.
+# (However they&#39;ll always try to apply a delay proportional to their
+# offset rank).
+#
+# Zero is the only value able to guarantee that when all the partitions heal
+# the cluster will always be able to continue.
+#
+# cluster-replica-validity-factor 10
+
+# Cluster replicas are able to migrate to orphaned masters, that are masters
+# that are left without working replicas. This improves the cluster ability
+# to resist to failures as otherwise an orphaned master can&#39;t be failed over
+# in case of failure if it has no working replicas.
+#
+# Replicas migrate to orphaned masters only if there are still at least a
+# given number of other working replicas for their old master. This number
+# is the &quot;migration barrier&quot;. A migration barrier of 1 means that a replica
+# will migrate only if there is at least 1 other working replica for its master
+# and so forth. It usually reflects the number of replicas you want for every
+# master in your cluster.
+#
+# Default is 1 (replicas migrate only if their masters remain with at least
+# one replica). To disable migration just set it to a very large value.
+# A value of 0 can be set but is useful only for debugging and dangerous
+# in production.
+#
+# cluster-migration-barrier 1
+
+# By default Redis Cluster nodes stop accepting queries if they detect there
+# is at least an hash slot uncovered (no available node is serving it).
+# This way if the cluster is partially down (for example a range of hash slots
+# are no longer covered) all the cluster becomes, eventually, unavailable.
+# It automatically returns available as soon as all the slots are covered again.
+#
+# However sometimes you want the subset of the cluster which is working,
+# to continue to accept queries for the part of the key space that is still
+# covered. In order to do so, just set the cluster-require-full-coverage
+# option to no.
+#
+# cluster-require-full-coverage yes
+
+# This option, when set to yes, prevents replicas from trying to failover its
+# master during master failures. However the master can still perform a
+# manual failover, if forced to do so.
+#
+# This is useful in different scenarios, especially in the case of multiple
+# data center operations, where we want one side to never be promoted if not
+# in the case of a total DC failure.
+#
+# cluster-replica-no-failover no
+
+# In order to setup your cluster make sure to read the documentation
+# available at http://redis.io web site.
+
+########################## CLUSTER DOCKER/NAT support  ########################
+
+# 在某些环境，redis集群节点的地址发现是失败的。主要原因是NAT网络或者Docker等容器化环境，导致地址发现是错误的。
+# 
+# 为了解决redis在这些网络环境的正常运行，redis提供的可配置化的可访问IP配置。
+# 如下是配置参数：
+#
+# * cluster-announce-ip
+# * cluster-announce-port
+# * cluster-announce-bus-port
+# 
+#
+# 如果这些配置未开启，使用默认的集群自动发现。
+# 
+# Note that when remapped, the bus port may not be at the fixed offset of
+# clients port + 10000, so you can specify any port and bus-port depending
+# on how they get remapped. If the bus-port is not set, a fixed offset of
+# 10000 will be used as usually.
+#
+# 一般来说，数据端口(port)和集群信息交换（bus-port）约定是port+10000.
+# Example:
+#
+# cluster-announce-ip 10.1.1.5
+# cluster-announce-port 6379
+# cluster-announce-bus-port 6380
+
+################################## SLOW LOG ###################################
+
+# redis慢日志是为了记录执行时间过长的指令。这些指令不包含IO操作，比如和客户端的数据通，只是记录
+# 指令在redis中的执行时间（因为redis是单线程的，每条指令执行都是堵塞其他指令，这样的机制，可以简单的记录下每条指令的执行时间）
+#
+# 你可以配置慢日志的两个参数，一个是慢日志的界定阈值，单位是微秒，另一个是慢日志的指令最大数量，
+# 超过最大数量，旧的慢日志将被删除。
+
+
+# 下面单位是微秒，1秒要写成1000000，如果数值为负数，表示不记录慢日志，如果数值为0，将会记录每条指令
+slowlog-log-slower-than 10000
+
+
+# 慢日志最大长度如果不设置，将没有限制，一直存储下去，这将导致内存暴增。
+# 你可以通过SLOWLOG RESET来重置慢日志记录
+slowlog-max-len 128
+
+################################ LATENCY MONITOR ##############################
+
+#
+# redis延时监控是为了在运行状态收集redis的慢操作（和慢日志的区别，其监控范围更广，不仅包括命令耗时，还包括内部指令，比如key过期回收这些的耗时）
+# 通过latency可以打印耗时图表
+# 通过latency-monitor-threshold（单位毫秒）的阈值记录延时日志，如果设置0，表示关闭延时日志监控。
+#
+# 默认情况下，延时监控是关闭的，大多数情况下，没有必要开启，除非redis存在性能问题。
+# 延时监控开启后，会有一定的性能损耗，不过相当小，即使在大负载运行的情
+# 延时监控也可以通过CONFIG SET latency-monitor-threshold &lt;milliseconds&gt;来进行热启动
+latency-monitor-threshold 0
+
+############################# EVENT NOTIFICATION ##############################
+
+# Redis can notify Pub/Sub clients about events happening in the key space.
+# This feature is documented at http://redis.io/topics/notifications
+#
+# For instance if keyspace events notification is enabled, and a client
+# performs a DEL operation on key &quot;foo&quot; stored in the Database 0, two
+# messages will be published via Pub/Sub:
+#
+# PUBLISH __keyspace@0__:foo del
+# PUBLISH __keyevent@0__:del foo
+#
+# It is possible to select the events that Redis will notify among a set
+# of classes. Every class is identified by a single character:
+#
+#  K     Keyspace events, published with __keyspace@&lt;db&gt;__ prefix.
+#  E     Keyevent events, published with __keyevent@&lt;db&gt;__ prefix.
+#  g     Generic commands (non-type specific) like DEL, EXPIRE, RENAME, ...
+#  $     String commands
+#  l     List commands
+#  s     Set commands
+#  h     Hash commands
+#  z     Sorted set commands
+#  x     Expired events (events generated every time a key expires)
+#  e     Evicted events (events generated when a key is evicted for maxmemory)
+#  A     Alias for g$lshzxe, so that the &quot;AKE&quot; string means all the events.
+#
+#  The &quot;notify-keyspace-events&quot; takes as argument a string that is composed
+#  of zero or multiple characters. The empty string means that notifications
+#  are disabled.
+#
+#  Example: to enable list and generic events, from the point of view of the
+#           event name, use:
+#
+#  notify-keyspace-events Elg
+#
+#  Example 2: to get the stream of the expired keys subscribing to channel
+#             name __keyevent@0__:expired use:
+#
+#  notify-keyspace-events Ex
+#
+#  By default all notifications are disabled because most users don&#39;t need
+#  this feature and the feature has some overhead. Note that if you don&#39;t
+#  specify at least one of K or E, no events will be delivered.
+notify-keyspace-events &quot;&quot;
+
+############################### ADVANCED CONFIG ###############################
+
+# Hashes are encoded using a memory efficient data structure when they have a
+# small number of entries, and the biggest entry does not exceed a given
+# threshold. These thresholds can be configured using the following directives.
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+
+# Lists are also encoded in a special way to save a lot of space.
+# The number of entries allowed per internal list node can be specified
+# as a fixed maximum size or a maximum number of elements.
+# For a fixed maximum size, use -5 through -1, meaning:
+# -5: max size: 64 Kb  &lt;-- not recommended for normal workloads
+# -4: max size: 32 Kb  &lt;-- not recommended
+# -3: max size: 16 Kb  &lt;-- probably not recommended
+# -2: max size: 8 Kb   &lt;-- good
+# -1: max size: 4 Kb   &lt;-- good
+# Positive numbers mean store up to _exactly_ that number of elements
+# per list node.
+# The highest performing option is usually -2 (8 Kb size) or -1 (4 Kb size),
+# but if your use case is unique, adjust the settings as necessary.
+list-max-ziplist-size -2
+
+# Lists may also be compressed.
+# Compress depth is the number of quicklist ziplist nodes from *each* side of
+# the list to *exclude* from compression.  The head and tail of the list
+# are always uncompressed for fast push/pop operations.  Settings are:
+# 0: disable all list compression
+# 1: depth 1 means &quot;don&#39;t start compressing until after 1 node into the list,
+#    going from either the head or tail&quot;
+#    So: [head]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[tail]
+#    [head], [tail] will always be uncompressed; inner nodes will compress.
+# 2: [head]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[tail]
+#    2 here means: don&#39;t compress head or head-&gt;next or tail-&gt;prev or tail,
+#    but compress all nodes between them.
+# 3: [head]-&gt;[next]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[prev]-&gt;[tail]
+# etc.
+list-compress-depth 0
+
+# Sets have a special encoding in just one case: when a set is composed
+# of just strings that happen to be integers in radix 10 in the range
+# of 64 bit signed integers.
+# The following configuration setting sets the limit in the size of the
+# set in order to use this special memory saving encoding.
+set-max-intset-entries 512
+
+# Similarly to hashes and lists, sorted sets are also specially encoded in
+# order to save a lot of space. This encoding is only used when the length and
+# elements of a sorted set are below the following limits:
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+
+# HyperLogLog sparse representation bytes limit. The limit includes the
+# 16 bytes header. When an HyperLogLog using the sparse representation crosses
+# this limit, it is converted into the dense representation.
+#
+# A value greater than 16000 is totally useless, since at that point the
+# dense representation is more memory efficient.
+#
+# The suggested value is ~ 3000 in order to have the benefits of
+# the space efficient encoding without slowing down too much PFADD,
+# which is O(N) with the sparse encoding. The value can be raised to
+# ~ 10000 when CPU is not a concern, but space is, and the data set is
+# composed of many HyperLogLogs with cardinality in the 0 - 15000 range.
+hll-sparse-max-bytes 3000
+
+# Streams macro node max size / items. The stream data structure is a radix
+# tree of big nodes that encode multiple items inside. Using this configuration
+# it is possible to configure how big a single node can be in bytes, and the
+# maximum number of items it may contain before switching to a new node when
+# appending new stream entries. If any of the following settings are set to
+# zero, the limit is ignored, so for instance it is possible to set just a
+# max entires limit by setting max-bytes to 0 and max-entries to the desired
+# value.
+stream-node-max-bytes 4096
+stream-node-max-entries 100
+
+# Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
+# order to help rehashing the main Redis hash table (the one mapping top-level
+# keys to values). The hash table implementation Redis uses (see dict.c)
+# performs a lazy rehashing: the more operation you run into a hash table
+# that is rehashing, the more rehashing &quot;steps&quot; are performed, so if the
+# server is idle the rehashing is never complete and some more memory is used
+# by the hash table.
+#
+# The default is to use this millisecond 10 times every second in order to
+# actively rehash the main dictionaries, freeing memory when possible.
+#
+# If unsure:
+# use &quot;activerehashing no&quot; if you have hard latency requirements and it is
+# not a good thing in your environment that Redis can reply from time to time
+# to queries with 2 milliseconds delay.
+#
+# use &quot;activerehashing yes&quot; if you don&#39;t have such hard requirements but
+# want to free memory asap when possible.
+activerehashing yes
+
+# The client output buffer limits can be used to force disconnection of clients
+# that are not reading data from the server fast enough for some reason (a
+# common reason is that a Pub/Sub client can&#39;t consume messages as fast as the
+# publisher can produce them).
+#
+# The limit can be set differently for the three different classes of clients:
+#
+# normal -&gt; normal clients including MONITOR clients
+# replica  -&gt; replica clients
+# pubsub -&gt; clients subscribed to at least one pubsub channel or pattern
+#
+# The syntax of every client-output-buffer-limit directive is the following:
+#
+# client-output-buffer-limit &lt;class&gt; &lt;hard limit&gt; &lt;soft limit&gt; &lt;soft seconds&gt;
+#
+# A client is immediately disconnected once the hard limit is reached, or if
+# the soft limit is reached and remains reached for the specified number of
+# seconds (continuously).
+# So for instance if the hard limit is 32 megabytes and the soft limit is
+# 16 megabytes / 10 seconds, the client will get disconnected immediately
+# if the size of the output buffers reach 32 megabytes, but will also get
+# disconnected if the client reaches 16 megabytes and continuously overcomes
+# the limit for 10 seconds.
+#
+# By default normal clients are not limited because they don&#39;t receive data
+# without asking (in a push way), but just after a request, so only
+# asynchronous clients may create a scenario where data is requested faster
+# than it can read.
+#
+# Instead there is a default limit for pubsub and replica clients, since
+# subscribers and replicas receive data in a push fashion.
+#
+# Both the hard or the soft limit can be disabled by setting them to zero.
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit replica 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+
+# Client query buffers accumulate new commands. They are limited to a fixed
+# amount by default in order to avoid that a protocol desynchronization (for
+# instance due to a bug in the client) will lead to unbound memory usage in
+# the query buffer. However you can configure it here if you have very special
+# needs, such us huge multi/exec requests or alike.
+#
+# client-query-buffer-limit 1gb
+
+# In the Redis protocol, bulk requests, that are, elements representing single
+# strings, are normally limited ot 512 mb. However you can change this limit
+# here.
+#
+# proto-max-bulk-len 512mb
+
+# Redis calls an internal function to perform many background tasks, like
+# closing connections of clients in timeout, purging expired keys that are
+# never requested, and so forth.
+#
+# Not all tasks are performed with the same frequency, but Redis checks for
+# tasks to perform according to the specified &quot;hz&quot; value.
+#
+# By default &quot;hz&quot; is set to 10. Raising the value will use more CPU when
+# Redis is idle, but at the same time will make Redis more responsive when
+# there are many keys expiring at the same time, and timeouts may be
+# handled with more precision.
+#
+# The range is between 1 and 500, however a value over 100 is usually not
+# a good idea. Most users should use the default of 10 and raise this up to
+# 100 only in environments where very low latency is required.
+hz 10
+
+# Normally it is useful to have an HZ value which is proportional to the
+# number of clients connected. This is useful in order, for instance, to
+# avoid too many clients are processed for each background task invocation
+# in order to avoid latency spikes.
+#
+# Since the default HZ value by default is conservatively set to 10, Redis
+# offers, and enables by default, the ability to use an adaptive HZ value
+# which will temporary raise when there are many connected clients.
+#
+# When dynamic HZ is enabled, the actual configured HZ will be used as
+# as a baseline, but multiples of the configured HZ value will be actually
+# used as needed once more clients are connected. In this way an idle
+# instance will use very little CPU time while a busy instance will be
+# more responsive.
+dynamic-hz yes
+
+# When a child rewrites the AOF file, if the following option is enabled
+# the file will be fsync-ed every 32 MB of data generated. This is useful
+# in order to commit the file to the disk more incrementally and avoid
+# big latency spikes.
+aof-rewrite-incremental-fsync yes
+
+# When redis saves RDB file, if the following option is enabled
+# the file will be fsync-ed every 32 MB of data generated. This is useful
+# in order to commit the file to the disk more incrementally and avoid
+# big latency spikes.
+rdb-save-incremental-fsync yes
+
+# Redis LFU eviction (see maxmemory setting) can be tuned. However it is a good
+# idea to start with the default settings and only change them after investigating
+# how to improve the performances and how the keys LFU change over time, which
+# is possible to inspect via the OBJECT FREQ command.
+#
+# There are two tunable parameters in the Redis LFU implementation: the
+# counter logarithm factor and the counter decay time. It is important to
+# understand what the two parameters mean before changing them.
+#
+# The LFU counter is just 8 bits per key, it&#39;s maximum value is 255, so Redis
+# uses a probabilistic increment with logarithmic behavior. Given the value
+# of the old counter, when a key is accessed, the counter is incremented in
+# this way:
+#
+# 1. A random number R between 0 and 1 is extracted.
+# 2. A probability P is calculated as 1/(old_value*lfu_log_factor+1).
+# 3. The counter is incremented only if R &lt; P.
+#
+# The default lfu-log-factor is 10. This is a table of how the frequency
+# counter changes with a different number of accesses with different
+# logarithmic factors:
+#
+# +--------+------------+------------+------------+------------+------------+
+# | factor | 100 hits   | 1000 hits  | 100K hits  | 1M hits    | 10M hits   |
+# +--------+------------+------------+------------+------------+------------+
+# | 0      | 104        | 255        | 255        | 255        | 255        |
+# +--------+------------+------------+------------+------------+------------+
+# | 1      | 18         | 49         | 255        | 255        | 255        |
+# +--------+------------+------------+------------+------------+------------+
+# | 10     | 10         | 18         | 142        | 255        | 255        |
+# +--------+------------+------------+------------+------------+------------+
+# | 100    | 8          | 11         | 49         | 143        | 255        |
+# +--------+------------+------------+------------+------------+------------+
+#
+# NOTE: The above table was obtained by running the following commands:
+#
+#   redis-benchmark -n 1000000 incr foo
+#   redis-cli object freq foo
+#
+# NOTE 2: The counter initial value is 5 in order to give new objects a chance
+# to accumulate hits.
+#
+# The counter decay time is the time, in minutes, that must elapse in order
+# for the key counter to be divided by two (or decremented if it has a value
+# less &lt;= 10).
+#
+# The default value for the lfu-decay-time is 1. A Special value of 0 means to
+# decay the counter every time it happens to be scanned.
+#
+# lfu-log-factor 10
+# lfu-decay-time 1
+
+########################### ACTIVE DEFRAGMENTATION #######################
+#
+# 注意，该特性是实验性的，尽管经过了众多开发者生产环境验证和人工测试，但还是不能保证没问题。
+#
+# 什么是碎片热整理？
+# -------------------------------
+# 碎片热整理是让redis整合内存空间的碎片化数据块和废弃数据，这样可以回收更大的内存空间用于分配。
+# 
+# 
+# Fragmentation is a natural process that happens with every allocator (but
+# less so with Jemalloc, fortunately) and certain workloads. 
+# 一般来说，服务需要重启才能减少内存碎片，或至少要释放所有数据内存，再次重新构建一次内存数据。
+# 然而，感谢Oran Agra在redis4.0实现了服务在运行时可整理碎片的机制。
+#
+# 基本上，当碎片达到一定级别（看下方的配置），redis将在临近的内存区域通过Jemalloc（可以更好的实现内存回收和碎片整理）构建一个备份，
+# 同时，将释放旧的内存数据，这个进程采用递增的方式逐个处理key值直到内存碎片降低的合理值。
+#
+# 重要的知识点:
+#
+# 1. This feature is disabled by default, and only works if you compiled Redis
+#    to use the copy of Jemalloc we ship with the source code of Redis.
+#    This is the default with Linux builds.
+# 2.你不需要开启该特性，如果你的系统没有碎片问题。
+# 3.一旦你想体验该特性，你可以通过CONFIG SET activedefrag yes指令开启
+#
+# 如下配置将更好的调整碎片整理的行为。如果你不确定参数的作用，建议采用默认值。
+
+# 开启碎片整理
+# activedefrag yes
+
+# 碎片大小下限值，碎片大小&gt;=100M,才可以触发整理，但是不一定触发（其他因素限制）
+# active-defrag-ignore-bytes 100mb
+
+# 碎片占比下限值，&gt;=10%,才可以触发整理，但是不一定触发（其他因素限制）
+# active-defrag-threshold-lower 10
+
+# 碎片占比上限值，&lt;=100%,才可以触发整理，但是不一定触发（其他因素限制）
+# active-defrag-threshold-upper 100
+
+# CPU的使用率下限值，&gt;=5%,才可以触发整理，但是不一定触发（其他因素限制）
+# active-defrag-cycle-min 5
+
+# CPU的使用率上限值，&lt;=75%,才可以触发整理，但是不一定触发（其他因素限制）
+# active-defrag-cycle-max 75
+
+# Maximum number of set/hash/zset/list fields that will be processed from
+# the main dictionary scan
+# active-defrag-max-scan-fields 1000
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/15991122990129.html"/>
+    <updated>2020-09-03T13:51:39+08:00</updated>
+    <id>http://www.throne4j.com/15991122990129.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[分布式和集群的概念区别]]></title>
+    <link href="http://www.throne4j.com/15990991988342.html"/>
+    <updated>2020-09-03T10:13:18+08:00</updated>
+    <id>http://www.throne4j.com/15990991988342.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">　　一、集群概念</h2>
+
+<h2 id="toc_1">1、两大关键特性</h2>
+
+<p>集群是一组协同工作的服务实体，用以提供比单一服务实体更具扩展性与可用性的服务平台。在客户端看来，一个集群就象是一个服务实体，但事实上集群由一组服务实体组成。与单一服务实体相比较，集群提供了以下两个关键特性：</p>
+
+<ul>
+<li>可扩展性－－集群的性能不限于单一的服务实体，新的服务实体可以动态地加入到集群，从而增强集群的性能。</li>
+<li>高可用性－－集群通过服务实体冗余使客户端免于轻易遇到out of service的警告。在集群中，同样的服务可以由多个服务实体提供。如果一个服务实体失败了，另一个服务实体会接管失败的服务实体。集群提供的从一个出 错的服务实体恢复到另一个服务实体的功能增强了应用的可用性。</li>
+</ul>
+
+<p>　　2. 两大能力 </p>
+
+<p>　　为了具有可扩展性和高可用性特点，集群的必须具备以下两大能力：</p>
+
+<p>　　·  负载均衡－－负载均衡能把任务比较均衡地分布到集群环境下的计算和网络资源。</p>
+
+<p>　　·  错误恢复－－由于某种原因，执行某个任务的资源出现故障，另一服务实体中执行同一任务的资源接着完成任务。这种由于一个实体中的资源不能工作，另一个实体中的资源透明的继续完成任务的过程叫错误恢复。</p>
+
+<p>　　负载均衡和错误恢复都要求各服务实体中有执行同一任务的资源存在，而且对于同一任务的各个资源来说，执行任务所需的信息视图（信息上下文）必须是一样的。</p>
+
+<p>　　3. 两大技术</p>
+
+<p>　　实现集群务必要有以下两大技术：</p>
+
+<p>　　·  集群地址－－集群由多个服务实体组成，集群客户端通过访问集群的集群地址获取集群内部各服务实体的功能。具有单一集群地址（也叫单一影像）是集群的一个基 本特征。维护集群地址的设置被称为负载均衡器。负载均衡器内部负责管理各个服务实体的加入和退出，外部负责集群地址向内部服务实体地址的转换。有的负载均 衡器实现真正的负载均衡算法，有的只支持任务的转换。只实现任务转换的负载均衡器适用于支持ACTIVE-STANDBY的集群环境，在那里，集群中只有 一个服务实体工作，当正在工作的服务实体发生故障时，负载均衡器把后来的任务转向另外一个服务实体。</p>
+
+<p>　　·  内部通信－－为了能协同工作、实现负载均衡和错误恢复，集群各实体间必须时常通信，比如负载均衡器对服务实体心跳测试信息、服务实体间任务执行上下文信息的通信。</p>
+
+<p>　　具有同一个集群地址使得客户端能访问集群提供的计算服务，一个集群地址下隐藏了各个服务实体的内部地址，使得客户要求的计算服务能在各个服务实体之间分布。内部通信是集群能正常运转的基础，它使得集群具有均衡负载和错误恢复的能力。</p>
+
+<h2 id="toc_2">　　二、集群分类</h2>
+
+<p>　　Linux集群主要分成三大类(高可用集群， 负载均衡集群，科学计算集群)</p>
+
+<p>高可用集群(High Availability Cluster)<br/>
+负载均衡集群(Load Balance Cluster)<br/>
+科学计算集群(High Performance Computing Cluster)<br/>
+　　具体包括：</p>
+
+<p>　　Linux High Availability 高可用集群<br/><br/>
+　　(普通两节点双机热备，多节点HA集群，RAC, shared, share-nothing集群等)</p>
+
+<p>　　Linux Load Balance 负载均衡集群<br/><br/>
+　　 (LVS等....)</p>
+
+<p>　　Linux High Performance Computing 高性能科学计算集群<br/><br/>
+　　 (Beowulf 类集群....)</p>
+
+<h2 id="toc_3">　　三、详细介绍</h2>
+
+<p>　　1. 高可用集群(High Availability Cluster)</p>
+
+<p>　　常见的就是2个节点做成的HA集群，有很多通俗的不科学的名称，比如&quot;双机热备&quot;，&quot;双机互备&quot;，&quot;双机&quot;。</p>
+
+<p>　　高可用集群解决的是保障用户的应用程序持续对外提供服务的能力。 (请注意高可用集群既不是用来保护业务数据的，保护的是用户的业务程序对外不间断提供服务，把因软件/硬件/人为造成的故障对业务的影响降低到最小程度)。</p>
+
+<p>　　2. 负载均衡集群(Load Balance Cluster)</p>
+
+<p>　　负载均衡系统：集群中所有的节点都处于活动状态，它们分摊系统的工作负载。一般Web服务器集群、数据库集群和应用服务器集群都属于这种类型。</p>
+
+<p>　　负载均衡集群一般用于相应网络请求的网页服务器，数据库服务器。这种集群可以在接到请求时，检查接受请求较少，不繁忙的服务器，并把请求转到这些服务器上。从检查其他服务器状态这一点上看，负载均衡和容错集群很接近，不同之处是数量上更多。</p>
+
+<p>　　3. 科学计算集群(High Performance Computing Cluster)</p>
+
+<p>　　高性能计算(High Perfermance Computing)集群，简称HPC集群。这类集群致力于提供单个计算机所不能提供的强大的计算能力。</p>
+
+<p>　　3.1 高性能计算分类　　　</p>
+
+<p>　　3.1.1 高吞吐计算(High-throughput Computing)</p>
+
+<p>　　有一类高性能计算，可以把它分成若干可以并行的子任务，而且各个子任务彼此间没有什么关联。象在家搜寻外星人（ SETI@HOME -- Search for Extraterrestrial Intelligence at Home ）就是这一类型应用。这一项目是利用Internet上的闲置的计算资源来搜寻外星人。SETI项目的服务器将一组数据和数据模式发给Internet上 参加SETI的计算节点，计算节点在给定的数据上用给定的模式进行搜索，然后将搜索的结果发给服务器。服务器负责将从各个计算节点返回的数据汇集成完整的 数据。因为这种类型应用的一个共同特征是在海量数据上搜索某些模式，所以把这类计算称为高吞吐计算。所谓的Internet计算都属于这一类。按照 Flynn的分类，高吞吐计算属于SIMD（Single Instruction/Multiple Data）的范畴。</p>
+
+<p>　　3.1.2 分布计算(Distributed Computing)</p>
+
+<p>　　另一类计算刚好和高吞吐计算相反，它们虽然可以给分成若干并行的子任务，但是子任务间联系很紧密，需要大量的数据交换。按照Flynn的分类，分布式的高性能计算属于MIMD（Multiple Instruction/Multiple Data）的范畴。</p>
+
+<h2 id="toc_4">　　四、分布式（集群）与集群的联系与区别</h2>
+
+<p>　　分布式是指将不同的业务分布在不同的地方；而集群指的是将几台服务器集中在一起，实现同一业务。</p>
+
+<p>　　分布式中的每一个节点，都可以做集群。 而集群并不一定就是分布式的。 </p>
+
+<p>　　举例：就比如新浪网，访问的人多了，他可以做一个群集，前面放一个响应服务器，后面几台服务器完成同一业务，如果有业务访问的时候，响应服务器看哪台服务器的负载不是很重，就将给哪一台去完成。 </p>
+
+<p>　　而分布式，从窄意上理解，也跟集群差不多， 但是它的组织比较松散，不像集群，有一个组织性，一台服务器垮了，其它的服务器可以顶上来。</p>
+
+<p>　　分布式的每一个节点，都完成不同的业务，一个节点垮了，那这个业务就不可访问了。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[linux和macOS下top命令区别]]></title>
@@ -1512,7 +4146,16 @@ TCP 将保持它首部和数据的检验和。这是一个端到端的检验和�
 <p>上面是一方主动关闭，另一方被动关闭的情况，实际中还会出现同时发起主动关闭的情况：<br/>
 <figure><img src="media/15955594725422/15956918440314.jpg" alt=""/></figure></p>
 
+<p>SYN洪泛攻击<br/>
+服务端会维护一个半连接队列 大小 &lt;= 10<br/>
+无效连接监控释放、延缓TCB分配方法、防火墙</p>
+
 <h4 id="toc_15">3.3.3、 通过序列号与确认应答提高可靠性</h4>
+
+<p>TCP缓冲区：每个tcp的socket的内核中都有一个发送缓冲区和一个接受缓冲区</p>
+
+<p>如何提高TCP的可靠性与高效率？<br/>
+确认与重发机制、序列号</p>
 
 <p>在 TCP 中，当发送端的数据到达接收主机时，接收端主机会返回一个已收到消息的通知。这个消息叫做确认应答（ACK）。当发送端将数据发出之后会等待对端的确认应答。如果有确认应答，说明数据已经成功到达对端。反之，则数据丢失的可能性很大。</p>
 
@@ -1522,8 +4165,9 @@ TCP 将保持它首部和数据的检验和。这是一个端到端的检验和�
 
 <p>此外，也有可能因为一些其他原因导致确认应答延迟到达，在源主机重发数据以后才到达的情况也屡见不鲜。此时，源主机只要按照机制重发数据即可。</p>
 
-<p>对于目标主机来说，反复收到相同的数据是不可取的。为了对上层应用提供可靠的传输，目标主机必须放弃重复的数据包。为此我们引入了序列号。<br/>
-序列号是按照顺序给发送数据的每一个字节（8位字节）都标上号码的编号。接收端查询接收数据 TCP 首部中的序列号和数据的长度，将自己下一步应该接收的序列号作为确认应答返送回去。通过序列号和确认应答号，TCP 能够识别是否已经接收数据，又能够判断是否需要接收，从而实现可靠传输。</p>
+<p>对于目标主机来说，反复收到相同的数据是不可取的。为了对上层应用提供可靠的传输，目标主机必须放弃重复的数据包。为此我们引入了序列号。</p>
+
+<p>序列号是按照顺序给发送数据的每一个字节（8位字节）都标上号码的编号。接收端查询接收数据 TCP 首部中的序列号和数据的长度，将自己下一步应该接收的序列号作为确认应答返送回去。通过序列号和确认应答号，TCP 能够识别是否已经接收数据，又能够判断是否需要接收，从而实现可靠传输。</p>
 
 <p><figure><img src="media/15955594725422/15956919436214.jpg" alt=""/></figure></p>
 
@@ -1941,1830 +4585,6 @@ IP 隧道可以将那些从网络 A 发过来的 IPv6 的包统合为一个数�
 <h4 id="toc_17">3.14、 503 Service Unavailable</h4>
 
 <p>表明服务器暂时处于超负载或正在进行停机维护，现在无法处理请求。如果事先得知解除以上状况需要的时间，最好写入 Retry-After 首部字段再返回给客户端。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HTTP协议(四)--HTTP 报文实体]]></title>
-    <link href="http://www.throne4j.com/15957408714359.html"/>
-    <updated>2020-07-26T13:21:11+08:00</updated>
-    <id>http://www.throne4j.com/15957408714359.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">1. HTTP 报文实体概述</h2>
-
-<p><figure><img src="media/15955168840534/15957385627780.jpg" alt="HTTP 报文结构"/><figcaption>HTTP 报文结构</figcaption></figure></p>
-
-<p>大家请仔细看看上面示例中，各个组成部分对应的内容。<br/>
-接着，我们来看看报文和实体的概念。如果把 HTTP 报文想象成因特网货运系统中的箱子，那么 HTTP 实体就是报文中实际的货物。</p>
-
-<ul>
-<li><p>报文：是网络中交换和传输的数据单元，即站点一次性要发送的数据块。报文包含了将要发送的完整的数据信息，其长短很不一致，长度不限且可变。</p></li>
-<li><p>实体：作为请求或响应的有效载荷数据（补充项）被传输，其内容由实体首部和实体主体组成。（实体首部相关内容在上面第六点中已有阐述。）</p></li>
-</ul>
-
-<p>我们可以看到，上面示例右图中深红色框的内容就是报文的实体部分，而蓝色框的两部分内容分别就是实体首部和实体主体。而左图中粉红框内容就是报文主体。<br/>
-通常，报文主体等于实体主体。只有当传输中进行编码操作时，实体主体的内容发生变化，才导致它和报文主体产生差异。</p>
-
-<h2 id="toc_1">2. 内容编码</h2>
-
-<p>HTTP 应用程序有时在发送之前需要对内容进行编码。例如，在把很大的 HTML 文档发送给通过慢速连接上来的客户端之前，服务器可能会对其进行压缩，这样有助于减少传输实体的时间。服务器还可以把内容搅乱或加密，以此来防止未授权的第三方看到文档的内容。</p>
-
-<p>这种类型的编码是在发送方应用到内容之上的。当内容经过内容编码后，编好码的数据就放在实体主体中，像往常一样发送给接收方。<br/>
-内容编码类型：</p>
-
-<table>
-<thead>
-<tr>
-<th>编码方式</th>
-<th>描述</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>gzip</td>
-<td>表明实体采用 GNU zip 编码</td>
-</tr>
-<tr>
-<td>compress</td>
-<td>表明实体采用 Unix 的文件压缩程序</td>
-</tr>
-<tr>
-<td>deflate</td>
-<td>表明实体采用 zlib 的格式压缩的</td>
-</tr>
-<tr>
-<td>identity</td>
-<td>表明没有对实体进行编码，当没有 Content-Encoding 首部字段时，默认采用此编码方式</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_2">3. 传输编码</h2>
-
-<p>内容编码是对报文的主体进行的可逆变换，是和内容的具体格式细节紧密相关的。<br/>
-传输编码也是作用在实体主体上的可逆变换，但使用它们是由于架构方面的原因，同内容的格式无关。使用传输编码是为了改变报文中的数据在网络上传输的方式。</p>
-
-<p><figure><img src="media/15955168840534/15957385792865.jpg" alt="内容编码和传输编码的对比"/><figcaption>内容编码和传输编码的对比</figcaption></figure></p>
-
-<h2 id="toc_3">4. 分块编码</h2>
-
-<p>分块编码把报文分割成若干已知大小的块。块之间是紧挨着发送的，这样就不需要在发送之前知道整个报文的大小了。分块编码是一种传输编码，是报文的属性。</p>
-
-<p>分块编码与持久连接<br/>
-若客户端与服务器端之间不是持久连接，客户端就不需要知道它在读取的主体的长度，而只需要读取到服务器关闭主体连接为止。<br/>
-当使用持久连接时，在服务器写主体之前，必须知道它的大小并在 Content-Length 首部中发送。如果服务器动态创建内容，就可能在发送之前无法知道主体的长度。<br/>
-分块编码为这种困难提供了解决方案，只要允许服务器把主体分块发送，说明每块的大小就可以了。因为主体是动态创建的，服务器可以缓冲它的一部分，发送其大小和相应的块，然后在主体发送完之前重复这个过程。服务器可以用大小为 0 的块作为主体结束的信号，这样就可以继续保持连接，为下一个响应做准备。<br/>
-来看看一个分块编码的报文示例：<br/>
-<figure><img src="media/15955168840534/15957390124186.jpg" alt=""/></figure></p>
-
-<p>分块编码的报文</p>
-
-<h2 id="toc_4">5.多部分媒体类型</h2>
-
-<p>MIME 中的 multipart（多部分）电子邮件报文中包含多个报文，它们合在一起作为单一的复杂报文发送。每一部分都是独立的，有各自的描述其内容的集，不同部分之间用分界字符串连接在一起。<br/>
-相应得，HTTP 协议中也采纳了多部分对象集合，发送的一份报文主体内可包含多种类型实体。<br/>
-多部分对象集合包含的对象如下：</p>
-
-<p>multipart/form-data：在 Web 表单文件上传时使用。<br/>
-multipart/byteranges：状态码 206 Partial Content 响应报文包含了多个范围的内容时使用。</p>
-
-<h2 id="toc_5">6. 范围请求</h2>
-
-<p>假设你正在下载一个很大的文件，已经下了四分之三，忽然网络中断了，那下载就必须重头再来一遍。为了解决这个问题，需要一种可恢复的机制，即能从之前下载中断处恢复下载。要实现该功能，这就要用到范围请求。<br/>
-有了范围请求， HTTP 客户端可以通过请求曾获取失败的实体的一个范围（或者说一部分），来恢复下载该实体。当然这有一个前提，那就是从客户端上一次请求该实体到这一次发出范围请求的时间段内，该对象没有改变过。例如：</p>
-
-<pre><code class="language-text">GET  /bigfile.html  HTTP/1.1
-Host: www.sample.com
-Range: bytes=20224-
-···
-</code></pre>
-
-<p><figure><img src="media/15955168840534/15957390372242.jpg" alt=""/></figure></p>
-
-<p>实体范围请求示例<br/>
-上面示例中，客户端请求的是文档开头20224字节之后的部分。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HTTP协议(三)--HTTP 报文详析]]></title>
-    <link href="http://www.throne4j.com/15957408699075.html"/>
-    <updated>2020-07-26T13:21:09+08:00</updated>
-    <id>http://www.throne4j.com/15957408699075.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">一、http 首部字段</h2>
-
-<h3 id="toc_1">1.首部字段概述</h3>
-
-<p>先来回顾一下首部字段在报文的位置，HTTP 报文包含报文首部和报文主体，报文首部包含请求行（或状态行）和首部字段。<br/>
-在报文众多的字段当中，HTTP 首部字段包含的信息最为丰富。首部字段同时存在于请求和响应报文内，并涵盖 HTTP 报文相关的内容信息。使用首部字段是为了给客服端和服务器端提供报文主体大小、所使用的语言、认证信息等内容。</p>
-
-<h3 id="toc_2">2.首部字段结构</h3>
-
-<p>HTTP 首部字段是由首部字段名和字段值构成的，中间用冒号“：”分隔。<br/>
-另外，字段值对应单个 HTTP 首部字段可以有多个值。<br/>
-当 HTTP 报文首部中出现了两个或以上具有相同首部字段名的首部字段时，这种情况在规范内尚未明确，根据浏览器内部处理逻辑的不同，优先处理的顺序可能不同，结果可能并不一致。</p>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>字段值</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Content-Type</td>
-<td>text/html</td>
-</tr>
-<tr>
-<td>Keep-Alive</td>
-<td>timeout=30, max=120</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_3">3.首部字段类型</h3>
-
-<p>首部字段根据实际用途被分为以下4种类型：</p>
-
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>描述</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>通用首部字段</td>
-<td>请求报文和响应报文两方都会使用的首部</td>
-</tr>
-<tr>
-<td>请求首部字段</td>
-<td>从客户端向服务器端发送请求报文时使用的首部。补充了请求的附加内容、客户端信息、响应内容相关优先级等信息</td>
-</tr>
-<tr>
-<td>响应首部字段</td>
-<td>从服务器端向客户端返回响应报文时使用的首部。补充了响应的附加内容，也会要求客户端附加额外的内容信息。</td>
-</tr>
-<tr>
-<td>实体首部字段</td>
-<td>针对请求报文和响应报文的实体部分使用的首部。补充了资源内容更新时间等与实体有关的的信息。</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_4">4.通用首部字段（HTTP/1.1）</h3>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Cache-Control</td>
-<td>控制缓存的行为</td>
-</tr>
-<tr>
-<td>Connection</td>
-<td>逐挑首部、连接的管理</td>
-</tr>
-<tr>
-<td>Date</td>
-<td>创建报文的日期时间</td>
-</tr>
-<tr>
-<td>Pragma</td>
-<td>报文指令</td>
-</tr>
-<tr>
-<td>Trailer</td>
-<td>报文末端的首部一览</td>
-</tr>
-<tr>
-<td>Transfer-Encoding</td>
-<td>指定报文主体的传输编码方式</td>
-</tr>
-<tr>
-<td>Upgrade</td>
-<td>升级为其他协议</td>
-</tr>
-<tr>
-<td>Via</td>
-<td>代理服务器的相关信息</td>
-</tr>
-<tr>
-<td>Warning</td>
-<td>错误通知</td>
-</tr>
-</tbody>
-</table>
-
-<h4 id="toc_5">4.1 Cache-Control</h4>
-
-<p>通过指定首部字段 Cache-Control 的指令，就能操作缓存的工作机制。</p>
-
-<h5 id="toc_6">4.1.1 可用的指令一览</h5>
-
-<p>可用的指令按请求和响应分类如下：<br/>
-缓存请求指令</p>
-
-<table>
-<thead>
-<tr>
-<th>指令</th>
-<th>参数</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>no-cache</td>
-<td>无</td>
-<td>强制向服务器再次验证</td>
-</tr>
-<tr>
-<td>no-store</td>
-<td>无</td>
-<td>不缓存请求或响应的任何内容</td>
-</tr>
-<tr>
-<td>max-age = [秒]</td>
-<td>必需</td>
-<td>响应的最大Age值</td>
-</tr>
-<tr>
-<td>max-stale( =[秒])</td>
-<td>可省略</td>
-<td>接收已过期的响应</td>
-</tr>
-<tr>
-<td>min-fresh = [秒]</td>
-<td>必需</td>
-<td>期望在指定时间内的响应仍有效</td>
-</tr>
-<tr>
-<td>no-transform</td>
-<td>无</td>
-<td>代理不可更改媒体类型</td>
-</tr>
-<tr>
-<td>only-if-cached</td>
-<td>无</td>
-<td>从缓存获取资源</td>
-</tr>
-<tr>
-<td>cache-extension</td>
-<td>-</td>
-<td>新指令标记（token）</td>
-</tr>
-</tbody>
-</table>
-
-<p>缓存响应指令：</p>
-
-<table>
-<thead>
-<tr>
-<th>指令</th>
-<th>参数</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>public</td>
-<td>无</td>
-<td>可向任意方提供响应的缓存</td>
-</tr>
-<tr>
-<td>private</td>
-<td>可省略</td>
-<td>仅向特定用户返回响应</td>
-</tr>
-<tr>
-<td>no-cache</td>
-<td>可省略</td>
-<td>缓存前必须先确认其有效性</td>
-</tr>
-<tr>
-<td>no-store</td>
-<td>无</td>
-<td>不缓存请求或响应的任何内容</td>
-</tr>
-<tr>
-<td>no-transform</td>
-<td>无</td>
-<td>代理不可更改媒体类型</td>
-</tr>
-<tr>
-<td>must-revalidate</td>
-<td>无</td>
-<td>可缓存但必须再向源服务器进行确认</td>
-</tr>
-<tr>
-<td>proxy-revalidate</td>
-<td>无</td>
-<td>要求中间缓存服务器对缓存的响应有效性再进行确认</td>
-</tr>
-<tr>
-<td>max-age = [秒]</td>
-<td>必需</td>
-<td>响应的最大Age值</td>
-</tr>
-<tr>
-<td>s-maxage = [秒]</td>
-<td>必需</td>
-<td>公共缓存服务器响应的最大Age值</td>
-</tr>
-<tr>
-<td>cache-extension</td>
-<td>-</td>
-<td>新指令标记（token）</td>
-</tr>
-</tbody>
-</table>
-
-<h5 id="toc_7">4.1.2 表示能否缓存的指令</h5>
-
-<ul>
-<li><p>public 指令<br/>
-Cache-Control: public<br/>
-当指定使用 public 指令时，则明确表明其他用户也可利用缓存。</p></li>
-<li><p>private 指令<br/>
-Cache-Control: private<br/>
-当指定 private 指令后，响应只以特定的用户作为对象，这与 public 指令的行为相反。缓存服务器会对该特定用户提供资源缓存的服务，对于其他用户发送过来的请求，代理服务器则不会返回缓存。</p></li>
-<li><p>no-cache 指令<br/>
-Cache-Control: no-cache</p></li>
-</ul>
-
-<p>使用 no-cache 指令是为了防止从缓存中返回过期的资源。<br/>
-客户端发送的请求中如果包含 no-cache 指令，则表示客户端将不会接收缓存过的响应。于是，“中间”的缓存服务器必须把客户端请求转发给源服务器。<br/>
-如果服务器中返回的响应包含 no-cache 指令，那么缓存服务器不能对资源进行缓存。源服务器以后也将不再对缓存服务器请求中提出的资源有效性进行确认，且禁止其对响应资源进行缓存操作。</p>
-
-<p>Cache-Control: no-cache=Location</p>
-
-<p>由服务器返回的响应中，若报文首部字段 Cache-Control 中对 no-cache 字段名具体指定参数值，那么客户端在接收到这个被指定参数值的首部字段对应的响应报文后，就不能使用缓存。换言之，无参数值的首部字段可以使用缓存。只能在响应指令中指定该参数。</p>
-
-<ul>
-<li>no-store 指令<br/>
-Cache-Control: no-store<br/>
-当使用 no-store 指令时，暗示请求（和对应的响应）或响应中包含机密信息。因此，该指令规定缓存不能在本地存储请求或响应的任一部分。<br/>
-注意：no-cache 指令代表不缓存过期的指令，缓存会向源服务器进行有效期确认后处理资源；no-store 指令才是真正的不进行缓存。</li>
-</ul>
-
-<h4 id="toc_8">4.1.3 指定缓存期限和认证的指令</h4>
-
-<ul>
-<li>s-maxage 指令<br/>
-Cache-Control: s-maxage=604800（单位：秒）</li>
-</ul>
-
-<p>s-maxage 指令的功能和 max-age 指令的相同，它们的不同点是 s-maxage 指令只适用于供多位用户使用的公共缓存服务器（一般指代理）。也就是说，对于向同一用户重复返回响应的服务器来说，这个指令没有任何作用。<br/>
-另外，当使用 s-maxage 指令后，则直接忽略对 Expires 首部字段及 max-age 指令的处理。</p>
-
-<ul>
-<li>max-age 指令<br/>
-Cache-Control: max-age=604800（单位：秒）</li>
-</ul>
-
-<p>当客户端发送的请求中包含 max-age 指令时，如果判定缓存资源的缓存时间数值比指定的时间更小，那么客户端就接收缓存的资源。另外，当指定 max-age 的值为0，那么缓存服务器通常需要将请求转发给源服务器。<br/>
-当服务器返回的响应中包含 max-age 指令时，缓存服务器将不对资源的有效性再作确认，而 max-age 数值代表资源保存为缓存的最长时间。<br/>
-应用 HTTP/1.1 版本的缓存服务器遇到同时存在 Expires 首部字段的情况时，会优先处理 max-age 指令，并忽略掉 Expires 首部字段；而 HTTP/1.0 版本的缓存服务器则相反。</p>
-
-<ul>
-<li><p>min-fresh 指令<br/>
-Cache-Control: min-fresh=60（单位：秒）<br/>
-min-fresh 指令要求缓存服务器返回至少还未过指定时间的缓存资源。</p></li>
-<li><p>max-stale 指令<br/>
-Cache-Control: max-stale=3600（单位：秒）</p></li>
-</ul>
-
-<p>使用 max-stale 可指示缓存资源，即使过期也照常接收。<br/>
-如果指令未指定参数值，那么无论经过多久，客户端都会接收响应；如果指定了具体参数值，那么即使过期，只要仍处于 max-stale 指定的时间内，仍旧会被客户端接收。</p>
-
-<ul>
-<li><p>only-if-cached 指令<br/>
-Cache-Control: only-if-cached<br/>
-表示客户端仅在缓存服务器本地缓存目标资源的情况下才会要求其返回。换言之，该指令要求缓存服务器不重新加载响应，也不会再次确认资源的有效性。</p></li>
-<li><p>must-revalidate 指令<br/>
-Cache-Control: must-revalidate<br/>
-使用 must-revalidate 指令，代理会向源服务器再次验证即将返回的响应缓存目前是否仍有效。另外，使用 must-revalidate 指令会忽略请求的 max-stale 指令。</p></li>
-<li><p>proxy-revalidate 指令<br/>
-Cache-Control: proxy-revalidate<br/>
-proxy-revalidate 指令要求所有的缓存服务器在接收到客户端带有该指令的请求返回响应之前，必须再次验证缓存的有效性。</p></li>
-<li><p>no-transform 指令<br/>
-Cache-Control: no-transform<br/>
-使用 no-transform 指令规定无论是在请求还是响应中，缓存都不能改变实体主体的媒体类型。这样做可防止缓存或代理压缩图片等类似操作。</p></li>
-</ul>
-
-<h5 id="toc_9">4.1.4 Cache-Control 扩展</h5>
-
-<p>Cache-Control: private, community=&quot;UCI&quot;<br/>
-通过 cache-extension 标记（token），可以扩展 Cache-Control 首部字段内的指令。上述 community 指令即扩展的指令，如果缓存服务器不能理解这个新指令，就会直接忽略掉。</p>
-
-<h4 id="toc_10">4.2 Connection</h4>
-
-<p>Connection 首部字段具备以下两个作用：</p>
-
-<h5 id="toc_11">控制不再转发的首部字段</h5>
-
-<p>Connection: Upgrade<br/>
-在客户端发送请求和服务器返回响应中，使用 Connection 首部字段，可控制不再转发给代理的首部字段，即删除后再转发（即Hop-by-hop首部）。</p>
-
-<h5 id="toc_12">管理持久连接</h5>
-
-<p>Connection: close<br/>
-HTTP/1.1 版本的默认连接都是持久连接。当服务器端想明确断开连接时，则指定 Connection 首部字段的值为 close。<br/>
-Connection: Keep-Alive<br/>
-HTTP/1.1 之前的 HTTP 版本的默认连接都是非持久连接。为此，如果想在旧版本的 HTTP 协议上维持持续连接，则需要指定 Connection 首部字段的值为 Keep-Alive。</p>
-
-<h4 id="toc_13">4.3 Date</h4>
-
-<p>表明创建 HTTP 报文的日期和时间。<br/>
-Date: Mon, 10 Jul 2017 15:50:06 GMT<br/>
-HTTP/1.1 协议使用在 RFC1123 中规定的日期时间的格式。</p>
-
-<h4 id="toc_14">4.4 Pragma</h4>
-
-<p>Pragma 首部字段是 HTTP/1.1 版本之前的历史遗留字段，仅作为与 HTTP/1.0 的向后兼容而定义。<br/>
-Pragma: no-cache</p>
-
-<p>该首部字段属于通用首部字段，但只用在客户端发送的请求中，要求所有的中间服务器不返回缓存的资源。</p>
-
-<p>所有的中间服务器如果都能以 HTTP/1.1 为基准，那直接采用 Cache-Control: no-cache 指定缓存的处理方式最为理想。但是要整体掌握所有中间服务器使用的 HTTP 协议版本却是不现实的，所以，发送的请求会同时包含下面两个首部字</p>
-
-<pre><code class="language-text">Cache-Control: no-cache
-Pragma: no-cache
-</code></pre>
-
-<h4 id="toc_15">4.5 Trailer</h4>
-
-<p>Trailer: Expires</p>
-
-<p>首部字段 Trailer 会事先说明在报文主体后记录了哪些首部字段。可应用在 HTTP/1.1 版本分块传输编码时。</p>
-
-<h4 id="toc_16">4.6 Transfer-Encoding</h4>
-
-<p>Transfer-Encoding: chunked</p>
-
-<p>规定了传输报文主体时采用的编码方式。<br/>
-HTTP/1.1 的传输编码方式仅对分块传输编码有效。</p>
-
-<h4 id="toc_17">4.7 Upgrade</h4>
-
-<p>Upgrade: TSL/1.0<br/>
-用于检测 HTTP 协议及其他协议是否可使用更高的版本进行通信，其参数值可以用来指定一个完全不同的通信协议。</p>
-
-<h4 id="toc_18">4.8 Via</h4>
-
-<p>Via: 1.1 a1.sample.com(Squid/2.7)<br/>
-为了追踪客户端和服务器端之间的请求和响应报文的传输路径。<br/>
-报文经过代理或网关时，会现在首部字段 Via 中附加该服务器的信息，然后再进行转发。<br/>
-首部字段 Via 不仅用于追踪报文的转发，还可避免请求回环的发生。</p>
-
-<h4 id="toc_19">4.9 Warning</h4>
-
-<p>该首部字段通常会告知用户一些与缓存相关的问题的警告。<br/>
-Warning 首部字段的格式如下：<br/>
-Warning：[警告码][警告的主机:端口号] &quot;[警告内容]&quot;([日期时间])<br/>
-最后的日期时间可省略。<br/>
-HTTP/1.1 中定义了7种警告，警告码对应的警告内容仅推荐参考，另外，警告码具备扩展性，今后有可能追加新的警告码。</p>
-
-<table>
-<thead>
-<tr>
-<th>警告码</th>
-<th>警告内容</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>110</td>
-<td>Response is stale(响应已过期)</td>
-<td>代理返回已过期的资源</td>
-</tr>
-<tr>
-<td>111</td>
-<td>Revalidation failed(再验证失败)</td>
-<td>代理再验证资源有效性时失败（服务器无法到达等原因）</td>
-</tr>
-<tr>
-<td>112</td>
-<td>Disconnection operation(断开连接操作)</td>
-<td>代理与互联网连接被故意切断</td>
-</tr>
-<tr>
-<td>113</td>
-<td>Heuristic expiration(试探性过期)</td>
-<td>响应的试用期超过24小时(有效缓存的设定时间大于24小时的情况下)</td>
-</tr>
-<tr>
-<td>199</td>
-<td>Miscellaneous warning(杂项警告)</td>
-<td>任意的警告内容</td>
-</tr>
-<tr>
-<td>214</td>
-<td>Transformation applied(使用了转换)</td>
-<td>代理对内容编码或媒体类型等执行了某些处理时</td>
-</tr>
-<tr>
-<td>299</td>
-<td>Miscellaneous persistent warning(持久杂项警告)</td>
-<td>任意的警告内容</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_20">二、  请求首部字段（HTTP/1.1）</h2>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Accept</td>
-<td>用户代理可处理的媒体类型</td>
-</tr>
-<tr>
-<td>Accept-Charset</td>
-<td>优先的字符集</td>
-</tr>
-<tr>
-<td>Accept-Encoding</td>
-<td>优先的内容编码</td>
-</tr>
-<tr>
-<td>Accept-Language</td>
-<td>优先的语言（自然语言）</td>
-</tr>
-<tr>
-<td>Authorization</td>
-<td>Web认证信息</td>
-</tr>
-<tr>
-<td>Expect</td>
-<td>期待服务器的特定行为</td>
-</tr>
-<tr>
-<td>From</td>
-<td>用户的电子邮箱地址</td>
-</tr>
-<tr>
-<td>Host</td>
-<td>请求资源所在服务器</td>
-</tr>
-<tr>
-<td>If-Match</td>
-<td>比较实体标记（ETag）</td>
-</tr>
-<tr>
-<td>If-Modified-Since</td>
-<td>比较资源的更新时间</td>
-</tr>
-<tr>
-<td>If-None-Match</td>
-<td>比较实体标记（与 If-Macth 相反）</td>
-</tr>
-<tr>
-<td>If-Range</td>
-<td>资源未更新时发送实体 Byte 的范围请求</td>
-</tr>
-<tr>
-<td>If-Unmodified-Since</td>
-<td>比较资源的更新时间(与 If-Modified-Since 相反)</td>
-</tr>
-<tr>
-<td>Max-Forwards</td>
-<td>最大传输逐跳数</td>
-</tr>
-<tr>
-<td>Proxy-Authorization</td>
-<td>代理服务器要求客户端的认证信息</td>
-</tr>
-<tr>
-<td>Range</td>
-<td>实体的字节范围请求</td>
-</tr>
-<tr>
-<td>Referer</td>
-<td>对请求中 URI 的原始获取方</td>
-</tr>
-<tr>
-<td>TE</td>
-<td>传输编码的优先级</td>
-</tr>
-<tr>
-<td>User-Agent</td>
-<td>HTTP</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_21">1 Accept</h3>
-
-<pre><code class="language-text">Accept: text/html, application/xhtml+xml, application/xml; q=0.5
-</code></pre>
-
-<p>Accept 首部字段可通知服务器，用户代理能够处理的媒体类型及媒体类型的相对优先级。可使用 type/subtype 这种形式，一次指定多种媒体类型。<br/>
-若想要给显示的媒体类型增加优先级，则使用 q=[数值] 来表示权重值，用分号（;）进行分隔。权重值的范围 0~1（可精确到小数点后三位），且 1 为最大值。不指定权重值时，默认为 1。</p>
-
-<h3 id="toc_22">2 Accept-Charset</h3>
-
-<pre><code class="language-text">Accept-Charset: iso-8859-5, unicode-1-1; q=0.8
-</code></pre>
-
-<p>Accept-Charset 首部字段可用来通知服务器用户代理支持的字符集及字符集的相对优先顺序。另外，可一次性指定多种字符集。同样使用 q=[数值] 来表示相对优先级。</p>
-
-<h3 id="toc_23">3 Accept-Encoding</h3>
-
-<pre><code class="language-text">Accept-Encoding: gzip, deflate
-</code></pre>
-
-<p>Accept-Encoding 首部字段用来告知服务器用户代理支持的内容编码及内容编码的优先顺序，并可一次性指定多种内容编码。同样使用 q=[数值] 来表示相对优先级。也可使用星号（*）作为通配符，指定任意的编码格式。</p>
-
-<h3 id="toc_24">4 Accept-Language</h3>
-
-<pre><code class="language-text">Accept-Lanuage: zh-cn,zh;q=0.7,en=us,en;q=0.3
-</code></pre>
-
-<p>告知服务器用户代理能够处理的自然语言集（指中文或英文等），以及自然语言集的相对优先级，可一次性指定多种自然语言集。同样使用 q=[数值] 来表示相对优先级。</p>
-
-<h3 id="toc_25">5 Authorization</h3>
-
-<pre><code class="language-text">Authorization: Basic ldfKDHKfkDdasSAEdasd==
-</code></pre>
-
-<p>告知服务器用户代理的认证信息（证书值）。通常，想要通过服务器认证的用户代理会在接收到返回的 401 状态码响应后，把首部字段 Authorization 加入请求中。共用缓存在接收到含有 Authorization 首部字段的请求时的操作处理会略有差异。</p>
-
-<h3 id="toc_26">6 Expect</h3>
-
-<pre><code class="language-text">Expect: 100-continue
-</code></pre>
-
-<p>告知服务器客户端期望出现的某种特定行为。</p>
-
-<h3 id="toc_27">7 From</h3>
-
-<pre><code class="language-text">From: Deeson_Woo@163.com
-</code></pre>
-
-<p>告知服务器使用用户代理的电子邮件地址。</p>
-
-<h3 id="toc_28">8 Host</h3>
-
-<pre><code class="language-text">Host: www.jianshu.com
-</code></pre>
-
-<p>告知服务器，请求的资源所处的互联网主机和端口号。<br/>
-Host 首部字段是 HTTP/1.1 规范内唯一一个必须被包含在请求内的首部字段。<br/>
-若服务器未设定主机名，那直接发送一个空值即可 Host: 。</p>
-
-<h3 id="toc_29">9 If-Match</h3>
-
-<p>形如 If-xxx 这种样式的请求首部字段，都可称为条件请求。服务器接收到附带条件的请求后，只有判断指定条件为真时，才会执行请求。</p>
-
-<pre><code class="language-text">If-Match: &quot;123456&quot;
-</code></pre>
-
-<p>首部字段 If-Match，属附带条件之一，它会告知服务器匹配资源所用的实体标记（ETag）值。这时的服务器无法使用弱 ETag 值。<br/>
-服务器会比对 If-Match 的字段值和资源的 ETag 值，仅当两者一致时，才会执行请求。反之，则返回状态码 412 Precondition Failed 的响应。<br/>
-还可以使用星号（*）指定 If-Match 的字段值。针对这种情况，服务器将会忽略 ETag 的值，只要资源存在就处理请求。</p>
-
-<h3 id="toc_30">10 If-Modified-Since</h3>
-
-<pre><code class="language-text">If-Modified-Since: Mon, 10 Jul 2017 15:50:06 GMT
-</code></pre>
-
-<p>首部字段 If-Modified-Since，属附带条件之一，用于确认代理或客户端拥有的本地资源的有效性。<br/>
-它会告知服务器若 If-Modified-Since 字段值早于资源的更新时间，则希望能处理该请求。而在指定 If-Modified-Since 字段值的日期时间之后，如果请求的资源都没有过更新，则返回状态码 304 Not Modified 的响应。</p>
-
-<h3 id="toc_31">11 If-None-Match</h3>
-
-<pre><code class="language-text">If-None-Match: &quot;123456&quot;
-</code></pre>
-
-<p>首部字段 If-None-Match 属于附带条件之一。它和首部字段 If-Match 作用相反。用于指定 If-None-Match 字段值的实体标记（ETag）值与请求资源的 ETag 不一致时，它就告知服务器处理该请求。</p>
-
-<h3 id="toc_32">12 If-Range</h3>
-
-<pre><code class="language-text">If-Range: &quot;123456&quot;
-</code></pre>
-
-<p>首部字段 If-Range 属于附带条件之一。它告知服务器若指定的 If-Range 字段值（ETag 值或者时间）和请求资源的 ETag 值或时间相一致时，则作为范围请求处理。反之，则返回全体资源。</p>
-
-<p>下面我们思考一下不使用首部字段 If-Range 发送请求的情况。服务器端的资源如果更新，那客户端持有资源中的一部分也会随之无效，当然，范围请求作为前提是无效的。这时，服务器会暂且以状态码 412 Precondition Failed 作为响应返回，其目的是催促客户端再次发送请求。这样一来，与使用首部字段 If-Range 比起来，就需要花费两倍的功夫。</p>
-
-<h3 id="toc_33">13 If-Unmodified-Since</h3>
-
-<pre><code class="language-text">If-Unmodified-Since: Mon, 10 Jul 2017 15:50:06 GMT
-</code></pre>
-
-<p>首部字段 If-Unmodified-Since 和首部字段 If-Modified-Since 的作用相反。它的作用的是告知服务器，指定的请求资源只有在字段值内指定的日期时间之后，未发生更新的情况下，才能处理请求。如果在指定日期时间后发生了更新，则以状态码 412 Precondition Failed 作为响应返回。</p>
-
-<h3 id="toc_34">14 Max-Forwards</h3>
-
-<pre><code class="language-text">Max-Forwards: 10
-</code></pre>
-
-<p>通过 TRACE 方法或 OPTIONS 方法，发送包含首部字段 Max-Forwards 的请求时，该字段以十进制整数形式指定可经过的服务器最大数目。服务器在往下一个服务器转发请求之前，Max-Forwards 的值减 1 后重新赋值。当服务器接收到 Max-Forwards 值为 0 的请求时，则不再进行转发，而是直接返回响应。</p>
-
-<h3 id="toc_35">15 Proxy-Authorization</h3>
-
-<pre><code class="language-text">Proxy-Authorization: Basic dGlwOjkpNLAGfFY5
-</code></pre>
-
-<p>接收到从代理服务器发来的认证质询时，客户端会发送包含首部字段 Proxy-Authorization 的请求，以告知服务器认证所需要的信息。<br/>
-这个行为是与客户端和服务器之间的 HTTP 访问认证相类似的，不同之处在于，认证行为发生在客户端与代理之间。</p>
-
-<h3 id="toc_36">16 Range</h3>
-
-<pre><code class="language-text">Range: bytes=5001-10000
-</code></pre>
-
-<p>对于只需获取部分资源的范围请求，包含首部字段 Range 即可告知服务器资源的指定范围。<br/>
-接收到附带 Range 首部字段请求的服务器，会在处理请求之后返回状态码为 206 Partial Content 的响应。无法处理该范围请求时，则会返回状态码 200 OK 的响应及全部资源。</p>
-
-<h3 id="toc_37">17 Referer</h3>
-
-<pre><code class="language-text">Referer: http://www.sample.com/index.html
-</code></pre>
-
-<p>首部字段 Referer 会告知服务器请求的原始资源的 URI。</p>
-
-<h3 id="toc_38">18 TE</h3>
-
-<pre><code class="language-text">TE: gzip, deflate; q=0.5
-</code></pre>
-
-<p>首部字段 TE 会告知服务器客户端能够处理响应的传输编码方式及相对优先级。它和首部字段 Accept-Encoding 的功能很相像，但是用于传输编码。<br/>
-首部字段 TE 除指定传输编码之外，还可以指定伴随 trailer 字段的分块传输编码的方式。应用后者时，只需把 trailers 赋值给该字段值。TE: trailers</p>
-
-<h3 id="toc_39">19 User-Agent</h3>
-
-<pre><code class="language-text">User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101
-</code></pre>
-
-<p>首部字段 User-Agent 会将创建请求的浏览器和用户代理名称等信息传达给服务器。</p>
-
-<p>由网络爬虫发起请求时，有可能会在字段内添加爬虫作者的电子邮件地址。此外，如果请求经过代理，那么中间也很可能被添加上代理服务器的名称。</p>
-
-<h2 id="toc_40">三、 响应首部字段（HTTP/1.1）</h2>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Accept-Ranges</td>
-<td>是否接受字节范围请求</td>
-</tr>
-<tr>
-<td>Age</td>
-<td>推算资源创建经过时间</td>
-</tr>
-<tr>
-<td>ETag</td>
-<td>资源的匹配信息</td>
-</tr>
-<tr>
-<td>Location</td>
-<td>令客户端重定向至指定 URI</td>
-</tr>
-<tr>
-<td>Proxy-Authenticate</td>
-<td>代理服务器对客户端的认证信息</td>
-</tr>
-<tr>
-<td>Retry-After</td>
-<td>对再次发起请求的时机要求</td>
-</tr>
-<tr>
-<td>Server</td>
-<td>HTTP 服务器的安装信息</td>
-</tr>
-<tr>
-<td>Vary</td>
-<td>代理服务器缓存的管理信息</td>
-</tr>
-<tr>
-<td>WWW-Authenticate</td>
-<td>服务器对客户端的认证信息</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_41">1 Accept-Ranges</h3>
-
-<p>Accept-Ranges: bytes</p>
-
-<p>首部字段 Accept-Ranges 是用来告知客户端服务器是否能处理范围请求，以指定获取服务器端某个部分的资源。<br/>
-可指定的字段值有两种，可处理范围请求时指定其为 bytes，反之则指定其为 none。</p>
-
-<h3 id="toc_42">2 Age</h3>
-
-<p>Age: 1200</p>
-
-<p>首部字段 Age 能告知客户端，源服务器在多久前创建了响应。字段值的单位为秒。<br/>
-若创建该响应的服务器是缓存服务器，Age 值是指缓存后的响应再次发起认证到认证完成的时间值。代理创建响应时必须加上首部字段 Age。</p>
-
-<h3 id="toc_43">3 ETag</h3>
-
-<p>ETag: &quot;usagi-1234&quot;</p>
-
-<p>首部字段 ETag 能告知客户端实体标识。它是一种可将资源以字符串形式做唯一性标识的方式。服务器会为每份资源分配对应的 ETag 值。</p>
-
-<p>另外，当资源更新时，ETag 值也需要更新。生成 ETag 值时，并没有统一的算法规则，而仅仅是由服务器来分配。</p>
-
-<p>ETag 中有强 ETag 值和弱 ETag 值之分。强 ETag 值，不论实体发生多么细微的变化都会改变其值；弱 ETag 值只用于提示资源是否相同。只有资源发生了根本改变，产生差异时才会改变 ETag 值。这时，会在字段值最开始处附加 W/： ETag: W/&quot;usagi-1234&quot;。</p>
-
-<h3 id="toc_44">4 Location</h3>
-
-<p>Location: <a href="http://www.sample.com/sample.html">http://www.sample.com/sample.html</a></p>
-
-<p>使用首部字段 Location 可以将响应接收方引导至某个与请求 URI 位置不同的资源。<br/>
-基本上，该字段会配合 3xx ：Redirection 的响应，提供重定向的 URI。<br/>
-几乎所有的浏览器在接收到包含首部字段 Location 的响应后，都会强制性地尝试对已提示的重定向资源的访问。</p>
-
-<h3 id="toc_45">5 Proxy-Authenticate</h3>
-
-<p>Proxy-Authenticate: Basic realm=&quot;Usagidesign Auth&quot;</p>
-
-<p>首部字段 Proxy-Authenticate 会把由代理服务器所要求的认证信息发送给客户端。<br/>
-它与客户端和服务器之间的 HTTP 访问认证的行为相似，不同之处在于其认证行为是在客户端与代理之间进行的。</p>
-
-<h3 id="toc_46">6 Retry-After</h3>
-
-<p>Retry-After: 180</p>
-
-<p>首部字段 Retry-After 告知客户端应该在多久之后再次发送请求。主要配合状态码 503 Service Unavailable 响应，或 3xx Redirect 响应一起使用。<br/>
-字段值可以指定为具体的日期时间（Mon, 10 Jul 2017 15:50:06 GMT 等格式），也可以是创建响应后的秒数。</p>
-
-<h3 id="toc_47">7 Server</h3>
-
-<p>Server: Apache/2.2.6 (Unix) PHP/5.2.5<br/>
-首部字段 Server 告知客户端当前服务器上安装的 HTTP 服务器应用程序的信息。不单单会标出服务器上的软件应用名称，还有可能包括版本号和安装时启用的可选项。</p>
-
-<h3 id="toc_48">8 Vary</h3>
-
-<p>Vary: Accept-Language</p>
-
-<p>首部字段 Vary 可对缓存进行控制。源服务器会向代理服务器传达关于本地缓存使用方法的命令。<br/>
-从代理服务器接收到源服务器返回包含 Vary 指定项的响应之后，若再要进行缓存，仅对请求中含有相同 Vary 指定首部字段的请求返回缓存。即使对相同资源发起请求，但由于 Vary 指定的首部字段不相同，因此必须要从源服务器重新获取资源。</p>
-
-<h3 id="toc_49">9 WWW-Authenticate</h3>
-
-<p>WWW-Authenticate: Basic realm=&quot;Usagidesign Auth&quot;<br/>
-首部字段 WWW-Authenticate 用于 HTTP 访问认证。它会告知客户端适用于访问请求 URI 所指定资源的认证方案（Basic 或是 Digest）和带参数提示的质询（challenge）。</p>
-
-<h2 id="toc_50">四、 实体首部字段（HTTP/1.1）</h2>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Allow</td>
-<td>资源可支持的 HTTP 方法</td>
-</tr>
-<tr>
-<td>Content-Encoding</td>
-<td>实体主体适用的编码方式</td>
-</tr>
-<tr>
-<td>Content-Language</td>
-<td>实体主体的自然语言</td>
-</tr>
-<tr>
-<td>Content-Length</td>
-<td>实体主体的大小（单位：字节）</td>
-</tr>
-<tr>
-<td>Content-Location</td>
-<td>替代对应资源的 URI</td>
-</tr>
-<tr>
-<td>Content-MD5</td>
-<td>实体主体的报文摘要</td>
-</tr>
-<tr>
-<td>Content-Range</td>
-<td>实体主体的位置范围</td>
-</tr>
-<tr>
-<td>Content-Type</td>
-<td>实体主体的媒体类型</td>
-</tr>
-<tr>
-<td>Expires</td>
-<td>实体主体过期的日期时间</td>
-</tr>
-<tr>
-<td>Last-Modified</td>
-<td>资源的最后修改日期时间</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_51">1 Allow</h3>
-
-<p>Allow: GET, HEAD</p>
-
-<p>首部字段 Allow 用于通知客户端能够支持 Request-URI 指定资源的所有 HTTP 方法。<br/>
-当服务器接收到不支持的 HTTP 方法时，会以状态码 405 Method Not Allowed 作为响应返回。与此同时，还会把所有能支持的 HTTP 方法写入首部字段 Allow 后返回。</p>
-
-<h3 id="toc_52">2 Content-Encoding</h3>
-
-<p>Content-Encoding: gzip</p>
-
-<p>首部字段 Content-Encoding 会告知客户端服务器对实体的主体部分选用的内容编码方式。内容编码是指在不丢失实体信息的前提下所进行的压缩。<br/>
-主要采用这 4 种内容编码的方式（gzip、compress、deflate、identity）。</p>
-
-<h3 id="toc_53">3 Content-Language</h3>
-
-<p>Content-Language: zh-CN<br/>
-首部字段 Content-Language 会告知客户端，实体主体使用的自然语言（指中文或英文等语言）。</p>
-
-<h3 id="toc_54">4 Content-Length</h3>
-
-<p>Content-Length: 15000<br/>
-首部字段 Content-Length 表明了实体主体部分的大小（单位是字节）。对实体主体进行内容编码传输时，不能再使用 Content-Length首部字段。</p>
-
-<h3 id="toc_55">5 Content-Location</h3>
-
-<p>Content-Location: <a href="http://www.sample.com/index.html">http://www.sample.com/index.html</a><br/>
-首部字段 Content-Location 给出与报文主体部分相对应的 URI。和首部字段 Location 不同，Content-Location 表示的是报文主体返回资源对应的 URI。</p>
-
-<h3 id="toc_56">6 Content-MD5</h3>
-
-<p>Content-MD5: OGFkZDUwNGVhNGY3N2MxMDIwZmQ4NTBmY2IyTY==<br/>
-首部字段 Content-MD5 是一串由 MD5 算法生成的值，其目的在于检查报文主体在传输过程中是否保持完整，以及确认传输到达。</p>
-
-<h3 id="toc_57">7 Content-Range</h3>
-
-<p>Content-Range: bytes 5001-10000/10000<br/>
-针对范围请求，返回响应时使用的首部字段 Content-Range，能告知客户端作为响应返回的实体的哪个部分符合范围请求。字段值以字节为单位，表示当前发送部分及整个实体大小。</p>
-
-<h3 id="toc_58">8 Content-Type</h3>
-
-<p>Content-Type: text/html; charset=UTF-8<br/>
-首部字段 Content-Type 说明了实体主体内对象的媒体类型。和首部字段 Accept 一样，字段值用 type/subtype 形式赋值。参数 charset 使用 iso-8859-1 或 euc-jp 等字符集进行赋值。</p>
-
-<h3 id="toc_59">9 Expires</h3>
-
-<p>Expires: Mon, 10 Jul 2017 15:50:06 GMT</p>
-
-<p>首部字段 Expires 会将资源失效的日期告知客户端。<br/>
-缓存服务器在接收到含有首部字段 Expires 的响应后，会以缓存来应答请求，在 Expires 字段值指定的时间之前，响应的副本会一直被保存。当超过指定的时间后，缓存服务器在请求发送过来时，会转向源服务器请求资源。<br/>
-源服务器不希望缓存服务器对资源缓存时，最好在 Expires 字段内写入与首部字段 Date 相同的时间值。</p>
-
-<h3 id="toc_60">10 Last-Modified</h3>
-
-<p>Last-Modified: Mon, 10 Jul 2017 15:50:06 GMT<br/>
-首部字段 Last-Modified 指明资源最终修改的时间。一般来说，这个值就是 Request-URI 指定资源被修改的时间。但类似使用 CGI 脚本进行动态数据处理时，该值有可能会变成数据最终修改时的时间</p>
-
-<h2 id="toc_61">五、  Cookie 服务的首部字段</h2>
-
-<table>
-<thead>
-<tr>
-<th>首部字段名</th>
-<th>说明</th>
-<th>首部类型</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Set-Cookie</td>
-<td>开始状态管理所使用的 Cookie 信息</td>
-<td>响应首部字段</td>
-</tr>
-<tr>
-<td>Cookie</td>
-<td>服务器接收到的 Cookie 信息</td>
-<td>请求首部字段</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_62">1 Set-Cookie</h3>
-
-<p>Set-Cookie: status=enable; expires=Mon, 10 Jul 2017 15:50:06 GMT; path=/;</p>
-
-<p>下面的表格列举了 Set-Cookie 的字段值。</p>
-
-<table>
-<thead>
-<tr>
-<th>属性</th>
-<th>说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>NAME=VALUE</td>
-<td>赋予 Cookie 的名称和其值（必需项）</td>
-</tr>
-<tr>
-<td>expires=DATE</td>
-<td>Cookie 的有效期（若不明确指定则默认为浏览器关闭前为止）</td>
-</tr>
-<tr>
-<td>path=PATH</td>
-<td>将服务器上的文件目录作为Cookie的适用对象（若不指定则默认为文档所在的文件目录）</td>
-</tr>
-<tr>
-<td>domain=域名</td>
-<td>作为 Cookie 适用对象的域名 （若不指定则默认为创建 Cookie的服务器的域名）</td>
-</tr>
-<tr>
-<td>Secure</td>
-<td>仅在 HTTPS 安全通信时才会发送 Cookie</td>
-</tr>
-<tr>
-<td>HttpOnly</td>
-<td>加以限制，使 Cookie 不能被 JavaScript 脚本访问</td>
-</tr>
-</tbody>
-</table>
-
-<h4 id="toc_63">1.1 expires 属性</h4>
-
-<p>Cookie 的 expires 属性指定浏览器可发送 Cookie 的有效期。<br/>
-当省略 expires 属性时，其有效期仅限于维持浏览器会话（Session）时间段内。这通常限于浏览器应用程序被关闭之前。<br/>
-另外，一旦 Cookie 从服务器端发送至客户端，服务器端就不存在可以显式删除 Cookie 的方法。但可通过覆盖已过期的 Cookie，实现对客户端 Cookie 的实质性删除操作。</p>
-
-<h4 id="toc_64">1.2 path 属性</h4>
-
-<p>Cookie 的 path 属性可用于限制指定 Cookie 的发送范围的文件目录。</p>
-
-<h4 id="toc_65">1.3 domain 属性</h4>
-
-<p>通过 Cookie 的 domain 属性指定的域名可做到与结尾匹配一致。比如，当指定 example.com 后，除example.com 以外，www.example.com 或 www2.example.com 等都可以发送 Cookie。</p>
-
-<p>因此，除了针对具体指定的多个域名发送 Cookie 之 外，不指定 domain 属性显得更安全。</p>
-
-<h4 id="toc_66">1.4 secure 属性</h4>
-
-<p>Cookie 的 secure 属性用于限制 Web 页面仅在 HTTPS 安全连接时，才可以发送 Cookie。</p>
-
-<h4 id="toc_67">1.5 HttpOnly 属性</h4>
-
-<p>Cookie 的 HttpOnly 属性是 Cookie 的扩展功能，它使 JavaScript 脚本无法获得 Cookie。其主要目的为防止跨站脚本攻击（Cross-site scripting，XSS）对 Cookie 的信息窃取。</p>
-
-<p>通过上述设置，通常从 Web 页面内还可以对 Cookie 进行读取操作。但使用 JavaScript 的 document.cookie 就无法读取附加 HttpOnly 属性后的 Cookie 的内容了。因此，也就无法在 XSS 中利用 JavaScript 劫持 Cookie 了。</p>
-
-<h3 id="toc_68">2 Cookie</h3>
-
-<p>Cookie: status=enable<br/>
-首部字段 Cookie 会告知服务器，当客户端想获得 HTTP 状态管理支持时，就会在请求中包含从服务器接收到的 Cookie。接收到多个 Cookie 时，同样可以以多个 Cookie 形式发送。</p>
-
-<h2 id="toc_69">六、 其他首部字段</h2>
-
-<p>HTTP 首部字段是可以自行扩展的。所以在 Web 服务器和浏览器的应用上，会出现各种非标准的首部字段。<br/>
-以下是最为常用的首部字段。</p>
-
-<h3 id="toc_70">1 X-Frame-Options</h3>
-
-<p>X-Frame-Options: DENY<br/>
-首部字段 X-Frame-Options 属于 HTTP 响应首部，用于控制网站内容在其他 Web 网站的 Frame 标签内的显示问题。其主要目的是为了防止点击劫持（clickjacking）攻击。首部字段 X-Frame-Options 有以下两个可指定的字段值：</p>
-
-<ul>
-<li>DENY：拒绝</li>
-<li>SAMEORIGIN：仅同源域名下的页面（Top-level-browsing-context）匹配时许可。（比如，当指定 <a href="http://sample.com/sample.html">http://sample.com/sample.html</a> 页面为 SAMEORIGIN 时，那么 sample.com 上所有页面的 frame 都被允许可加载该页面，而 example.com 等其他域名的页面就不行了）</li>
-</ul>
-
-<h3 id="toc_71">2 X-XSS-Protection</h3>
-
-<p>X-XSS-Protection: 1<br/>
-首部字段 X-XSS-Protection 属于 HTTP 响应首部，它是针对跨站脚本攻击（XSS）的一种对策，用于控制浏览器 XSS 防护机制的开关。首部字段 X-XSS-Protection 可指定的字段值如下:</p>
-
-<ul>
-<li>0 ：将 XSS 过滤设置成无效状态</li>
-<li><p>1 ：将 XSS 过滤设置成有效状态</p>
-<h3 id="toc_72">3 DNT</h3>
-<p>DNT: 1<br/>
-首部字段 DNT 属于 HTTP 请求首部，其中 DNT 是 Do Not Track 的简称，意为拒绝个人信息被收集，是表示拒绝被精准广告追踪的一种方法。首部字段 DNT 可指定的字段值如下：</p></li>
-<li><p>0 ：同意被追踪<br/>
-1-  ：拒绝被追踪<br/>
-由于首部字段 DNT 的功能具备有效性，所以 Web 服务器需要对 DNT做对应的支持。</p></li>
-</ul>
-
-<h3 id="toc_73">4 P3P</h3>
-
-<pre><code class="language-text">P3P: CP=&quot;CAO DSP LAW CURa ADMa DEVa TAIa PSAa PSDa IVAa IVDa OUR BUS IND
-</code></pre>
-
-<p>首部字段 P3P 属于 HTTP 响应首部，通过利用 P3P（The Platform for Privacy Preferences，在线隐私偏好平台）技术，可以让 Web 网站上的个人隐私变成一种仅供程序可理解的形式，以达到保护用户隐私的目的。<br/>
-要进行 P3P 的设定，需按以下操作步骤进行：</p>
-
-<ul>
-<li>步骤 1：创建 P3P 隐私</li>
-<li>步骤 2：创建 P3P 隐私对照文件后，保存命名在 /w3c/p3p.xml</li>
-<li>步骤 3：从 P3P 隐私中新建 Compact policies 后，输出到 HTTP 响应中</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HTTP协议（二）-- HTTP 协议报文结构]]></title>
-    <link href="http://www.throne4j.com/15955594725422.html"/>
-    <updated>2020-07-24T10:57:52+08:00</updated>
-    <id>http://www.throne4j.com/15955594725422.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">1.HTTP 报文</h2>
-
-<p>用于 HTTP 协议交互的信息被称为 HTTP 报文。请求端（客户端）的 HTTP 报文叫做请求报文；响应端（服务器端）的叫做响应报文。HTTP 报文本身是由多行（用 CR+LF 作换行符）数据构成的字符串文本。</p>
-
-<h2 id="toc_1">2.HTTP 报文结构</h2>
-
-<p>HTTP 报文大致可分为报文首部和报文主体两部分。两者由最初出现的空行（CR+LF）来划分。通常，并不一定有报文主体。如下：</p>
-
-<p><figure><img src="media/15955168840534/15957370382069.jpg" alt="HTTP 报文结构"/><figcaption>HTTP 报文结构</figcaption></figure></p>
-
-<p><figure><img src="media/15955168840534/15957373454385.jpg" alt=""/></figure></p>
-
-<h3 id="toc_2">2.1请求报文结构</h3>
-
-<p><figure><img src="media/15955168840534/15957373620655.jpg" alt="请求报文结构"/><figcaption>请求报文结构</figcaption></figure></p>
-
-<p>请求报文的首部内容由以下数据组成：</p>
-
-<ul>
-<li>请求行 —— 包含用于请求的方法、请求 URI 和 HTTP 版本。</li>
-<li>首部字段 —— 包含表示请求的各种条件和属性的各类首部。（通用首部、请求首部、实体首部以及RFC里未定义的首部如 Cookie 等）<br/>
-请求报文的示例，如下：
-<figure><img src="media/15955168840534/15957373766248.jpg" alt="请求报文示例"/><figcaption>请求报文示例</figcaption></figure></li>
-</ul>
-
-<h3 id="toc_3">2.2响应报文结构</h3>
-
-<p><figure><img src="media/15955168840534/15957373975954.jpg" alt="响应报文结构"/><figcaption>响应报文结构</figcaption></figure></p>
-
-<p>响应报文的首部内容由以下数据组成：</p>
-
-<ul>
-<li>状态行 —— 包含表明响应结果的状态码、原因短语和 HTTP 版本。</li>
-<li>首部字段 —— 包含表示请求的各种条件和属性的各类首部。（通用首部、响应首部、实体首部以及RFC里未定义的首部如 Cookie 等）<br/>
-响应报文的示例，如下：
-<figure><img src="media/15955168840534/15957375812162.jpg" alt=""/></figure></li>
-</ul>
-
-<h2 id="toc_4">HTTP 报文首部之请求行、状态行</h2>
-
-<h3 id="toc_5">1.请求行</h3>
-
-<p>举个栗子，下面是一个 HTTP 请求的报文：</p>
-
-<pre><code class="language-text">GET  /index.htm  HTTP/1.1
-Host: sample.com
-</code></pre>
-
-<p>其中，下面的这行就是请求行，</p>
-
-<pre><code class="language-text">GET  /index.htm  HTTP/1.1
-</code></pre>
-
-<ul>
-<li>开头的 GET 表示请求访问服务器的类型，称为方法；</li>
-<li>随后的字符串 /index.htm 指明了请求访问的资源对象，也叫做请求 URI；</li>
-<li>最后的 HTTP/1.1，即 HTTP 的版本号，用来提示客户端使用的 HTTP 协议功能。<br/>
-综合来看，大意是请求访问某台 HTTP 服务器上的 /index.htm 页面资源。</li>
-</ul>
-
-<h3 id="toc_6">2.状态行</h3>
-
-<p>同样举个栗子，下面是一个 HTTP 响应的报文：</p>
-
-<pre><code class="language-text">HTTP/1.1  200  OK
-Date: Mon, 10 Jul 2017 15:50:06 GMT
-Content-Length: 256
-Content-Type: text/html
-    
-&lt;html&gt;
-...
-</code></pre>
-
-<p>其中，下面的这行就是状态行，</p>
-
-<pre><code class="language-text">HTTP/1.1  200  OK
-</code></pre>
-
-<p>开头的 HTTP/1.1 表示服务器对应的 HTTP 版本；<br/>
-紧挨着的 200 OK 表示请求的处理结果的状态码和原因短语。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HTTP协议（一）-- HTTP协议概述]]></title>
-    <link href="http://www.throne4j.com/15955168840534.html"/>
-    <updated>2020-07-23T23:08:04+08:00</updated>
-    <id>http://www.throne4j.com/15955168840534.html</id>
-    <content type="html"><![CDATA[
-<p><figure><img src="media/15955168840534/15957366995368.jpg" alt=""/></figure></p>
-
-<h2 id="toc_0">一、概述</h2>
-
-<h3 id="toc_1">1.计算机网络体系结构分层</h3>
-
-<p><figure><img src="media/15955168840534/15957367250846.jpg" alt="网络体系结构分层"/><figcaption>网络体系结构分层</figcaption></figure></p>
-
-<h3 id="toc_2">2.TCP/IP 通信传输流</h3>
-
-<p>利用 TCP/IP 协议族进行网络通信时，会通过分层顺序与对方进行通信。发送端从应用层往下走，接收端则从链路层往上走。如下：<br/>
-<figure><img src="media/15955168840534/15957367734847.jpg" alt="TCP/IP 通信传输流"/><figcaption>TCP/IP 通信传输流</figcaption></figure></p>
-
-<p>首先作为发送端的客户端在应用层（HTTP 协议）发出一个想看某个 Web 页面的 HTTP 请求。</p>
-
-<p>接着，为了传输方便，在传输层（TCP 协议）把从应用层处收到的数据（HTTP 请求报文）进行分割，并在各个报文上打上标记序号及端口号后转发给网络层。<br/>
-在网络层（IP 协议），增加作为通信目的地的 MAC 地址后转发给链路层。这样一来，发往网络的通信请求就准备齐全了。</p>
-
-<p>接收端的服务器在链路层接收到数据，按序往上层发送，一直到应用层。当传输到应用层，才能算真正接收到由客户端发送过来的 HTTP请求。</p>
-
-<p>如下图所示：<br/>
-<figure><img src="media/15955168840534/15957367985192.jpg" alt="HTTP 请求"/><figcaption>HTTP 请求</figcaption></figure></p>
-
-<p>在网络体系结构中，包含了众多的网络协议，这篇文章主要围绕 HTTP 协议（HTTP/1.1版本）展开。</p>
-
-<p><code>HTTP协议（HyperText Transfer Protocol，超文本传输协议）是用于从WWW服务器传输超文本到本地浏览器的传输协议。它可以使浏览器更加高效，使网络传输减少。它不仅保证计算机正确快速地传输超文本文档，还确定传输文档中的哪一部分，以及哪部分内容首先显示(如文本先于图形)等。<br/>
-HTTP是客户端浏览器或其他程序与Web服务器之间的应用层通信协议。在Internet上的Web服务器上存放的都是超文本信息，客户机需要通过HTTP协议传输所要访问的超文本信息。HTTP包含命令和传输信息，不仅可用于Web访问，也可以用于其他因特网/内联网应用系统之间的通信，从而实现各类应用资源超媒体访问的集成。<br/>
-我们在浏览器的地址栏里输入的网站地址叫做URL (Uniform Resource Locator，统一资源定位符)。就像每家每户都有一个门牌地址一样，每个网页也都有一个Internet地址。当你在浏览器的地址框中输入一个URL或是单击一个超级链接时，URL就确定了要浏览的地址。浏览器通过超文本传输协议(HTTP)，将Web服务器上站点的网页代码提取出来，并翻译成漂亮的网页。<br/>
-</code></p>
-
-<h2 id="toc_3">二、HTTP 工作过程</h2>
-
-<p><figure><img src="media/15955168840534/15957369027873.jpg" alt="HTTP请求响应模型"/><figcaption>HTTP请求响应模型</figcaption></figure></p>
-
-<p>HTTP通信机制是在一次完整的 HTTP 通信过程中，客户端与服务器之间将完成下列7个步骤：</p>
-
-<ul>
-<li><p>建立 TCP 连接<br/>
-在HTTP工作开始之前，客户端首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，该协议与 IP 协议共同构建 Internet，即著名的 TCP/IP 协议族，因此 Internet 又被称作是 TCP/IP 网络。HTTP 是比 TCP 更高层次的应用层协议，根据规则，只有低层协议建立之后，才能进行高层协议的连接，因此，首先要建立 TCP 连接，一般 TCP 连接的端口号是80；</p></li>
-<li><p>客户端向服务器发送请求命令<br/>
-一旦建立了TCP连接，客户端就会向服务器发送请求命令；<br/>
-例如：GET/sample/hello.jsp HTTP/1.1</p></li>
-<li><p>客户端发送请求头信息<br/>
-客户端发送其请求命令之后，还要以头信息的形式向服务器发送一些别的信息，之后客户端发送了一空白行来通知服务器，它已经结束了该头信息的发送；</p></li>
-<li><p>服务器应答<br/>
-客户端向服务器发出请求后，服务器会客户端返回响应；<br/>
-例如： HTTP/1.1 200 OK<br/>
-响应的第一部分是协议的版本号和响应状态码</p></li>
-<li><p>服务器返回响应头信息<br/>
-正如客户端会随同请求发送关于自身的信息一样，服务器也会随同响应向用户发送关于它自己的数据及被请求的文档；</p></li>
-<li><p>服务器向客户端发送数据<br/>
-服务器向客户端发送头信息后，它会发送一个空白行来表示头信息的发送到此为结束，接着，它就以 Content-Type 响应头信息所描述的格式发送用户所请求的实际数据；</p></li>
-<li><p>服务器关闭 TCP 连接<br/>
-一般情况下，一旦服务器向客户端返回了请求数据，它就要关闭 TCP 连接，然后如果客户端或者服务器在其头信息加入了这行代码 Connection:keep-alive ，TCP 连接在发送后将仍然保持打开状态，于是，客户端可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p></li>
-</ul>
-
-<h2 id="toc_4">三、HTTP 协议基础</h2>
-
-<h3 id="toc_5">1.通过请求和响应的交换达成通信</h3>
-
-<p>应用 HTTP 协议时，必定是一端担任客户端角色，另一端担任服务器端角色。仅从一条通信线路来说，服务器端和客服端的角色是确定的。HTTP 协议规定，请求从客户端发出，最后服务器端响应该请求并返回。换句话说，肯定是先从客户端开始建立通信的，服务器端在没有接收到请求之前不会发送响应。</p>
-
-<h3 id="toc_6">2.HTTP 是不保存状态的协议</h3>
-
-<p>HTTP 是一种无状态协议。协议自身不对请求和响应之间的通信状态进行保存。也就是说在 HTTP 这个级别，协议对于发送过的请求或响应都不做持久化处理。这是为了更快地处理大量事务，确保协议的可伸缩性，而特意把 HTTP 协议设计成如此简单的。<br/>
-可是随着 Web 的不断发展，我们的很多业务都需要对通信状态进行保存。于是我们引入了 Cookie 技术。有了 Cookie 再用 HTTP 协议通信，就可以管理状态了。</p>
-
-<h3 id="toc_7">3.使用 Cookie 的状态管理</h3>
-
-<p>Cookie 技术通过在请求和响应报文中写入 Cookie 信息来控制客户端的状态。Cookie 会根据从服务器端发送的响应报文内的一个叫做 Set-Cookie 的首部字段信息，通知客户端保存Cookie。当下次客户端再往该服务器发送请求时，客户端会自动在请求报文中加入 Cookie 值后发送出去。服务器端发现客户端发送过来的 Cookie 后，会去检查究竟是从哪一个客户端发来的连接请求，然后对比服务器上的记录，最后得到之前的状态信息。</p>
-
-<p><figure><img src="media/15955168840534/15957369673190.jpg" alt="Cookie 的流程"/><figcaption>Cookie 的流程</figcaption></figure></p>
-
-<h3 id="toc_8">4.请求 URI 定位资源</h3>
-
-<p>HTTP 协议使用 URI 定位互联网上的资源。正是因为 URI 的特定功能，在互联网上任意位置的资源都能访问到。</p>
-
-<h3 id="toc_9">5.告知服务器意图的 HTTP 方法（HTTP/1.1）</h3>
-
-<p><figure><img src="media/15955168840534/15957369934248.jpg" alt="HTTP 方法"/><figcaption>HTTP 方法</figcaption></figure></p>
-
-<h3 id="toc_10">6.持久连接</h3>
-
-<p>HTTP 协议的初始版本中，每进行一个 HTTP 通信都要断开一次 TCP 连接。比如使用浏览器浏览一个包含多张图片的 HTML 页面时，在发送请求访问 HTML 页面资源的同时，也会请求该 HTML 页面里包含的其他资源。因此，每次的请求都会造成无畏的 TCP 连接建立和断开，增加通信量的开销。<br/>
-为了解决上述 TCP 连接的问题，HTTP/1.1 和部分 HTTP/1.0 想出了持久连接的方法。其特点是，只要任意一端没有明确提出断开连接，则保持 TCP 连接状态。旨在建立一次 TCP 连接后进行多次请求和响应的交互。在 HTTP/1.1 中，所有的连接默认都是持久连接。</p>
-
-<h3 id="toc_11">7.管线化</h3>
-
-<p>持久连接使得多数请求以管线化方式发送成为可能。以前发送请求后需等待并接收到响应，才能发送下一个请求。管线化技术出现后，不用等待亦可发送下一个请求。这样就能做到同时并行发送多个请求，而不需要一个接一个地等待响应了。<br/>
-比如，当请求一个包含多张图片的 HTML 页面时，与挨个连接相比，用持久连接可以让请求更快结束。而管线化技术要比持久连接速度更快。请求数越多，时间差就越明显。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[# HTTP访问控制（CORS）]]></title>
-    <link href="http://www.throne4j.com/15955163850122.html"/>
-    <updated>2020-07-23T22:59:45+08:00</updated>
-    <id>http://www.throne4j.com/15955163850122.html</id>
-    <content type="html"><![CDATA[
-<p>跨域资源共享(CORS) 是一种机制，它使用额外的 HTTP 头来告诉浏览器  让运行在一个 origin (domain) 上的Web应用被准许访问来自不同源服务器上的指定的资源。当一个资源从与该资源本身所在的服务器不同的域、协议或端口请求一个资源时，资源会发起一个跨域 HTTP 请求。</p>
-
-<p>比如，站点 <a href="http://domain-a.com">http://domain-a.com</a> 的某 HTML 页面又去请求 <a href="http://domain-b.com/xxx%E9%A1%B5%E9%9D%A2%E3%80%82%E7%BD%91%E7%BB%9C%E4%B8%8A%E7%9A%84%E8%AE%B8%E5%A4%9A%E9%A1%B5%E9%9D%A2%E9%83%BD%E4%BC%9A%E5%8A%A0%E8%BD%BD%E6%9D%A5%E8%87%AA%E4%B8%8D%E5%90%8C%E5%9F%9F%E7%9A%84CSS%E6%A0%B7%E5%BC%8F%E8%A1%A8%EF%BC%8C%E5%9B%BE%E5%83%8F%E5%92%8C%E8%84%9A%E6%9C%AC%E7%AD%89%E8%B5%84%E6%BA%90%E3%80%82">http://domain-b.com/xxx页面。网络上的许多页面都会加载来自不同域的CSS样式表，图像和脚本等资源。</a></p>
-
-<p>出于安全原因，浏览器限制从脚本内发起的跨源HTTP请求。 例如，XMLHttpRequest和Fetch API遵循同源策略。 这意味着使用这些API的Web应用程序只能从加载应用程序的同一个域请求HTTP资源，除非响应报文包含了正确CORS响应头。</p>
-
-<p><figure><img src="media/15955111272689/15955114749443.jpg" alt=""/></figure></p>
-
-<p>跨域资源共享（ CORS ）机制允许 Web 应用服务器进行跨域访问控制，从而使跨域数据传输得以安全进行。现代浏览器支持在 API 容器中（例如 XMLHttpRequest 或 Fetch ）使用 CORS，以降低跨域 HTTP 请求所带来的风险。</p>
-
-<hr/>
-
-<h2 id="toc_0">什么情况下需要 CORS ？</h2>
-
-<p>跨域资源共享标准（ cross-origin sharing standard ）允许在下列场景中使用跨域 HTTP 请求：</p>
-
-<ul>
-<li>由 XMLHttpRequest 或 Fetch 发起的跨域 HTTP 请求。</li>
-<li>Web 字体 (CSS 中通过 @font-face 使用跨域字体资源), 因此，网站就可以发布 TrueType 字体资源，并只允许已授权网站进行跨站调用。</li>
-<li>WebGL 贴图</li>
-<li>使用 drawImage 将 Images/video 画面绘制到 canvas<br/>
-本文概述了跨域资源共享机制及其所涉及的 HTTP 头。</li>
-</ul>
-
-<p>跨域资源共享标准新增了一组 HTTP 首部字段，允许服务器声明哪些源站通过浏览器有权限访问哪些资源。另外，规范要求，对那些可能对服务器数据产生副作用的 HTTP 请求方法（特别是 GET 以外的 HTTP 请求，或者搭配某些 MIME 类型的 POST 请求），浏览器必须首先使用 OPTIONS 方法发起一个预检请求（preflight request），从而获知服务端是否允许该跨域请求。服务器确认允许之后，才发起实际的 HTTP 请求。在预检请求的返回中，服务器端也可以通知客户端，是否需要携带身份凭证（包括 Cookies 和 HTTP 认证相关数据）。</p>
-
-<p>CORS请求失败会产生错误，但是为了安全，在JavaScript代码层面是无法获知到底具体是哪里出了问题。你只能查看浏览器的控制台以得知具体是哪里出现了错误。</p>
-
-<hr/>
-
-<h2 id="toc_1">HTTP 响应 header 字段</h2>
-
-<p>使用 Origin 和 Access-Control-Allow-Origin 就能完成最简单的访问控制。</p>
-
-<ul>
-<li><p>Access-Control-Allow-Origin: <origin> | *<br/>
-服务端设置 Access-Control-Allow-Origin 就是告诉浏览器允许向服务端请求资源的域名，浏览器通过 Response 中的 Access-Control-Allow-Origin 就可以知道能不能把数据吐出来。<br/>
-例如：</p>
-<pre><code class="language-text">Access-Control-Allow-Origin: http://mozilla.com
-</code></pre>
-<p>如果服务端指定了具体的域名而非“*”，那么响应首部中的 Vary 字段的值必须包含 Origin。这将告诉客户端：服务器对不同的源站返回不同的内容</p></li>
-<li><p>Access-Control-Expose-Headers : 让服务器把允许浏览器访问的头放入白名单<br/>
-在跨域访问时，XMLHttpRequest对象的getResponseHeader()方法只能拿到一些最基本的响应头，Cache-Control、Content-Language、Content-Type、Expires、Last-Modified、Pragma，如果要访问其他头，则需要服务器设置本响应头。<br/>
-例如：</p>
-<pre><code class="language-text">Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
-</code></pre>
-<p>这样浏览器就能够通过getResponseHeader访问X-My-Custom-Header和 X-Another-Custom-Header 响应头了。</p></li>
-<li><p>Access-Control-Max-Age: <delta-seconds> <br/>
-指定了preflight请求的结果能够被缓存多久，delta-seconds 参数表示preflight请求的结果在多少秒内有效。</p></li>
-<li><p>Access-Control-Allow-Credentials: true|false <br/>
-指定了当浏览器的credentials设置为true时是否允许浏览器读取response的内容</p></li>
-<li><p>Access-Control-Allow-Methods: <method>[, <method>]* <br/>
-指明实际请求所允许使用的 HTTP 方法</p></li>
-<li><p>Access-Control-Allow-Headers: <field-name>[, <field-name>]* <br/>
-指明实际请求中允许携带的首部字段</p></li>
-</ul>
-
-<h2 id="toc_2">HTTP 请求header字段</h2>
-
-<ul>
-<li>Origin  表明预检请求或实际请求的源站 URI,不管是否跨域ORIGIN 字段总是被发送</li>
-<li>Access-Control-Request-Method 将实际请求所使用的 HTTP 方法告诉服务器</li>
-<li>Access-Control-Request-Headers  将实际请求所携带的首部字段告诉服务器</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Redission 防止用户请求重复提交]]></title>
-    <link href="http://www.throne4j.com/15955096929534.html"/>
-    <updated>2020-07-23T21:08:12+08:00</updated>
-    <id>http://www.throne4j.com/15955096929534.html</id>
-    <content type="html"><![CDATA[
-<pre><code class="language-text">package com.rongdu.cashloan.core.redisson;
- 
-import org.apache.commons.lang3.StringUtils;
-import org.redisson.Redisson;
-import org.redisson.api.*;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
- 
-/***
- * Redis client的辅助工具类
- * 用于连接Redis服务器 创建不同的Redis Server对应的客户端对象
- * @author wangnian
- * 博客地址：http://my.oschina.net/wangnian
- */
-public class RedisUtils {
- 
-   private static  Logger logger= LoggerFactory.getLogger(RedisUtils.class);
- 
-   private static RedisUtils redisUtils;
- 
-   private static RedissonClient redissonClient;
- 
-   private RedisUtils(){}
- 
-   /**
-    * 提供单例模式
-    * @return
-    */
-   public static RedisUtils getInstance(){
-      if(redisUtils==null) {
-         synchronized (RedisUtils.class) {
-            if(redisUtils==null){
-               redisUtils=new RedisUtils();
-            }
-         }
-      }
-      return redisUtils;
-   }
- 
- 
-   /**
-    * 使用config创建Redisson
-    * Redisson是用于连接Redis Server的基础类
-    * @param config
-    * @return
-    */
-   public RedissonClient getRedisson(Config config){
-      if(redissonClient==null){
-         synchronized (RedisUtils.class) {
-            if(redissonClient==null){
-               redissonClient=Redisson.create(config);
-            }
-         }
-      }
-      return redissonClient;
-   }
- 
-   /**
-    * 使用ip地址和端口创建Redisson
-    * @param ip
-    * @param port
-    * @return
-    */
-   public RedissonClient getRedisson(String ip,String port,String passwd){
- 
-      if(!ip.startsWith(&quot;http://&quot;)){
-         ip = &quot;http://&quot;+ip;
-      }
- 
-      logger.info(&quot;RedisUtils-getRedisson-传入参数-ip：&quot;+ip+&quot;-port:&quot;+port+&quot;-passwd:&quot;+passwd);
-      Config config=new Config();
- 
-      SingleServerConfig singleServerConfig = config.useSingleServer();
- 
-      singleServerConfig.setAddress(ip+&quot;:&quot;+port).
-              setTimeout(200000).
-              setRetryAttempts(10).
-              // .setIdleConnectionTimeout(10000)
-                      setRetryInterval(2000).
-              //.setFailedAttempts(20)
-                      setSubscriptionsPerConnection(5).
-              setSubscriptionConnectionPoolSize(10).
-              setConnectionPoolSize(64).
-              setDatabase(0);
- 
-      if(StringUtils.isNotBlank(passwd)){
-         singleServerConfig.setPassword(passwd);
-      }
- 
-      if(redissonClient==null){
-         synchronized (RedisUtils.class) {
-            if(redissonClient==null){
-               redissonClient=Redisson.create(config);
-            }
-         }
-      }
-      return redissonClient;
-   }
- 
-   /**
-    * 关闭Redisson客户端连接
-    * @param redisson
-    */
-   public void closeRedisson(RedissonClient redisson){
-      redisson.shutdown();
-   }
- 
-   /**
-    * 获取字符串对象
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;T&gt; RBucket&lt;T&gt; getRBucket(RedissonClient redisson, String objectName){
-      RBucket&lt;T&gt; bucket=redisson.getBucket(objectName);
-      return bucket;
-   }
- 
-   /**
-    * 获取Map对象
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;K,V&gt; RMap&lt;K, V&gt; getRMap(RedissonClient redisson, String objectName){
-      RMap&lt;K, V&gt; map=redisson.getMap(objectName);
-      return map;
-   }
- 
-   /**
-    * 获取有序集合
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;V&gt; RSortedSet&lt;V&gt; getRSortedSet(RedissonClient redisson, String objectName){
-      RSortedSet&lt;V&gt; sortedSet=redisson.getSortedSet(objectName);
-      return sortedSet;
-   }
- 
-   /**
-    * 获取集合
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;V&gt; RSet&lt;V&gt; getRSet(RedissonClient redisson, String objectName){
-      RSet&lt;V&gt; rSet=redisson.getSet(objectName);
-      return rSet;
-   }
- 
-   /**
-    * 获取列表
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;V&gt; RList&lt;V&gt; getRList(RedissonClient redisson,String objectName){
-      RList&lt;V&gt; rList=redisson.getList(objectName);
-      return rList;
-   }
- 
-   /**
-    * 获取队列
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;V&gt; RQueue&lt;V&gt; getRQueue(RedissonClient redisson,String objectName){
-      RQueue&lt;V&gt; rQueue=redisson.getQueue(objectName);
-      return rQueue;
-   }
- 
-   /**
-    * 获取双端队列
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;V&gt; RDeque&lt;V&gt; getRDeque(RedissonClient redisson,String objectName){
-      RDeque&lt;V&gt; rDeque=redisson.getDeque(objectName);
-      return rDeque;
-   }
- 
-   /**
-    * 此方法不可用在Redisson 1.2 中 
-    * 在1.2.2版本中 可用
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   /**
-    public &lt;V&gt; RBlockingQueue&lt;V&gt; getRBlockingQueue(RedissonClient redisson,String objectName){
-    RBlockingQueue rb=redisson.getBlockingQueue(objectName);
-    return rb;
-    }*/
- 
-   /**
-    * 获取锁
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public RLock getRLock(RedissonClient redisson,String objectName){
-      RLock rLock=redisson.getLock(objectName);
-      return rLock;
-   }
- 
-   /**
-    * 获取原子数
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public RAtomicLong getRAtomicLong(RedissonClient redisson,String objectName){
-      RAtomicLong rAtomicLong=redisson.getAtomicLong(objectName);
-      return rAtomicLong;
-   }
- 
-   /**
-    * 获取记数锁
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public RCountDownLatch getRCountDownLatch(RedissonClient redisson,String objectName){
-      RCountDownLatch rCountDownLatch=redisson.getCountDownLatch(objectName);
-      return rCountDownLatch;
-   }
- 
-   /**
-    * 获取消息的Topic
-    * @param redisson
-    * @param objectName
-    * @return
-    */
-   public &lt;M&gt; RTopic&lt;M&gt; getRTopic(RedissonClient redisson,String objectName){
-      RTopic&lt;M&gt; rTopic=redisson.getTopic(objectName);
-      return rTopic;
-   }
- 
- 
-}
-</code></pre>
-
-<pre><code class="language-text">public void commitUserReq(HttpServletRequest request){
-        final RedissonClient redisson = RedisUtils.getInstance().getRedisson(redisIp,redisPort,redisPasswd);
-        // 防重复提交锁
-        RLock lock = redisson.getLock(orderId + &quot;COMMIT_ORDER&quot; + userId);
-        try {
-            boolean res = lock.tryLock(0, 10, TimeUnit.SECONDS);
-            if (!res){
-                throw new SimpleMessageException(&quot;操作太频繁！&quot;);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // 防止正在请求过程再发起请求
-        boolean isBack = false;
-        RLock lock2 = redisson.getLock(orderId + &quot;LOCK_BUTTON&quot; + userId);
-        lock2.lock(10,TimeUnit.SECONDS);
-        if (redisClient.exists(&quot;BUTTON_PAY_&quot;+ userId)){
-            isBack = true;
-        }else{
-            redisClient.setObject(&quot;BUTTON_PAY_&quot;+ userId,borrowId,20*60);
-        }
-        lock2.unlock();
-        if (isBack){
-            logger.info(&quot;系统提交已经开始&quot;);
-            throw new SimpleMessageException(&quot;你有请求正在处理，请20分钟后再试！&quot;);
-        }
-        System.out.println(&quot;处理业务代码==========正常执行&quot;);
-        
-        }
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[十三、过期键的删除策略]]></title>
-    <link href="http://www.throne4j.com/15952588914829.html"/>
-    <updated>2020-07-20T23:28:11+08:00</updated>
-    <id>http://www.throne4j.com/15952588914829.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">redis过期键删除策略</h2>
-
-<p>一个键过期了，它什么时候被删除呢？</p>
-
-<p>Redis 服务器采用惰性删除策略和定期删除两种策略，通过分配使用这两种删除策略，redis服务器可以很好的利用cpu时间和避免内存浪费之间取得一个较好的平衡</p>
-
-<ul>
-<li>定时删除:在设置键的过期时间的同时,创建一个定时器( timer),让定时器在键的过期时间来临时,立即执行对键的删除操作。</li>
-<li>惰性删除:放任键过期不管,但是每次从键空间中获取健时,都检查取得的键是否过期,如果过期的话,就删除该键;如果没有过期,就返回该键。</li>
-<li>定期删除:每隔一段时间,程序就对数据库进行一次检查,删除里面的过期键。至于要删除多少过期键,以及要检査多少个数据库,则由算法决定。<br/>
-在这三种策略中,第一种和第三种为主动删除策略,而第二种则为被动删除策略。</li>
-</ul>
-
-<h2 id="toc_1">定时删除策略</h2>
-
-<p>定时删除策略，设置键过期时间的同时，创建定时器，让定时器在键的过期时间来来临时立即执行对键的删除操作。</p>
-
-<p>优点是：可以保证过期键会尽可能快的被删除，并释放过期键所占用的内存，</p>
-
-<p>但缺点也很明显：会占用一定的cpu时间，影响服务器的响应时间和吞吐量，</p>
-
-<p>除此之外，创建定时器需要用到 redis 服务器的时间事件，而当前时间事件的实现方式是无序链表，查找一个时间的时间复杂度为 O(N)，并不能高效的处理大量的时间事件。</p>
-
-<h2 id="toc_2">惰性删除策略</h2>
-
-<p>惰性删除策略，访问数据库键时，校验该键是否过期，如果过期则删除</p>
-
-<p>优点是：对cpu时间来说最友好，程序只会在取出键时才对键进行过期检查，可以保证删除过期键的操作只会在费做不可的情况下进行，并且删除过期键的操作仅限当前处理的键，</p>
-
-<p>但是此种策略非常占用内存，有内存泄漏的风险，已过期的键不会立马删除，占着内存直到下次访问时才会释放内存空间。</p>
-
-<h2 id="toc_3">定期删除策略</h2>
-
-<p>定期删除策略，周期性删除过期键，redisServer启动过程最后一步(开启事件循环，会触发Redis的定时任务的时间事件，查看 <a href="15934396305281.html">三、redis命令处理生命周期</a>) </p>
-
-<ul>
-<li>每个一段时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少删除操作对cpu时间的影响</li>
-<li>通过定期删除过期键，有效的减少了过期键带来的内存损耗。</li>
-</ul>
-
-<p>定期删除策略的难点是确定删除操作执行的时长和频率：</p>
-
-<ul>
-<li>如果删除操作执行得太频繁,或者执行的时间太长,定期删除策略就会退化成定时除策略,以至于将CPU时间过多地消耗在删除过期键上面。</li>
-<li>如果删除操作执行得太少,或者执行的时间太短,定期删除策略又会和惰性删除策略一样,出现浪费内存的情况。</li>
-</ul>
-
-<h2 id="toc_4">AOF、RDB和复制功能对过期键的处理</h2>
-
-<h3 id="toc_5">RDB 文件生成</h3>
-
-<p>在执行SAⅣE命令或者 BGSAVE命令创建一个新的RDB文件时,程序会对数据库中的键进行检查,已过期的键不会被保存到新创建的RDB文件中。</p>
-
-<h3 id="toc_6">载入RDB文件</h3>
-
-<p>在启动 Redis服务器时,如果服务器开启了RDB功能,那么服务器将对RDB文件进行载人: </p>
-
-<ul>
-<li>如果服务器以主服务器模式运行,那么在载入RDB文件时,程序会对文件中保存的键进行检查,未过期的键会被载入到数据库中,而过期键则会被忽略,所以过期键对载入RDB文件的主服务器不会造成影响</li>
-<li>如果服务器以从服务器模式运行,那么在载入RDB文件时,文件中保存的所有键, 不论是否过期,都会被载人到数据库中。不过,因为主从服务器在进行数据同步的时候,从服务器的数据库就会被清空,所以一般来讲,过期键对载人RDB文件的从服务器也不会造成影响。</li>
-</ul>
-
-<h3 id="toc_7">AOF 文件写入</h3>
-
-<p>当服务器以AOF持久化模式运行时,如果数据库中的某个键已经过期,但它还没有被惰性删除或者定期删除,那么AOF文件不会因为这个过期键而产生任何影响。</p>
-
-<p>当过期键被惰性删除或者定期删除之后, 程序会向AOF文件迫加( append)一条DEL 命令,来显式地记录该键已被删除。</p>
-
-<p>举个例子,如果客户端使用 GET message命令,试图访向问过期的 message键,那么服务器将执行以下三个动作: </p>
-
-<p>1)从数据库中删除 message键。<br/>
-2)追加一条 DEL message命令到AOF文件。<br/>
-3)向执行GET命令的客户端返回空回复。</p>
-
-<p>和生成RDB文件时类似,在执行AOF重写的过程中,程序会对数据库中的键进行检査,已过期的键不会被保存到重写后的AOF文件中。</p>
-
-<h2 id="toc_8">复制</h2>
-
-<p>当服务器运行在复制模式下时,从服务器的过期键删除动作由主服务器控制</p>
-
-<ul>
-<li>主服务器在删除一个过期键之后,会显式地向所有从服务器发送一个DEL命令,告知从服务器删除这个过期键。</li>
-<li>从服务器在执行客户端发送的读命令时,即使碰到过期键也不会将过期健删除,而是继续像处理未过期的键一样来处理过期键。</li>
-<li>从服务器只有在接到主服务器发来的DEL命令之后,才会删除过期键。</li>
-</ul>
-
-<p>通过由主服务器来控制从服务器统一地删除过期键,可以保证主从服务器数据的一致性,也正是因为这个原因,当一个过期键仍然存在于主服务器的数据库时,这个过期键在从服务器里的复制品也会继续存在。</p>
-
-<p>如果这时有客户端向从服务器发送命令 GET message,那么从服务器将发现 message 键已经过期,但从服务器并不会删除 message键,而是继续将 message键的值返回给客户端,就好像 message健并没有过期一样。</p>
-
-<p>假设在此之后,有客户端向主服务器发送命令 GET message,那么主服务器将发现键message已经过期，主服务器会删除 message键,向客户端返回空回复,并向从服务器发送 DEL message命令。</p>
-
-<p>从服务器在接收到主服务器发来的DEL message命令之后,也会从数据库中删除 message键,在这之后,主从服务器都不再保存过期键 message了。</p>
-
-<h2 id="toc_9">总结</h2>
-
-<p>Redis使用惰性删除和定期删除两种策略来删除过期的键:惰性删除策略只在碰到过期键时才进行删除操作,定期删除策略则每隔一段时间主动査找并删除过期键。</p>
-
-<p>执行SAVE命令或者 BGSAVE命令所产生的新RDB文件不会包含已经过期的键。</p>
-
-<p>执行 BGREWRITEAOF命令所产生的重写AOF文件不会包含已经过期的键。</p>
-
-<p>当一个过期键被删除之后,服务器会追加一条DEL命令到现有AOF文件的末尾, 显式地删除过期键。</p>
-
-<p>当主服务器删除一个过期键之后,它会向所有从服务器发送一条DEL命令,显式地删除过期键。</p>
-
-<p>从服务器即使发现过期键也不会自作主张地删除它,而是等待主节点发来DEL命令, 这种统一、中心化的过期键删除策略可以保证主从服务器数据的一致性。</p>
-
-<p>当 Redis命令对数据库进行修改之后,服务器会根据配置向客户端发送数据库通知。</p>
 
 ]]></content>
   </entry>
