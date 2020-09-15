@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+     - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                               
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/09/11</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='mysql.html'>mysql</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>以下几类数据都是不适合在数据库中存放的</p>
+
+<p>实际上，以下几类数据都是不适合在数据库中存放的: </p>
+
+<ol>
+<li>二进制多媒体数据<br/>
+将二进制多媒体数据存放在数据库中，一个问题是数据库空间资源耗用非常严重，另一个问题 是这些数据的存储很消耗数据库主机的 CPU 资源。这种数据主要包括图片，音频、视频和其他一些 相关的二进制文件。这些数据的处理本不是数据的优势，如果我们硬要将他们塞入数据库，肯定会 造成数据库的处理资源消耗严重。</li>
+<li><p>流水队列数据 <br/>
+我们都知道，数据库为了保证事务的安全性(支持事务的存储引擎)以及可恢复性，都是需要记录所有变更的日志信息的。而流水队列数据的用途就决定了存放这种数据的表中的数据会不断的 被 INSERT，UPDATE 和 DELETE，而每一个操作都会生成与之对应的日志信息。在MySQL 中，如果是支 持事务的存储引擎，这个日志的产生量更是要翻倍。而如果我们通过一些成熟的第三方队列软件来 实现这个 Queue 数据的处理功能，性能将会成倍的提升。</p></li>
+<li><p>超大文本数据<br/>
+对于 5.0.3 之前的 MySQL 版本，VARCHAR 类型的数据最长只能存放 255 个字节，如果需要存储更长的文本数据到一个字段，我们就必须使用 TEXT 类型(最大可存放 64KB)的字段，甚至是更大的 LONGTEXT 类型(最大 4GB)。而 TEXT 类型数据的处理性能要远比 VARCHAR 类型数据的处理性能低下 很多。从 5.0.3 版本开始， VARCHAR 类型的最大长度被调整到 64KB 了，但是当实际数据小于 255 Bytes的时候，实际存储空间和实际的数据长度一样，可一旦长度超过255 Bytes之后，所占用的存 储空间就是实际数据长度的两倍。</p></li>
+</ol>
+
+<p>什么样的数据适合通过 Cache 技术来提高系统性能:</p>
+
+<ol>
+<li>系统各种配置及规则数据; 由于这些配置信息变动的频率非常低，访问概率又很高，所以非常适合存使用Cache;</li>
+<li>活跃用户的基本信息数据; 虽然我们经常会听到某某网站的用户量达到成百上千万，但是很少有系统的活跃用户量能够都 达到这个数量级。也很少有用户每天没事干去将自己的基本信息改来改去。更为重要的一点是 用户的基本信息在应用系统中的访问频率极其频繁。所以用户基本信息的Cache，很容易让整个 应用系统的性能出现一个质的提升。</li>
+<li>活跃用户的个性化定制信息数据; 虽然用户个性化定制的数据从访问频率来看，可能并没有用户的基本信息那么的频繁，但相对 于系统整体来说，也占了很大的比例，而且变更皮律一样不会太多。从 Ebay 的 PayPal 通过 MySQL 的 Memory 存储引擎实现用户个性化定制数据的成功案例我们就能看出对这部分信息进行 Cache 的价值了。虽然通过 MySQL 的 Memory 存储引擎并不像我们传统意义层面的 Cache 机制， 但正是对 Cache 技术的合理利用和扩充造就了项目整体的成功。</li>
+<li>准实时的统计信息数据; 所谓准实时的统计数据，实际上就是基于时间段的统计数据。这种数据不会实时更新，也很少 需要增量更新，只有当达到重新 Build 该统计数据的时候需要做一次全量更新操作。虽然这种 数据即使通过数据库来读取效率可能也会比较高，但是执行频率很高之后，同样会消耗不少资 源。既然数据库服务器的资源非常珍贵，我们为什么不能放在应用相关的内存Cache 中呢?</li>
+<li>其他一些访问频繁但变更较少的数据; 出了上面这四种数据之外，在我们面对的各种系统环境中肯定还会有各种各样的变更较少但是 访问很频繁的数据。只要合适，我们都可以将对他们的访问从数据库移到Cache 中。</li>
+</ol>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

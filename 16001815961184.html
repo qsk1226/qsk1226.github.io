@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    Object 对象 - 大爷来玩儿啊~
+    TCP 粘包/拆包 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            Object 对象   
+                            TCP 粘包/拆包   
                       </h1>
                      
                     
@@ -94,10 +94,10 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/09/06</span>
+                                 <span class="date">2020/09/15</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                      <span class="posted-in"><a href='%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B.html'>网络编程</a></span>
                                          
                                   
 
@@ -114,13 +114,45 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>waitSet</p>
+                    <p>TCP底层并不了解上层业务数据的具体含义，它会根据TCP缓冲区的实际情况进行包的划分，即滑动窗口的概念。所以一个完整的业务包可能会被TCP拆分成多个包进行发送，也有可能吧多个晓得包封装成一个大的数据包发送，这就是所谓的TCP粘包与拆包问题。</p>
 
-<p>entrySet</p>
+<h2 id="toc_0">TCP粘包与拆包问题说明</h2>
 
-<h2 id="toc_0">wait 方法</h2>
+<p><figure><img src="media/16001815961184/16001825107010.jpg" alt="" style="width:622px;"/></figure></p>
 
-<h2 id="toc_1">sleep 与 wait 区别</h2>
+<p>假设客户端分别发送了两个数据包D1 和D2给服务端，由于服务端一次读取到的字节数是不确定的，故可能存在以下4种情况：</p>
+
+<ul>
+<li>服务端分两次读取到了两个独立的数据包 D1 和 D2 ，没有 粘包与拆包</li>
+<li>服务端一次接收到了两个数据包，D1和D2粘合在一起，被称为TCP粘包</li>
+<li>服务端分两次读取到了两个数据包，第一次读取到了完整的D1 包和D2包的部分内容，第二次读取到了 D2 包的剩余内容，这被称为 TCP拆包</li>
+<li>服务端分两次读取到了两个数据包，第一次读取到了D1包的部分内容 D1_1 ，第二次读取到了D1包的剩余内容 D1_2 和 D2 包的整包。</li>
+</ul>
+
+<p>如果此时服务端 tcp 接收 滑窗 非常小，而数据包 D1 和 D2 比较大，很有可能会发生第5种情况，即服务端分多次才能将D1和D2包 接受完全，期间发生多次拆包。</p>
+
+<h2 id="toc_1">TCP 粘包/拆包发生的原因</h2>
+
+<p>问题产生的原因有 三个：</p>
+
+<ul>
+<li>应用程序write 写入的字节大小大于套接口发送缓冲区大小</li>
+<li>进行MSS大小的TCP分段</li>
+<li>以太网帧的payload 大于 MTU 进行 IP 分片。</li>
+</ul>
+
+<p><figure><img src="media/16001815961184/16001830988462.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">粘包问题的解决策略</h2>
+
+<p>由于底层的 TCP 无法理解上层的业务数据，所以在底层是无法保证数据包不被拆分和重组的，这个问题只能通过上层的应用协议栈设计来解决，根据业界的主流协议的解决方案，可以归纳如下：</p>
+
+<ul>
+<li>消息定长，例如每个报文的大小为固定长度200字节，如果不够，空位补空格</li>
+<li>在包尾增加回车换行符进行分割，例如 FTP协议</li>
+<li>将消息分为消息头和消息体，消息头中包含消息总长度（或者消息体长度）的字段，通常设计思路为消息头的第一个字段使用 int32 来表示消息的总长度</li>
+<li>更复杂的应用层协议</li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">

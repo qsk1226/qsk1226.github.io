@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    线程 - 大爷来玩儿啊~
+    Mysql的锁定机制 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            线程   
+                            Mysql的锁定机制   
                       </h1>
                      
                     
@@ -94,10 +94,10 @@
                             <div class="media-content">
                               <div class="content">
                                 <p>
-                                 <span class="date">2020/08/23</span>
+                                 <span class="date">2020/09/14</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                      <span class="posted-in"><a href='mysql.html'>mysql</a></span>
                                          
                                   
 
@@ -114,9 +114,74 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>java 线程的本质--Thread--jvm--os</p>
+                    <p>为了保证数据的一致完整性，任何一个数据库都存在锁定机制，在mysql中使用最为频繁的当属 innoDB 和 MyISAM，我们就来具体探讨一下这两种存储引擎是如何实现锁机制的。</p>
 
-<p>java 线程模型</p>
+<p>数据库锁定机制简单来说就是数据库为了保证数据的一致性而使各种共享资源在被并发访问访问变得有序所设计的一种规则。</p>
+
+<p>MySQL 各存储引擎使用了三种类型（级别）的锁定机制：行级锁定，页级锁定和表级锁定。</p>
+
+<table>
+<thead>
+<tr>
+<th>锁机制</th>
+<th>描述</th>
+<th>优点</th>
+<th>缺点</th>
+<th>存储引擎</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>行级锁</td>
+<td>锁定对象的颗粒度很小</td>
+<td>由于锁定颗粒度很小，所以发生锁定资源争用的概率也最小，能够给予应用程序尽可能大的并发处理能力而提高一些需要高并发应用系统的整体性能。</td>
+<td>由于锁定颗粒度很小，每次获取锁和释放锁需要做的事情也更多，带来的消耗自然也就更大。另外可能会引发死锁的情况</td>
+<td>Innodb 存储引擎和 NDB Cluster 存储引擎</td>
+</tr>
+<tr>
+<td>表级锁</td>
+<td>各存储引擎中最大颗粒度的锁定机制。</td>
+<td>实现逻辑非常简单，带来的系统负面影响最小</td>
+<td>出现锁定资源争用的概率也会最高，致使并大度大打折扣</td>
+<td>MyISAM，Memory，CSV 等一些非事务性存储引擎</td>
+</tr>
+<tr>
+<td>页级锁</td>
+<td>锁定颗粒度介于行级锁定与表级锁之间</td>
+<td>并发处理能力介于行级锁和表级锁之间</td>
+<td>页级锁定和行级锁定一样，会发生死锁</td>
+<td>BerkeleyDB</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="toc_0">表级锁定</h2>
+
+<p>mysql的表级锁定主要分为两种类型：读锁定、写锁定。主要通过4个队列来维护这两种锁定。</p>
+
+<p>两个存放当前正在锁定中的读和写锁定信息，另外两个存放等待中的读写锁定信息，</p>
+
+<p>如下：<br/>
+• Current read-lock queue (lock-&gt;read) <br/>
+• Pending read-lock queue (lock-&gt;read_wait) <br/>
+• Current write-lock queue (lock-&gt;write) <br/>
+• Pending write-lock queue (lock-&gt;write_wait)</p>
+
+<h3 id="toc_1">读锁定</h3>
+
+<p>一个新的客户端请求在申请获取读锁定资源的时候，需要满足两个条件：</p>
+
+<ul>
+<li>请求锁定的资源当前没有被写锁定；</li>
+<li>写锁定等待队列（Pending write-lock queue）中没有更高优先级的写锁定等待；</li>
+</ul>
+
+<p>如果满足了上面两个条件之后，该请求会被立即通过，并将相关的信息存入 Current read-lock queue 中，而如果上面两个条件中任何一个没有满足，都会被迫进入等待队列 Pending read-lock queue 中等待资源的释放。</p>
+
+<h3 id="toc_2">写锁定</h3>
+
+<p>当客户端请求写锁定的时候，MySQL 首先检查在 Current write-lock queue 是否已经有锁定相同资源的信息存在。</p>
 
                   </article>
                   <div class="comments-wrap">

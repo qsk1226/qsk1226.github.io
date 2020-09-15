@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-     - 大爷来玩儿啊~
+    RPC框架 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                               
+                            RPC框架   
                       </h1>
                      
                     
@@ -114,7 +114,32 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    
+                    <p>remote procedure call 远程过程调用。</p>
+
+<p>首先我们看一下 一次完整的 RPC 同步调用流程:</p>
+
+<ul>
+<li>服务消费方(client)以本地调用方式调用客户端存根;</li>
+<li>什么叫客户端存根?就是远程方法在本地的模拟对象，一样的也有方法名，也有方法参数，client stub 接收到调用后负责将方法名、方法的参数等包装， 并将包装后的信息通过网络发送到服务端;</li>
+<li>服务端收到消息后，交给代理存根在服务器的部分后进行解码为实际的方法名和参数</li>
+<li>server stub 根据解码结果调用服务器上本地的实际服务; </li>
+<li>本地服务执行并将结果返回给 server stub;</li>
+<li>server stub 将返回结果打包成消息并发送至消费方; </li>
+<li>client stub 接收到消息，并进行解码; </li>
+<li>服务消费方得到最终结果。</li>
+</ul>
+
+<p>RPC 框架的目标就是要中间步骤都封装起来，让我们进行远程方法调用的时 候感觉到就像在本地调用一样。</p>
+
+<p>RPC框架需要解决的问题有哪些？</p>
+
+<ul>
+<li>代理问题, 隐藏底层实现</li>
+<li>序列化问题，</li>
+<li>通信问题</li>
+<li>服务实例化</li>
+</ul>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">

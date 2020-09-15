@@ -116,7 +116,7 @@
                   <article class="markdown-body single-content">
                     <h2 id="toc_0">概念</h2>
 
-<p>reactor设计模式，是一种基于事件驱动的设计模式。Reactor框架是ACE 各个框架中最基础的一个框架，其他框架都或多或少地用到了Reactor框架。 </p>
+<p>reactor设计模式，是一种基于事件驱动的设计模式。Reactor框架是 ACE 各个框架中最基础的一个框架，其他框架都或多或少地用到了Reactor框架。 </p>
 
 <p>在事件驱动的应用中，将一个或多个客户的服务请求分离（demultiplex）和调度（dispatch）给应用程序。在事件驱动的应用中，同步地、有序地处理同时接收的多个服务请求。 </p>
 
@@ -141,6 +141,10 @@
 <h3 id="toc_4">1、架构图</h3>
 
 <p> <figure><img src="media/15586898110083/15590230630201.jpg" alt="" style="width:556px;"/></figure></p>
+
+<p><figure><img src="media/15880496547017/16000945672842.jpg" alt=""/></figure><br/>
+<figure><img src="media/15880496547017/16000945742221.jpg" alt=""/></figure><br/>
+<figure><img src="media/15880496547017/16000945814901.jpg" alt=""/></figure></p>
 
 <h3 id="toc_5">2、构成</h3>
 
@@ -179,8 +183,7 @@ import java.util.Set;
  *  
  * 传统线程池做法：来一个客人(请求)去一个服务员(线程) 
  * 反应器模式做法：当客人点菜的时候，服务员就可以去招呼其他客人了，等客人点好了菜，直接招呼一声“服务员” 
- *  
- * @author linxcool 
+ * 
  */  
 public class Reactor implements Runnable{  
     public final Selector selector;  
