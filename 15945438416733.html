@@ -166,7 +166,7 @@ OK
 
 <p>为了解决老版本的效率低下问题，新版复制功能使用PSYNC命令代替SYNC命令来执行复制时的同步操作。</p>
 
-<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步( partial resynchronization 两种模式:</p>
+<p>PSYNC命令具有完整重同步( full resynchronization)和部分重同步(partial resynchronization) 两种模式:</p>
 
 <ul>
 <li>完整重同步用于处理初次复制情况: 完整重同步的执行步骤和SYNC命令的执行步骤基本一样, 它们都是通过让主服务器创建并发送RDB文件,以及向从服务器发送保存在缓冲区里面的写命令来进行同步。</li>

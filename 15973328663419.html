@@ -156,7 +156,63 @@
 <li>Page cleaner thread：刷新脏页</li>
 </ul>
 
-<h2 id="toc_1">缓冲池</h2>
+<h2 id="toc_1">InnoDB 存储引擎的优化</h2>
+
+<p>合理利用 Innodb 的行级锁定，做到扬长避短，我们必须做好以下工作：<br/>
+a) 尽可能让所有的数据检索都通过索引来完成，从而避免 Innodb 因为无法通过索引键加锁而升级为表级锁定；</p>
+
+<p>b) 合理设计索引，让 Innodb 在索引键上面加锁的时候尽可能准确，尽可能的缩小锁定范围，避免造成不必要的锁定而影响其他 Query 的执行；</p>
+
+<p>c) 尽可能减少基于范围的数据检索过滤条件，避免因为间隙锁带来的负面影响而锁定了不该锁定的记录；</p>
+
+<p>d) 尽量控制事务的大小，减少锁定的资源量和锁定时间长度；</p>
+
+<p>e) 在业务环境允许的情况下，尽量使用较低级别的事务隔离，以减少 MySQL 因为实现事务隔离级别所带来的附加成本；</p>
+
+<p>Innodb 的行级锁定和事务性，所以肯定会产生死锁，下面是一些比较常用的减少死锁产生概率的的小建议：</p>
+
+<p>a) 类似业务模块中，尽可能按照相同的访问顺序来访问，防止产生死锁；<br/>
+b) 在同一个事务中，尽可能做到一次锁定所需要的所有资源，减少死锁产生概率；<br/>
+c) 对于非常容易产生死锁的业务部分，可以尝试使用升级锁定颗粒度，通过表级锁定来减少死锁产生的概率；</p>
+
+<p>Innodb 所使用的行级锁定:<br/>
+show status like &#39;innodb_row_lock%&#39;</p>
+
+<table>
+<thead>
+<tr>
+<th>Variable_name</th>
+<th>Value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Innodb_row_lock_current_waits</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Innodb_row_lock_time</td>
+<td>490578</td>
+</tr>
+<tr>
+<td>Innodb_row_lock_time_avg</td>
+<td>37736</td>
+</tr>
+<tr>
+<td>Innodb_row_lock_time_max</td>
+<td>121411</td>
+</tr>
+<tr>
+<td>Innodb_row_lock_waits</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+
+<p>●Innodb_row_lock_current_waits：当前正在等待锁定的数量；●Innodb_row_lock_time：从系统启动到现在锁定总时间长度；●Innodb_row_lock_time_avg：每次等待所花平均时间；●Innodb_row_lock_time_max：从系统启动到现在等待最常的一次所花的时间；●Innodb_row_lock_waits：系统启动后到现在总共等待的次数；</p>
+
+<h2 id="toc_2">缓冲池</h2>
 
 <p>InnoDB是基于磁盘存储的，为了提高数据库的整体性能，引入了缓冲池技术。</p>
 
@@ -212,7 +268,7 @@ I/O sum[0]:cur[0], unzip sum[0]:cur[0]
 
 </code></pre>
 
-<h3 id="toc_2">重做日志缓冲</h3>
+<h3 id="toc_3">重做日志缓冲</h3>
 
 <p>InnoDB 存储引擎的内存区域除了有缓冲池外，还有重做日志缓冲（redo log buffer）。innodb存储引擎首先将重做日志信息放入这个缓冲区，然后按照一定频率将其刷新到重做日志文件。这个区域不用设置很大，基本是每秒产生的事务量在这个缓冲大小之内即可(innodb_log_buffer_size参数设置其大小，通常8MB可以满足大部分应用)。</p>
 
