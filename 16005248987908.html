@@ -235,8 +235,6 @@ public void method();
 
 <p>jvm 在执行method方法的时候当方法调用时，调用指令将会检查方法的 ACC_SYNCHRONIZED 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象。</p>
 
-<p>被synchronized修饰的静态方法，反编译的结果中 既带有 ACC_SYNCHRONIZED标识符在方法中又存在 &#39;monitorenter&#39; 和 &#39;monitorexit&#39;</p>
-
 <h2 id="toc_3">4、synchronized 原理预备知识</h2>
 
 <p>查看java 对象头 ，图例如下，详情请查看<a href="15865981620428.html">二、JVM自动内存管理--java内存区域与内存溢出异常</a> 中的 java 对象头部分<br/>
