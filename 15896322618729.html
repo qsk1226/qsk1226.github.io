@@ -170,7 +170,7 @@
     /*容器，存放连接*/
     private static LinkedList&lt;Connection&gt; pool = new LinkedList&lt;Connection&gt;();
 
-    /*限制了池的大小=20*/
+    /*限制了池的大小*/
     public DBPool(int initialSize) {
         if (initialSize &gt; 0) {
             for (int i = 0; i &lt; initialSize; i++) {
