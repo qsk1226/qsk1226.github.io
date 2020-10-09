@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    Mysql query语句是怎么执行的 - 大爷来玩儿啊~
+    mysql的多版本并发控制机制 MVCC - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            Mysql query语句是怎么执行的   
+                            mysql的多版本并发控制机制 MVCC   
                       </h1>
                      
                     
@@ -114,9 +114,65 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>下面给出的是 MySQL 的基本架构示意图，从中你可以清楚地看到 SQL 语句在 MySQL 的各个功能模块中的执行过程。</p>
+                    <h2 id="toc_0">什么是MVCC</h2>
 
-<p><figure><img src="media/16006573741586/16006774614968.jpg" alt=""/></figure></p>
+<p>MVCC，Multi-Version Concurrency Control，多版本并发控制。MVCC 是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问；在编程语言中实现事务内存。</p>
+
+<p>数据库通常使用锁来实现隔离性。最原生的锁，锁住一个资源后会禁止其他任何线程访问同一个资源。但是很多应用的一个特点都是读多写少的场景，很多数据的读取次数远大于修改的次数，而读取数据间互相排斥显得不是很必要。</p>
+
+<p>所以就使用了一种读写锁的方法，读锁和读锁之间不互斥，而写锁和写锁、读锁都互斥。这样就很大提升了系统的并发能力。</p>
+
+<p>之后人们发现并发读还是不够，又提出了能不能让读写之间也不冲突的方法，就是读取数据时通过一种类似快照的方式将数据保存下来，这样读锁就和写锁不冲突了，不同的事务session会看到自己特定版本的数据。当然快照是一种概念模型，不同的数据库可能用不同的方式来实现这种功能。</p>
+
+<p>MVCC 并发控制下的读事务一般使用时间戳或者事务 ID去标记当前读的数据库的状态（版本），读取这个版本的数据。读、写事务相互隔离，不需要加锁。读写并存的时候，写操作会根据目前数据库的状态，创建一个新版本，并发的读则依旧访问旧版本的数据。</p>
+
+<h2 id="toc_1">InnoDB与MVCC</h2>
+
+<p>MVCC只在 READ COMMITTED 和 REPEATABLE READ 两个隔离级别下工作。</p>
+
+<p>其他两个隔离级别够和MVCC不兼容,因为 READ UNCOMMITTED 总是读取最新的数据行, 而不是符合当前事务版本的数据行。而 SERIALIZABLE 则会对所有读取的行都加锁。</p>
+
+<h3 id="toc_2">Redo log、bin log、Undo log</h3>
+
+<p>InnoDB 中 通过 undo log 实现了数据的多版本，而并发控制通过锁来实现。undo log除了实现MVCC外，还用于事务的回滚。MySQL Innodb中存在多种日志，除了错误日志、查询日志外，还有很多和数据持久性、一致性有关的日志。</p>
+
+<ul>
+<li><p>binlog，是mysql服务层产生的日志，常用来进行数据恢复、数据库复制，常见的mysql主从架构，就是采用slave同步master的binlog实现的, 另外通过解析binlog能够实现mysql到其他数据源（如ElasticSearch)的数据复制。</p></li>
+<li><p>Redo log记录了数据操作在物理层面的修改，mysql中使用了大量缓存，缓存存在于内存中，修改操作时会直接修改内存，而不是立刻修改磁盘，当内存和磁盘的数据不一致时，称内存中的数据为脏页(dirty page)。为了保证数据的安全性，事务进行中时会不断的产生redo log，在事务提交时进行一次flush操作，保存到磁盘中, redo log是按照顺序写入的，磁盘的顺序读写的速度远大于随机读写。当数据库或主机失效重启时，会根据redo log进行数据的恢复，如果redo log中有事务提交，则进行事务提交修改数据。这样实现了事务的原子性、一致性和持久性。</p></li>
+<li><p>undo log: 除了记录redo log外，当进行数据修改时还会记录undo log，undo log用于数据的撤回操作，它记录了修改的反向操作，比如，插入对应删除，修改对应修改为原来的数据，通过undo log可以实现事务回滚，并且可以根据undo log回溯到某个特定的版本的数据，实现MVCC。</p></li>
+</ul>
+
+<h3 id="toc_3">MySql Mvcc实现</h3>
+
+<p>MVCC是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（或删除时间）。当然存储的并不是实际的时间值，而是系统版本号（system version number)。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。</p>
+
+<p>主要实现思想是通过数据多版本来做到读写分离。从而实现不加锁读进而做到读写并行。</p>
+
+<h4 id="toc_4">版本链与 undo log</h4>
+
+<p>InnoDB 的行记录中存在 rowid 外，还有 trx_id 和 db_roll_ptr, trx_id表示最近修改的事务的id,  db_roll_ptr指向undo segment中的undo log。</p>
+
+<p>新增一个事务时事务id会增加，trx_id能够表示事务开始的先后顺序。</p>
+
+<p>Undo log分为Insert和Update两种，delete可以看做是一种特殊的update，即在记录上修改删除标记。</p>
+
+<p>update undo log记录了数据之前的数据信息，通过这些信息构成一个版本链，通过版本链可以还原到之前版本的状态。</p>
+
+<h4 id="toc_5">ReadView</h4>
+
+<p>ReadView 中主要就是有个列表来存储我们系统中当前活跃着的读写事务，也就是begin了还未提交的事务。通过这个列表来判断记录的某个版本是否对当前事务可见。其中最主要的与可见性相关的属性如下：</p>
+
+<ul>
+<li><p>up_limit_id：当前已经提交的事务号 + 1，事务号 &lt; up_limit_id ，对于当前Read View都是可见的。理解起来就是创建Read View视图的时候，之前已经提交的事务对于该事务肯定是可见的。</p></li>
+<li><p>low_limit_id：当前最大的事务号 + 1，事务号 &gt;= low_limit_id，对于当前Read View都是不可见的。理解起来就是在创建Read View视图之后创建的事务对于该事务肯定是不可见的。</p></li>
+<li><p>trx_ids：为活跃事务id列表，即Read View初始化时当前未提交的事务列表。所以当进行RR读的时候，trx_ids中的事务对于本事务是不可见的（除了自身事务，自身事务对于表的修改对于自己当然是可见的）。理解起来就是创建RV时，将当前活跃事务ID记录下来，后续即使他们提交对于本事务也是不可见的。</p></li>
+</ul>
+
+<p>也就是说已提交读隔离级别下的事务在每次查询的开始都会生成一个独立的ReadView,而可重复读隔离级别则在第一次读的时候生成一个ReadView，之后的读都复用之前的ReadView。</p>
+
+<h3 id="toc_6">MVCC 总结</h3>
+
+<p>这就是Mysql的MVCC, 通过版本链，实现多版本，可并发读-写，写-读。通过ReadView生成策略的不同实现不同的隔离级别。</p>
 
                   </article>
                   <div class="comments-wrap">

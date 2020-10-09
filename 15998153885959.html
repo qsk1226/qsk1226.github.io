@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    mysql - 大爷来玩儿啊~
+    mysql 索引 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            mysql   
+                            mysql 索引   
                       </h1>
                      
                     
@@ -114,9 +114,37 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">隔离级别</h2>
+                    <h2 id="toc_0">innoDB存储引擎索引概述</h2>
 
-<p><figure><img src="media/15998153885959/16003980475787.jpg" alt="" style="width:808px;"/></figure></p>
+<p>innoDB存储引擎支持以下几种常见索引</p>
+
+<ul>
+<li>B+树索引</li>
+<li>全文索引</li>
+<li>哈希索引</li>
+</ul>
+
+<p>InnoDB存储引擎支持的哈希索引是自适应的，innoDB存储引擎 会根据表的使用情况自动为表生成哈希索引，不能人为干预是否在一张表中生成哈希索引。</p>
+
+<p>B+树索引就是传统意义上的索引，这是目前关系数据库系统中查找最为常用和最为有效的索引。</p>
+
+<p>注意： B+树索引并不能找到一个给定键值得具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过吧页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
+
+<h2 id="toc_1">B+树</h2>
+
+<p>详情见 <a href="16020916538677.html"># B+ 树</a></p>
+
+<h2 id="toc_2">B+树索引</h2>
+
+<p>B+树索引 实质上就是 B+ 树 在数据库中的实现。但是 B+树索引在数据库中有一个特点是 高扇出性，因此在数据库中，B+树的高度一般都在 2~4层，这也就是说查找某一个键值得行记录时最多只需要 2~4 次IO。</p>
+
+<p>数据库中的 B+树索引可以分为 聚集索引 和 辅助索引，但是不管是哪种索引，内部都是 B+树，高度平衡的，也只节点存放着所有的数据，聚集索引和辅助索引的不同是：叶子节点存放的是否是一整行的信息。</p>
+
+<h3 id="toc_3">聚集索引</h3>
+
+<h3 id="toc_4">辅助索引</h3>
+
+<h2 id="toc_5">B+树索引的分裂</h2>
 
                   </article>
                   <div class="comments-wrap">

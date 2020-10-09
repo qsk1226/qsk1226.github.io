@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Map相关面试题 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Map相关面试题   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/10/05</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.html'>数据结构与算法</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">HashMap、LinkedHashMap、treeMap的区别以及使用场景</h2>
+
+<ul>
+<li>HashMap：允许null键/值、非同步、不保证有序(比如插入的顺序)、也不保证序不随时间变化。</li>
+<li>LinkedHashMap：保存了记录的插入顺序，在用iterator遍历时，险渠道的记录肯定是先插入的，但是遍历比 HashMap 慢，在需要输出顺序和输入顺序相同的情况下使用。</li>
+<li>TreeMap：实现了SortMap接口，能够吧它保存的记录根据键排序（默认是按键值升序排序，也可以指定排序的比较器）。在需要按自然顺序或自定义顺序便来键的情况下使用。</li>
+</ul>
+
+<h2 id="toc_1">HashMap和HashTable有什么区别</h2>
+
+<ul>
+<li>HashMap是线程不安全的，HashTable是线程安全的</li>
+<li>HashTabe 效率比 HashMap 效率低</li>
+<li>HashMap最多只允许一条记录的键为null，允许多条记录的值为 null， HashTable 不允许 null</li>
+<li>HashMap的默认初始化数组大小为 16，而 HashTable 为 11，HashMap 扩容时是扩大两倍，HashTable扩容时扩大两倍+1</li>
+<li>HashMap需要重新计算 hash值，HashTable直接使用对象的 hashCode</li>
+</ul>
+
+<h2 id="toc_2">Java 中的另一个线程安全的与 HashMap 极其类似的类是什么?同样是 线程安全，它与 HashTable 在线程同步上有什么不同?</h2>
+
+<p>ConcurrentHashMap 类(是 Java 并发包 java.util.concurrent 中提供的一 个线程安全且高效的 HashMap 实现)</p>
+
+<p>HashTable 是使用 synchronize 关键字加锁的原理(就是对对象加锁);<br/>
+而针对 ConcurrentHashMap，在 JDK 1.7 中采用分段锁的方式;JDK 1.8 中 直接采用了 CAS(无锁算法)+ synchronized，也采用分段锁的方式并大大缩小了 锁的粒度。</p>
+
+<h2 id="toc_3">HashMap &amp; ConcurrentHashMap 的区别?</h2>
+
+<p>除了加锁，原理上无太大区别。<br/>
+另外，HashMap 的键值对允许有 null，但是 ConCurrentHashMap 都不允许。 在数据结构上，红黑树相关的节点类</p>
+
+<h2 id="toc_4">为什么 ConcurrentHashMap 比 HashTable 效率要高?</h2>
+
+<p>HashTable 使用一把锁(锁住整个链表结构)处理并发问题，多个线程竞争一把锁，容易阻塞;</p>
+
+<p>ConcurrentHashMap</p>
+
+<p>JDK 1.7 中使用分段锁(ReentrantLock + Segment + HashEntry)，相当于把一 个 HashMap 分成多个段，每段分配一把锁，这样支持多线程访问。锁粒度:基 于 Segment，包含多个 HashEntry。</p>
+
+<p>JDK 1.8 中使用 CAS + synchronized + Node + 红黑树。锁粒度:Node(首结 点)(实现 Map.Entry<K,V>)。锁粒度降低了。</p>
+
+<h2 id="toc_5">针对 ConcurrentHashMap 锁机制具体分析(JDK 1.7 VS JDK 1.8)?</h2>
+
+<p>JDK 1.7 中，采用分段锁的机制，实现并发的更新操作，底层采用数组+链表<br/>
+的存储结构，包括两个核心静态内部类 Segment 和 HashEntry。 </p>
+
+<ul>
+<li>1、Segment 继承 ReentrantLock(重入锁) 用来充当锁的角色，每个Segment 对象守护每个散列映射表的若干个桶; </li>
+<li>2、HashEntry 用来封装映射表的键-值对;</li>
+<li>3、每个桶是由若干个 HashEntry 对象链接起来的链表。</li>
+</ul>
+
+<p>JDK 1.8 中，采用 Node + CAS + Synchronized 来保证并发安全。取消类 Segment，直接用 table 数组存储键值对;当 HashEntry 对象组成的链表长度超 过 TREEIFY_THRESHOLD 时，链表转换为红黑树，提升性能。底层变更为数组 + 链表 + 红黑树。</p>
+
+<h2 id="toc_6">ConcurrentHashMap 在 JDK 1.8 中，为什么要使用内置锁 synchronized 来代替重入锁 ReentrantLock?</h2>
+
+<ul>
+<li>JVM 开发团队在 1.8 中对 synchronized 做了大量性能上的优化，而且基 于 JVM 的 synchronized 优化空间更大，更加自然</li>
+<li>在大量的数据操作下，对于 JVM 的内存压力，基于 API 的 ReentrantLock 会开销更多的内存。</li>
+</ul>
+
+<h2 id="toc_7">ConcurrentHashMap 简单介绍?</h2>
+
+<ul>
+<li><p>1、重要的常量:<br/>
+private transient volatile int sizeCtl;<br/>
+当为负数时，-1 表示正在初始化，-N 表示 N - 1 个线程正在进行扩容; 当为 0 时，表示 table 还没有初始化; 当为其他正数时，表示初始化或者下一次进行扩容的大小。 </p></li>
+<li><p>2、数据结构:<br/>
+Node 是存储结构的基本单元，继承 HashMap 中的 Entry，用于存储数据; TreeNode 继承 Node，但是数据结构换成了二叉树结构，是红黑树的存储<br/>
+结构，用于红黑树中存储数据;<br/>
+TreeBin 是封装 TreeNode 的容器，提供转换红黑树的一些条件和锁的控制。</p></li>
+<li><p>3、存储对象时(put() 方法):</p>
+<ul>
+<li>1.如果没有初始化，就调用 initTable() 方法来进行初始化;</li>
+<li>2.如果没有 hash 冲突就直接 CAS 无锁插入;</li>
+<li>3.如果需要扩容，就先进行扩容;</li>
+<li>4.如果存在 hash 冲突，就加锁来保证线程安全，两种情况:一种是链表形 式就直接遍历到尾端插入，一种是红黑树就按照红黑树结构插入;</li>
+<li>5.如果该链表的数量大于阀值 8，就要先转换成红黑树的结构，break 再一 次进入循环</li>
+<li>6.如果添加成功就调用 addCount() 方法统计 size，并且检查是否需要扩容。 </li>
+</ul></li>
+<li><p>4、扩容方法 transfer():默认容量为 16，扩容时，容量变为原来的两倍。 helpTransfer():调用多个工作线程一起帮助进行扩容，这样的效率就会更高。</p></li>
+<li><p>5、获取对象时(get()方法):</p>
+<ul>
+<li>1.计算 hash 值，定位到该 table 索引位置，如果是首结点符合就返回;</li>
+<li>2.如果遇到扩容时，会调用标记正在扩容结点 ForwardingNode.find()方法，查找该结点，匹配就返回; </li>
+<li>3.以上都不符合的话，就往下遍历结点，匹配就返回，否则最后就返回 null</li>
+</ul></li>
+</ul>
+
+<h2 id="toc_8">ConcurrentHashMap 的并发度是什么?</h2>
+
+<p>1.7 中程序运行时能够同时更新 ConccurentHashMap 且不产生锁竞争的最大线程数。默认为 16，且可以在构造函数中设置。当用户设置并发度时， ConcurrentHashMap 会使用大于等于该值的最小 2 幂指数作为实际并发度(假如 用户设置并发度为 17，实际并发度则为 32)。</p>
+
+<p>1.8 中并发度则无太大的实际意义了，主要用处就是当设置的初始容量小于并发度，将初始容量提升至并发度大小。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

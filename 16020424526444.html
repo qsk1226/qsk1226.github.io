@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    jdk8 新增的并发 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            jdk8 新增的并发   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/10/07</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">原子操作 CAS</h2>
+
+<p>JDK1.8 时，java.util.concurrent.atomic 包中提供了一个新的原子类:LongAdder。</p>
+
+<p>LongAdder 在高并发的场景下会比它的前辈 --- AtomicLong 具有更好的性能，代价是消耗更多的内存空间。</p>
+
+<p>AtomicLong 是利用了底层的 CAS 操作来提供并发性的，调用了 Unsafe 类的 getAndAddLong 方法，该方法是个 native 方法，它的逻辑是采用自旋的方式不断 更新目标值，直到更新成功。</p>
+
+<p>在并发量较低的环境下，线程冲突的概率比较小，自旋的次数不会很多。但 是，高并发环境下，N 个线程同时进行自旋操作，会出现大量失败并不断自旋的 情况，此时 AtomicLong 的自旋会成为瓶颈。</p>
+
+<p>AtomicLong 中有个内部变量 value 保存着实际的 long 值，所有的操作都是 针对该变量进行。也就是说，高并发环境下，value 变量其实是一个热点，也就 是 N 个线程竞争一个热点。</p>
+
+<p>LongAdder 的基本思路就是分散热点，将 value 值分散到一个数组中，不同 线程会命中到数组的不同槽中，各个线程只对自己槽中的那个值进行 CAS 操作，这样热点就被分散了，冲突的概率就小很多。如果要获取真正的 long 值，只有将各个槽中的变量值累加返回，这个值也仅仅是个近似值，这也是他不能完全代替LongAtomic 的原因之一。</p>
+
+<p>除了引入 LongAdder外，还有引入了其它三个类：LongAccumulator、DoubleAdder、DoubleAccumulator。</p>
+
+<p>通过 LongBinaryOperator，可以自定义对入参的任意操作，并返回结果 (LongBinaryOperator 接收 2 个 long 作为参数，并返回 1 个 long)。<br/>
+LongAccumulator 内部原理和 LongAdder 几乎完全一样。 DoubleAdder 和 DoubleAccumulator 用于操作 double 原始类型。</p>
+
+<h2 id="toc_1">StampLock</h2>
+
+<p>StampedLock 是 Java8 引入的一种新的锁机制,简单的理解,可以认为它是读写 锁的一个改进版本。</p>
+
+<p>读写锁虽然分离了读和写的功能,使得读与读之间可以完全并发,但是读和写之间依然是冲突的,读锁会完全阻塞写锁,它使用的依然是悲观的锁策略.如果有大量的读线程,他也有可能引起写线程的饥饿。</p>
+
+<p>而 StampedLock 则提供了一种乐观的读策略,这种乐观策略的锁非常类似于 无锁的操作,使得乐观锁完全不会阻塞写线程。它的思想是读写锁中读不仅不阻塞读，同时也不应该阻塞写。</p>
+
+<p>读不阻塞写的实现思路:<br/>
+在读的时候如果发生了写，则应当重读而不是在读的时候直接阻塞写!即读 写之间不会阻塞对方，但是写和写之间还是阻塞的! StampedLock 的内部实现是基于 CLH 的。</p>
+
+<h2 id="toc_2">CompleteableFuture</h2>
+
+<p>JDK1.8 才新加入的一个实现类 CompletableFuture，实现了 Future<T>，CompletionStage<T>两个接口。详情见 ： <a href="15882235745444.html">CompletableFuture</a></p>
+
+<h2 id="toc_3">lambada 表达式</h2>
+
+<p>在语法上，Lambda 表达式包含三个部分，参数列表，箭头，主体，比如:</p>
+
+<pre><code class="language-text">(parameters) -&gt; expression 
+
+(parameters) -&gt; {statements;}
+</code></pre>
+
+<p>Lambda 表达式用在函数式接口上，所谓函数式接口，是只定义了一个抽象方法的接口(Interface)，接口中是否有默认方法，不影响。</p>
+
+<p>注解@FunctionalInterface 可以帮助我们在设计函数式接口时防止出错。</p>
+
+<p>我们常用的 Runnable,Callable 都是函数式接口，JDK8 中新增了几个函数式接 口:</p>
+
+<ul>
+<li><p>Predicate<T> :<br/>
+包含 test 方法，接受泛型的 T，返回 boolean，可以视为断言(检查)接口 </p></li>
+<li><p>Consumer<T> :<br/>
+包含 accept 方法，接受泛型的 T，无返回，可以视为数据消费接口 </p></li>
+<li><p>Function<T，R> :<br/>
+包含 apply 方法，接受泛型的 T，返回 R，可以视为映射转换接口 Supplier<T><br/>
+包含 get 方法，无输入，返回 T，可以视为创建一个新对象接口 </p></li>
+<li><p>UnaryOperator<T></p></li>
+</ul>
+
+<p>扩展至 Function<T，T>，所以这个本质上也是一个映射转换接口，只不过映 射转换后的类型保持不变</p>
+
+<ul>
+<li><p>BiFunction<T, U, R><br/>
+包含 apply 方法，接受泛型的 T、U，返回 R，可以视为复合型映射转换接口</p></li>
+<li><p>BinaryOperator<T><br/>
+扩展至Function BiFunction<T,T,T>，所以这个本质上也是一个复合型映射转 换接口，只不过映射转换后的类型保持不变</p></li>
+<li><p>BiPredicate <T, U><br/>
+包含 test 方法，接受泛型的 T，U，返回 boolean，可以视为复合型断言(检 查)接口</p></li>
+<li><p>BiConsumer<T，U>:<br/>
+包含 accept 方法，接受泛型的 T，U，无返回，可以视为复合型数据消费接<br/>
+口</p></li>
+</ul>
+
+<h3 id="toc_4">函数描述符</h3>
+
+<p>函数式接口的抽象方法的签名基本上就是 Lambda 表达式的签名。我们将这 种抽象方法叫作函数描述符</p>
+
+<p>Runnable 接口可以看作一个什么也不接受什么也不返回(void)的函数的签 名，因为它只有一个叫作 run 的抽象方法，这个方法什么也不接受，什么也不返 回(void)。</p>
+
+<p>我们可以用 () -&gt; void 代表参数列表为空，且返回 void 的函数。这正是 Runnable 接口所代表的。我们于是可以称() -&gt; void 是 Runnable 接口的函数描述符。</p>
+
+<h2 id="toc_5">新增类库的新特性</h2>
+
+<h3 id="toc_6">Optional</h3>
+
+<p>Optional实际上是个容器：它可以保存类型T的值，或者仅仅保存null。Optional提供很多有用的方法，这样我们就不用显式进行空值检测。</p>
+
+<pre><code class="language-java">Optional&lt; String &gt; fullName = Optional.ofNullable( null );
+System.out.println( &quot;Full Name is set? &quot; + fullName.isPresent() );        
+System.out.println( &quot;Full Name: &quot; + fullName.orElseGet( () -&gt; &quot;[none]&quot; ) ); 
+System.out.println( fullName.map( s -&gt; &quot;Hey &quot; + s + &quot;!&quot; ).orElse( &quot;Hey Stranger!&quot; ) );
+</code></pre>
+
+<h3 id="toc_7">Stream</h3>
+
+<p>最新添加的Stream API（java.util.stream） 把真正的函数式编程风格引入到Java中,Stream API极大简化了集合框架的处理</p>
+
+<h3 id="toc_8">Date/Time API (JSR 310)</h3>
+
+<p>当前北京时间：  2020-10-07 23:41:45</p>
+
+<ul>
+<li>第一个是Clock类<br/>
+它通过指定一个时区，然后就可以获取到当前的时刻，日期与时间。Clock可以替换System.currentTimeMillis()与TimeZone.getDefault()。</li>
+</ul>
+
+<pre><code class="language-java">// Get the system clock as UTC offset 
+final Clock clock = Clock.systemUTC();
+System.out.println( clock.instant() );
+System.out.println( clock.millis() );
+
+2020-10-07T15:46:53.818Z
+1602085613878
+</code></pre>
+
+<ul>
+<li>LocaleDateTime、LocalDate、LocalTime</li>
+</ul>
+
+<p>LocaleDate只持有ISO-8601格式且无时区信息的日期部分。相应的，LocaleTime只持有ISO-8601格式且无时区信息的时间部分。LocaleDate与LocalTime都可以从Clock中得到</p>
+
+<pre><code class="language-java">// Get the local date and local time
+final LocalDate date = LocalDate.now();
+final LocalDate dateFromClock = LocalDate.now( clock );
+         
+System.out.println( date );
+System.out.println( dateFromClock );
+         
+// Get the local date and local time
+final LocalTime time = LocalTime.now();
+final LocalTime timeFromClock = LocalTime.now( clock );
+         
+System.out.println( time );
+System.out.println( timeFromClock );
+
+2020-10-07
+2020-10-07
+23:47:33.925
+15:47:33.925
+</code></pre>
+
+<p>LocalDateTime</p>
+
+<pre><code class="language-java">// Get the local date/time
+final LocalDateTime datetime = LocalDateTime.now();
+final LocalDateTime datetimeFromClock = LocalDateTime.now( clock );
+         
+System.out.println( datetime );
+System.out.println( datetimeFromClock );
+
+2020-10-07T23:50:34.974
+2020-10-07T15:50:34.974
+</code></pre>
+
+<p>如果你需要特定时区的日期/时间，那么ZonedDateTime是你的选择。它持有ISO-8601格式具具有时区信息的日期与时间</p>
+
+<pre><code class="language-java">// Get the zoned date/time
+final ZonedDateTime zonedDatetime = ZonedDateTime.now();
+final ZonedDateTime zonedDatetimeFromClock = ZonedDateTime.now( clock );
+final ZonedDateTime zonedDatetimeFromZone = ZonedDateTime.now( ZoneId.of( &quot;Asia/Shanghai&quot; ) );
+         
+System.out.println( zonedDatetime );
+System.out.println( zonedDatetimeFromClock );
+System.out.println( zonedDatetimeFromZone );
+
+2020-10-07T23:56:49.792+08:00[Asia/Shanghai]
+2020-10-07T15:56:49.792Z
+2020-10-07T23:56:49.792+08:00[Asia/Shanghai]
+</code></pre>
+
+<h2 id="toc_9">JavaScript 引擎 Nashorn</h2>
+
+<p>Nashorn，一个新的JavaScript引擎随着Java 8一起公诸于世，它允许在JVM上开发运行某些JavaScript应用。Nashorn就是javax.script.ScriptEngine的另一种实现，并且它们俩遵循相同的规则，允许Java与JavaScript相互调用。下面看一个例子：</p>
+
+<pre><code class="language-java">ScriptEngineManager manager = new ScriptEngineManager();
+ScriptEngine engine = manager.getEngineByName( &quot;JavaScript&quot; );
+         
+System.out.println( engine.getClass().getName() );
+System.out.println( &quot;Result:&quot; + engine.eval( &quot;function f() { return 1; }; f() + 1;&quot; ) );
+</code></pre>
+
+<h2 id="toc_10">Base64</h2>
+
+<p>在Java 8中，Base64编码已经成为Java类库的标准。</p>
+
+<pre><code class="language-java">import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+ 
+public class Base64s {
+    public static void main(String[] args) {
+        final String text = &quot;Base64 finally in Java 8!&quot;;
+         
+        final String encoded = Base64
+            .getEncoder()
+            .encodeToString( text.getBytes( StandardCharsets.UTF_8 ) );
+        System.out.println( encoded );
+         
+        final String decoded = new String( 
+            Base64.getDecoder().decode( encoded ),
+            StandardCharsets.UTF_8 );
+        System.out.println( decoded );
+    }
+}
+</code></pre>
+
+<p>Base64类同时还提供了对URL、MIME友好的编码器与解码器（Base64.getUrlEncoder() / Base64.getUrlDecoder(), Base64.getMimeEncoder() / Base64.getMimeDecoder()）。</p>
+
+<h2 id="toc_11">并行（parallel）数组</h2>
+
+<p>Java 8增加了大量的新方法来对数组进行并行处理。可以说，最重要的是parallelSort()方法，因为它可以在多核机器上极大提高数组排序的速度。</p>
+
+<pre><code class="language-java">import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+ 
+public class ParallelArrays {
+    public static void main( String[] args ) {
+        long[] arrayOfLong = new long [ 20000 ];        
+         
+        Arrays.parallelSetAll( arrayOfLong, 
+            index -&gt; ThreadLocalRandom.current().nextInt( 1000000 ) );
+        Arrays.stream( arrayOfLong ).limit( 10 ).forEach( 
+            i -&gt; System.out.print( i + &quot; &quot; ) );
+        System.out.println();
+         
+        Arrays.parallelSort( arrayOfLong );     
+        Arrays.stream( arrayOfLong ).limit( 10 ).forEach( 
+            i -&gt; System.out.print( i + &quot; &quot; ) );
+        System.out.println();
+    }
+}
+</code></pre>
+
+<h2 id="toc_12">Java虚拟机（JVM）的新特性</h2>
+
+<p>PermGen空间被移除了，取而代之的是Metaspace（JEP 122）。JVM选项-XX:PermSize与-XX:MaxPermSize分别被-XX:MetaSpaceSize与-XX:MaxMetaspaceSize所代替</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

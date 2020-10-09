@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    CLH锁、CMS锁算法 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            CLH锁、CMS锁算法   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/10/03</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.html'>数据结构与算法</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">自旋锁简介</h2>
+
+<p>通常情况下解决多线程共享资源逻辑一致性问题有两种方式：</p>
+
+<p>互斥锁：当发现资源被占用的时候，会阻塞自己直到资源解除占用，然后再次尝试获取；<br/>
+自旋锁：当发现占用时，一直尝试获取锁（线程没有被挂起的过程，也就没有线程调度切换的消耗）；<br/>
+对于这两种方式没有优劣之分，只有是否适合当前的场景，但是如果竞争非常激烈的时候，使用自旋锁就会产生一些额外的问题：</p>
+
+<ul>
+<li>可能导致一些线程始终无法获取锁（争抢的时候必然是当前活跃线程获得锁的几率大），也就是饥饿现象；</li>
+<li>因为自旋锁会依赖一个共享的锁标识，所以竞争激烈的时候，锁标识的同步也需要消耗大量的资源；</li>
+<li>如果要用自旋锁实现公平锁（即先到先获取），此时就还需要额外的变量，也会比较麻烦；</li>
+</ul>
+
+<p>解决这些问题其中的一种办法就是使用队列锁，简单来讲就是让这些线程排队获取；下面我们介绍常用的两种，即 CLH 锁 和 MCS 锁；</p>
+
+<h2 id="toc_1">CLH</h2>
+
+<p>CLH 是 Craig、Landin 和 Hagersten 三位作者的缩写，我们 JDK 中 java.util.concurrent.locks.AbstractQueuedSynchronizer 就是根据 CLH 锁的变种实现的；</p>
+
+<pre><code class="language-text">public class CLH implements Lock {
+  private final ThreadLocal&lt;Node&gt; preNode = ThreadLocal.withInitial(() -&gt; null);
+  
+  private final ThreadLocal&lt;Node&gt; node = ThreadLocal.withInitial(Node::new);
+  
+  private final AtomicReference&lt;Node&gt; tail = new AtomicReference&lt;&gt;(new Node());
+
+  private static class Node {
+    private volatile boolean locked;
+  }
+
+  @Override
+  public void lock() {
+    final Node node = this.node.get();
+    node.locked = true;
+    Node pre = this.tail.getAndSet(node);
+    this.preNode.set(pre);
+    while (pre.locked) ;
+  }
+
+  @Override
+  public void unlock() {
+    final Node node = this.node.get();
+    node.locked = false;
+    this.node.set(this.preNode.get());
+  }
+}
+</code></pre>
+
+<p><figure><img src="media/16017089858785/16017093450896.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">MCS锁</h2>
+
+<p>同样 MCS 是 John M. Mellor-Crummey 和 Michael L. Scott 名字的缩写，</p>
+
+<pre><code class="language-text">public class MCS implements Lock {
+  private final ThreadLocal&lt;Node&gt; node = ThreadLocal.withInitial(Node::new);
+  
+  private final AtomicReference&lt;Node&gt; tail = new AtomicReference&lt;&gt;();
+
+  private static class Node {
+    private volatile boolean locked = false;
+    private volatile Node next = null;
+  }
+
+  @Override
+  public void lock() {
+    Node node = this.node.get();
+    node.locked = true;
+    Node pre = tail.getAndSet(node);
+    if (pre != null) {
+      pre.next = node;
+      while (node.locked) ;
+    }
+  }
+
+  @Override
+  public void unlock() {
+    Node node = this.node.get();
+    if (node.next == null) {
+      if (tail.compareAndSet(node, null)) {
+        return;
+      }
+      while (node.next == null) ;
+    }
+    node.next.locked = false;
+    node.next = null;
+  }
+}
+</code></pre>
+
+<p><figure><img src="media/16017089858785/16017094214421.jpg" alt=""/></figure></p>
+
+<h2 id="toc_3">CLH 锁和 MCS 锁区别</h2>
+
+<p>却别主要有两点：</p>
+
+<ul>
+<li>1、 链表结构的区别；</li>
+<li>2、 自旋对象的区别，CLH 是在前驱节点上自旋，而 MCS 是在自身节点上自旋；</li>
+</ul>
+
+<p>这里第二点才是最重要的，主要体现在 SMP(Symmetric Multi-Processor) 和 NUMA(Non-Uniform Memory Access) 不同的处理器架构上。</p>
+
+<p>CLH 在 NUMA 系统结构下性能很差，但是在 SMP 系统结构下该法还是非常有效。而 MCS 队列锁适应于 NUMA 系统结构</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

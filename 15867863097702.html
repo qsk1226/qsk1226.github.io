@@ -118,53 +118,67 @@
                   <article class="markdown-body single-content">
                     <ul>
 <li>
-<a href="#toc_0">了解 LockSupport</a>
-</li>
-<li>
-<a href="#toc_1">AQS 使用方式</a>
-</li>
-<li>
-<a href="#toc_2">AQS 源码解读</a>
+<a href="#toc_0">储备知识</a>
 <ul>
 <li>
-<a href="#toc_3">AQS 中的数据结构</a>
-<ul>
-<li>
-<a href="#toc_4">Node节点</a>
+<a href="#toc_1">CLH锁、CMS锁算法</a>
 </li>
 <li>
-<a href="#toc_5">head 和 tail</a>
-</li>
-<li>
-<a href="#toc_6">state</a>
+<a href="#toc_2">LockSupport</a>
 </li>
 </ul>
 </li>
 <li>
-<a href="#toc_7">节点在同步队列中的增加</a>
+<a href="#toc_3">AQS的整体结构</a>
 </li>
 <li>
-<a href="#toc_8">独占式同步状态获取与释放</a>
+<a href="#toc_4">AQS 流程图</a>
+</li>
+<li>
+<a href="#toc_5">AQS 使用方式</a>
+</li>
+<li>
+<a href="#toc_6">AQS 源码解读</a>
 <ul>
 <li>
-<a href="#toc_9">获取同步状态</a>
+<a href="#toc_7">AQS 中的数据结构</a>
+<ul>
+<li>
+<a href="#toc_8">Node节点</a>
 </li>
 <li>
-<a href="#toc_10">释放同步状态</a>
+<a href="#toc_9">head 和 tail</a>
+</li>
+<li>
+<a href="#toc_10">state</a>
 </li>
 </ul>
 </li>
 <li>
-<a href="#toc_11">共享式同步状态获取与释放</a>
+<a href="#toc_11">节点在同步队列中的增加</a>
 </li>
 <li>
-<a href="#toc_12">下面实现一个共享锁，代码如下：</a>
-</li>
-<li>
-<a href="#toc_13">ConditionObject</a>
+<a href="#toc_12">独占式同步状态获取与释放</a>
 <ul>
 <li>
-<a href="#toc_14">ConditionObject的数据结构</a>
+<a href="#toc_13">获取同步状态</a>
+</li>
+<li>
+<a href="#toc_14">释放同步状态</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_15">共享式同步状态获取与释放</a>
+</li>
+<li>
+<a href="#toc_16">下面实现一个共享锁，代码如下：</a>
+</li>
+<li>
+<a href="#toc_17">ConditionObject</a>
+<ul>
+<li>
+<a href="#toc_18">ConditionObject的数据结构</a>
 </li>
 </ul>
 </li>
@@ -181,14 +195,27 @@
 
 <p>同步器面向的是锁的实现者，它简化了锁的实现方式，屏蔽了同步状态管理、 线程的排队、等待与唤醒等底层操作。锁和同步器很好地隔离了使用者和实现者 所需关注的领域。</p>
 
-<h2 id="toc_0">了解 LockSupport</h2>
+<h2 id="toc_0">储备知识</h2>
+
+<h3 id="toc_1"><a href="16017089858785.html">CLH锁、CMS锁算法</a></h3>
+
+<h3 id="toc_2">LockSupport</h3>
 
 <p>LockSupport 定义了一组的公共静态方法，这些方法提供了最基本的线程阻 塞和唤醒功能，而 LockSupport 也成为构建同步组件的基础工具。</p>
 
 <p>LockSupport 定义了一组以 park 开头的方法用来阻塞当前线程，以及 unpark(Thread thread)方法来唤醒一个被阻塞的线程。</p>
 
-<p>LockSupport 增加了 park(Object blocker)、parkNanos(Object blocker,long nanos)和 parkUntil(Object blocker,long deadline)3 个方法，用于实现阻塞当前线程的功能，其中参数 blocker 是用来标识当前线程在等待的对象(以下称为阻塞对象)，线程被阻塞时记录此对象，以允许监视和诊断工具识别线程被阻塞的原因。<br/>
-关于LockSupport给出一个样例</p>
+<p>LockSupport 增加了三个方法，用于实现阻塞当前线程的功能</p>
+
+<ul>
+<li>park(Object blocker)</li>
+<li>parkNanos(Object blocker,long nanos)</li>
+<li>parkUntil(Object blocker,long deadline)</li>
+</ul>
+
+<p>其中参数 blocker 是用来标识当前线程在等待的对象(以下称为阻塞对象)，该对象主要用于问题排查和系统监控。</p>
+
+<p>关于LockSupport给出一个样例</p>
 
 <pre><code class="language-java">/**
  * 先入先出的不可重入锁
@@ -226,7 +253,15 @@ public class FiFOMutex {
 
 <hr/>
 
-<h2 id="toc_1">AQS 使用方式</h2>
+<h2 id="toc_3">AQS的整体结构</h2>
+
+<p><figure><img src="media/15867863097702/16017111534984.jpg" alt=""/></figure></p>
+
+<h2 id="toc_4">AQS 流程图</h2>
+
+<p><figure><img src="media/15867863097702/AQS.jpg" alt="AQS"/><figcaption>AQS</figcaption></figure></p>
+
+<h2 id="toc_5">AQS 使用方式</h2>
 
 <p>AbstractQueuedSynchronizer 又称为队列同步器(后面简称AQS)。</p>
 
@@ -250,9 +285,9 @@ public class FiFOMutex {
 <p>•compareAndSetState(int expect,int update)<br/>
 使用 CAS 设置当前状态，该方 法能够保证状态设置的原子性。</p>
 
-<p>AQS支持默认独占模式和共享模式来获取同步状态，子类应被定义为自定义同步组件的非公共静态内部类，AQS 自身不实现任何同步接口，它仅仅是定义了若干同步状态获取和释放的方法来供自定义同步组件使用，这样就可以方便实现不同类型的同步组件(ReentrantLock、 ReentrantReadWriteLock、CountDownLatch、Semaphore、CyclicBarrier 等)。</p>
+<p>AQS支持独占模式(默认)和共享模式来获取同步状态，子类应被定义为自定义同步组件的非公共静态内部类，AQS 自身不实现任何同步接口，它仅仅是定义了若干同步状态获取和释放的方法来供自定义同步组件使用，这样就可以方便实现不同类型的同步组件(ReentrantLock、 ReentrantReadWriteLock、CountDownLatch、Semaphore、CyclicBarrier 等)。</p>
 
-<p>AQS的设计者采用模板模式，提供一系列模板方法供不同类型的同步组件使用，如下所示：</p>
+<p>AQS的设计者采用<strong>模板模式</strong>，提供一系列模板方法供不同类型的同步组件使用，如下所示：</p>
 
 <table>
 <thead>
@@ -413,9 +448,9 @@ class BooleanLatch {
 
 <hr/>
 
-<h2 id="toc_2">AQS 源码解读</h2>
+<h2 id="toc_6">AQS 源码解读</h2>
 
-<h3 id="toc_3">AQS 中的数据结构</h3>
+<h3 id="toc_7">AQS 中的数据结构</h3>
 
 <p><figure><img src="media/15867863097702/15874785413013.jpg" alt=""/></figure></p>
 
@@ -437,7 +472,7 @@ private volatile int state;
 }
 </code></pre>
 
-<h4 id="toc_4">Node节点</h4>
+<h4 id="toc_8">Node节点</h4>
 
 <p>Node节点是同步队列节点类。同步队列（由Node实现）是“CLH”(Craig、Landin和Hagersten)锁队列的变体，CLH锁通常用于自旋锁。<br/>
 Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请求的状态（取消、通知下一节点）；3、当前节点的前驱和后驱节点等信息。</p>
@@ -457,7 +492,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
     static final int CONDITION = -2;
     //表示一个被释放的节点应该被传播到其他节点。这是在doReleaseShared中设置的(仅针对head节点)，以确保传播能够继续，即使其他操作已经介入。
     static final int PROPAGATE = -3;
-    // 线程”获取锁“ 的请求等待状态 0、CANCELLED、SIGNAL、PROPAGATE、CONDITION
+    // int 变量表示线程在队列中的状态 0、CANCELLED、SIGNAL、PROPAGATE、CONDITION
     volatile int waitStatus;
     // 表示该节点的前一个 Node 节点(前驱)
     volatile Node prev;
@@ -494,11 +529,11 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 }
 </code></pre>
 
-<h4 id="toc_5">head 和 tail</h4>
+<h4 id="toc_9">head 和 tail</h4>
 
 <p>head是指向Node同步队列的头结点，tail是指向Node同步队列的尾结点。</p>
 
-<h4 id="toc_6">state</h4>
+<h4 id="toc_10">state</h4>
 
 <p>同步器当前的的同步状态，通过下面3个方法进行访问：<br/>
 •getState():获取当前同步状态。<br/>
@@ -507,7 +542,7 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 
 <hr/>
 
-<h3 id="toc_7">节点在同步队列中的增加</h3>
+<h3 id="toc_11">节点在同步队列中的增加</h3>
 
 <p>当一个线程成功地获取了同步状态(或者锁)，其他线程将无法获取到同步状态，也就是获取同步状态失败，AQS 会将这个线程以及等待状态等信息构造成 为一个节点(Node)并将其加入同步队列的尾部。</p>
 
@@ -516,12 +551,12 @@ Node节点会存1、储线程信息；2、当前线程&quot;获取锁&quot;请�
 <p>首节点的变化<br/>
 首节点是获取同步状态成功的节点，首节点的线程在释放同步状态时，将会唤醒后继节点，而后继节点将会在获取同步状态成功时将自己设置为首节点。设 置首节点是通过获取同步状态成功的线程来完成的，由于只有一个线程能够成功 获取到同步状态，因此设置头节点的方法并不需要使用 CAS 来保证，它只需要将 首节点设置成为原首节点的后继节点并断开原首节点的 next 引用即可。</p>
 
-<h3 id="toc_8">独占式同步状态获取与释放</h3>
+<h3 id="toc_12">独占式同步状态获取与释放</h3>
 
-<p>首先看一下度展示同步状态获取与释放的流程图：<br/>
+<p>首先看一下图展示同步状态获取与释放的流程图：<br/>
 <figure><img src="media/15867863097702/15874795148241.jpg" alt=""/></figure></p>
 
-<h4 id="toc_9">获取同步状态</h4>
+<h4 id="toc_13">获取同步状态</h4>
 
 <p>获取同步状态通过调用同步器的 acquire(int arg)方法可以获取同步状态，主要完成了同步 状态获取、节点构造、加入同步队列以及在同步队列中自旋等待的相关工作，其主要逻辑是:</p>
 
@@ -629,7 +664,7 @@ private Node enq(final Node node) {
 }
 </code></pre>
 
-<h4 id="toc_10">释放同步状态</h4>
+<h4 id="toc_14">释放同步状态</h4>
 
 <p>当前线程获取同步状态并执行了相应逻辑之后，就需要释放同步状态，使得后续节点能够继续获取同步状态。通过调用同步器的 release(int arg)方法可以释 放同步状态，该方法在释放了同步状态之后，会唤醒其后继节点(进而使后继节 点重新尝试获取同步状态)。</p>
 
@@ -667,7 +702,7 @@ private Node enq(final Node node) {
 
 <hr/>
 
-<h3 id="toc_11">共享式同步状态获取与释放</h3>
+<h3 id="toc_15">共享式同步状态获取与释放</h3>
 
 <p>共享式获取与独占式获取最主要的区别在于同一时刻能否有多个线程同时 获取到同步状态。以读写为例，如果一个程序在进行读操作，那么这一时刻写操作均被阻塞，而读操作能够同时进行。写操作要求对资源的独占式访问，而读操作可以是共享式访问。</p>
 
@@ -759,7 +794,7 @@ private void setHeadAndPropagate(Node node, int propagate) {
 
 <hr/>
 
-<h3 id="toc_12">下面实现一个共享锁，代码如下：</h3>
+<h3 id="toc_16">下面实现一个共享锁，代码如下：</h3>
 
 <pre><code class="language-java">/**
  * 共享锁简单实现
@@ -842,11 +877,11 @@ public class SimpleShareLock implements Lock {
 
 <hr/>
 
-<h3 id="toc_13">ConditionObject</h3>
+<h3 id="toc_17">ConditionObject</h3>
 
 <p><figure><img src="media/15867863097702/15875725837865.jpg" alt=""/></figure></p>
 
-<h4 id="toc_14">ConditionObject的数据结构</h4>
+<h4 id="toc_18">ConditionObject的数据结构</h4>
 
 <p>等待队列是一个 FIFO 的队列，在队列中的每个节点都包含了一个线程引用， 该线程就是在 Condition 对象上等待的线程，如果一个线程调用了 Condition.await() 方法，那么该线程将会释放锁、构造成节点加入等待队列并进入等待状态。</p>
 

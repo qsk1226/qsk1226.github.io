@@ -118,7 +118,7 @@
                   <article class="markdown-body single-content">
                     <ul>
 <li>
-<a href="#toc_0">ThreadLocal结构分析</a>
+<a href="#toc_0">ThreadLocal 结构分析</a>
 </li>
 <li>
 <a href="#toc_1">ThreadLocal的源码解析</a>
@@ -148,9 +148,9 @@
 </ul>
 
 
-<p>ThreadLocal该类提供线程局部变量，起到线程隔离的作用。</p>
+<p>ThreadLocal 为每个线程都提供了变量的 副本，使得每个线程在某一时间訪问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。</p>
 
-<h2 id="toc_0">ThreadLocal结构分析</h2>
+<h2 id="toc_0">ThreadLocal 结构分析</h2>
 
 <ul>
 <li>首先我们看下ThreadLocal和Thread的它们之间的关系，如下图所示：</li>
@@ -226,7 +226,18 @@ public void remove() {
 
 <p><figure><img src="media/15864440934982/15865034564443.jpg" alt=""/></figure></p>
 
-<pre><code class="language-java">
+<pre><code class="language-java">// 用数组保存Entry，因为可能有多个变量需要线程隔离访问
+private Entry[] table;
+
+static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; {
+    Object value;
+    // k 就是ThreadLocal，v 就是需要隔离访问访问的变量
+    Entry(ThreadLocal&lt;?&gt; k, Object v) {
+        super(k);
+        value = v;
+    }
+}
+
 private Entry getEntry(ThreadLocal&lt;?&gt; key) {
     int i = key.threadLocalHashCode &amp; (table.length - 1);
     Entry e = table[i];
@@ -308,6 +319,8 @@ private void rehash() {
 }
 </code></pre>
 
+<p>Entry</p>
+
 <h3 id="toc_4">ThreadLocal的引用关系</h3>
 
 <p>ThreadLocal的引用关系 如下图所示：</p>
@@ -316,7 +329,7 @@ private void rehash() {
 
 <h4 id="toc_5">内存泄漏问题及解决办法</h4>
 
-<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么下次gc的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链： <br/>
+<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么下次 gc 的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链： <br/>
 current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <br/>
 永远无法回收，造成内存泄露。</p>
 
@@ -392,7 +405,7 @@ public class ThreadOOM {
 
 <h3 id="toc_6">Hash冲突怎么解决</h3>
 
-<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种<strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong></p>
+<p>ThreadLocalMap当执行set(Object value)的时候可能会发生hash冲突，当发生了hash碰撞的时候，map采用了一种 <strong>线性探测法(就是根据初始key的hashcode值确定元素在table数组中的位置，如果发现这个位置上已经有其他key值的元素被占用,按照一定步长查找下一个位置，直到找到空余的位置存放value值为止)</strong></p>
 
 <p>ThreadLocalMap解决Hash冲突的方式就是简单的步长加1或减1，寻找下一个相邻的位置，如下代码：</p>
 

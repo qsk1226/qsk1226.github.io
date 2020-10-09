@@ -175,7 +175,7 @@
 
 <h2 id="toc_1">创建CompletableFuture对象</h2>
 
-<pre><code class="language-text">//比较特殊，他入参就是返回值，也就是说他可以用来执行需要其他返回值的异步任务。
+<pre><code class="language-java">//比较特殊，他入参就是返回值，也就是说他可以用来执行需要其他返回值的异步任务。
 public static &lt;U&gt; CompletableFuture&lt;U&gt; completedFuture(U value)
 
 //无返回值，使用默认线程池
@@ -218,7 +218,7 @@ CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; 
 <li>使用 exceptionally方法时，如果原始计算逻辑抛出异常，那么返回的 新的CompletableFuture对象 的返回结果由该方法的return值决定；如果原始计算逻辑没有抛出异常，那么返回的 新的CompletableFuture对象 的返回结果和原始计算逻辑返回的结果一致。有点绕，先不明白没关系，下面会有四个exceptionally实例解释这段话。</li>
 </ul>
 
-<pre><code class="language-text">BiConsumer&lt;T,U&gt; 函数接口有两个参数，无返回值。
+<pre><code class="language-java">BiConsumer&lt;T,U&gt; 函数接口有两个参数，无返回值。
 Function&lt;T,R&gt; 函数接口有一个输入参数，返回一个结果。
 
 //无Async，同步处理正常计算结果或异常，使用执行任务的那个线程来执行该方法，所以这个方法是同步的。
@@ -233,45 +233,45 @@ public CompletableFuture&lt;T&gt; exceptionally(Function&lt;Throwable,? extends 
 
 <p>注意：当没有异常抛出来的时候，上面的Throwable参数为空！举例：</p>
 
-<pre><code class="language-text">    private static Random random = new Random();
-    private static long time = System.currentTimeMillis();
+<pre><code class="language-java">private static Random random = new Random();
+private static long time = System.currentTimeMillis();
 
-    public static int getMoreData(){
-        System.out.println(&quot;begin to start compute&quot;);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(&quot;end to compute, passed:&quot; + System.currentTimeMillis());
-        return random.nextInt(1000);
+public static int getMoreData(){
+    System.out.println(&quot;begin to start compute&quot;);
+    try {
+        Thread.sleep(10000);
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
     }
+    System.out.println(&quot;end to compute, passed:&quot; + System.currentTimeMillis());
+    return random.nextInt(1000);
+}
 
-    public static int throwException(){
-        System.out.println(&quot;准备抛出异常&quot;);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(&quot;抛了&quot;);
-        throw new RuntimeException(&quot;主动抛出异常&quot;);
+public static int throwException(){
+    System.out.println(&quot;准备抛出异常&quot;);
+    try {
+        Thread.sleep(10000);
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
     }
+    System.out.println(&quot;抛了&quot;);
+    throw new RuntimeException(&quot;主动抛出异常&quot;);
+}
 </code></pre>
 
 <p>whenComplete：</p>
 
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
-    public static void main(String[] args) throws Exception{
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
+<pre><code class="language-java">//如果使用这段代码，则会是和当前线程同步执行
+public static void main(String[] args) throws Exception{
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
 
-        CompletableFuture&lt;Integer&gt; future2 = future.whenComplete((result, excetion) -&gt; {
-            System.out.println(&quot;执行到whenComplete了，result:&quot; + result);
-            System.out.println(&quot;执行到whenComplete了，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
-        });
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-    }
+    CompletableFuture&lt;Integer&gt; future2 = future.whenComplete((result, excetion) -&gt; {
+        System.out.println(&quot;执行到whenComplete了，result:&quot; + result);
+        System.out.println(&quot;执行到whenComplete了，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
+    });
+    System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
+    System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
+}
 
 &gt; 打印执行结果：  
 begin to start compute  
@@ -286,16 +286,16 @@ end to compute, passed:1551182552193
 
 <p>whenCompleteAsync：</p>
 
-<pre><code class="language-text">    //如果使用这段代码，则会是和当前线程同步执行
-    public static void main(String[] args) throws Exception{
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
+<pre><code class="language-java">//如果使用这段代码，则会是和当前线程同步执行
+public static void main(String[] args) throws Exception{
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; getMoreData());
 
-        future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
-        });
-        System.out.println(&quot;执行到最后一段代码了，result：&quot; + future.get());
-    }
+    future.whenCompleteAsync((result, exception) -&gt; {
+        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
+        System.out.println(&quot;计算已执行完毕，exception:&quot; + (excetion == null ? &quot;无异常&quot; : excetion.getClass()));
+    });
+    System.out.println(&quot;执行到最后一段代码了，result：&quot; + future.get());
+}
 
 &gt; 打印执行结果：  
 begin to start compute  
@@ -310,21 +310,21 @@ end to compute, passed:1551180611064
 <p>exceptionally比较复杂，需要通过4个实例才能真正明白：<br/>
 exceptionally实例1：</p>
 
-<pre><code class="language-text">    //这段代码，由于会抛出异常，会先走whenCompleteAsync，然后再走exceptionally，而且是无法获取到返回值的。
-    public static void main(String[] args) throws Exception{
+<pre><code class="language-java">//这段代码，由于会抛出异常，会先走whenCompleteAsync，然后再走exceptionally，而且是无法获取到返回值的。
+public static void main(String[] args) throws Exception{
 
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
 
-        future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        }).exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            return 0;
-        });
+    future.whenCompleteAsync((result, exception) -&gt; {
+        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
+        System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
+    }).exceptionally(exception -&gt; {
+        System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
+        return 0;
+    });
 
-       System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-    }
+   System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
+}
 
 &gt; 打印执行结果：  
 准备抛出异常
@@ -346,26 +346,26 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例2：</p>
 
-<pre><code class="language-text">    //这里的打印结果是和上面类似的，可是为什么这次要获取新的CompletableFuture对象呢？看下面的exceptionally实例3后，再回来对比吧
-    public static void main(String[] args) throws Exception{
+<pre><code class="language-java">//这里的打印结果是和上面类似的，可是为什么这次要获取新的CompletableFuture对象呢？看下面的exceptionally实例3后，再回来对比吧
+public static void main(String[] args) throws Exception{
 
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
 
-        CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        });
+    CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
+        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
+        System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
+    });
 
-        CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            return 0;
-        });
+    CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
+        System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
+        return 0;
+    });
 
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-       //因为上面的执行过程中，已经抛出了异常了，那么下面的这两段代码是无法执行到的，
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-        System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
-    }
+    System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
+   //因为上面的执行过程中，已经抛出了异常了，那么下面的这两段代码是无法执行到的，
+    System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
+    System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
+}
 
 &gt; 打印执行结果：  
 准备抛出异常
@@ -384,28 +384,28 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例3：</p>
 
-<pre><code class="language-text">    //
-    public static void main(String[] args) throws Exception{
+<pre><code class="language-java">    
+public static void main(String[] args) throws Exception{
 
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(() -&gt; throwException());
 
-        CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-        });
+    CompletableFuture&lt;Integer&gt; future2 = future.whenCompleteAsync((result, exception) -&gt; {
+        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
+        System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
+    });
 
-        CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
-            System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
-            //这里的返回值实际其是没有用处的。因为如果抛出了异常，future的get方法是执行不到的；而如果没有抛出异常的话，还是会返回原始的CompletableFuture的值的
-            //所以这个exceptionally就是仅仅用来处理异常的。
-            return 0;
-        });
+    CompletableFuture&lt;Integer&gt; future3 = future2.exceptionally(exception -&gt; {
+        System.out.println(&quot;计算执行过程中发生了异常，exception:&quot; + exception.getClass());
+        //这里的返回值实际其是没有用处的。因为如果抛出了异常，future的get方法是执行不到的；而如果没有抛出异常的话，还是会返回原始的CompletableFuture的值的
+        //所以这个exceptionally就是仅仅用来处理异常的。
+        return 0;
+    });
 
-        //System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        //System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-        //和上面实例2唯一的区别就是注释掉了上面两段代码，但是执行结果却不一样了，而且整个main方法都没有抛出来异常，原因就在于future和future2是异步执行的，所以是在别的线程抛了异常，而main方法是不会抛出来的。而且在获取future3的结果时，可以发现，返回了future3对象自定义的返回值
-        System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
-    }
+    //System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
+    //System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
+    //和上面实例2唯一的区别就是注释掉了上面两段代码，但是执行结果却不一样了，而且整个main方法都没有抛出来异常，原因就在于future和future2是异步执行的，所以是在别的线程抛了异常，而main方法是不会抛出来的。而且在获取future3的结果时，可以发现，返回了future3对象自定义的返回值
+    System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
+}
 
 &gt; 打印执行结果：  
 准备抛出异常
@@ -418,7 +418,7 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
 
 <p>exceptionally实例4：</p>
 
-<pre><code class="language-text">public static void main(String[] args) throws Exception{
+<pre><code class="language-java">public static void main(String[] args) throws Exception{
 
     CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
@@ -437,21 +437,17 @@ Caused by: java.lang.RuntimeException: 主动抛出异常
     //原始的计算逻辑不变，exceptionally返回的新的CompletableFuture对象的结果和原始计算逻辑返回的结果一致。
     System.out.println(&quot;执行到最后一段代码了，future3 result：&quot; + future3.get());
 }
+
+&gt; 打印执行结果：  
+begin to start compute
+end to compute, passed:1551239497158
+getMoreData: 679
+执行到最后一段代码了，future result：679
+计算已执行完毕，result:679
+计算已执行完毕，exception:无异常
+执行到最后一段代码了，future2 result：679
+执行到最后一段代码了，future3 result：679
 </code></pre>
-
-<blockquote>
-<p>打印执行结果：<br/><br/>
-begin to start compute<br/>
-end to compute, passed:1551239497158<br/>
-getMoreData: 679<br/>
-执行到最后一段代码了，future result：679<br/>
-计算已执行完毕，result:679<br/>
-计算已执行完毕，exception:无异常<br/>
-执行到最后一段代码了，future2 result：679<br/>
-执行到最后一段代码了，future3 result：679</p>
-
-<pre><code class="language-text"></code></pre>
-</blockquote>
 
 <h3 id="toc_4">handle* 方法</h3>
 
@@ -468,19 +464,19 @@ public &lt;U&gt; CompletableFuture&lt;U&gt;     handleAsync(BiFunction&lt;? supe
 
 <p>代码实例：</p>
 
-<pre><code class="language-java">    public static void main(String[] args) throws Exception{
+<pre><code class="language-java">public static void main(String[] args) throws Exception{
 
-        CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
+    CompletableFuture&lt;Integer&gt; future = CompletableFuture.supplyAsync(Main::getMoreData);
 
-        CompletableFuture&lt;Integer&gt; future2 = future.handleAsync((result, exception) -&gt; {
-            System.out.println(&quot;计算已执行完毕，result:&quot; + result);
-            System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
-            return result + 1;
-        });
+    CompletableFuture&lt;Integer&gt; future2 = future.handleAsync((result, exception) -&gt; {
+        System.out.println(&quot;计算已执行完毕，result:&quot; + result);
+        System.out.println(&quot;计算已执行完毕，exception:&quot; + (exception == null ? &quot;无异常&quot; : exception.getClass()));
+        return result + 1;
+    });
 
-        System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
-        System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
-    }
+    System.out.println(&quot;执行到最后一段代码了，future result：&quot; + future.get());
+    System.out.println(&quot;执行到最后一段代码了，future2 result：&quot; + future2.get());
+}
 
 &gt; 打印执行结果：  
 begin to start compute
@@ -678,8 +674,6 @@ public static &lt;T&gt; CompletableFuture&lt;Stream&lt;T&gt;&gt; sequence(Stream
     }, executor);
 }
 </code></pre>
-
-<p>转载掘金文章: <a href="https://juejin.im/post/5c77b3ade51d456a045898c8">java8 CompletableFuture入门 使用教程 详解所有方法 附实例</a></p>
 
                   </article>
                   <div class="comments-wrap">

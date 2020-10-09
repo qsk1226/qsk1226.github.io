@@ -118,8 +118,9 @@
                   <article class="markdown-body single-content">
                     <p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
 
-<p>问:java中有了synchronized，为什么又会出现java显式锁呢？<br/>
-答：Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
+<p>问:java中有了synchronized，为什么又会出现java显式锁呢？</p>
+
+<p>Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
 
 <p>使用 synchronized 方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
 
@@ -162,14 +163,24 @@ try{
 
 <h3 id="toc_1">可重入</h3>
 
-<p>重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞， 该特性的实现需要解决以下两个问题。<br/>
-1)线程再次获取锁。锁需要去识别获取锁的线程是否为当前占据锁的线程， 如果是，则再次成功获取。<br/>
-2)锁的最终释放。线程重复 n 次获取了锁，随后在第 n 次释放该锁后，其 他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示 当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于 0 时表示锁已 经成功释放。</p>
+<p>简单的说的话就是同一个线程对于已经获得到的锁，可以多次继续申请到该 锁的使用权”。<br/>
+重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞， 该特性的实现需要解决以下两个问题：</p>
 
-<p>nonfairTryAcquire 方法增加了再次获取同步状态的处理逻辑:通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请 求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。<br/>
-如果该锁被获取了 n 次，那么前(n-1)次 tryRelease(int releases)方法必须返回 false，而只有同步状态完全释放了，才能返回 true。可以看到，该方法将同步状 态是否为 0 作为最终释放的条件，当同步状态为 0 时，将占有线程设置为 null， 并返回 true，表示释放成功。</p>
+<ul>
+<li>线程再次获取锁。锁需要去识别获取锁的线程是否为当前占据锁的线程， 如果是，则再次成功获取。</li>
+<li>锁的最终释放。线程重复 n 次获取了锁，随后在第 n 次释放该锁后，其 他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示 当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于 0 时表示锁已 经成功释放。</li>
+</ul>
+
+<p>nonfairTryAcquire 方法增加了再次获取同步状态的处理逻辑: 通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。</p>
+
+<p>如果该锁被获取了 n 次，那么前(n-1)次 tryRelease(int releases)方法必须返回 false，而只有同步状态完全释放了，才能返回 true。可以看到，该方法将同步状 态是否为 0 作为最终释放的条件，当同步状态为 0 时，将占有线程设置为 null， 并返回 true，表示释放成功。</p>
 
 <h3 id="toc_2">公平和非公平锁</h3>
+
+<p>公平锁是指所有试图获得锁的线程按照获取锁的顺序依次获得锁，而非公平锁则是当前的锁状态没有被占用时, 当前线程可以直接占用,而不需要等待。在实现上，非公平锁逻辑基本跟公平锁一致，唯一的区别是，当前线程不需要判断同步队列中是否有等待线程。</p>
+
+<p>非公平锁性能高于公平锁性能。首先，在恢复一个被挂起的线程与该线程真 正运行之间存在着严重的延迟。而且，非公平锁能更充分的利用 cpu 的时间片， 尽量的减少 cpu 空闲的状态时间。<br/>
+使用场景的话呢，其实还是和他们的属性一一相关，比如:如果业务中线程 占用(处理)时间要远长于线程等待，那用非公平锁其实效率并不明显，但是用公 平锁可以保证不会有线程被饿死。</p>
 
 <pre><code class="language-java">public ReentrantLock(boolean fair) {
     sync = fair ? new FairSync() : new NonfairSync();
@@ -183,6 +194,9 @@ try{
 <p>nonfairTryAcquire(int acquires)方法，对于非公平锁，只要 CAS 设置同步状态 成功，则表示当前线程获取了锁，而公平锁则不同。</p>
 
 <p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
+
+<p>非公平锁的实现流程：<br/>
+<figure><img src="media/15867933931035/16017114037904.jpg" alt=""/></figure></p>
 
 <pre><code class="language-java">/** ReentrantLock 锁的基础同步器，实现有公平和非公平两种同步器 */
 abstract static class Sync extends AbstractQueuedSynchronizer {
@@ -343,7 +357,31 @@ static final class NonfairSync extends Sync {
 }
 </code></pre>
 
-<h4 id="toc_4">使用Condition的阻塞的有界队列</h4>
+<h4 id="toc_4">Conditon 使用范式</h4>
+
+<pre><code class="language-java">Lock lock = new ReetrantLock();
+Condition condition = lock.newCondition();
+
+public void conditionWait() throws Exception {
+    lock.lock();
+    try{
+        condition.await();
+    }finally{
+        lock.unlock();
+    }
+}
+
+public void conditionSignal() throws Exception {
+    lock.lock();
+    try{
+        condition.signal();
+    } finally {
+        lock.unlock();
+    }
+}
+</code></pre>
+
+<h4 id="toc_5">使用Condition的阻塞的有界队列</h4>
 
 <pre><code class="language-java">/**
  * 阻塞的有界队列
@@ -389,7 +427,7 @@ public class BoundedBuffer {
 }
 </code></pre>
 
-<h4 id="toc_5">生产者和消费者</h4>
+<h4 id="toc_6">生产者和消费者</h4>
 
 <p>可以通过多个线程来调用put和take方法，来模拟生产者和消费者。</p>
 
@@ -505,7 +543,7 @@ public class BoundedBuffer {
 
 <hr/>
 
-<h2 id="toc_6">ReadWriteLock</h2>
+<h2 id="toc_7">ReadWriteLock</h2>
 
 <p>读写锁接口只定义了两个获取读锁和写锁的接口方法，需要具体实现类ReentrantReadWriteLock实现</p>
 
@@ -515,16 +553,16 @@ public class BoundedBuffer {
 }
 </code></pre>
 
-<h3 id="toc_7">ReentrantReadWriteLock</h3>
+<h3 id="toc_8">ReentrantReadWriteLock</h3>
 
-<h4 id="toc_8">读写状态的设计</h4>
+<h4 id="toc_9">读写状态的设计</h4>
 
 <p>读写锁同样依赖自定义同步器来实现同步功能，而读写状态就是其同步器的 同步状态。<br/>
 回想 ReentrantLock 中自定义同步器的实现，同步状态表示锁被一个线程重 复获取的次数，而读写锁的自定义同步器需要在同步状态(一个整型变量)上维 护多个读线程和一个写线程的状态，使得该状态的设计成为读写锁实现的关键。<br/>
 如果在一个整型变量上维护多种状态，就一定需要“按位切割使用”这个变 量，读写锁将变量切分成了两个部分，高 16 位表示读，低 16 位表示写，读写锁 是如何迅速确定读和写各自的状态呢?<br/>
 答案是通过位运算。假设当前同步状态值为 S，写状态等于 S&amp;0x0000FFFF (将高 16 位全部抹去)，读状态等于 S&gt;&gt;&gt;16(无符号补 0 右移 16 位)。当写 状态增加 1 时，等于 S+1，当读状态增加 1 时，等于 S+(1&lt;<16)，也就是 S+0x00010000。 根据状态的划分能得出一个推论:S 不等于 0 时，当写状态(S&0x0000FFFF)等 于 0 时，则读状态(S>&gt;&gt;16)大于 0，即读锁已被获取。</p>
 
-<h4 id="toc_9">写锁的获取与释放</h4>
+<h4 id="toc_10">写锁的获取与释放</h4>
 
 <p>写锁是一个支持重进入的排它锁。如果当前线程已经获取了写锁，则增加写 状态。如果当前线程在获取写锁时，读锁已经被获取(读状态不为 0)或者该线 程不是已经获取写锁的线程，则当前线程进入等待状态。</p>
 
@@ -532,13 +570,13 @@ public class BoundedBuffer {
 
 <p>写锁的释放与ReentrantLock的释放过程基本类似，每次释放均减少写状态， 当写状态为 0 时表示写锁已被释放，从而等待的读写线程能够继续访问读写锁， 同时前次写线程的修改对后续读写线程可见</p>
 
-<h4 id="toc_10">读锁的获取与释放</h4>
+<h4 id="toc_11">读锁的获取与释放</h4>
 
 <p>读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他 写线程访问(或者写状态为 0)时，读锁总会被成功地获取，而所做的也只是(线 程安全的)增加读状态。如果当前线程已经获取了读锁，则增加读状态。</p>
 
 <p>如果当前线程在获取读锁时，写锁已被其他线程获取，则进入等待状态。读 状态是所有线程获取读锁次数的总和，而每个线程各自获取读锁的次数只能选择 保存在 ThreadLocal 中，由线程自身维护。在 tryAcquireShared(int unused)方法中， 如果其他线程已经获取了写锁，则当前线程获取读锁失败，进入等待状态。如果 当前线程获取了写锁或者写锁未被获取，则当前线程(线程安全，依靠 CAS 保证) 增加读状态，成功获取读锁。读锁的每次释放(线程安全的，可能有多个读线程 同时释放读锁)均减少读状态。</p>
 
-<h4 id="toc_11">锁的升降级</h4>
+<h4 id="toc_12">锁的升降级</h4>
 
 <p>锁降级指的是写锁降级成为读锁。如果当前线程拥有写锁，然后将其释放， 最后再获取读锁，这种分段完成的过程不能称之为锁降级。</p>
 
@@ -548,7 +586,7 @@ public class BoundedBuffer {
 ReadLock<br/>
 WriteLock </p>
 
-<h3 id="toc_12">StampedLock</h3>
+<h3 id="toc_13">StampedLock</h3>
 
 <p>JDK1.8增加的一种新的锁实现</p>
 

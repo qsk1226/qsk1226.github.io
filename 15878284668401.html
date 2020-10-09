@@ -340,12 +340,12 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <h2 id="toc_4">线程池的工作机制</h2>
 
-<ol>
+<ul>
 <li>如果当前运行的线程少于 corePoolSize，则创建新线程来执行任务(注意， 执行这一步骤需要获取全局锁)。</li>
-<li>如果运行的线程等于或多于 corePoolSize，则将任务加入 BlockingQueue。 </li>
+<li> 如果运行的线程等于或多于 corePoolSize，则将任务加入 BlockingQueue。 </li>
 <li>如果无法将任务加入 BlockingQueue(队列已满)，则创建新的线程来处理任务。</li>
 <li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
-</ol>
+</ul>
 
 <h3 id="toc_5">提交任务</h3>
 
@@ -369,16 +369,18 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 <li>任务的依赖性:是否依赖其他系统资源，如数据库连接。 性质不同的任务可以用不同规模的线程池分开处理。</li>
 </ul>
 
-<p>CPU 密集型任务应配置尽可能小的线程，如配置 Ncpu+1 个线程的线程池。 </p>
+<p>有一个依据经验值配置的方案如下：</p>
 
-<p>由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如 2*Ncpu。</p>
-
-<p>混合型的任务，如果可以拆分，将其拆分成一个 CPU 密集型任务和一个 IO 密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行 分解。</p>
+<ul>
+<li><p>CPU 密集型任务应配置尽可能小的线程，如配置 Ncpu+1 个线程的线程池。 </p></li>
+<li><p>由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如 2*Ncpu。</p></li>
+<li><p>混合型的任务，如果可以拆分，将其拆分成一个 CPU 密集型任务和一个 IO 密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行分解。</p></li>
+</ul>
 
 <p>可以通过 Runtime.getRuntime().availableProcessors()方法获得当前设备的 CPU 个数。</p>
 
 <p>对于 IO 型的任务的最佳线程数，有个公式可以计算 ：<br/>
-Nthreads = NCPU * UCPU * (1 + W/C)</p>
+<strong>Nthreads = NCPU * UCPU * (1 + W/C)</strong></p>
 
 <p>其中:<br/>
 NCPU 是处理器的核的数目<br/>
@@ -392,6 +394,76 @@ W/C 是等待时间与计算时间的比率</p>
 <p>依赖数据库连接池的任务，因为线程提交 SQL 后需要等待数据库返回结果， 等待的时间越长，则 CPU 空闲时间就越长，那么线程数应该设置得越大，这样才能更好地利用 CPU。</p>
 
 <p>建议使用有界队列。有界队列能增加系统的稳定性和预警能力，可以根据需要设的大一点儿。</p>
+
+<h2 id="toc_8">预定义线程池</h2>
+
+<h3 id="toc_9">FixedThreadPool</h3>
+
+<p>创建使用固定线程数的 FixedThreadPool 的 API。适用于为了满足资源管理的 需求，而需要限制当前线程数量的应用场景，它适用于负载比较重的服务器。</p>
+
+<p>FixedThreadPool 的 corePoolSize 和 maximumPoolSize 都被设置为创建 FixedThreadPool 时指定的参数 nThreads。</p>
+
+<p>当线程池中的线程数大于 corePoolSize 时，keepAliveTime 为多余的空闲线程 等待新任务的</p>
+
+<p>最长时间，超过这个时间后多余的线程将被终止。这里把 keepAliveTime 设 置为 0L，意味着多余的空闲线程会被立即终止。</p>
+
+<p>FixedThreadPool 使用有界队列 LinkedBlockingQueue 作为线程池的工作队列 (队列的容量为 Integer.MAX_VALUE)。</p>
+
+<h3 id="toc_10">SingleThreadExecutor</h3>
+
+<p>创建使用单个线程的 SingleThread-Executor 的 API，于需要保证顺序地执行 各个任务;并且在任意时间点，不会有多个线程是活动的应用场景。</p>
+
+<p>corePoolSize 和 maximumPoolSize 被设置为 1。其他参数与FixedThreadPool 相同。SingleThreadExecutor 使用有界队列LinkedBlockingQueue 作为线程池的工 作队列(队列的容量为Integer.MAX_VALUE)。</p>
+
+<h3 id="toc_11">CachedThreadPool</h3>
+
+<p>创建一个会根据需要创建新线程的 CachedThreadPool 的 API。大小无界的线 程池，适用于执行很多的短期异步任务的小程序，或者是负载较轻的服务器。</p>
+
+<p>corePoolSize 被设置为 0，即 corePool 为空;maximumPoolSize 被设置为 Integer.MAX_VALUE。这里把 keepAliveTime 设置为 60L，意味着 </p>
+
+<p>CachedThreadPool 中的空闲线程等待新任务的最长时间为 60 秒，空闲线程超过 60 秒后将会被终止。</p>
+
+<p>FixedThreadPool 和 SingleThreadExecutor 使用有界队列LinkedBlockingQueue 作为线程池的工作队列。</p>
+
+<p>CachedThreadPool 使用没有容量的 SynchronousQueue 作为线程池的工作队列，但 CachedThreadPool 的 maximumPool 是无界的。</p>
+
+<p>这意味着，如果主线程提交任务的速度高于 maximumPool 中线程处理任务的速度时， CachedThreadPool 会不断创建新线程。极端情况下，CachedThreadPool 会因为创 建过多线程而耗尽 CPU 和内存资源。</p>
+
+<h3 id="toc_12">WorkStealingPool</h3>
+
+<p>利用所有运行的处理器数目来创建一个工作窃取的线程池，使用 forkjoin 实现</p>
+
+<h3 id="toc_13">ScheduledThreadPoolExecutor</h3>
+
+<p>使用工厂类 Executors 来创建。Executors 可以创建 2 种类型的 ScheduledThreadPoolExecutor，如下。</p>
+
+<ul>
+<li>ScheduledThreadPoolExecutor。包含若干个线程的 ScheduledThreadPoolExecutor。</li>
+<li>SingleThreadScheduledExecutor。只包含一个线程的 ScheduledThreadPoolExecutor。</li>
+</ul>
+
+<p>ScheduledThreadPoolExecutor 适用于需要多个后台线程执行周期任务，同时 为了满足资源管理的需求而需要限制后台线程的数量的应用场景。</p>
+
+<p>SingleThreadScheduledExecutor 适用于需要单个后台线程执行周期任务，同 时需要保证顺序地执行各个任务的应用场景。</p>
+
+<h4 id="toc_14">提交定时任务</h4>
+
+<ul>
+<li><p>public ScheduledFuture&lt;?&gt; schedule(Runnable command, long delay, TimeUnit unit)<br/>
+向定时任务线程池提交一个延时 Runnable 任务(仅执行一次) public <V> </p></li>
+<li><p>ScheduledFuture<V> schedule(Callable<V> callable, long delay,<br/>
+TimeUnit unit);<br/>
+向定时任务线程池提交一个延时的 Callable 任务(仅执行一次)</p></li>
+<li><p>public ScheduledFuture&lt;?&gt; scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)<br/>
+向定时任务线程池提交一个固定时间间隔执行的任务</p></li>
+<li><p>public ScheduledFuture&lt;?&gt; scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit);</p></li>
+</ul>
+
+<p>固定时间间隔的任务不论每次任务花费多少时间，下次任务开始执行时间从 理论上讲是确定的，当然执行任务的时间不能超过执行周期。</p>
+
+<p>固定延时间隔的任务是指每次执行完任务以后都延时一个固定的时间。由于 操作系统调度以及每次任务执行的语句可能不同，所以每次任务执行所花费的时 间是不确定的，也就导致了每次任务的执行周期存在一定的波动</p>
+
+<h4 id="toc_15">定时任务超时问题</h4>
 
                   </article>
                   <div class="comments-wrap">
