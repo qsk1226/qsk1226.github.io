@@ -137,7 +137,7 @@
 
 <h2 id="toc_2">协议介绍</h2>
 
-<p>好了，复习完两阶段提交协议，接下来我们继续来分析ZAB协议。</p>
+<p>好了，学习完两阶段提交协议，接下来我们继续来分析 ZAB 协议。</p>
 
 <p>很多人会误以为ZAB协议是Paxos的一种特殊实现，事实上他们是两种不同的协议。ZAB和Paxos最大的不同是，ZAB主要是为分布式主备系统设计的，而Paxos的实现是一致性状态机(state machine replication)</p>
 
@@ -200,9 +200,9 @@
 <li>leader从客户端收到一个写请求</li>
 <li>leader生成一个新的事务并为这个事务生成一个唯一的ZXID，</li>
 <li>leader将这个事务发送给所有的follows节点</li>
-<li>follower节点将收到的事务请求加入到历史队列(history queue)中,并发送ack给ack给leader</li>
-<li>当leader收到大多数follower（超过法定数量）的ack消息，leader会发送commit请求</li>
-<li>当follower收到commit请求时，会判断该事务的ZXID是不是比历史队列中的任何事务的ZXID都小，如果是则提交，如果不是则等待比它更小的事务的commit</li>
+<li>follower节点将收到的事务请求加入到历史队列(history queue)中,并发送ack 给 leader</li>
+<li>当leader收到大多数 follower（超过法定数量）的 ack 消息，leader会发送commit请求</li>
+<li>当follower收到commit请求时，会判断该事务的ZXID是不是比历史队列中的任何事务的 ZXID 都小，如果是则提交，如果不是则等待比它更小的事务的commit</li>
 </ul>
 
 <p><figure><img src="media/16014357742277/16014361084663.jpg" alt=""/></figure></p>

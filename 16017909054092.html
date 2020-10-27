@@ -723,7 +723,7 @@ private transient volatile int sizeCtl;
 private transient volatile int transferIndex;
 </code></pre>
 
-<p>sizeCtl 非常非常非常重要的一个参数，统御全局, 控制标识符，用来控制table初始化和扩容操作的，在不同的地方有不同的用途，其值也不同，所代表的含义也不同</p>
+<p><strong>非常重要</strong>：sizeCtl 非常非常非常重要的一个参数，统御全局, 控制标识符，用来控制table初始化和扩容操作的，在不同的地方有不同的用途，其值也不同，所代表的含义也不同</p>
 
 <ul>
 <li>负数代表正在进行初始化或扩容操作</li>

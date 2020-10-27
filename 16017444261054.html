@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    hashMap的容量为什么是2的幂次方 - 大爷来玩儿啊~
+    HashMap 是线程不安全的所引发的问题 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            hashMap的容量为什么是2的幂次方   
+                            HashMap 是线程不安全的所引发的问题   
                       </h1>
                      
                     
@@ -97,7 +97,7 @@
                                  <span class="date">2020/10/04</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.html'>数据结构与算法</a></span>
+                                      <span class="posted-in"><a href='%E9%9D%A2%E8%AF%95%E9%A2%98.html'>面试题</a></span>
                                          
                                   
 
@@ -114,49 +114,109 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>源码中他们采用了延迟初始化操作，也就是table只有在用到的时候才初始化，如果你不对他进行put等操作的话，table的长度永远为&quot;零&quot;。</p>
+                    <h2 id="toc_0">jdk 1.7中的死循环分析</h2>
 
-<p>在HashMap中主要有两个函数保证了它的长度为 2 的 n 次方</p>
+<p>在多线程环境下，使用HashMap进行put操作，会引起死循环，导致cpu利用率接近100%，是因为多线程会导致HashMap的Entry链表形成环形数据结构，一旦形成环形数据结构，Entry的next节点永远不为空，就会产生死循环获取 Entry。那么这个死循环是怎么产生的呢？</p>
+
+<h2 id="toc_1">HashMap扩容流程</h2>
+
+<p>引起死循环是在HashMap的扩容操作中，正常的扩容操作在put操作中触发，主要是3个方法：<br/>
+addEntry(int hash, K key, V value, int bucketIndex)<br/>
+resize(int newCapacity)<br/>
+transfer(entry[] newTable,boolean rehash)</p>
+
+<p>我们看一下 JDK7中的扩容代码片段：</p>
+
+<pre><code class="language-java">void resize(int newCapacity) {
+    Entry[] oldTable = table;
+    int oldCapacity = oldTable.length;
+    if (oldCapacity == MAXIMUM_CAPACITY) {
+        threshold = Integer.MAX_VALUE;
+        return;
+    }
+
+    Entry[] newTable = new Entry[newCapacity];
+    transfer(newTable, initHashSeedAsNeeded(newCapacity));
+    table = newTable;
+    threshold = (int)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY + 1);
+}
+
+void transfer(Entry[] newTable, boolean rehash) {
+    int newCapacity = newTable.length;
+    for (Entry&lt;K,V&gt; e : table) {
+        while(null != e) {
+            Entry&lt;K,V&gt; next = e.next;
+            if (rehash) {
+                e.hash = null == e.key ? 0 : hash(e.key);
+            }
+            int i = indexFor(e.hash, newCapacity);
+            e.next = newTable[i];
+            newTable[i] = e;
+            e = next;
+        }
+    }
+}
+
+</code></pre>
+
+<p>综合来说， HashMap一次扩容过程：</p>
 
 <ul>
-<li>tableSizeFor()</li>
-<li>resize()</li>
+<li>取当前table的2倍作为新table的大小</li>
+<li>根据算出的新 table 的大小 new 出一个新的 Entry 数组，名为 newTable</li>
+<li>轮询原 table 的每个位置，将每个位置上连接的 Entry，算出新的 table 上的位置，并以链表形式连接</li>
+<li>原 table 上的所有 Entry 全部轮询完毕之后，意味着原 table 上面的所有 Entry 已经移动到新的 table 上， HashMap 中的table 指向 newTable。</li>
 </ul>
 
-<h2 id="toc_0">HashMap的 hash 算法是怎么实现的</h2>
+<h3 id="toc_2">正常的扩容操作</h3>
 
-<p>jdk8中，通过hashCode的高16位与低16位进行异或操作</p>
+<p>假设存在这样一个HashMap：<br/>
+<figure><img src="media/16017877048038/16017883683090.jpg" alt=""/></figure></p>
 
-<pre><code class="language-text">(key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16)
-</code></pre>
+<p>正常的扩容过程如下所示：<br/>
+<figure><img src="media/16017877048038/16017885649268.jpg" alt=""/></figure></p>
 
-<p>主要是高位也参与hash计算的话，可以提高hash算法的质量(只要 hashCode 有一位不一样，整个hash的结果就会不一样)和效率，降低 hash 冲突的发生。</p>
+<p><figure><img src="media/16017877048038/16017885776965.jpg" alt=""/></figure></p>
 
-<h2 id="toc_1">为什么要保证 capacity 是2的次幂呢</h2>
+<p><figure><img src="media/16017877048038/16017885875556.jpg" alt=""/></figure></p>
 
-<p>在HashMap的存取过程中我们会看到这样的操作</p>
+<h3 id="toc_3">在并发环境下扩容：</h3>
 
-<pre><code class="language-text">static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);
-}
-</code></pre>
+<p>我们现在假设有两个线程并发操作，都进入了扩容操作<br/>
+我们假设 线程1执行到 Entry<K,V> next = e.next;的时候被操作系统调度挂起，而线程2执行完成了扩容操作。<br/>
+<figure><img src="media/16017877048038/16017888401037.jpg" alt="" style="width:600px;"/></figure></p>
 
-<p>HashMap是根据key的hash值决策key放入到哪个桶（bucket）中，通过 tab=[(n - 1) &amp; hash] 公式计算得出。其中tab是一个哈希表。</p>
+<p>于是在线程1和2看来，就是这样子的：<br/>
+<figure><img src="media/16017877048038/16017889707459.jpg" alt=""/></figure></p>
 
-<p>当容量一定是2<sup>n时，h</sup> &amp; (length - 1) == h % length, 我们知道 在计算机的世界中，所有的一切都是二进制的，所以通过位运算去模要比10进制的取模要效率高很多。</p>
+<p>1）接下来线程1 被调度执行：<br/>
+<figure><img src="media/16017877048038/16017890108688.jpg" alt=""/></figure></p>
 
-<p>在get方法实现中，实际上是匹配链表中的 Node[] tab 中的数据。<br/>
-(n - 1) &amp; hash 实际上是计算出 key 在 tab 中索引位置，当key的hash没有冲突时，key在HashMap存储的位置就是匹配的node中的第一个节点。如果hash有冲突，就会在node里面节点中查询，直至匹配到相等的key。</p>
+<p>2）<br/>
+<figure><img src="media/16017877048038/16017891079881.jpg" alt=""/></figure></p>
 
-<p>因为 n 永远是2的次幂，所以 n-1 通过 二进制表示，永远都是尾端以连续1的形式表示（00001111，00000011），当(n - 1) 和 hash 做与运算时，会保留hash中 后 x 位的 1，例如 00001111 &amp; 10000011 = 00000011</p>
+<p>3）<br/>
+<figure><img src="media/16017877048038/16017891313750.jpg" alt=""/></figure></p>
 
-<p>这样做有几个好处：</p>
+<p>4）<br/>
+<figure><img src="media/16017877048038/16017891504410.jpg" alt=""/></figure></p>
+
+<p>5）<br/>
+<figure><img src="media/16017877048038/16017892242698.jpg" alt=""/></figure></p>
+
+<p>6）<br/>
+<figure><img src="media/16017877048038/16017892729978.jpg" alt=""/></figure></p>
+
+<p>7）<br/>
+<figure><img src="media/16017877048038/16017893091024.jpg" alt=""/></figure></p>
+
+<p>通过这样几步操作之后，之前的链表结构变成了一个环形链表，当执行get操作的时候，就会在这个环形链表中一直循环，将CPU资源消耗殆尽。</p>
+
+<h2 id="toc_4">如何规避HashMap的线程不安全</h2>
 
 <ul>
-<li>&amp;运算速度快，至少比%取模运算块</li>
-<li>能保证 索引值 肯定在 capacity 中，不会超出数组长度</li>
-<li>(n - 1) &amp; hash，当n为2次幂时，会满足一个公式：(n - 1) &amp; hash = hash % n</li>
+<li>使用包装类 Collections.SynchronizedMap()</li>
+<li>使用ConcurrentHashMap</li>
 </ul>
 
                   </article>

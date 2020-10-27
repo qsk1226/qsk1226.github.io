@@ -123,6 +123,18 @@
 &gt; show variables like &#39;innodb_buffer_pool_instances&#39; 查看有几个缓冲池实例
 &gt; set global innodb_old_block_time=1000; 设置多长时间之后热点页被放入LRU列表前端
 &gt; show variables like &#39;innodb_log_buffer_size&#39; 查看重做日志缓冲池大小
+&gt; show status 了解各种sql的执行频率
+&gt; show global status
+&gt; show status like &#39;Com_%&#39;  
+&gt; insert into select * from table2 where column=100;
+&gt; # Com_XXX表示每个XXX语句执行的次数，select、update、insert、delete
+&gt; # 只针对 innoDB引擎的参数：
+&gt; # InnoDB_rows_read 执行 select 操作的次数
+&gt; # InnoDB_rows_updated 执行 update 操作的次数
+&gt; # InnoDB_rows_inserted 执行 insert 操作的次数
+&gt; # InnoDB_rows_deleted 执行 delete 操作的次数
+&gt; 
+&gt; # Slow_queries：慢查询的次数
 </code></pre>
 
                   </article>

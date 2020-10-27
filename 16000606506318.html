@@ -136,9 +136,19 @@
 <li><p>尽可能避免复杂的 Join 和子查询；</p></li>
 </ul>
 
-<h2 id="toc_0">合理设计并利用索引</h2>
+<h2 id="toc_0">show status查看sql执行频率</h2>
 
-<h3 id="toc_1">索引设计原则</h3>
+<p>主要语句 show status &#39;Com_%&#39;,例如</p>
+
+<pre><code class="language-mysql">&gt;show status like &#39;Com_insert%&#39;
+&gt;show status like &#39;Com_select%&#39;
+&gt;show status like &#39;Com_update%&#39;
+&gt;show status like &#39;Com_delete%&#39;
+</code></pre>
+
+<h2 id="toc_1">合理设计并利用索引</h2>
+
+<h3 id="toc_2">索引设计原则</h3>
 
 <ul>
 <li>搜索的索引列,不一定是所要选择的列。换句话说,最适合索引的列是出现在 WHERE 子句中的列,或连接子向中指定的列,而不是出现在 SELECT关键字后的选择列表中的列。</li>
@@ -149,9 +159,9 @@
 <li><p>对于 INNODB存储引擎的表,记录默认会按照一定的顺序保存,如果有明确定义的主键,则按照主键顺序保存。如果没有主键,但是有唯一索引,那么就是按照唯一索引的顺序保存。如果既没有主键又没有唯一索引,那么表中会自动生成一个内部列,按照这个列的顺序保存。按照主键或者内部列进行的访问是最快的,所以 INNODB表尽量自己指定主键,当表中同时有几个列都是唯一的,都可以作为主键的时候,要选择最常作为访问条件的列作为主键,提高查询的效率。另外,还需要注意, INNODB表的普通索引都会保存主键的键值,所以主键要尽可能选择较短的数据类型,可以有效地减少索引的磁盘占用,提高索引的缓存效果。</p></li>
 </ul>
 
-<h2 id="toc_2">SQL 优化</h2>
+<h2 id="toc_3">SQL 优化</h2>
 
-<h3 id="toc_3">尽量全值匹配</h3>
+<h3 id="toc_4">尽量全值匹配</h3>
 
 <pre><code class="language-mysql">CREATE TABLE `staffs`(
 id int primary key auto_increment,
@@ -175,29 +185,29 @@ EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39; AND age = 25 AND pos = 
 
 <p>当建立了索引列后，能在 wherel 条件中使用索引的尽量所用。</p>
 
-<h3 id="toc_4">最佳左前缀法则</h3>
+<h3 id="toc_5">最佳左前缀法则</h3>
 
-<h3 id="toc_5">不在索引列上做任何操作</h3>
+<h3 id="toc_6">不在索引列上做任何操作</h3>
 
 <p>不在索引列上做任何操作(计算、函数、(自动 or 手动)类型转换)，会导致索引失效而转向 全表扫描</p>
 
-<h3 id="toc_6">范围条件放最后</h3>
+<h3 id="toc_7">范围条件放最后</h3>
 
-<h3 id="toc_7">覆盖索引尽量用</h3>
+<h3 id="toc_8">覆盖索引尽量用</h3>
 
-<h3 id="toc_8">不等于要谨慎用</h3>
+<h3 id="toc_9">不等于要谨慎用</h3>
 
 <p>mysql 在使用不等于(!= 或者&lt;&gt;)的时候无法使用索引会导致全表扫描，如果定要需要使用不等于,请用覆盖索引</p>
 
-<h3 id="toc_9">Null/Not 有影响</h3>
+<h3 id="toc_10">Null/Not 有影响</h3>
 
-<h4 id="toc_10">字段定义为 NOT NULL</h4>
+<h4 id="toc_11">字段定义为 NOT NULL</h4>
 
 <p>在字段为 not null 的情况下，使用 is null 或 is not null 会导致索引失效。<br/>
 解决方式:覆盖索引<br/>
 EXPLAIN select name,age,pos from staffs where name is not null</p>
 
-<h4 id="toc_11">字段自定义为 NULL 或者不定义</h4>
+<h4 id="toc_12">字段自定义为 NULL 或者不定义</h4>
 
 <pre><code class="language-mysql">EXPLAIN select * from staffs where name is not null
 </code></pre>
@@ -207,7 +217,7 @@ EXPLAIN select name,age,pos from staffs where name is not null</p>
 <pre><code class="language-mysql">EXPLAIN select name,age,pos from staffs where name is not null
 </code></pre>
 
-<h3 id="toc_12">Like 查询要当心</h3>
+<h3 id="toc_13">Like 查询要当心</h3>
 
 <p>like 以通配符开头(&#39;%abc...&#39;)mysql 索引失效会变成全表扫描的操作.<br/>
 解决方式:覆盖索引</p>
@@ -215,11 +225,11 @@ EXPLAIN select name,age,pos from staffs where name is not null</p>
 <pre><code class="language-mysql">EXPLAIN select name,age,pos from staffs where name like &#39;%july%&#39;
 </code></pre>
 
-<h3 id="toc_13">字符类型加引号</h3>
+<h3 id="toc_14">字符类型加引号</h3>
 
 <p>字符串不加单引号索引失效, 所以请加上引号吧</p>
 
-<h3 id="toc_14">OR 改 UNION效率高</h3>
+<h3 id="toc_15">OR 改 UNION效率高</h3>
 
 <pre><code class="language-mysql">EXPLAIN
 select * from staffs where name=&#39;July&#39; or name = &#39;z3&#39;
