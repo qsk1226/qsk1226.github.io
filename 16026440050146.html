@@ -98,6 +98,8 @@
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
                                       <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                  
+                                      <span class="posted-in"><a href='%E6%9C%8D%E5%8A%A1%E5%99%A8.html'>服务器</a></span>
                                          
                                   
 
@@ -241,6 +243,38 @@
 注意：本地的事件触发 本地cache和触发cache为相同。</p>
 
 <p><figure><img src="media/16026440050146/16026616087435.jpg" alt="" style="width:1121px;"/></figure></p>
+
+<p>当一个cache line的调整的状态的时候，另外一个cache line 需要调整的状态。</p>
+
+<p><figure><img src="media/16026440050146/16045611186544.jpg" alt="" style="width:1198px;"/></figure></p>
+
+<p>举个栗子来说：<br/>
+假设cache 1 中有一个变量x = 0的cache line 处于S状态(共享)。<br/>
+那么其他拥有x变量的cache 2、cache 3等x的cache line调整为S状态（共享）或者调整为 I 状态（无效）。</p>
+
+<p>假设有三个CPU A、B、C，对应三个缓存分别是cache a、b、 c。在主内存中定义了变量 x 的引用值为0。</p>
+
+<ul>
+<li><p>单核读取<br/>
+执行流程是：<br/>
+CPU A发出了一条指令，从主内存中读取x。从主内存通过bus读取到缓存中（远端读取Remote read）,这是该Cache line修改为E状态（独享）.</p></li>
+<li><p>双核读取<br/>
+执行流程是：<br/>
+CPU A发出了一条指令，从主内存中读取x。<br/>
+CPU A从主内存通过bus读取到 cache a中并将该cache line 设置为E状态。<br/>
+CPU B发出了一条指令，从主内存中读取x。<br/>
+CPU B试图从主内存中读取x时，CPU A检测到了地址冲突。这时CPU A对相关数据做出响应。此时x 存储于cache a和cache b中，x在chche a和cache b中都被设置为S状态(共享)。</p></li>
+<li><p>修改数据<br/>
+执行流程是：<br/>
+CPU A 计算完成后发指令需要修改x.<br/>
+CPU A 将x设置为M状态（修改）并通知缓存了x的CPU B, CPU B将本地cache b中的x设置为I状态(无效)<br/>
+CPU A 对x进行赋值。</p></li>
+<li><p>同步数据<br/>
+执行流程是：<br/>
+CPU B 发出了要读取x的指令。<br/>
+CPU B 通知CPU A, CPU A将修改后的数据同步到主内存时cache a 修改为E（独享）<br/>
+CPU A同步CPU B的x,将cache a和同步后cache b中的x设置为S状态（共享）。</p></li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">

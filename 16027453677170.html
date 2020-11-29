@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-     - 大爷来玩儿啊~
+    redis rehash - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                               
+                            redis rehash   
                       </h1>
                      
                     
@@ -114,11 +114,9 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h1 id="toc_0">redis rehash</h1>
+                    <p>作为一个内存数据库，redis内部采用了字典的数据结构实现了键值对的存储，字典也就是我们平时所说的哈希表。随着数据量的不断增加，数据必然会产生hash碰撞，而redis采用链地址法解决hash冲突。我们知道如果哈希表数据量达到了一个很大的量级，那么冲突的链的元素数量就会很大，这时查询效率就会变慢，因为取值的时候redis会遍历链表。而随着数据量的缩减，也会产生一定的内存浪费。redis在设计时充分考虑了字典的增加和缩减，为了优化数据量增加时的查询效率和缩减时的内存利用率，redis进行了一系列操作，而处理的这个过程被称作rehash。</p>
 
-<p>作为一个内存数据库，redis内部采用了字典的数据结构实现了键值对的存储，字典也就是我们平时所说的哈希表。随着数据量的不断增加，数据必然会产生hash碰撞，而redis采用链地址法解决hash冲突。我们知道如果哈希表数据量达到了一个很大的量级，那么冲突的链的元素数量就会很大，这时查询效率就会变慢，因为取值的时候redis会遍历链表。而随着数据量的缩减，也会产生一定的内存浪费。redis在设计时充分考虑了字典的增加和缩减，为了优化数据量增加时的查询效率和缩减时的内存利用率，redis进行了一系列操作，而处理的这个过程被称作rehash。</p>
-
-<h2 id="toc_1">redis 哈希表结构</h2>
+<h2 id="toc_0">redis 哈希表结构</h2>
 
 <p><figure><img src="media/16027453677170/16027455213851.jpg" alt=""/></figure></p>
 
@@ -155,7 +153,7 @@ typedef struct dict {
 
 <p>从结构上看每个字典中都包含了两个hashtable。那么为什么一个字典会需要两个hashtable？首先redis在正常读写时会用到一个hashtable，而另一个hashtable的作用实际上是作为字典在进行rehash时的一个临时载体。我们可以这么理解，redis开始只会用一个hashtable去读写，如果这个hashtable的数据量增加或者缩减到某个值，到达了rehash的条件，redis便会开始根据数据量和链（bucket）的个数初始化那个备用的hashtable，来使这个hashtable从容量上满足后续的使用，并开始把之前的hashtable的数据迁移到这个新的hashtable上来，当然这种迁移是对每个节点值进行一次hash运算。等到数据全部迁移完成，再进行一次hashtable的地址更名，把这个备用的hashtable为正式的hashtable，同时清空另一个hashtable以供下一次rehash使用。</p>
 
-<h2 id="toc_2">rehash 条件</h2>
+<h2 id="toc_1">rehash 条件</h2>
 
 <p>hashtable元素总个数 / 字典的链个数 = 每个链平均存储的元素个数(load_factor)</p>
 
@@ -165,7 +163,7 @@ typedef struct dict {
 <li><p>load_factor &lt; 0.1，dict就会触发缩减操作rehash</p></li>
 </ul>
 
-<h2 id="toc_3">rehash 过程</h2>
+<h2 id="toc_2">rehash 过程</h2>
 
 <p>我们假设 ht[0]为正在使用的hashtable，ht[1]为rehash之后的备用hashtable<br/>
 步骤如下：</p>
@@ -179,7 +177,7 @@ typedef struct dict {
 <li><p>随着字典操作的不断执行，最终在某个时间点上，ht[0]的所有键值对都会被rehash至ht[1]，这时程序将rehashidx属性的值设为-1，表示rehash操作已完成。</p></li>
 </ul>
 
-<h2 id="toc_4">rehash 总结</h2>
+<h2 id="toc_3">rehash 总结</h2>
 
 <p><strong><em>在Hash 表扩容或者收缩的时候，程序需要将现有的哈希表中的所有键值对rehash 到新的 Hash表里面，此rehash 过程不是一次性完成的，而是渐进式的完成。</em></strong></p>
 

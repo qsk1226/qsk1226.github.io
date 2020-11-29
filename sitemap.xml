@@ -2,7 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
   <loc>http://www.throne4j.com/</loc>
-  <lastmod>2020-10-27T21:06:16+08:00</lastmod>
+  <lastmod>2020-11-29T22:21:23+08:00</lastmod>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/16064609884543.html</loc>
+  <lastmod>2020-11-27T15:09:48+08:00</lastmod>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/16063167790102.html</loc>
+  <lastmod>2020-11-25T23:06:19+08:00</lastmod>
 </url>
 
 <url>
@@ -223,11 +233,6 @@
 <url>
   <loc>http://www.throne4j.com/16005248987908.html</loc>
   <lastmod>2020-09-19T22:14:58+08:00</lastmod>
-</url>
-
-<url>
-  <loc>http://www.throne4j.com/16001854729591.html</loc>
-  <lastmod>2020-09-15T23:57:52+08:00</lastmod>
 </url>
 
 <url>
@@ -773,6 +778,10 @@
 
 <url>
   <loc>http://www.throne4j.com/dubbo.html</loc>
+</url>
+
+<url>
+  <loc>http://www.throne4j.com/Netty.html</loc>
 </url>
 
 <url>

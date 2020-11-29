@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-     - 大爷来玩儿啊~
+    serversocketChannel - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                               
+                            serversocketChannel   
                       </h1>
                      
                     
@@ -114,7 +114,29 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    
+                    <p>socketChannel， begin()</p>
+
+<p>selector --&gt; selectorImpl 初始化两个集合，<br/>
+EpollSelectorImpl</p>
+
+<p><figure><img src="media/16024819837796/16065704639756.jpg" alt=""/></figure></p>
+
+<p>publicKey 存放所有注册的selectionKey<br/>
+publicSelectedKey  已经就绪的key</p>
+
+<p><figure><img src="media/16024819837796/16065707769531.jpg" alt=""/></figure></p>
+
+<p>fd0 管道的读端文件描述符<br/>
+fd1 管道的写端文件描述符</p>
+
+<p>线程中断的时候写入一个字节来唤醒线程。</p>
+
+<p>管道本质上是一块内存</p>
+
+<p>在两个进程之间如何进行通信，</p>
+
+<p>selector.select()  --&gt; lockAndDoSelect(long timeout)</p>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
