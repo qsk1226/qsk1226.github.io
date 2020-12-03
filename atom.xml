@@ -4,13 +4,319 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-11-29T22:21:16+08:00</updated>
+  <updated>2020-12-04T07:55:27+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[todo]]></title>
+    <link href="http://www.throne4j.com/16069200648740.html"/>
+    <updated>2020-12-02T22:41:04+08:00</updated>
+    <id>http://www.throne4j.com/16069200648740.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[原生 NIO 非阻塞通信]]></title>
+    <link href="http://www.throne4j.com/16068260624844.html"/>
+    <updated>2020-12-01T20:34:22+08:00</updated>
+    <id>http://www.throne4j.com/16068260624844.html</id>
+    <content type="html"><![CDATA[
+<p>java.nio 包提供了非阻塞的通信能力</p>
+
+<h2 id="toc_0">线程阻塞的概念</h2>
+
+<p>所有处于阻塞状态的线程的共同特征是：放弃 CPU ,暂停运行，只有等到导致阻塞的原因消除，才能恢复运行；或者被其他线程中断，该线程退出阻塞状态，并且抛出 InterruptedException异常</p>
+
+<h2 id="toc_1">线程阻塞的原因</h2>
+
+<ul>
+<li>线程执行了 Thread.sleep(int n) 方法，线程放弃 CPU ，睡眠 n 毫秒之后，恢复运行。</li>
+<li>线程无法获取要执行代码的同步锁，进入阻塞状态</li>
+<li>线程执行一个对象的 wait()方法，进入阻塞状态，直至其他线程唤醒该对象</li>
+<li>线程执行 IO 操作或进行远程通信时，会因为等待相关资源进入阻塞状态</li>
+<li>请求与服务器建立连接时会进入阻塞状态</li>
+<li>线程从 socket 的输入流读取数据时，没有足够的数据，就会进入阻塞状态，直到读到了足够欧的数据，或者到达输入流的末尾，或出现异常，才会从输入流的 read()方法返回或者中断</li>
+<li>线程向 socket 的输出流写数据时，肯能会进入阻塞状态</li>
+<li>调用 socket 的 setSoLinger()方法设置了关闭 Socket 的延迟时间，那么线程执行 socket 的 close() 方法时，会进入阻塞状态</li>
+</ul>
+
+<p>服务器程序中线程遇到如下情况可能会进入阻塞状态</p>
+
+<ul>
+<li>线程执行 ServerSocket 的 accept()方法，等待客户的连接，直到接收到了客户的连接才从 accept()方法返回</li>
+<li>线程从 socket 的输入流读入数据时，可能会进入阻塞状态</li>
+<li>线程向 socket 的输出流写数据时，可能会进入阻塞状态</li>
+</ul>
+
+<h2 id="toc_2">服务器程序用多线程来处理阻塞通信的局限性</h2>
+
+<p><figure><img src="media/16068260624844/16069196524116.jpg" alt="" style="width:733px;"/></figure></p>
+
+<ul>
+<li>JVM 会为每个线程分配独立的堆栈空间，工作线程数目越多，系统开销越大，而且增加了 JVM 调度线程的负担，增加了线程之间同步的复杂性，提高了线程死锁的可能性</li>
+<li>工作线程的许多时间都浪费在阻塞IO操作上，JVM 需要频繁的转让 CPU 的使用权，使进入阻塞状态的线程放弃 CPU，再把 CPU 分配给处于可运行状态的线程。</li>
+</ul>
+
+<p>因此，工作线程并不是越多越好，适量的工作线程会提高服务器的并发能力，但是超出了系统的负荷时，反而降低并发性能。</p>
+
+<h2 id="toc_3">和 BIO 的主要区别</h2>
+
+<p>Java NIO 和 IO 之间第一个最大的区别是，IO 是面向流的，NIO 是面向缓冲区的。 Java IO 面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地 方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它 缓存到一个缓冲区。 Java NIO 的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓 冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查 是否该缓冲区中包含所有需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。</p>
+
+<h2 id="toc_4">NIO 组件</h2>
+
+<h3 id="toc_5">Channel</h3>
+
+<p>通道 channel 用来连接缓冲区与数据源</p>
+
+<p>java.nio.channels.Channel接口只声明了两个方法</p>
+
+<ul>
+<li>isOpen() 判断通道是否打开</li>
+<li>close() 关闭通道</li>
+</ul>
+
+<h4 id="toc_6">SelectableChannel</h4>
+
+<p>SelectableChannel 支持阻塞IO、非阻塞IO，他有两个子类：</p>
+
+<ul>
+<li>ServerSocketChannel: 相当于 ServerSocket 的替代类，支持阻塞通信和非阻塞通信,通过 ServerSocketChannel.open()创建</li>
+<li>SocketChannel : 相当于 Socket 的替代类，支持阻塞通信和非阻塞通信，通过 SocketChannel.open()创建</li>
+</ul>
+
+<p>SelectableChannel可以向 Selector 注册读就绪和写就绪事件。<br/>
+Selector负责监控这些事件，等到事件发生时，SelectableChannel就可以执行相应的操作，比如读事件或写事件。</p>
+
+<p>主要方法：</p>
+
+<ul>
+<li>configureBlocking(boolean block) block 为 true表示 阻塞模式，false非阻塞模式，默认阻塞模式，isBlocking()方法返回它的阻塞模式</li>
+<li>SelectionKey register(Selector sel, int ops)</li>
+<li>SelectionKey register(Selector sel, int ops, Object attachment)<br/>
+向Selector注册事件;ops: 感兴趣的事件，见 SelectionKey; attachment用于为SelectionKey关联一个附件，当被注册事件发生后，需要处理该事件时，可以从SelectionKey中获得这个附件，该附件可用来包含与处理这个事件相关的信息。</li>
+</ul>
+
+<pre><code class="language-text">MyHandler handler = new MyHandler();
+SelectionKey key = socketChannel.register(selector, SelectionKey.OP_READ, handler);
+
+之后 可以从SelectionKey中获取 handler,然后执行handler相关处理方法 ：
+
+MyHandler handler =  (MyHandler) key.attachment()
+</code></pre>
+
+<h4 id="toc_7">ServerSocketChannel 只可能发生一种事件</h4>
+
+<ul>
+<li>SelectionKey.OP_ACCEPT: 接收连接就绪事件，表示至少有了一个客户连接，服务器可以接收这个连接</li>
+</ul>
+
+<h4 id="toc_8">SocketChannel 可能发生 3 中事件</h4>
+
+<ul>
+<li>SelectionKey.OP_CONNECT: 连接就绪事件，表示客户端与服务器的连接已经建立成功</li>
+<li>SelectionKey.OP_READ: 度就绪事件，表示输入流中已经有了可读数据，可以执行读操作了</li>
+<li>SelectionKey.OP_WRITE: 写就绪事件，表示已经可以向输出流写数据了。</li>
+</ul>
+
+<p>SocketChannel提供了 读和写数据的方法</p>
+
+<ul>
+<li>read(ByteBuffer buffer): 读数据，把他们放到参数指定的 ByteBuffer中</li>
+<li>write(ByteBuffer buffer): 把参数指定的ByteBuffer中的数据发送出去</li>
+</ul>
+
+<h4 id="toc_9">服务端和客户端可以监听的事件表：</h4>
+
+<table>
+<thead>
+<tr>
+<th>CHANNEL</th>
+<th>OP_READ</th>
+<th>OP_WRITE</th>
+<th>OP_CONNECT</th>
+<th>OP_ACCEPT</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>服务器ServerSocketChannel</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Y</td>
+</tr>
+<tr>
+<td>服务器SocketChannel</td>
+<td>Y</td>
+<td>Y</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>客户端SocketChannel</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_10">Selector</h3>
+
+<p>Selector 的英文含义是“选择器”，也可以称为为“轮询代理器”、“事件订阅器”、“channel 容器管理机”都行。</p>
+
+<p>为 ServerSocketChannel 监控接收连接就绪事件，为 SocketChannel 监控连接就绪、写就绪、读就绪事件。</p>
+
+<p>一个Selector对象会包含 3中类型 SelectionKey集合：</p>
+
+<ul>
+<li>all-keys: 当前所有向 Selector 注册的 SelectionKey 的集合， Selector 的 keys() 方法返回该集合</li>
+<li>selected-keys: 相关事件已经被 Selector 捕获的 SelectionKey 的集合，Selector的 selectedKeys()方法返回该集合</li>
+<li>cancelled-keys: 已经被取消的 SelectionKey 集合，暂无访问该集合的方法。</li>
+</ul>
+
+<p>执行 Selector 的 select() 方法时，与 SelectionKey 相关的事件发生了，这个 SelectionKey 就被加入到 selected-keys 集合中。</p>
+
+<p>主要方法：</p>
+
+<ul>
+<li>static Selector open() 创建 Selector对象</li>
+<li>isOpen() 是否处于打开状态，创建 Selector 之后就处于打开状态，直到 执行close()方法</li>
+<li>Set<SelectionKey> keys() 返回 all-keys集合</li>
+<li>int selectNow() 返回相关事件已经发生的 SelectionKey 对象数目</li>
+<li>int select() 或 int select(long timeout) 返回相关事件已经发生的SelectionKey对象的数目，如果一个都没有进入阻塞状态，直到出现以下情况之一：
+<ul>
+<li>至少有一个 SelectionKey 的相关事件已经发生</li>
+<li>其他线程调用了 Selector 的 wakeup()方法，导致执行 select()方法的线程立即从 select()方法中返回</li>
+<li>当执行 sselect()方法的线程被其他线程中断</li>
+<li>超出了等待时间</li>
+</ul></li>
+<li>Selector wakeup() 唤醒执行 Selector 的 select()方法的线程</li>
+<li>close() 关闭 Selector，使它占用的所有资源都被释放，所有与Selector 关联的 SelectionKey 都被取消</li>
+</ul>
+
+<h3 id="toc_11">SelectionKey</h3>
+
+<p>代表 SocketChannel、ServerSocketChannel向 Selector 注册事件的句柄，包括接收连接就绪事件、连接就绪事件、读事件就绪、写事件就绪</p>
+
+<ul>
+<li>OP_READ : 当操作系统读缓冲区有数据可读时就绪。并非时刻都有数据可读，所 以一般需要注册该操作，仅当有就绪时才发起读操作，有的放矢，避免浪 费 CPU。</li>
+<li>OP_WRITE : 当操作系统写缓冲区有空闲空间时就绪。一般情况下写缓冲区都有空 闲空间，小块数据直接写入即可，没必要注册该操作类型，否则该条件不 断就绪浪费 CPU;但如果是写密集型的任务，比如文件下载等，缓冲区很 可能满，注册该操作类型就很有必要，同时注意写完后取消注册。</li>
+<li>OP_CONNECT : 当 SocketChannel.connect()请求连接成功后就绪。该操作只给客户端 使用。</li>
+<li>OP_ACCEPT : 当接收到一个客户端连接请求时就绪。该操作只给服务器使用。</li>
+</ul>
+
+<p>以下情况下 SelectionKey 对象会失效：</p>
+
+<ul>
+<li>程序调用 SelectionKey 的 cancel() 方法</li>
+<li>关闭 与 SelectionKey 关联的 Channel</li>
+<li>与 SelectionKey 关联的 selector 被关闭</li>
+</ul>
+
+<p>主要方法：</p>
+
+<ul>
+<li>SelectableChannel channel() </li>
+<li>Selector selector()</li>
+<li>boolean isValid()</li>
+<li>void cancel()</li>
+<li>int interestOps()</li>
+<li>SelectionKey interestOps(int ops)</li>
+<li>boolean isReadable()</li>
+<li>boolean isWritable()</li>
+<li>boolean isConnectable()</li>
+<li>boolean isAcceptable()</li>
+<li>attach(Object obj)</li>
+<li>Object attachment()</li>
+</ul>
+
+<h3 id="toc_12">缓冲区 buffer</h3>
+
+<p>缓冲区从两个方面提高 IO 效能 ：</p>
+
+<ul>
+<li>减少实际的物理读写次数</li>
+<li>缓冲区在创建的时候被分配内存，这块缓冲区一直被重用，减少了动态分配内存和回收内存的次数。</li>
+</ul>
+
+<p>以下是Buffer 类的层次结构</p>
+
+<pre><code class="language-text">Buffer (java.nio)
+|---IntBuffer (java.nio)
+|---FloatBuffer (java.nio)
+|---CharBuffer (java.nio)
+|---DoubleBuffer (java.nio)
+|---ShortBuffer (java.nio)
+|---LongBuffer (java.nio)
+|---ByteBuffer (java.nio)
+</code></pre>
+
+<p>所有的缓冲区都由以下属性</p>
+
+<ul>
+<li>容量 capacity: 表示该缓冲区可以保存多少数据</li>
+<li>极限 limit: 表示缓冲区当前的终点，不能对缓冲区中超过极限的区域进行读写操作。极限是可以修改的，这有利于缓冲区的重用。</li>
+<li>位置 position: 表示缓冲区中下一个读写单元的位置，每次读写缓冲区的数据时，都会改变该值，为下一次读写数据做准备</li>
+</ul>
+
+<p>以上三个属性的关系为 容量 &gt;= 极限 &gt;= 位置 &gt;= 0</p>
+
+<p>Buffer 提供了用于改变以上 3 个属性的方法：</p>
+
+<ul>
+<li>clear()  把极限设为容量，再把位置设为 0</li>
+<li>flip()  把极限设置为位置，再把位置设置为 0</li>
+<li>rewind() 不改变极限，把位置设为 0</li>
+</ul>
+
+<p>Buffer类的其他方法：</p>
+
+<ul>
+<li>remaining()方法返回缓冲区的剩余容量 = 极限 - 位置</li>
+<li>compact() 删除缓冲区内 从 0 到当前位置 position 的内容，然后把从当前位置 position 到极限 limit 的内容复制到 0 到 limit - position的区域内，当前位置 position 和 极限 limit 的取值也作相应的变化。</li>
+<li>get() 相对读数据，从当前位置读取一个单元的数据，读完后位置 +1</li>
+<li>get(index) 从指定位置 index 读取一个单元的数据</li>
+<li>put()</li>
+<li>put(index)</li>
+</ul>
+
+<p>由于 Buffer 是一个冲向类，不能直接实例化，通过如下方式获取</p>
+
+<ul>
+<li>allocate(int capacity) 返回一个 ByteBuffer 对象，参数 capacity 指定缓冲区的容量</li>
+<li>directAllocate(int capacity) 返回ByteBuffer 对象，参数 capacity 指定缓冲区的容量，推荐缓冲区较大且长期存在或者需要重用的时候，使用这种缓冲区。</li>
+</ul>
+
+<h4 id="toc_13">直接内存</h4>
+
+<p>HeapByteBuffer 与 DirectByteBuffer，在原理上，前者可以看出分配的 buffer 是在 heap 区域的，其实真正 flush 到远程的时候会先拷贝到直接内存，再做下一步操作;在 NIO 的框 架下，很多框架会采用 DirectByteBuffer 来操作，这样分配的内存不再是在 java heap 上，经 过性能测试，可以得到非常快速的网络交互，在大量的网络交互下，一般速度会比 HeapByteBuffer 要快速好几倍。</p>
+
+<p>直接内存(Direct Memory)并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用，而且也可能导致 OutOfMemoryError 异常出现。</p>
+
+<p>NIO 可以使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆里面的 DirectByteBuffer 对象作为这块内存的引用进行操作。</p>
+
+<p>DirectByteBuffer继承自 MappedByteBuffer 能把缓冲区和文件的某个区域直接映射。</p>
+
+<p>这样能在一些场景中显著提高性能， 因为避免了在 Java 堆和 Native 堆中来回复制数据。</p>
+
+<h5 id="toc_14">直接内存(堆外内存)与堆内存比较</h5>
+
+<p>直接内存申请空间耗费更高的性能，当频繁申请到一定量时尤为明显<br/>
+直接内存 IO 读写的性能要优于普通的堆内存，在多次读写操作的情况下差异明显</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux 文件描述符]]></title>
@@ -209,32 +515,128 @@ Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一
 <p>下面用图来说明他们之间的关系：<br/>
 <figure><img src="media/16063167790102/16063195145545.jpg" alt=""/></figure></p>
 
-<p><figure><img src="media/16063167790102/16063203402166.jpg" alt=""/></figure></p>
+<h3 id="toc_5">Channel 接口</h3>
 
-<p><figure><img src="media/16063167790102/16063208871763.jpg" alt=""/></figure></p>
+<p>基本的 I/O 操作(bind()、connect()、read()和 write())依赖于底层网络传输所提供的原语。</p>
 
-<h2 id="toc_5">Channel 接口</h2>
+<p>在基于 Java 的网络编程中，其基本的构造是类 Socket。Netty 的 Channel 接口所提供 的 API，被用于所有的 I/O 操作。大大地降低了直接使用 Socket 类的复杂性。</p>
 
-<h3 id="toc_6">Channel 生命周期</h3>
+<h4 id="toc_6">Channel 生命周期</h4>
 
 <ul>
 <li>ChannelRegistered : Channel 已经被注册到了 EventLoop</li>
 <li>ChannelActive : Channel 处于活动状态(已经连接到它的远程节点)。它现在可以接收和发送数据了</li>
 <li>ChannelInactive : Channel 没有连接到远程节点</li>
-<li>- ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
+<li>ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
 </ul>
 
-<h3 id="toc_7">Channel 接口中重要的方法</h3>
+<h4 id="toc_7">Channel 接口中重要的方法</h4>
 
 <ul>
 <li>eventLoop: 返回分配给 Channel 的 EventLoop</li>
 <li>pipeline: 返回分配给 Channel 的 ChannelPipeline</li>
 <li>isActive: 如果 Channel 是活动的，则返回 true。活动的意义可能依赖于底层的传输。 例如，一个 Socket 传输一旦连接到了远程节点便是活动的，而一个 Datagram 传输一旦被打开便是活动的。</li>
-<li>localAddress: 返回本地的 SokcetAddress</li>
+<li>localAddress: 返回本地的 SocketAddress</li>
 <li>remoteAddress: 返回远程的 SocketAddress</li>
 <li>write: 将数据写到远程节点。这个数据将被传递给 ChannelPipeline，并且排队直到它被冲刷</li>
-<li>flush: 将之前已写的数据冲刷到底层传输，如一个 Socket writeAndFlush: 一个简便的方法，等同于调用 write()并接着调用 flush()</li>
+<li>flush: 将之前已写的数据冲刷到底层传输，如一个 Socket </li>
+<li>writeAndFlush: 一个简便的方法，等同于调用 write()并接着调用 flush()</li>
 </ul>
+
+<h3 id="toc_8">EventLoop 和 EventLoopGroup</h3>
+
+<p>EventLoop 定义了 Netty 的核心抽象，用于处理网络连接的生命周期中所发生的事件。<br/>
+一个 EventLoop 将由一个永远都不会改变的 Thread 驱动，同时任务(Runnable 或者 Callable)可以直接提交给 EventLoop 实现，以立即执行或者调度执行。</p>
+
+<p><figure><img src="media/16063167790102/EventLoop.jpg" alt="EventLoop"/><figcaption>EventLoop</figcaption></figure></p>
+
+<p>根据配置和可用核心的不同，可能会创建多个 EventLoop 实例用以优化资源的使用，并 且单个 EventLoop 可能会被指派用于服务多个 Channel。</p>
+
+<h4 id="toc_9">任务调度</h4>
+
+<p>有时你将需要调度一个任务以便稍后(延迟)执行或者周期性地执行，常见的一个用例就是发送心跳消息到远程节点，以检查连接是否仍然还活着。如果没有响应，你便知道可以关闭该 Channel 了。</p>
+
+<h4 id="toc_10">线程管理</h4>
+
+<p>当提交任务到如果(当前)调用线程正是支撑 EventLoop 的线程，那么所提交 的代码块将会被(直接)执行。否则，EventLoop 将调度该任务以便稍后执行，并将它放入 到内部队列中。当 EventLoop 下次处理它的事件时，它会执行队列中的那些任务/事件。</p>
+
+<p><figure><img src="media/16063167790102/16070090935626.jpg" alt=""/></figure></p>
+
+<h4 id="toc_11">线程的分配</h4>
+
+<p>服务于 Channel 的 IO 和事件的 EventLoop 则包含在 EventLoopGroup 中。</p>
+
+<p>异步传输实现只使用了少量的 EventLoop(以及和它们相关联的 Thread)，而且在当前 的线程模型中，它们可能会被多个Channel 所共享。这使得可以通过尽可能少量的Thread 来 支撑大量的 Channel，而不是每个 Channel 分配一个 Thread。EventLoopGroup 负责为每个 新创建的 Channel 分配一个 EventLoop。</p>
+
+<p><figure><img src="media/16063167790102/16070093180963.jpg" alt=""/></figure></p>
+
+<p>一旦一个 Channel 被分配给一个 EventLoop，它将在它的整个生命周期中都使用这个 EventLoop(以及相关联的 Thread)。</p>
+
+<p>这里就需要特别注意一个类了 ThreadLocal，因为一个 EventLoop 通 常会被用于支撑多个 Channel，所以对于所有相关联的 Channel 来说，ThreadLocal 都将是 一样的。这使得它对于实现状态追踪等功能来说是个糟糕的选择。然而，在一些无状态的上下文中，它仍然可以被用于在多个 Channel 之间共享一些重度的或者代价昂贵的对象，甚至是事件。</p>
+
+<h2 id="toc_12">ChannelFuture 接口</h2>
+
+<p>Netty 中所有的 I/O 操作都是异步的。因为一个操作可能不会立即返回，所以我们需要 一种用于在之后的某个时间点确定其结果的方法。为此，Netty 提供了 ChannelFuture 接口， 其 addListener()方法注册了一个 ChannelFutureListener，以便在某个操作完成时(无论是否 成功)得到通知。</p>
+
+<h2 id="toc_13">ChannelHandler</h2>
+
+<p>ChannelHandler 承担了所有处理入站和出站数据的处理。ChannelHandler 的方法是由网络事件触发的。</p>
+
+<p>Netty 定义了下面两个重要的 ChannelHandler 子接口：</p>
+
+<ul>
+<li>ChannelInboundHandler——处理入站数据以及各种状态变化; </li>
+<li>ChannelOutboundHandler——处理出站数据并且允许拦截所有的操作</li>
+</ul>
+
+<h3 id="toc_14">ChannelInboundHandler</h3>
+
+<p>ChannelInboundHandler 会在数据被接收时或者与其对应的 Channel 状态发生改变时被调用。下面我们来看下它所定义的相关方法：</p>
+
+<ul>
+<li>channelRegistered : 当 Channel 已经注册到它的 EventLoop 并且能够处理 I/O 时被调用</li>
+<li>channelUnregistered : 当 Channel 从它的 EventLoop 注销并且无法处理任何 I/O 时被调用</li>
+<li>channelActive : 当 Channel 处于活动状态时被调用;Channel 已经连接/绑定并且已经就绪</li>
+<li>channelInactive : 当 Channel 离开活动状态并且不再连接它的远程节点时被调用</li>
+<li>channelReadComplete : 当 Channel 的一个读操作完成时被调用</li>
+<li>channelRead : 当从 Channel 读取数据时被调用</li>
+<li>channelWritabilityChanged : 当 Channel 的可写状态发生改变时被调用。可以通过调用 Channel 的 isWritable()方法 来检测 Channel 的可写性。与可写性相关的阈值可以通过Channel.config().setWriteHighWaterMark()和Channel.config().setWriteLowWaterMark()方法来设置</li>
+<li>userEventTriggered : 当 ChannelnboundHandler.fireUserEventTriggered() 方法被调用时被 调用。</li>
+</ul>
+
+<h3 id="toc_15">ChannelOutboundHandler</h3>
+
+<p>出站操作和数据将由 ChannelOutboundHandler 处理。它的方法将被 Channel、ChannelPipeline 以及 ChannelHandlerContext 调用</p>
+
+<p>所有由 ChannelOutboundHandler 本身所定义的方法：</p>
+
+<ul>
+<li>bind(ChannelHandlerContext,SocketAddress,ChannelPromise)<br/>
+当请求将 Channel 绑定到本地地址时被调用</li>
+<li>connect(ChannelHandlerContext,SocketAddress,SocketAddress,ChannelPromise)<br/>
+当请求将 Channel 连接到远程节点时被调用</li>
+<li>disconnect(ChannelHandlerContext,ChannelPromise)<br/>
+当请求将 Channel 从远程节点断开时被调用</li>
+<li>close(ChannelHandlerContext,ChannelPromise) 当请求关闭 Channel 时被调用</li>
+<li>deregister(ChannelHandlerContext,ChannelPromise)<br/>
+当请求将 Channel 从它的 EventLoop 注销时被调用</li>
+<li>read(ChannelHandlerContext)<br/>
+当请求从 Channel 读取更多的数据时被调用</li>
+<li>flush(ChannelHandlerContext)<br/>
+当请求通过 Channel 将入队数据冲刷到远程节点时被调 用</li>
+<li>write(ChannelHandlerContext,Object,ChannelPromise)<br/>
+当请求通过 Channel 将数据写到 远程节点时被调用</li>
+</ul>
+
+<h3 id="toc_16">ChannelHandler 适配器</h3>
+
+<p>有一些适配器类可以将编写自定义的 ChannelHandler 所需要的工作降到最低限度，因 为它们提供了定义在对应接口中的所有方法的默认实现。因为你有时会忽略那些不感兴趣的 事件，所以 Netty 提供了抽象基类 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter。</p>
+
+<p>可以使用 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter 类作为 自己的 ChannelHandler 的起始点。这两个适配器分别提供了 ChannelInboundHandler 和 ChannelOutboundHandler 的基本实现。通过扩展抽象类 ChannelHandlerAdapter，它们获得 了它们共同的超接口 ChannelHandler 的方法。</p>
+
+<p>ChannelHandlerAdapter 还提供了实用方法 isSharable()。如果其对应的实现被标注为 Sharable，那么这个方法将返回 true，表示它可以被添加到多个 ChannelPipeline。</p>
+
+<p><figure><img src="media/16063167790102/16070173055991.jpg" alt=""/></figure></p>
 
 ]]></content>
   </entry>
@@ -519,7 +921,7 @@ fd1 管道的写端文件描述符</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[网络编程面试题]]></title>
+    <title type="html"><![CDATA[TCP 与 HTTP]]></title>
     <link href="http://www.throne4j.com/16024149950927.html"/>
     <updated>2020-10-11T19:16:35+08:00</updated>
     <id>http://www.throne4j.com/16024149950927.html</id>
@@ -555,6 +957,176 @@ fd1 管道的写端文件描述符</p>
 <h2 id="toc_4">5、为什么 TCP 需要四次挥手</h2>
 
 <p>TCP 是全双工的连接，必须两端同时关闭连接，连接才算真正关闭。如果一方已经准备关闭写，但是它还可以读另一方发送的数据。发送给 FIN 结束报文给 对方对方收到后，回复 ACK 报文。当这方也已经写完了准备关闭，发送 FIN 报文，对方回复 ACK。两端都关闭，TCP 连接正常关闭。</p>
+
+<h2 id="toc_5">概述NIO</h2>
+
+<p>NIO编程中涉及到如下几个</p>
+
+<ul>
+<li><p>Buffer:与 Channel 进行交互，数据是从 Channel 读入缓冲区，从缓冲区写入 Channel中的</p>
+<ul>
+<li>flip 方法 : 反转此缓冲区，将 position 给 limit，然后将 position 置为 0，其实就是切换 读写模式</li>
+<li>clear 方法 :清除此缓冲区，将 position 置为 0，把 capacity 的值给 limit。</li>
+<li>rewind 方法 : 重绕此缓冲区，将 position 置为 0<br/>
+DirectByteBuffer 可减少一次系统空间到用户空间的拷贝。但 Buffer 创建和销毁的成本 更高，不可控，通常会用内存池来提高性能。直接缓冲区主要分配给那些易受基础系统的本 机 I/O 操作影响的大型、持久的缓冲区。如果数据量比较小的中小应用情况下，可以考虑使 用 heapBuffer，由 JVM 进行管理。</li>
+</ul></li>
+<li><p>Channel: 表示 IO 源与目标打开的连接，是双向的，但不能直接访问数据，只能与 Buffer 进行交互。通过源码可知，FileChannel 的 read 方法和 write 方法都导致数据复制了两次!</p></li>
+<li><p>Selector 可使一个单独的线程管理多个 Channel</p>
+<ul>
+<li>open 方法: 创建 Selector</li>
+<li>register 方法: 向多路复用器器注册通道，可以监听的事件类型:读、写、连接、accept。注册事件后会产生一个SelectionKey
+<ul>
+<li>SelectionKey: 它表示 SelectableChannel 和 Selector 之间的注册关系，</li>
+</ul></li>
+<li>wakeup 方法: 使尚未返回的第一个选择操作立即返回，唤醒的原因是:注册了新的 channel 或者事件; channel 关闭，取消注册;优先级更高的事件触发(如定时器事件)，希望及时处理</li>
+</ul></li>
+</ul>
+
+<p>NIO 的服务端建立过程:Selector.open():打开一个 Selector;ServerSocketChannel.open(): 创建服务端的 Channel;bind():绑定到某个端口上。并配置非阻塞模式;register():注册 Channel 和关注的事件到 Selector 上;select()轮询拿到已经就绪的事件。</p>
+
+<h2 id="toc_6">HTTP1.0 与HTTP1.1的区别</h2>
+
+<p>HTTP1.0 最早在网页中使用是在 1996 年，那个时候只是使用一些较为简单的网页上和 网络请求上，而 HTTP1.1 则在 1999 年才开始广泛应用于现在的各大浏览器网络请求中，同时 HTTP1.1 也是当前使用最为广泛的 HTTP 协议。 </p>
+
+<p>主要区别主要体现在如下几点：</p>
+
+<ul>
+<li>缓存处理，在HTTP1.0中主要使用header里的 if-Modified-Since，Expires来做缓存判断的标准，HTTP1.1 则引入了更多的缓存控制策略，如：Entity Tag、If-Unmodified-Since、If-Match、If-None-Match等更多可供选择的缓存头来控制缓存策略</li>
+<li>带块优化以及网络连接的使用，HTTP1.0 中，存在一些浪费带宽的现象，例如客户端 只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能， HTTP1.1 则在请求头引入了 range 头域，它允许只请求资源的某个部分，即返回码是 206 (Partial Content)，这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
+<li>错误通知的管理，在 HTTP1.1 中新增了 24 个错误状态响应码，如 409(Conflict)表 示请求的资源与资源的当前状态发生冲突;410(Gone)表示服务器上的某个资源被永久性 的删除。</li>
+<li>Host头处理，在 HTTP1.0 中认为每台服务器都绑定一个唯一的 IP 地址，因此，请求 消息中的 URL 并没有传递主机名(hostname)。但随着虚拟主机技术的发展，在一台物理 服务器上可以存在多个虚拟主机(Multi-homed Web Servers)，并且它们共享一个 IP 地址。 HTTP1.1 的请求消息和响应消息都应支持 Host 头域，且请求消息中如果没有 Host 头域会报 告一个错误(400 Bad Request)。</li>
+<li>长连接，HTTP 1.1 支持长连接(PersistentConnection)和请求的流水线(Pipelining) 处理，在一个 TCP 连接上可以传送多个 HTTP 请求和响应，减少了建立和关闭连接的消耗和延迟，在 HTTP1.1 中默认开启 Connection: keep-alive，一定程度上弥补了 HTTP1.0 每次请 求都要创建连接的缺点。</li>
+</ul>
+
+<h2 id="toc_7">HTTP2.0 和 HTTP1.X 相比的新特性</h2>
+
+<p>新的二进制格式(Binary Format)，HTTP1.x 的解析是基于文本。基于文本协议的格式 解析存在天然缺陷，文本的表现形式有多样性，要做到健壮性考虑的场景必然很多，二进制 则不同，只认 0 和 1 的组合。基于这种考虑 HTTP2.0 的协议解析决定采用二进制格式，实现方便且健壮。</p>
+
+<p>多路复用(MultiPlexing)，即连接共享，即每一个 request 都是是用作连接共享机制的。 一个 request 对应一个 id，这样一个连接上可以有多个 request，每个连接的 request 可以随 机的混杂在一起，接收方可以根据 request 的 id 将 request 再归属到各自不同的服务端请求里面。</p>
+
+<p>header 压缩，如上文中所言，对前面提到过 HTTP1.x 的 header 带有大量信息，而且每 次都要重复发送，HTTP2.0 使用 encoder 来减少需要传输的 header 大小，通讯双方各自 cache 一份 header fields 表，既避免了重复 header 的传输，又减小了需要传输的大小。</p>
+
+<p>服务端推送(server push)，HTTP2.0 也具有 server push 功能。</p>
+
+<h2 id="toc_8">HTTP2.0 的多路复用和 HTTP1.X 中的长连接复用有什么区别</h2>
+
+<ul>
+<li>HTTP/1.0 一次请求-响应，建立一个连接，用完关闭;每一个请求都要建立一个连接;</li>
+<li>HTTP/1.1 Pipeling 解决方式为，若干个请求排队串行化单线程处理，后面的请求等待前面请求的返回才能获得执行机会，一旦有某请求超时等，后续请求只能被阻塞，毫无办法， 也就是人们常说的线头阻塞;</li>
+<li>HTTP/2.0 多个请求可同时在一个连接上并行执行。某个请求任务耗时严重，不会影响到其它连接的正常执行</li>
+</ul>
+
+<h2 id="toc_9">Http 与 Https 的区别</h2>
+
+<p>HTTPS 协议(HyperText Transfer Protocol over Secure Socket Layer):一般理解为 HTTP+SSL/TLS，通过 SSL 证书来验证服务器的身份，并为浏览器和服务器之间的通信进行加密。</p>
+
+<ul>
+<li><p>HTTP 的 URL 以 http:// 开头，而 HTTPS 的 URL 以 https:// 开头<br/>
+HTTP 是不安全的，而 HTTPS 是安全的</p></li>
+<li><p>HTTP 标准端口是 80 ，而 HTTPS 的标准端口是 443</p></li>
+<li><p>在 OSI 网络模型中，HTTP 工作于应用层，而 HTTPS 的安全传输机制工作在传输层 </p></li>
+<li><p>HTTP 无法加密，而 HTTPS 对传输的数据进行加密</p></li>
+<li><p>HTTP 无需证书，而 HTTPS 需要 CA 机构颁发的 SSL 证书</p></li>
+</ul>
+
+<h2 id="toc_10">HTTPS 方式与 Web 服务器通信时的步骤</h2>
+
+<ul>
+<li>客户使用 https 的 URL 访问 Web 服务器，要求与 Web 服务器建立 SSL 连接。</li>
+<li>Web 服务器收到客户端请求后，会将网站的证书信息(证书中包含服务器公 钥&lt;非对称加密&gt;)传送一份给客户端。(HTTPS 中，服务端将公钥发给数字证书认证机构进行安全认证并对公钥进行数字签名，完成后公钥和签名组合成数字证书。在和客户端通信时， 服务端将数字证书发给客户端，客户端通过第三方安全认证机构(一般会在浏览器开发时， 内置在浏览器中)对数字证书上的签名进行验证。)</li>
+<li>客户端的浏览器与 Web 服务器开始协商 SSL 连接的安全等级，也就是信息加 密的等级。</li>
+<li>客户端的浏览器根据双方同意的安全等级，建立会话密钥&lt;对称加密&gt;，然后 利用服务器公钥将会话密钥加密，并传送给网站。</li>
+<li>Web 服务器利用自己的私钥解密出会话密钥。</li>
+<li>Web 服务器利用会话密钥加密与客户端之间的通信。</li>
+</ul>
+
+<h2 id="toc_11">什么是 Http 协议无状态协议?怎么解决?</h2>
+
+<p>无状态协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息,却无法获取到，也就是说，当客户端一次 HTTP 请求完成以后，客户端再发送一次 HTTP 请求，HTTP 并不知道当前客户端是一个”老用户“。</p>
+
+<p>可以使用 Cookie 来解决无状态的问题，Cookie 就相当于一个通行证，第一次访问的时 候给客户端发送一个 Cookie，当客户端再次来的时候，拿着 Cookie(通行证)，那么服务器就 知道这个是”老用户“</p>
+
+<h2 id="toc_12">一次完整的 HTTP 请求所经历的步骤</h2>
+
+<ul>
+<li><p>首先进行 DNS 域名解析(本地浏览器缓存、操作系统缓存或者 DNS 服务器)，首先会搜索浏览器自身的 DNS 缓存(缓存时间比较短，大概只有 1 分钟，且只能容纳 1000 条缓存)</p>
+<ul>
+<li>如果浏览器自身的缓存里面没有找到，那么浏览器会搜索系统自身的 DNS 缓存</li>
+<li>如果还没有找到，那么尝试从 hosts 文件里面去找</li>
+<li>在前面三个过程都没获取到的情况下，就去域名服务器去查找</li>
+</ul></li>
+<li><p>三次握手建立 TCP 连接<br/>
+在 HTTP 工作开始之前，客户端首先要通过网络与服务器建立连接，HTTP 连接是通过 TCP 来完成的。HTTP 是比 TCP 更高层次的应用层协议，根据规则，只有低层协议建立之后，才能进行高层协议的连接，因此，首先要建立 TCP 连接，一般 TCP 连接的端口号是 80;</p></li>
+<li><p>客户端发起 HTTP 请求</p></li>
+<li><p>服务器响应 HTTP 请求</p></li>
+<li><p>客户端解析 html 代码，并请求html代码中的资源。浏览器拿到 html 文件后，就开始解析其中的 html 代码，遇到 js/css/image 等静态资源 时，就向服务器端去请求下载</p></li>
+<li><p>客户端渲染展示内容</p></li>
+<li><p>关闭 TCP 连接</p></li>
+</ul>
+
+<p>一般情况下，一旦服务器向客户端返回了请求数据，它就要关闭 TCP 连接，然后如果 客户端或者服务器在其头信息加入了这行代码 Connection:keep-alive ，TCP 连接在发送后 将仍然保持打开状态，于是，客户端可以继续通过相同的连接发送请求，也就是说前面的 3 到 6，可以反复进行。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p>
+
+<h2 id="toc_13">常见的 HTTP 相应状态码</h2>
+
+<ul>
+<li>200:请求被正常处理</li>
+<li>204:请求被受理但没有资源可以返回 </li>
+<li>206:客户端只是请求资源的一部分，服务器只对请求的部分资源执行 GET 方法，相应报文中通过 Content-Range 指定范围的资源。</li>
+<li>301:永久性重定向</li>
+<li>302:临时重定向</li>
+<li>303:与 302 状态码有相似功能，只是它希望客户端在请求一个 URI 的时候，能通过 GET 方法重定向到另一个 URI 上</li>
+<li>304:发送附带条件的请求时，条件不满足时返回，与重定向无关 </li>
+<li>307:临时重定向，与 </li>
+<li>302 类似，只是强制要求使用 POST 方法 </li>
+<li>400:请求报文语法有误，服务器无法识别</li>
+<li>401:请求需要认证</li>
+<li>403:请求的对应资源禁止被访问 </li>
+<li>404:服务器无法找到对应资源 </li>
+<li>500:服务器内部错误 </li>
+<li>503:服务器正忙</li>
+</ul>
+
+<h2 id="toc_14">常用的 HTTP 方法有哪些</h2>
+
+<ul>
+<li>GET: 用于请求访问已经被 URI(统一资源标识符)识别的资源，可以通过 URL 传参给服务器</li>
+<li>POST:用于传输信息给服务器，主要功能与 GET 方法类似，但一般推荐使用 POST 方式。</li>
+<li>PUT: 传输文件，报文主体中包含文件内容，保存到对应 URI 位置。</li>
+<li>HEAD: 获得报文首部，与 GET 方法类似，只是不返回报文主体，一般用于验证 URI 是否有效。</li>
+<li>DELETE:删除文件，与 PUT 方法相反，删除对应 URI 位置的文件。 OPTIONS:查询相应 URI 支持的 HTTP 方法</li>
+</ul>
+
+<h2 id="toc_15">HTTP 请求报文与响应报文格式</h2>
+
+<p><a href="15955594725422.html">HTTP协议（二）-- HTTP 协议报文结构</a></p>
+
+<h2 id="toc_16">URI 和 URL 的区别</h2>
+
+<p>URI，是 uniform resource identifier，统一资源标识符，用来唯一的标识一个资源。</p>
+
+<p>Web 上可用的每种资源如 HTML 文档、图像、视频片段、程序等都是一个来 URI 来定位 的</p>
+
+<p>URI 一般由三部组成:</p>
+
+<ul>
+<li>访问资源的命名机制</li>
+<li>存放资源的主机名</li>
+<li>3资源自身的名称，由路径表示，着重强调于资源。</li>
+</ul>
+
+<p>URL 是 uniform resource locator，统一资源定位器，它是一种具体的 URI，即 URL 可以用 来标识一个资源，而且还指明了如何 locate 这个资源。</p>
+
+<p>URL是Internet上用来描述信息资源的字符串，主要用在各种WWW客户程序和服务器 程序上，特别是著名的 Mosaic。</p>
+
+<p>采用 URL 可以用一种统一的格式来描述各种信息资源，包括文件、服务器的地址和目 录等。</p>
+
+<p>URL 一般由三部组成:</p>
+
+<ul>
+<li>协议(或称为服务方式)</li>
+<li>存有该资源的主机 IP 地址(有时也包括端口号) </li>
+<li>主机资源的具体地址。如目录和文件名等</li>
+</ul>
 
 ]]></content>
   </entry>
@@ -1857,88 +2429,6 @@ Queue特点： 存取有序，两端进出元素</p>
     }
 }
 </code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Socket 与 ServerSocket 的用法详解]]></title>
-    <link href="http://www.throne4j.com/16020519457966.html"/>
-    <updated>2020-10-07T14:25:45+08:00</updated>
-    <id>http://www.throne4j.com/16020519457966.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">Socket</h2>
-
-<h3 id="toc_1">Socket 参数设置</h3>
-
-<ul>
-<li><p>TCP_NODELAY: 表示立即发送数据<br/>
-采用 Negale 算法，发送方发送的数据不会立刻发出，而是先放在缓冲区内，等缓冲区满了，再发出。发送完一批数据后，会等待接收方对这批数据的回应，然后再发送下一批数据。</p></li>
-<li><p>SO_REUSEADDR: 表示是否允许重用 Socket 所绑定的本地地址Addr,一般情况下，socketA关闭之后，并不是立即释放socketA 所占用的地址Addr，需要等待一段时间后，没有资源传输了才会真实释放，设置此配置参数即是socketA未完全释放资源的时候，允许别的socketB重新绑定地址Addr。</p></li>
-<li><p>SO_TIMEOUT: 表示接收数据时的等待超时时间</p></li>
-<li><p>SO_LINGER: 表示当执行 Socket 的close()方法时，是否立即关闭底层的socket。默认情况下，执行socket的close()方法，底层的socket并不会立即关闭，而是会延时一段时间，知道发送完所有数据之后，才会真的关闭 socket，断开连接。</p></li>
-<li><p>SO_SNFBUF: 表示发送数据的缓冲区大小</p></li>
-<li><p>SO_RCVBUF: 表示接收数据的缓冲区大小</p></li>
-<li><p>SO_KEEPALIVE: 表示对于长时间处于空闲状态的socket，是否要自动把它关闭</p></li>
-<li><p>OOBINLINE: 表示是否支持发送一个字节的TCP紧急数据</p></li>
-</ul>
-
-<h2 id="toc_2">ServerSocket</h2>
-
-<p>参数设置：</p>
-
-<ul>
-<li>SO_TIMEOUT: 表示等待客户连接超时时间</li>
-<li>SO_REUSEADDR: 表示是否允许重用服务器所绑定的地址</li>
-<li>SO_RCVBUF: 表示接收数据的缓冲区的大小</li>
-</ul>
-
-<p>另外还有一个参数： SO_BACKLOG设置请求连接队列的大小即最大连接数的大小</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Disruptor]]></title>
-    <link href="http://www.throne4j.com/16020511412975.html"/>
-    <updated>2020-10-07T14:12:21+08:00</updated>
-    <id>http://www.throne4j.com/16020511412975.html</id>
-    <content type="html"><![CDATA[
-<p>Disruptor 是英国外汇交易公司 LMAX 开发的一个高性能队列，研发的初衷是 解决内部的内存队列的延迟问题，而不是分布式队列。基于 Disruptor 开发的系 统单线程能支撑每秒 600 万订单，2010 年在 QCon 演讲后，获得了业界关注。</p>
-
-<p>Disruptor 是一个高性能的线程间异步通信的框架，即在同一个 JVM 进程中 的多线程间消息传递。</p>
-
-<h2 id="toc_0">传统队列问题</h2>
-
-<p>在 JDK 中，Java 内部的队列 BlockQueue 的各种实现，仔细分析可以得知， 队列的底层数据结构一般分成三种:数组、链表和堆，堆这里是为了实现带有优先级特性的队列暂且不考虑。</p>
-
-<p>在稳定性和性能要求特别高的系统中，为了防止生产者速度过快，导致内存 溢出，只能选择有界队列;同时，为了减少 Java 的垃圾回收对系统性能的影响， 会尽量选择 Array 格式的数据结构。这样筛选下来，符合条件的队列就只有 ArrayBlockingQueue。但是 ArrayBlockingQueue 是通过加锁的方式保证线程安全， 而且 ArrayBlockingQueue 还存在伪共享问题，这两个问题严重影响了性能。</p>
-
-<p>ArrayBlockingQueue 的这个伪共享问题存在于哪里呢，分析下核心的部分源 码，其中最核心的三个成员变量为：takeIndex、putIndex、count，在 ArrayBlockingQueue 的核心 enqueue 和 dequeue 方法中经常会用到的，这三 个变量很容易放到同一个缓存行中，进而产生伪共享问题。</p>
-
-<h2 id="toc_1">高性能的原理</h2>
-
-<p>引入环形的数组结构:数组元素不会被回收，避免频繁的 GC， </p>
-
-<p>无锁的设计:采用 CAS 无锁方式，保证线程的安全性 </p>
-
-<p>属性填充:通过添加额外的无用信息，避免伪共享问题</p>
-
-<p>环形数组结构是整个 Disruptor 的核心所在。</p>
-
-<p><figure><img src="media/16020511412975/16020523609287.jpg" alt="" style="width:738px;"/></figure></p>
-
-<p>首先，因为是数组，所以要比链表快，而且根据我们对上面缓存行的解释知道， 数组中的一个元素加载，相邻的数组元素也是会被预加载的，因此在这样的结构中，cpu 无需时不时去主存加载数组中的下一个元素。而且，你可以为数组预先分配内存，使得数组对象一直存在(除非程序终止)。</p>
-
-<p>这就意味着不需要花大量的时间用于垃圾回收。此外，不像链表那样，需要为每一个添加到其上面的对象创造节点对象，对应的，当删除节点时，需要执行相应的内存清理操作。环形数组中的元素采用覆盖方式，避免了 jvm 的 GC。</p>
-
-<p>其次，结构作为环形，数组的大小为 2 的 n 次方，这样元素定位可以通过位运算效率会更高，这个跟一致性哈希中的环形策略有点像。在 disruptor 中，这个牛逼的环形结构就是 RingBuffer，既然是数组，那么就有大小，而且这个大小必须是2的n次方。</p>
-
-<p>其实质只是一个普通的数组，只是当放置数据填充满队列(即到达 2<sup>n-1</sup> 位 置)之后，再填充数据，就会从 0 开始，覆盖之前的数据，于是就相当于一个环。</p>
-
-<p>每个生产者首先通过 CAS 竞争获取可以写的空间，然后再进行慢慢往里放数据，如果正好这个时候消费者要消费数据，那么每个消费者都需要获取最大可消费的下标。</p>
-
-<p>同时，Disruptor 不像传统的队列，分为一个队头指针和一个队尾指针，而是只有一个角标(上图的 seq)，它属于一个 volatile 变量，同时也是我们能够不用锁操作就能实现 Disruptor 的原因之一，而且通过缓存行补充，避免伪共享 问题。该指针是通过一直自增的方式来获取下一个可写或者可读数据。</p>
 
 ]]></content>
   </entry>

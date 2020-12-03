@@ -163,32 +163,128 @@ Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一
 <p>下面用图来说明他们之间的关系：<br/>
 <figure><img src="media/16063167790102/16063195145545.jpg" alt=""/></figure></p>
 
-<p><figure><img src="media/16063167790102/16063203402166.jpg" alt=""/></figure></p>
+<h3 id="toc_5">Channel 接口</h3>
 
-<p><figure><img src="media/16063167790102/16063208871763.jpg" alt=""/></figure></p>
+<p>基本的 I/O 操作(bind()、connect()、read()和 write())依赖于底层网络传输所提供的原语。</p>
 
-<h2 id="toc_5">Channel 接口</h2>
+<p>在基于 Java 的网络编程中，其基本的构造是类 Socket。Netty 的 Channel 接口所提供 的 API，被用于所有的 I/O 操作。大大地降低了直接使用 Socket 类的复杂性。</p>
 
-<h3 id="toc_6">Channel 生命周期</h3>
+<h4 id="toc_6">Channel 生命周期</h4>
 
 <ul>
 <li>ChannelRegistered : Channel 已经被注册到了 EventLoop</li>
 <li>ChannelActive : Channel 处于活动状态(已经连接到它的远程节点)。它现在可以接收和发送数据了</li>
 <li>ChannelInactive : Channel 没有连接到远程节点</li>
-<li>- ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
+<li>ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
 </ul>
 
-<h3 id="toc_7">Channel 接口中重要的方法</h3>
+<h4 id="toc_7">Channel 接口中重要的方法</h4>
 
 <ul>
 <li>eventLoop: 返回分配给 Channel 的 EventLoop</li>
 <li>pipeline: 返回分配给 Channel 的 ChannelPipeline</li>
 <li>isActive: 如果 Channel 是活动的，则返回 true。活动的意义可能依赖于底层的传输。 例如，一个 Socket 传输一旦连接到了远程节点便是活动的，而一个 Datagram 传输一旦被打开便是活动的。</li>
-<li>localAddress: 返回本地的 SokcetAddress</li>
+<li>localAddress: 返回本地的 SocketAddress</li>
 <li>remoteAddress: 返回远程的 SocketAddress</li>
 <li>write: 将数据写到远程节点。这个数据将被传递给 ChannelPipeline，并且排队直到它被冲刷</li>
-<li>flush: 将之前已写的数据冲刷到底层传输，如一个 Socket writeAndFlush: 一个简便的方法，等同于调用 write()并接着调用 flush()</li>
+<li>flush: 将之前已写的数据冲刷到底层传输，如一个 Socket </li>
+<li>writeAndFlush: 一个简便的方法，等同于调用 write()并接着调用 flush()</li>
 </ul>
+
+<h3 id="toc_8">EventLoop 和 EventLoopGroup</h3>
+
+<p>EventLoop 定义了 Netty 的核心抽象，用于处理网络连接的生命周期中所发生的事件。<br/>
+一个 EventLoop 将由一个永远都不会改变的 Thread 驱动，同时任务(Runnable 或者 Callable)可以直接提交给 EventLoop 实现，以立即执行或者调度执行。</p>
+
+<p><figure><img src="media/16063167790102/EventLoop.jpg" alt="EventLoop"/><figcaption>EventLoop</figcaption></figure></p>
+
+<p>根据配置和可用核心的不同，可能会创建多个 EventLoop 实例用以优化资源的使用，并 且单个 EventLoop 可能会被指派用于服务多个 Channel。</p>
+
+<h4 id="toc_9">任务调度</h4>
+
+<p>有时你将需要调度一个任务以便稍后(延迟)执行或者周期性地执行，常见的一个用例就是发送心跳消息到远程节点，以检查连接是否仍然还活着。如果没有响应，你便知道可以关闭该 Channel 了。</p>
+
+<h4 id="toc_10">线程管理</h4>
+
+<p>当提交任务到如果(当前)调用线程正是支撑 EventLoop 的线程，那么所提交 的代码块将会被(直接)执行。否则，EventLoop 将调度该任务以便稍后执行，并将它放入 到内部队列中。当 EventLoop 下次处理它的事件时，它会执行队列中的那些任务/事件。</p>
+
+<p><figure><img src="media/16063167790102/16070090935626.jpg" alt=""/></figure></p>
+
+<h4 id="toc_11">线程的分配</h4>
+
+<p>服务于 Channel 的 IO 和事件的 EventLoop 则包含在 EventLoopGroup 中。</p>
+
+<p>异步传输实现只使用了少量的 EventLoop(以及和它们相关联的 Thread)，而且在当前 的线程模型中，它们可能会被多个Channel 所共享。这使得可以通过尽可能少量的Thread 来 支撑大量的 Channel，而不是每个 Channel 分配一个 Thread。EventLoopGroup 负责为每个 新创建的 Channel 分配一个 EventLoop。</p>
+
+<p><figure><img src="media/16063167790102/16070093180963.jpg" alt=""/></figure></p>
+
+<p>一旦一个 Channel 被分配给一个 EventLoop，它将在它的整个生命周期中都使用这个 EventLoop(以及相关联的 Thread)。</p>
+
+<p>这里就需要特别注意一个类了 ThreadLocal，因为一个 EventLoop 通 常会被用于支撑多个 Channel，所以对于所有相关联的 Channel 来说，ThreadLocal 都将是 一样的。这使得它对于实现状态追踪等功能来说是个糟糕的选择。然而，在一些无状态的上下文中，它仍然可以被用于在多个 Channel 之间共享一些重度的或者代价昂贵的对象，甚至是事件。</p>
+
+<h2 id="toc_12">ChannelFuture 接口</h2>
+
+<p>Netty 中所有的 I/O 操作都是异步的。因为一个操作可能不会立即返回，所以我们需要 一种用于在之后的某个时间点确定其结果的方法。为此，Netty 提供了 ChannelFuture 接口， 其 addListener()方法注册了一个 ChannelFutureListener，以便在某个操作完成时(无论是否 成功)得到通知。</p>
+
+<h2 id="toc_13">ChannelHandler</h2>
+
+<p>ChannelHandler 承担了所有处理入站和出站数据的处理。ChannelHandler 的方法是由网络事件触发的。</p>
+
+<p>Netty 定义了下面两个重要的 ChannelHandler 子接口：</p>
+
+<ul>
+<li>ChannelInboundHandler——处理入站数据以及各种状态变化; </li>
+<li>ChannelOutboundHandler——处理出站数据并且允许拦截所有的操作</li>
+</ul>
+
+<h3 id="toc_14">ChannelInboundHandler</h3>
+
+<p>ChannelInboundHandler 会在数据被接收时或者与其对应的 Channel 状态发生改变时被调用。下面我们来看下它所定义的相关方法：</p>
+
+<ul>
+<li>channelRegistered : 当 Channel 已经注册到它的 EventLoop 并且能够处理 I/O 时被调用</li>
+<li>channelUnregistered : 当 Channel 从它的 EventLoop 注销并且无法处理任何 I/O 时被调用</li>
+<li>channelActive : 当 Channel 处于活动状态时被调用;Channel 已经连接/绑定并且已经就绪</li>
+<li>channelInactive : 当 Channel 离开活动状态并且不再连接它的远程节点时被调用</li>
+<li>channelReadComplete : 当 Channel 的一个读操作完成时被调用</li>
+<li>channelRead : 当从 Channel 读取数据时被调用</li>
+<li>channelWritabilityChanged : 当 Channel 的可写状态发生改变时被调用。可以通过调用 Channel 的 isWritable()方法 来检测 Channel 的可写性。与可写性相关的阈值可以通过Channel.config().setWriteHighWaterMark()和Channel.config().setWriteLowWaterMark()方法来设置</li>
+<li>userEventTriggered : 当 ChannelnboundHandler.fireUserEventTriggered() 方法被调用时被 调用。</li>
+</ul>
+
+<h3 id="toc_15">ChannelOutboundHandler</h3>
+
+<p>出站操作和数据将由 ChannelOutboundHandler 处理。它的方法将被 Channel、ChannelPipeline 以及 ChannelHandlerContext 调用</p>
+
+<p>所有由 ChannelOutboundHandler 本身所定义的方法：</p>
+
+<ul>
+<li>bind(ChannelHandlerContext,SocketAddress,ChannelPromise)<br/>
+当请求将 Channel 绑定到本地地址时被调用</li>
+<li>connect(ChannelHandlerContext,SocketAddress,SocketAddress,ChannelPromise)<br/>
+当请求将 Channel 连接到远程节点时被调用</li>
+<li>disconnect(ChannelHandlerContext,ChannelPromise)<br/>
+当请求将 Channel 从远程节点断开时被调用</li>
+<li>close(ChannelHandlerContext,ChannelPromise) 当请求关闭 Channel 时被调用</li>
+<li>deregister(ChannelHandlerContext,ChannelPromise)<br/>
+当请求将 Channel 从它的 EventLoop 注销时被调用</li>
+<li>read(ChannelHandlerContext)<br/>
+当请求从 Channel 读取更多的数据时被调用</li>
+<li>flush(ChannelHandlerContext)<br/>
+当请求通过 Channel 将入队数据冲刷到远程节点时被调 用</li>
+<li>write(ChannelHandlerContext,Object,ChannelPromise)<br/>
+当请求通过 Channel 将数据写到 远程节点时被调用</li>
+</ul>
+
+<h3 id="toc_16">ChannelHandler 适配器</h3>
+
+<p>有一些适配器类可以将编写自定义的 ChannelHandler 所需要的工作降到最低限度，因 为它们提供了定义在对应接口中的所有方法的默认实现。因为你有时会忽略那些不感兴趣的 事件，所以 Netty 提供了抽象基类 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter。</p>
+
+<p>可以使用 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter 类作为 自己的 ChannelHandler 的起始点。这两个适配器分别提供了 ChannelInboundHandler 和 ChannelOutboundHandler 的基本实现。通过扩展抽象类 ChannelHandlerAdapter，它们获得 了它们共同的超接口 ChannelHandler 的方法。</p>
+
+<p>ChannelHandlerAdapter 还提供了实用方法 isSharable()。如果其对应的实现被标注为 Sharable，那么这个方法将返回 true，表示它可以被添加到多个 ChannelPipeline。</p>
+
+<p><figure><img src="media/16063167790102/16070173055991.jpg" alt=""/></figure></p>
 
                   </article>
                   <div class="comments-wrap">

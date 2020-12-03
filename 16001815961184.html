@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    TCP 粘包/拆包 - 大爷来玩儿啊~
+    传统的 BIO 通信模型与NIO发展历程 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            TCP 粘包/拆包   
+                            传统的 BIO 通信模型与NIO发展历程   
                       </h1>
                      
                     
@@ -114,46 +114,157 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>TCP底层并不了解上层业务数据的具体含义，它会根据TCP缓冲区的实际情况进行包的划分，即滑动窗口的概念。所以一个完整的业务包可能会被TCP拆分成多个包进行发送，也有可能把多个晓得包封装成一个大的数据包发送，这就是所谓的TCP粘包与拆包问题。</p>
+                    <p>首先看一下BIO通信模型示意图，如下图所示：</p>
 
-<h2 id="toc_0">TCP粘包与拆包问题说明</h2>
+<p><figure><img src="media/15998898223293/15998918203285.jpg" alt="" style="width:843px;"/></figure></p>
 
-<p><figure><img src="media/16001815961184/16001825107010.jpg" alt="" style="width:622px;"/></figure></p>
+<p><figure><img src="media/15998898223293/15998920886309.jpg" alt="" style="width:844px;"/></figure></p>
 
-<p>假设客户端分别发送了两个数据包D1 和D2给服务端，由于服务端一次读取到的字节数是不确定的，故可能存在以下4种情况：</p>
+<p>网络编程的基本模型是 Client/ Server模型,也就是两个进程之间进行相互通信,其中服务端提供位置信息(绑定的IP地址和监听端口),客户端通过连接操作向服务端监听的地址发起连接请求,通过三次握手建立连接,如果连接建立成功,双方就可以通过网络套接字(Socket)进行通信。</p>
+
+<p>在基于传统同步阻塞模型开发中, Serversocket负责绑定IP地址,启动监听端口Socket负责发起连接操作。连接成功之后,双方通过输入和输出流进行同步阻塞式通信。</p>
+
+<p>采用 BIO 通信模型的服务端，通常由一个独立的 Acceptor 线程负责监听客户端的连接，它接收到客户端连接请求之后为每个客户端创建一 个新的线程进行链路处理没处理完成后，通过输出流返回应答给客户端，线程销毁。即典型的一请求一应答模型。</p>
+
+<p>该模型最大的问题就是缺乏弹性伸缩能力，当客户端并发访问量增加后，服 务端的线程个数和客户端并发访问数呈 1:1 的正比关系，Java 中的线程也是比较 宝贵的系统资源，线程数量快速膨胀后，系统的性能将急剧下降，随着访问量的 继续增大，系统最终就不堪重负挂掉了。</p>
+
+<p>为了改进这种一连接一线程的模型，我们可以使用线程池来管理这些线程， 实现 1 个或多个线程处理 N 个客户端的模型(但是底层还是使用的同步阻塞 I/O)， 通常被称为“伪异步 I/O 模型“。</p>
+
+<p>我们看一下 返回应答时间过长会引起的级联故障：</p>
+
+<p>(1)服务端处理缓慢,返回应答消息耗费60s,平时只需要10ms </p>
+
+<p>(2)米用伪异步1/O的线程正在读取故障服务节点的响应,由于读取输入流是阻塞的,它将别阻塞 60s。</p>
+
+<p>(3)假如所有的可用线程都被故障服务器阻塞,那后续所有的1/O消息都将在队列中排队。</p>
+
+<p>(4)由于线程池采用阻塞队列实现,当队列积满之后,后续入队列的操作将被阻塞</p>
+
+<p>(5)由于前端只有一个 Accptor线程接收客户端接入,它被阻塞在线程池的同步阻塞队列之后,新的客户端请求消息将被拒绝,客户端会发生大量的连接超时。</p>
+
+<p>(6)由于几乎所有的连接都超时,调用者会认为系统已经崩溃,无法接收新的请求消息。</p>
+
+<p>代码如下：</p>
+
+<pre><code class="language-java">import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * BIO 服务端
+ **/
+public class Server {
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress(8081));
+        System.out.println(&quot;server 启动了&quot;);
+        while (true) {
+            // 在这里会阻塞接受连接请求
+            Socket accept = serverSocket.accept();
+            // 这里可以换成线程池实现用户与线程 N:M 的伪异步IO模型
+            // 但是如果发生读取数据较慢时，大量并发的情况下，其它接入的消息只能一直等待，这是此模型的最大弊端
+            new Thread(new ServerTask(accept)).start();
+        }
+    }
+
+
+    private static class ServerTask implements Runnable {
+        private Socket socket = null;
+
+        public ServerTask(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream = socket.getOutputStream();
+
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
+                String s = objectInputStream.readUTF();
+                System.out.println(&quot;server accept &quot; + s);
+
+                objectOutputStream.writeUTF(&quot;有胆你就来&quot;);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}
+
+</code></pre>
+
+<pre><code class="language-java">
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
+/**
+ * 请求客户端
+ **/
+public class Client {
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress(&quot;127.0.0.1&quot;,8081));
+
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+
+        outputStream.writeUTF(&quot;老子来逛逛&quot;);
+        outputStream.flush();
+        System.out.println(inputStream.readUTF());
+
+    }
+}
+
+</code></pre>
+
+<h2 id="toc_0">JDK对NIO的支持与演进</h2>
+
+<p>由于上面几点阻塞IO引起的问题，java 在JDK1.4的时候，随着JSR-51的发布，引入了NIO，它新增了一个java.nio包。提供了很多进行一步IO开发的API和类库。主要的类和接口如下：</p>
 
 <ul>
-<li>服务端分两次读取到了两个独立的数据包 D1 和 D2 ，没有 粘包与拆包</li>
-<li>服务端一次接收到了两个数据包，D1和D2粘合在一起，被称为TCP粘包</li>
-<li>服务端分两次读取到了两个数据包，第一次读取到了完整的D1 包和D2包的部分内容，第二次读取到了 D2 包的剩余内容，这被称为 TCP拆包</li>
-<li>服务端分两次读取到了两个数据包，第一次读取到了D1包的部分内容 D1_1 ，第二次读取到了D1包的剩余内容 D1_2 和 D2 包的整包。</li>
+<li>进行异步I/O操作的缓冲区 Bytebuffer等;</li>
+<li>进行异步1O操作的管道Pipe </li>
+<li>进行各种1/O操作(异步或者同步)的 Channel,包括 ServerSocketChannel和SocketChannel </li>
+<li>多种字符集的编码能力和解码能力</li>
+<li>实现非阻塞1/O操作的多路复用器 selector </li>
+<li>基于流行的Perl实现的正则表达式类库; </li>
+<li>文件通道 FileChannel</li>
 </ul>
 
-<p>如果此时服务端 tcp 接收 滑窗 非常小，而数据包 D1 和 D2 比较大，很有可能会发生第5种情况，即服务端分多次才能将D1和D2包 接受完全，期间发生多次拆包。</p>
-
-<h2 id="toc_1">TCP 粘包/拆包发生的原因</h2>
-
-<p>问题产生的原因有 三个：</p>
+<p>虽然NIO类库促进了基于java 的一步非阻塞编程的发展和应用，但是，它仍然有不完善的地方，主要问题如下：</p>
 
 <ul>
-<li>应用程序write 写入的字节大小大于套接口发送缓冲区大小</li>
-<li>进行MSS大小的TCP分段</li>
-<li>以太网帧的payload 大于 MTU 进行 IP 分片。</li>
+<li>没有统一的文件属性</li>
+<li>API能力比较弱，例如目录的级联创建和递归遍历，需要自己实现</li>
+<li>底层存储系统的一些高级API无法使用</li>
+<li>所有的文件操作都是同步阻塞调用，不支持异步文件读写操作</li>
 </ul>
 
-<p><figure><img src="media/16001815961184/16001830988462.jpg" alt=""/></figure></p>
-
-<h2 id="toc_2">粘包问题的解决策略</h2>
-
-<p>由于底层的 TCP 无法理解上层的业务数据，所以在底层是无法保证数据包不被拆分和重组的，这个问题只能通过上层的应用协议栈设计来解决，根据业界的主流协议的解决方案，可以归纳如下：</p>
+<p>之后随着 JDK1.7 正式发布，NIO升级为成我们口中的额 NIO2.0 ,它是有JSR-203演进而来，主要提供了如下三个方面的改进：</p>
 
 <ul>
-<li>消息定长，例如每个报文的大小为固定长度200字节，如果不够，空位补空格</li>
-<li>在包尾增加回车换行符作为消息结束符，例如 FTP协议，在文本协议中应用比较广泛</li>
-<li>将特殊的分隔符作为消息的结束标志，回车换行符就是一种特殊的结束分隔符</li>
-<li>将消息分为消息头和消息体，消息头中包含消息总长度（或者消息体长度）的字段，通常设计思路为消息头的第一个字段使用 int32 来表示消息的总长度</li>
-<li>更复杂的应用层协议</li>
+<li>提供能够批量获取文件属性的API，这些API具有平台无关性，不予特性的文件系统相耦合</li>
+<li>提供AIO功能，支持基于文件的异步IO操作和针对网络套接字的异步操作</li>
+<li>完成JSR-51定义的通道功能，包括对配置和多播数据报的支持等。</li>
 </ul>
+
+<h2 id="toc_1">BIO和NIO的区别</h2>
+
+<p>Java NIO 和 IO 之间第一个最大的区别是，IO 是面向流的，NIO 是面向缓冲 区的。 </p>
+
+<p>Java IO 的各种流是阻塞的，Java NIO 的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它 仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不 是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。</p>
 
                   </article>
                   <div class="comments-wrap">
@@ -197,6 +308,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
