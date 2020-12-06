@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-12-04T07:55:27+08:00</updated>
+  <updated>2020-12-06T22:39:36+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,11 +13,336 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[todo]]></title>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/16072655636252.html"/>
+    <updated>2020-12-06T22:39:23+08:00</updated>
+    <id>http://www.throne4j.com/16072655636252.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[UDT]]></title>
+    <link href="http://www.throne4j.com/16072579547979.html"/>
+    <updated>2020-12-06T20:32:34+08:00</updated>
+    <id>http://www.throne4j.com/16072579547979.html</id>
+    <content type="html"><![CDATA[
+<p>基于 UDP 的数据传输协议(UDP-based Data Transfer Protocol，简称 UDT)是一种互联 网数据传输协议。UDT 的主要目的是支持高速广域网上的海量数据传输，最典型的例子就是 建立在光纤广域网上的网格计算，一些研究所在这样的网络上运行他们的分布式的数据密集 程式，例如，远程访问仪器、分布式数据挖掘和高分辨率的多媒体流。</p>
+
+<p>而互联网上的标准数据传输协议 TCP 在高带宽长距离网络上性能很差。顾名思义，UDT 建于 UDP 之上，并引入新的拥塞控制和数据可靠性控制机制。UDT 是面向连接的<strong>双向的应用层协议</strong>。</p>
+
+<p>UDT 的特性主要包括在以下几个方面:</p>
+
+<ul>
+<li><p>基于 UDP 的应用层协议: 有基本网络知识的朋友都知道 TCP 和 UDP 的区别和使用场 景，但是有没有一种协议能同时兼顾 TCP 协议的安全可靠和 UDP 协议的高效，那么 UDT 就是一种。</p></li>
+<li><p>面向连接的协议:面向连接意味着两个使用协议的应用在彼此交换数据之前必须先建立 一个连接，当然 UDT 是逻辑上存在的连接通道。这种连接的维护是基于握手、Keep-alive(保活)以及关闭连接。</p></li>
+<li><p>可靠的协议:依靠包序号机制、接收者的 ACK 响应和丢包报告、ACK 序号机制、重传机 制(基于丢包报告和超时处理)来实现数据传输的可靠性。</p></li>
+<li><p>双工的协议:每个 UDT 实例包含发送端和接收端的信息。</p>
+<ul>
+<li>新的拥塞算法，并且具有可扩展的拥塞控制框架:新的拥塞控制算法不同于基于窗口的 TCP 拥塞控制算法(慢启动和拥塞避免)，是混合的基于窗口的、基于速率的拥塞控制算法。</li>
+</ul></li>
+<li><p>带宽估计:UDT 使用对包(PP -- Packet pair)的机制来估计带宽值。即每 16 个包为一组, 最后一个是对包,即发送方不用等到下一个发送周期内再发送。接收方接收到对包后对其到 达时间进行记录,可结合上次记录的值计算出链路的带宽(计算的方法称为中值过滤法), 并 在下次 ACK 中进行反馈。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[服务器推送技术-短轮询和 Comet]]></title>
+    <link href="http://www.throne4j.com/16072486450593.html"/>
+    <updated>2020-12-06T17:57:25+08:00</updated>
+    <id>http://www.throne4j.com/16072486450593.html</id>
+    <content type="html"><![CDATA[
+<p>服务器推送技术干嘛用?就是让用户在使用网络应用的时候，不需要一遍又一遍的去手 动刷新就可以及时获得更新的信息。大家平时在上各种视频网站时，对视频节目进行欢乐的 吐槽和评论，会看到各种弹幕，当然，他们是用 flash 技术实现的，对于我们没有用 flash 的 应用，一样可以实现弹幕。又比如在股票网站，往往可以看到，各种股票信息的实时刷新， 上面的这些都是基于服务器推送技术。</p>
+
+<h2 id="toc_0">Ajax 短轮询</h2>
+
+<p>就是用一个定时器不停的去网站上请求数据。</p>
+
+<h2 id="toc_1">Comet</h2>
+
+<p>服务器推送 是一种很早就存在的技术，以前在实现上主要是通过客户端的套接口，或是服务器端的远程调用。因为浏览器技术的发展比较缓慢，没有为“服务器推”的实现提供很好的支持，在纯浏览器的应用中很难有一个完善的方案去实现“服务器推”并用于商业程序。 因为 AJAX 技术的普及，gmail 等等在实现中使用了这些新技术;同时“服务器推送”在现实应用中确实存在很多需求。称这种基于 HTTP 长连接、无须在浏览器端安装插件的“服务器推” 技术为“Comet”。</p>
+
+<h3 id="toc_2">基于 AJAX 的长轮询</h3>
+
+<p>DeferredResult : spring mvc 的控制层接收用户的请求之后，如果要采用异步处理，那么就要返回 DeferredResult 泛型对象。在调用完控制层之后，立即返回 DeferredResult 对象，此时驱动控制层的容器在主线程，可处理更多的请求</p>
+
+<p>可以将 DeferredResult 对象作为真实响应数据的代理，而真实的数据是该对象的成员变量 result ，它可以是 String 类型或者 ModelAndView类型等</p>
+
+<p>业务处理完毕之后，要执行 setResult 方法，将真实的响应数据赋值到 DeferredResult 对象中。此时，异步线程会唤醒容器主线程。那么容器主线程会继续执行 getResult 方法， 将真实数据响应到客户端。</p>
+
+<h3 id="toc_3">SSE</h3>
+
+<p>严格地说，HTTP 协议无法做到服务器主动推送信息。但是，有一种变通方法，就是服 务器向客户端声明，接下来要发送的是流信息(streaming)。</p>
+
+<p>也就是说，发送的不是一次性的数据包，而是一个数据流，会连续不断地发送过来。这 时，客户端不会关闭连接，会一直等着服务器发过来的新的数据流，视频播放就是这样的例子。本质上，这种通信就是以流信息的方式，完成一次用时很长的下载。</p>
+
+<p>SSE 就是利用这种机制，使用流信息向浏览器推送信息。它基于 HTTP 协议，目前除了 IE/Edge，其他浏览器都支持。</p>
+
+<p>SSE 与 WebSocket 作用相似，都是建立浏览器与服务器之间的通信渠道，然后服务器向浏览器推送信息。</p>
+
+<p>总体来说，WebSocket 更强大和灵活。因为它是全双工通道，可以双向通信;SSE 是单 向通道，只能服务器向浏览器发送，因为流信息本质上就是下载。如果浏览器向服务器发送信息，就变成了另一次 HTTP 请求。</p>
+
+<ul>
+<li>SSE 使用 HTTP协议，现有的服务器软件都支持，WebSocket 是一个独立的协议</li>
+<li>SSE 比较轻量，使用简单，WebSocket 协议相对复杂</li>
+<li>SSE 默认支持断线重连，WebSocket 需要自己实现</li>
+<li>SSE 一般只用来传送文本，二进制数据需要编码后传送，WebSocket 默认支持传送二进制数据</li>
+<li>SSE支持自定义发送的消息类型</li>
+</ul>
+
+<h4 id="toc_4">HTTP 头信息</h4>
+
+<p>服务器向浏览器发送的 SSE 数据必须是 UTF-8 编码的文本，具有如下的 HTTP 头信息</p>
+
+<ul>
+<li>Content-Type: text/event-stream (MIME 类型必须是 event-stream类型)</li>
+<li>Cache-Control: no-cache</li>
+<li>Connection: keep-alive</li>
+</ul>
+
+<h4 id="toc_5">消息格式</h4>
+
+<p>每次发送的信息由若干个message 组成，每个 message 之间用 \n\n 分割。每个 message 内部由若干行组成，每行都是如下格式：</p>
+
+<p>上面的 field 可以取 4 个值：</p>
+
+<ul>
+<li>data</li>
+<li>event</li>
+<li>id<br/></li>
+<li>retry</li>
+</ul>
+
+<p>此外还可以有冒号开头的行，表示注释。通常服务器每隔一段时间就会向浏览器发送一个注释，保持连接不中断</p>
+
+<h5 id="toc_6">data字段</h5>
+
+<p>数据内容，如果数据很长，可以分成多行，最后一行用 \n\n 结尾，前面行用 \n 结尾。例如：</p>
+
+<p>data:hello ,\n<br/>
+data:world\n\n</p>
+
+<h5 id="toc_7">id字段</h5>
+
+<p>数据标识符用 id 字段表示，相当于每一条数据的编号</p>
+
+<p>id:msg\n<br/>
+data:gou zei\n\n</p>
+
+<p>浏览器用 lastEventId 属性读取这个值。一旦连接断线，浏览器会发送一个 HTTP 头， 里面包含一个特殊的 Last-Event-ID 头信息，将这个值发送回来，用来帮助服务器端重建连接。 因此，这个头信息可以被视为一种同步机制。</p>
+
+<h5 id="toc_8">event 字段</h5>
+
+<p>event 字段表示自定义的事件类型，默认是 message 事件。浏览器可以用 addEventListener()监听该事件。</p>
+
+<p>event: foo\n<br/>
+data: a foo event\n\n<br/>
+data: an unnamed event\n\n<br/>
+event: bar\n<br/>
+data: a bar event\n\n</p>
+
+<p>上面的代码创造了三条信息。第一条的名字是 foo，触发浏览器的 foo 事件;第二条未 取名，表示默认类型，触发浏览器的 message 事件;第三条是 bar，触发浏览器的 bar 事件。</p>
+
+<h5 id="toc_9">retry 字段</h5>
+
+<p>服务器可以用 retry 字段，指定浏览器重新发起连接的时间间隔。</p>
+
+<p>retry: 10000\n</p>
+
+<p>两种情况会导致浏览器重新发起连接:一种是时间间隔到期，二是由于网络错误等原因， 导致连接出错。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Netty 编解码器]]></title>
+    <link href="http://www.throne4j.com/16072474529189.html"/>
+    <updated>2020-12-06T17:37:32+08:00</updated>
+    <id>http://www.throne4j.com/16072474529189.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">什么是编解码器</h2>
+
+<p>每个网络应用程序都必须定义如何解析在两个节点之间来回传输的原始字节，以及如何 将其和目标应用程序的数据格式做相互转换。这种转换逻辑由编解码器处理，编解码器由编码器和解码器组成，它们每种都可以将字节流从一种格式转换为另一种格式。</p>
+
+<p>那么它们的区别是什么呢?</p>
+
+<p>如果将消息看作是对于特定的应用程序具有具体含义的结构化的字节序列。 </p>
+
+<p>那么编码器是将消息转换为适合于传输的格式(最有可能的就是字节流);而对应的解码器则是将网络字节流转换回应用程序的消息格式。</p>
+
+<p>因此，编码器操作出站数据，而解码器处理入站数据。</p>
+
+<h2 id="toc_1">Netty 编解码解决粘包拆包问题</h2>
+
+<p>首先需要回顾下什么是 <a href="15998898223293.html">TCP 粘包/拆包</a></p>
+
+<p>下面我们看下 Netty是如何解决 粘包chai包问题提的</p>
+
+<p>由于底层的 TCP 无法理解上层的业务数据，所以在底层是无法保证数据包不被拆分和重 组的，这个问题只能通过上层的应用协议栈设计来解决，根据业界的主流协议的解决方案， 可以归纳如下：</p>
+
+<ul>
+<li>在包尾增加分割符，比如回车换行符进行分割，例如FTP协议; 使用LineBasedFrameDecoder、DelimiterBasedFrameDecoder 实现</li>
+<li>消息定长，例如每个报文的大小为固定长度 200 字节，如果不够，空位补空格，使用 FixedLengthFrameDecoder 实现</li>
+<li>将消息分为消息头和消息体，消息头中包含表示消息总长度(或者消息体长度) 的字段，通常设计思路为消息头的第一个字段使用 int32 来表示消息的总长度，使用 LengthFieldBasedFrameDecoder 实现。</li>
+</ul>
+
+<h2 id="toc_2">解码器</h2>
+
+<p>因为解码器是负责将入站数据从一种格式转换到另一种格式的，所以 Netty 的解码器实现了 ChannelInboundHandler。</p>
+
+<p>什么时候会用到解码器呢? </p>
+
+<p>每当需要为 ChannelPipeline 中的下一个 ChannelInboundHandler 转换入站数据时会用到。此外，得益于 ChannelPipeline 的设计，可 以将多个解码器链接在一起，以实现任意复杂的转换逻辑。</p>
+
+<p>加码器相关的接口：</p>
+
+<ul>
+<li>将字节解码为消息 ByteToMessageDecoder</li>
+<li>将一种消息类型解码为另一种 MessageToMessageDecoder。</li>
+</ul>
+
+<h3 id="toc_3">ByteToMessageDecoder 将字节解码为消息</h3>
+
+<p>将字节解码为消息(或者另一个字节序列)是一项如此常见的任务，以至于 Netty 为它 提供了一个抽象的基类:ByteToMessageDecoder。由于你不可能知道远程节点是否会一次性 地发送一个完整的消息，所以这个类会对入站数据进行缓冲，直到它准备好处理。</p>
+
+<pre><code class="language-text">decode(ChannelHandlerContext ctx,ByteBuf in,List&lt;Object&gt; out)
+</code></pre>
+
+<p>这是你必须实现的唯一抽象方法。decode()方法被调用时将会传入一个包含了传入数据 的 ByteBuf，以及一个用来添加解码消息的 List。对这个方法的调用将会重复进行，直到确 定没有新的元素被添加到该 List，或者该 ByteBuf 中没有更多可读取的字节时为止。然后， 如果该 List 不为空，那么它的内容将会被传递给 ChannelPipeline 中的下一个 ChannelInboundHandler。</p>
+
+<h3 id="toc_4">MessageToMessageDecoder 将一种消息类型解码为另一种</h3>
+
+<p>在两个消息格式之间进行转换 (例如，从 String-&gt;Integer)</p>
+
+<pre><code class="language-text">decode(ChannelHandlerContext ctx,I msg,List&lt;Object&gt; out)
+</code></pre>
+
+<p>对于每个需要被解码为另一种格式的入站消息来说，该方法都将会被调用。</p>
+
+<p>解码消息随 后会被传递给 ChannelPipeline 中的下一个 ChannelInboundHandler</p>
+
+<p>MessageToMessageDecoder<T>，T 代表源数据的类型</p>
+
+<h2 id="toc_5">编码器</h2>
+
+<p>解码器的功能正好相反。</p>
+
+<p>Netty 提供了一组类，用于帮助你编写具有以下功能的编码器: </p>
+
+<ul>
+<li>将消息编码为字节 : MessageToByteEncoder<I></li>
+<li>将消息编码为消息:MessageToMessageEncoder<T>，T 代表源数据的类型</li>
+</ul>
+
+<h3 id="toc_6">将消息编码为字节</h3>
+
+<p>需要实现接口 MessageToByteEncoder，并实现其定义的方法：</p>
+
+<pre><code class="language-text">encode(ChannelHandlerContext ctx,I msg,ByteBuf out)
+</code></pre>
+
+<p>它被调用时将会传入要被该类编码为 ByteBuf 的出站消息(类型为 I 的)。该 ByteBuf 随后将会被转发给 ChannelPipeline 中的下一个 ChannelOutboundHandler</p>
+
+<h3 id="toc_7">将消息编码为消息</h3>
+
+<p>需要实现接口 MessageToMessageEncoder，并实现其定义的方法：</p>
+
+<pre><code class="language-text">encode(ChannelHandlerContext ctx,I msg,List&lt;Object&gt; out)
+</code></pre>
+
+<p>每个通过 write() 方法写入的消息都将会被传递给 encode() 方法，以编码为一个或者多个出站消息。随后，这些出站消息将会被转发给 ChannelPipeline 中的下一个 ChannelOutboundHandler</p>
+
+<h2 id="toc_8">编解码器类</h2>
+
+<p>又是我们需要在同一个类中管理入站和出站的数据和消息转换，Netty 提供了如下两个类。他们每一个都捆绑了一对解码器/编码器</p>
+
+<ul>
+<li>抽象类 ByteToMessageCodec </li>
+<li>抽象类 MessageToMessageCodec</li>
+</ul>
+
+<h2 id="toc_9">Netty 内置的编解码器和 ChannelHandler</h2>
+
+<h3 id="toc_10">通过 SSL/TLS 保护 Netty 应用程序</h3>
+
+<p>SSL 和 TLS 这样的安全协议，它们层叠在其他协议之上，用以实现数据安全。我们在访 问安全网站时遇到过这些协议，但是它们也可用于其他不是基于 HTTP 的应用程序，如安全 SMTP(SMTPS)邮件服务器甚至是关系型数据库系统。</p>
+
+<p>为了支持 SSL/TLS，Java 提供了 javax.net.ssl 包，它的 SSLContext 和 SSLEngine 类使得 实现解密和加密相当简单直接。</p>
+
+<p>Netty 通过一个名为 SslHandler 的 ChannelHandler 实现利用了这个 API，其中 SslHandler 在内部使用 SSLEngine 来完成实际的工作。在大多数情况下，SslHandler 将是 ChannelPipeline 中的第一个 ChannelHandler。</p>
+
+<h3 id="toc_11">HTTP 相关编解码</h3>
+
+<p>HTTP 是基于请求/响应模式的，客户端向服务器发送一个 HTTP 请求，然后服务器将会返回一个 HTTP 响应。 Netty 提供了多种编码器和解码器以简化对这个协议的使用。</p>
+
+<p>一个HTTP 请求/响应可能由多个数据部分组成，FullHttpRequest 和FullHttpResponse 消息是特殊的子类型，分别代表了完整的请求和响应。所有类型的 HTTP 消息(FullHttpRequest、 LastHttpContent 等等)都实现了 HttpObject 接口。</p>
+
+<ul>
+<li><p>HttpRequestEncoder 将 HttpRequest、HttpContent 和 LastHttpContent 消息编码为字节 </p></li>
+<li><p>HttpResponseEncoder 将 HttpResponse、HttpContent 和 LastHttpContent 消息编码为字节</p></li>
+<li><p>HttpResponseDecoder 将字节解码为 HttpResponse、HttpContent 和 LastHttpContent 消息</p></li>
+<li><p>HttpClientCodec 和 HttpServerCodec 则将请求和响应做了一个组合</p></li>
+</ul>
+
+<h4 id="toc_12">聚合 HTTP 消息</h4>
+
+<p>由于 HTTP 的请求和响应可能由许多部分组成，因此你需要聚合它们以形成完整的消息。</p>
+
+<p>为了消除这项繁琐的任务，Netty 提供了一个聚合器 HttpObjectAggregator，它可以将多个消息部分合并为 FullHttpRequest 或者 FullHttpResponse 消息。</p>
+
+<h4 id="toc_13">HTTP 压缩</h4>
+
+<p>当使用 HTTP 时，建议开启压缩功能以尽可能多地减小传输数据的大小。</p>
+
+<p>虽然压缩会带来一些 CPU 时钟周期上的开销，但是通常来说它都是一个好主意，特别是对于文本数据来说。</p>
+
+<p>Netty 为压缩和解压缩提供了 ChannelHandler 实现，它们同时支持 gzip 和 deflate 编码 : HttpContentDecompressor 、HttpContentCompressor</p>
+
+<h3 id="toc_14">空闲的连接和超时</h3>
+
+<p>检测空闲连接以及超时对于及时释放资源来说是至关重要的。由于这是一项常见的任务， Netty 特地为它提供了几个 ChannelHandler 实现：</p>
+
+<ul>
+<li><p>IdleStateHandler 当连接空闲时间太长时，将会触发一个 IdleStateEvent 事件。然后，你 可以通过在你的 ChannelInboundHandler 中重写 userEventTriggered()方法来处理该 IdleStateEvent 事件。</p></li>
+<li><p>ReadTimeoutHandler 如果在指定的时间间隔内没有收到任何的入站数据，则抛出一个 Read-TimeoutException 并关闭对应的 Channel。可以通过重写你的 ChannelHandler 中的 exceptionCaught()方法来检测该 Read-TimeoutException。</p></li>
+<li><p>WriteTimeoutHandler 如果在指定的时间间隔内没有任何出站数据写入，则抛出一个 Write-TimeoutException 并关闭对应的 Channel 。可以通过重写你的 ChannelHandler 的 exceptionCaught()方法检测该 WriteTimeout-Exception。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[UDP 用户数据报协议]]></title>
     <link href="http://www.throne4j.com/16069200648740.html"/>
     <updated>2020-12-02T22:41:04+08:00</updated>
     <id>http://www.throne4j.com/16069200648740.html</id>
     <content type="html"><![CDATA[
+<p>UDP 是一个简单的面向数据报的运输层协议: 进程的每个输出操作都正好产生一个<br/>
+UDP 数据报，并组装成一份待发送的 IP 数据报</p>
+
+<p>UDP 数据报封装成一份 IP 数据报的格式 如下图所示:<br/>
+<figure><img src="media/16069200648740/16072567321465.jpg" alt=""/></figure></p>
+
+<p>UDP 是面向无连接的通讯协议，UDP 报头由 4 个域组成，其中每个域各占用 2 个字节， 其中包括目的端口号 和 源端口号信息，数据报的长度域是指包括报头和数据部分在内的总字节数，校验值域来保证数据的安全。由于通讯不需要连接，所以可以实现广播发送。</p>
+
+<p>UDP 通讯时不需要接收方确认，属于不可靠的传输，可能会出现丢包现象，实际应用中 要求程序员编程验证。</p>
+
+<p>UDP 与 TCP 位于同一层，但它不管数据包的顺序、错误或重发。因此，UDP 不被应用于那些使用虚电路的面向连接的服务，UDP 主要用于那些面向查询---应答的服务，例如 NFS。 相对于 FTP 或 Telnet，这些服务需要交换的信息量较小。</p>
+
+<p>使用 UDP 的服务包括 </p>
+
+<ul>
+<li>NTP(网络时 间协议)和 DNS(DNS 也使用 TCP)，包总量较少的通信(DNS、SNMP 等);</li>
+<li>视频、音频等多媒体通信(即时通信)</li>
+<li>限定于 LAN 等特定网络中的应用通信</li>
+<li>广播通信(广播、 多播)、单播通信
+<ul>
+<li>单播 : 定义为发送消息给一个由唯一的地址所标识的单一的网络目的地。面向连接的协议和无连接协议都支持这种模式。</li>
+<li>广播 : 传输到网络(或者子网)上的所有主机</li>
+</ul></li>
+</ul>
 
 ]]></content>
   </entry>
@@ -171,9 +496,45 @@ MyHandler handler =  (MyHandler) key.attachment()
 </tbody>
 </table>
 
-<h3 id="toc_10">Selector</h3>
+<h3 id="toc_10">SelectionKey</h3>
 
-<p>Selector 的英文含义是“选择器”，也可以称为为“轮询代理器”、“事件订阅器”、“channel 容器管理机”都行。</p>
+<p>代表 SocketChannel、ServerSocketChannel向 Selector 注册事件的句柄，包括接收连接就绪事件、连接就绪事件、读事件就绪、写事件就绪</p>
+
+<ul>
+<li>OP_READ : 当操作系统读缓冲区有数据可读时就绪。并非时刻都有数据可读，所 以一般需要注册该操作，仅当有就绪时才发起读操作，有的放矢，避免浪 费 CPU。</li>
+<li>OP_WRITE : 当操作系统写缓冲区有空闲空间时就绪。一般情况下写缓冲区都有空 闲空间，小块数据直接写入即可，没必要注册该操作类型，否则该条件不 断就绪浪费 CPU;但如果是写密集型的任务，比如文件下载等，缓冲区很 可能满，注册该操作类型就很有必要，同时注意写完后取消注册。</li>
+<li>OP_CONNECT : 当 SocketChannel.connect()请求连接成功后就绪。该操作只给客户端 使用。</li>
+<li>OP_ACCEPT : 当接收到一个客户端连接请求时就绪。该操作只给服务器使用。</li>
+</ul>
+
+<p>以下情况下 SelectionKey 对象会失效：</p>
+
+<ul>
+<li>程序调用 SelectionKey 的 cancel() 方法</li>
+<li>关闭 与 SelectionKey 关联的 Channel</li>
+<li>与 SelectionKey 关联的 selector 被关闭</li>
+</ul>
+
+<p>主要方法：</p>
+
+<ul>
+<li>SelectableChannel channel()</li>
+<li>Selector selector()</li>
+<li>boolean isValid()</li>
+<li>void cancel()</li>
+<li>int interestOps()</li>
+<li>SelectionKey interestOps(int ops)</li>
+<li>boolean isReadable()</li>
+<li>boolean isWritable()</li>
+<li>boolean isConnectable()</li>
+<li>boolean isAcceptable()</li>
+<li>attach(Object obj)</li>
+<li>Object attachment()</li>
+</ul>
+
+<h3 id="toc_11">Selector 多路复用器</h3>
+
+<p>Selector 多路复用器提供选择已经就绪事件的能力。</p>
 
 <p>为 ServerSocketChannel 监控接收连接就绪事件，为 SocketChannel 监控连接就绪、写就绪、读就绪事件。</p>
 
@@ -203,42 +564,6 @@ MyHandler handler =  (MyHandler) key.attachment()
 </ul></li>
 <li>Selector wakeup() 唤醒执行 Selector 的 select()方法的线程</li>
 <li>close() 关闭 Selector，使它占用的所有资源都被释放，所有与Selector 关联的 SelectionKey 都被取消</li>
-</ul>
-
-<h3 id="toc_11">SelectionKey</h3>
-
-<p>代表 SocketChannel、ServerSocketChannel向 Selector 注册事件的句柄，包括接收连接就绪事件、连接就绪事件、读事件就绪、写事件就绪</p>
-
-<ul>
-<li>OP_READ : 当操作系统读缓冲区有数据可读时就绪。并非时刻都有数据可读，所 以一般需要注册该操作，仅当有就绪时才发起读操作，有的放矢，避免浪 费 CPU。</li>
-<li>OP_WRITE : 当操作系统写缓冲区有空闲空间时就绪。一般情况下写缓冲区都有空 闲空间，小块数据直接写入即可，没必要注册该操作类型，否则该条件不 断就绪浪费 CPU;但如果是写密集型的任务，比如文件下载等，缓冲区很 可能满，注册该操作类型就很有必要，同时注意写完后取消注册。</li>
-<li>OP_CONNECT : 当 SocketChannel.connect()请求连接成功后就绪。该操作只给客户端 使用。</li>
-<li>OP_ACCEPT : 当接收到一个客户端连接请求时就绪。该操作只给服务器使用。</li>
-</ul>
-
-<p>以下情况下 SelectionKey 对象会失效：</p>
-
-<ul>
-<li>程序调用 SelectionKey 的 cancel() 方法</li>
-<li>关闭 与 SelectionKey 关联的 Channel</li>
-<li>与 SelectionKey 关联的 selector 被关闭</li>
-</ul>
-
-<p>主要方法：</p>
-
-<ul>
-<li>SelectableChannel channel() </li>
-<li>Selector selector()</li>
-<li>boolean isValid()</li>
-<li>void cancel()</li>
-<li>int interestOps()</li>
-<li>SelectionKey interestOps(int ops)</li>
-<li>boolean isReadable()</li>
-<li>boolean isWritable()</li>
-<li>boolean isConnectable()</li>
-<li>boolean isAcceptable()</li>
-<li>attach(Object obj)</li>
-<li>Object attachment()</li>
 </ul>
 
 <h3 id="toc_12">缓冲区 buffer</h3>
@@ -475,10 +800,10 @@ map auto_home           0         0         0   100%       0          0  100%   
 <p>有以下几点致使我们去使用 Netty：</p>
 
 <ul>
-<li>JAVA NIO 异步框架虽然提供了多路复用 IO 的支持，但是没有提供上层的 “信息格式” 的封装。例如JAVA NIO没有提供针对JSON、protocol这些信息的封装。</li>
-<li>NIO的类库和API比较复杂，学习成本很高，需要熟练的掌握 Selector、ByteBuffer、ServerSocketChannel、SocketChannel等组件，要能正常使用 NIO 需要了解 NIO涉及到的 Reactor线程模型、多线程、网络编程等技能的支持。</li>
-<li>要编写一个可靠的、已维护的、高可用的NIO服务器应用，除了框架本身要兼容实现各类操作系统之外，更重要的是它还要处理很多长层特有的服务，例如客户端权限、信息格式的封装、数据读取、断线重连、半包读写、心跳机制等，这些是 Netty 提供了相应的支持。</li>
-<li>JAVA NIO 框架存在一个 poll/epoll 的bug： Selector 不能在 Selector.select(timeout) 上 阻塞，这也就意味着CPU资源占用率会达到 100%（linux内核上，JDK1.7 以及之前的版本会重现）</li>
+<li><p>JAVA NIO 异步框架虽然提供了多路复用 IO 的支持，但是没有提供上层的 “信息格式” 的封装。例如JAVA NIO没有提供针对JSON、protocol这些信息的封装。</p></li>
+<li><p>NIO的类库和API比较复杂，学习成本很高，需要熟练的掌握 Selector、ByteBuffer、ServerSocketChannel、SocketChannel等组件，要能正常使用 NIO 需要了解 NIO涉及到的 Reactor线程模型、多线程、网络编程等技能的支持。</p></li>
+<li><p>要编写一个可靠的、已维护的、高可用的NIO服务器应用，除了框架本身要兼容实现各类操作系统之外，更重要的是它还要处理很多长层特有的服务，例如客户端权限、信息格式的封装、数据读取、断线重连、半包读写、心跳机制等，这些是 Netty 提供了相应的支持。</p></li>
+<li><p>JAVA NIO 框架存在一个 poll/epoll 的bug： Selector 不能在 Selector.select(timeout) 上 阻塞，这也就意味着CPU资源占用率会达到 100%（linux内核上，JDK1.7 以及之前的版本会重现）</p></li>
 </ul>
 
 <h2 id="toc_2">Netty 为什么要使用 NIO 而不是 AIO</h2>
@@ -529,6 +854,8 @@ Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一
 <li>ChannelInactive : Channel 没有连接到远程节点</li>
 <li>ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
 </ul>
+
+<p><figure><img src="media/16063167790102/16071923273555.jpg" alt="channel生命周期"/><figcaption>channel生命周期</figcaption></figure></p>
 
 <h4 id="toc_7">Channel 接口中重要的方法</h4>
 
@@ -581,6 +908,14 @@ Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一
 <h2 id="toc_13">ChannelHandler</h2>
 
 <p>ChannelHandler 承担了所有处理入站和出站数据的处理。ChannelHandler 的方法是由网络事件触发的。</p>
+
+<p>在ChannelHandler被添加到ChannelPipeline 中或者被从ChannelPipeline 中移除时会调用下面这些代表 ChannelHandler 生命周期的方法方法。这些方法中的每一个都接受一个ChannelHandlerContext 参数。</p>
+
+<ul>
+<li>handlerAdded 当把 ChannelHandler 添加到 ChannelPipeline 中时被调用 </li>
+<li>handlerRemoved 当从 ChannelPipeline 中移除 ChannelHandler 时被调用 </li>
+<li>exceptionCaught 当处理过程中在 ChannelPipeline 中有错误产生时被调用</li>
+</ul>
 
 <p>Netty 定义了下面两个重要的 ChannelHandler 子接口：</p>
 
@@ -637,6 +972,383 @@ Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一
 <p>ChannelHandlerAdapter 还提供了实用方法 isSharable()。如果其对应的实现被标注为 Sharable，那么这个方法将返回 true，表示它可以被添加到多个 ChannelPipeline。</p>
 
 <p><figure><img src="media/16063167790102/16070173055991.jpg" alt=""/></figure></p>
+
+<h3 id="toc_17">资源管理和 SimpleChannelInboundHandler</h3>
+
+<p>Netty 在处理网络数据时，同样也需要 Buffer，在 Read 网络数据时由 Netty 创建 Buffer， Write 网络数据时 Buffer 往往是由业务方创建的。不管是读和写，Buffer 用完后都必须进行释放，否则可能会造成内存泄露。</p>
+
+<p>在 Write 网络数据时，可以确保数据被写往网络，Netty 会自动进行 Buffer 的释放，但是如果 Write 网络数据时， 我们有 outBouondHandler 处理了 write()操作并丢弃了数据，没有继续往下写，要有我们自己负责释放这个 Buffer，就必须调用 ReferenceCountUtil.release 方法，否则就可能会造成内存泄漏。</p>
+
+<p>在 read 网络数据的时候，如果我们可以确保每个 inboundHandler 都把数据往后传递了，也就是调用了相关的 fireChannelRead 方法， Netty 也会帮我们释放；如果我们有 InboundHandler 处理了数据，又不继续往后传递，又不调用负责释放的 ReferenceCountUtil.release 方法，就可能会造成内存泄漏。</p>
+
+<p>为了让用户更加简单的找到遗漏的释放，Netty 包含了一个ResourceLeakDetector ，将会从已分配的缓冲区 1% 作为样品来检查是否存在在应用程序泄漏。因为 1% 的抽样,开销很小。</p>
+
+<p>对于检测泄漏，将看到如下日志：</p>
+
+<pre><code class="language-text">LEAK: ByteBuf.release() was not called before it’s garbage-collected. Enable advanced leak reporting to find out where the leak occurred. To enable advanced
+leak reporting, specify the JVM option ’-Dio.netty.leakDetectionLevel=advanced’ or call ResourceLeakDetector.setLevel()
+
+Relaunch your application with the JVM option mentioned above, then you’ll see the recent locations of your application where the leaked buffer was accessed. The following output shows a leak from our unit test (XmlFrameDecoderTest.testDecodeWithXml()):
+
+Running io.netty.handler.codec.xml.XmlFrameDecoderTest
+
+15:03:36.886 [main] ERROR io.netty.util.ResourceLeakDetector - LEAK:
+ByteBuf.release() was not called before it’s garbage-collected.
+
+Recent access records: 1
+
+#1:
+
+io.netty.buffer.AdvancedLeakAwareByteBuf.toString(AdvancedLeakAwareByteBuf.java:697)
+
+io.netty.handler.codec.xml.XmlFrameDecoderTest.testDecodeWithXml(XmlFrameDecoderTest.java:157)
+    io.netty.handler.codec.xml.XmlFrameDecoderTest.testDecodeWithTwoMessages(XmlFrameDecoderTest.java:133)
+</code></pre>
+
+<p>泄漏检测等级 :</p>
+
+<ul>
+<li>Disables: 禁用</li>
+<li>SIMPLE 告知是否发现泄漏。再次使用1％的采样率，默认级别和大多数情况下的合适值。</li>
+<li>ADVANCED: 使用1％的采样率告诉是否发现泄漏以及在何处访问该消息。</li>
+<li>PARANOID: 与“高级”级别相同，主要区别在于每个访问都经过采样。这会对性能产生巨大影响。仅在调试阶段使用它。</li>
+</ul>
+
+<p>如需修改检测等级，只需修改 io.netty.leakDetectionLevel 系统属性</p>
+
+<pre><code class="language-text"># java -Dio.netty.leakDetectionLevel=paranoid
+</code></pre>
+
+<p>但是由于消费入站数据是一项常规任务，所以 Netty 提供了一个特殊的被称为 SimpleChannelInboundHandler 的 ChannelInboundHandler 实现，这个实现会在数据被 channelRead0 方法消费之后自动释放数据。</p>
+
+<p>如果消息是被 消耗/丢弃 并不会被传入下个 ChannelPipeline 的 ChannelOutboundHandler ，调用 ReferenceCountUtil.release(message) 。一旦消息经过实际的传输，在消息被写或者 Channel 关闭时，它将会自动释放。</p>
+
+<h2 id="toc_18">ChannelPipeline 和 ChannelHandlerContext</h2>
+
+<h3 id="toc_19">ChannelPipeline接口</h3>
+
+<p>当 Channel 被创建时， 它将会被自动的分配一个新的 ChannelPipeline，这项关联是永久性的；Channel 既不能附加另外一个 ChannelPipeline 也不能分离其当前的。在 Netty 组件的生命周期中，这是一项固定的操作，不需要开发人员的干涉。</p>
+
+<p>是的事件流经 ChannelPipeline 是 ChannelHandler 的工作，他们是在应用程序的初始化或者引导阶段别安装的。这些对象接收事件、执行他们所实现的处理逻辑，并将数据传递给链中的下一个 ChannelHandler，他们的执行的顺序是由她们被添加的顺序决定的。</p>
+
+<h3 id="toc_20">ChannelPipeline 中的 ChannelHandler</h3>
+
+<p>入站和出站 ChannelHandler 可以别安装到同一个 ChannelPipeline 中，如果一个消息或者任何其他的入站事件被读取，那么它会从 ChannelPipeline 的头部开始流动，最终，数据将会到达 ChannelPipeline 的尾端，此时所有处理就都结束了。</p>
+
+<p>数据的出站将从 channelOutboundHandler 链的尾端开始流动，直到它到达链的头部为止，之后出站数据将会到达网络传输层，然后将触发一个写事件。</p>
+
+<p>ChannelPipeline 的主要方法：</p>
+
+<ul>
+<li>addFirst、addBefore、addAfter、addLast 将一个 ChannelHandler 添加到 ChannelPipeline</li>
+<li>remove 将一个 ChannelHandler 添加到 ChannelPipeline</li>
+<li>replace 将 ChannelPipeline 中的一个 ChannelHandler 替换为另一个 ChannelHandler</li>
+<li>get 通过类型或者名称返回 ChannelHandler</li>
+<li>context 返回和 ChannelHandler 绑定的 chanelHandlerContext</li>
+<li>names 返回 ChannelPipeline 中所有的 ChannelHandler 的名称</li>
+</ul>
+
+<h3 id="toc_21">ChannelHandlerContext</h3>
+
+<p>通过使用作为参数传递到每个方法的 channelHandlerContext，事件可以被传递给当前 ChannelHandler 链中的下一个 ChannelHandler，虽然这个对象可以被用于获取底层的 Channel，但是它主要还是被用于写出站数据。</p>
+
+<p>ChannelHandlerContext 代表了 ChannelHandler 和 CHannelPipeline 之间的关联，每当有 ChannelHandler 添加到 ChannelPipeline 中，都会创建 ChannelHandlerContext。</p>
+
+<p>ChannelHandlerContext 有很多的方法，其中一些方法也存在于 Channel 和 Channel-Pipeline 本身上，但是有一点重要的不同。如果调用Channel 或者ChannelPipeline 上 的这些方法，它们将沿着整个 ChannelPipeline 进行传播。而调用位于 ChannelHandlerContext 上的相同方法，则将从当前所关联的 ChannelHandler 开始，并且只会传播给位于该 ChannelPipeline 中的下一个(入站下一个，出站上一个)能够处理该事件的 ChannelHandler。</p>
+
+<p>ChannelHandlerContext的主要方法：</p>
+
+<ul>
+<li>alloc : 返回和这个实力相关的 Channel 所配置的 ByteBufAllocator</li>
+<li>bind : 绑定到给定的 SSocketAddress，并返回 ChannelFuture</li>
+<li>channel : 返回绑定到这个实例的 Channel</li>
+<li>close : 关闭Channel，并返回 ChanelFuture</li>
+<li>connect : 连接给定的 SocketAddress，并返回 ChannelFuture</li>
+<li>deregister : 从之前分配的 EventExecutor 注销，并返回 ChannelFuture</li>
+<li>disconnect : 从远程节点断开，并返回 ChannelFuture</li>
+<li>executor : 返回调度事件的 EventExecutor</li>
+<li>fireChannelActive : 触发对下一个 ChannelInboundHandler 上的 channelActive()方法(已连接)的调用</li>
+<li>fireChannelInactive : 触发对下一个 ChannelInboundHandler 上的 channelInactive()方法 (已关闭)的调用</li>
+<li>fireChannelRead : 触发对下一个 ChannelInboundHandler 上的 channelRead()方法(已接 收的消息)的调用</li>
+<li>fireChannelReadComplete : 触发对下一个 ChannelInboundHandler 上的 channelReadComplete()方法的调用</li>
+<li>fireChannelRegistered : 触发对下一个 ChannelInboundHandler 上的 fireChannelRegistered()方法的调用</li>
+<li>fireChannelUnregistered 触发对下一个 ChannelInboundHandler 上的 fireChannelUnregistered()方法的调用</li>
+<li>fireChannelWritabilityChanged : 触发对下一个ChannelInboundHandler 上的 fireChannelWritabilityChanged()方法的调用</li>
+<li>fireExceptionCaught : 触发对下一个 ChannelInboundHandler 上的 fireExceptionCaught(Throwable)方法的调用</li>
+<li>fireUserEventTriggered : 触发对下一个 ChannelInboundHandler 上的 fireUserEventTriggered(Object evt)方法的调用</li>
+<li>handler : 返回绑定到这个实例的 ChannelHandler</li>
+<li>isRemoved : 如果所关联的 ChannelHandler 已经被从 ChannelPipeline 中移除则返回 true</li>
+<li>name : 返回这个实例的唯一名称</li>
+<li>pipeline : 返回这个实例所关联的 ChannelPipeline</li>
+<li>read : 将数据从 Channel 读取到第一个入站缓冲区;如果读取成功则触发一个 channelRead 事件，并(在最后一个消息被读取完成后)通知 ChannelInboundHandler 的 channelReadComplete(ctx)方法</li>
+<li>write : 通过这个实例写入消息并经过 ChannelPipeline</li>
+<li>writeAndFlush : 通过这个实力写入并冲刷消息，此消息会经过 ChannelPipeline</li>
+</ul>
+
+<h2 id="toc_22">内置通信传输模式</h2>
+
+<p>NIO io.netty.channel.socket.nio 使用 java.nio.channels 包作为基础，基于多路复用选择器的方式</p>
+
+<p>Epoll io.netty.channel.epoll 由 JNI 驱动的 epoll() 和非阻塞 IO。这个传输支持只有在 Linux 上可用的多种特性，如 SO_REUSEPORT，比 NIO 传输更快，而且是完全非阻塞的。将 NioEventLoopGroup 替换为 EpollEventLoopGroup，并且将 NioServerSocketChannel.class 替换为 EpollServerSocketChannel.class</p>
+
+<p>OIO io.netty.channel.socket.oio 使用 java.net 包作为基础使用阻塞流</p>
+
+<p>Local io.netty.channel.local 可以在VM内部通过管道进行通信的本地传输</p>
+
+<p>Embedded io.netty.channel.embedded Embedded 传输，允许使用 ChannelHandler 而又不需要一个真正的基于网络的传输。在测试 ChannelHandler实现时非常有用</p>
+
+<h2 id="toc_23">引导类 Bootstrap、ServerBootStrap</h2>
+
+<p>网络编程里，服务器和客户端实际上表示了不同的网络行为，换句话说，是监听传入的连接还是建立到一个或多个进程的连接。</p>
+
+<p>有两种类型的引导，一种(Bootstrap)用于客户端，另一种(ServerBootStrap)用于服务器。</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Bootstrap</th>
+<th>ServerBootStrap</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>网络编程中的作用</td>
+<td>连接到远程主机和端口</td>
+<td>绑定到一个本地端口</td>
+</tr>
+<tr>
+<td>EventLoopGroup的数目</td>
+<td>1</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+
+<p>服务器需要两组不同的 Channel，第一组将只包含一个 ServerChannel，代表服务器自身的已绑定到某个本地端口的正在监听的套接字，而第二组将包含所有已创建的用来处理传入客户端连接的 Channel。</p>
+
+<p>与 ServerChannel 相关联的  EventLoopGroup 将分配一个负责为传入的连接请求创建 Channel 的 EventLoop。一旦连接被接受，第二个 EventLoopGroup 就会给它的 Channel 分配一个 EventLoop。</p>
+
+<p>在引导过程中添加多个 ChannelHandler <br/>
+Netty 提供了一个特殊的 ChannelInboundHandlerAdapter 子类 ChannelInitializer，它提供了下面一个方法：</p>
+
+<pre><code class="language-text">protected abstract void initChannel(C ch) throws Exception;
+</code></pre>
+
+<p>这个方法提供了一种将多个ChannelHandler 添加到一个 ChannelPipeline 中的便捷方法，该方法返回之后， ChannelInitializer 的实例将会从 ChannelPipeline 中移除自己，正所谓功成身退之典范。</p>
+
+<h2 id="toc_24">ChannelOption</h2>
+
+<p>ChannelOption 的各种属性在套接字选项中都由对应</p>
+
+<ul>
+<li>ChannelOption.SO_BACKLOG <br/>
+此参数对应的是 TCP/IP 协议 listen 函数中的 backlog 参数，函数 listen(int socketfd, int backlog) 用来初始化服务端可连接队列</li>
+</ul>
+
+<p>服务器处理客户端的连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog 参数制定了队列的大小</p>
+
+<ul>
+<li><p>ChannelOption.SO_REUSEADDR<br/>
+此参数对应套接字选项中的 SO_REUSEADDR，表示允许重复使用本地地址和端口。</p></li>
+<li><p><strong>ChannelOption.SO_KEEPALIVE</strong><br/>
+此参数对应套接字选项中的 SO_KEEPALIVE ，用于设置 TCP 连接，当设置该选项之后，连接会测试连接的状态，这个选项用于可能长时间没有数据交流的连接，当设置这个参数之后，如果两个小时内， TCP 会自动发送一个活动的探测数据报文进行连接状态的维护，服务端可以探测客户端的连接是否还存活着,如果客户端因为断电或者网络问题或者客户端挂掉了等,那么服务端的连接可以关闭掉,释放资源。</p></li>
+<li><p><strong>ChannelOption.SO_SNDBUF</strong> 和 <strong>ChannelOption.SO_RCVBUF</strong><br/>
+这两个参数用用操作连接缓冲区和发送缓冲区的大小，接收缓冲区用于保存网络协议站内收到的数据，知道应用程序读取成功，发送缓冲区用于保存发送数据，直到发送成功。</p></li>
+<li><p>ChannelOption.SO_LINGER<br/>
+Linux内核默认的处理方式是当用户调用 close() 方法的时候，函数返回，在可能的情况下，尽量发送数据，不一定保证会发送剩余的数据，造成了数据的不确定性，使用 SO_LINGER 可以阻塞 close()的调用时间，直到数据完全发送</p></li>
+<li><p>ChannelOption.TCP_NODELAY<br/>
+该参数与 Nagle 算法有关， Nagle 算法是将小的数据包组装为更大的帧然后进行发送，而不是输入一次发送一次，因此在数据包不足的时候会等待其他数据的到来，组装成大的数据包进行发送，虽然该方式有效的提高了网络的有效负载，但是却造成了延时，该参数的作用是禁止使用 Nagle 算法，使用于小数据即时传输，与 TCP_NODELAY 相对应的是 TCP_CORK，该选项是需要等到发送的数据量最大的时候，一次性发送数据，适用于文件传输。</p></li>
+</ul>
+
+<h2 id="toc_25">ByteBuf</h2>
+
+<p>ByteBuf API的优点：</p>
+
+<ul>
+<li>可以被用户自定义的缓冲类型扩展</li>
+<li>通过内置的复合缓冲区类型实现了透明的零拷贝</li>
+<li>容量可以按需增长</li>
+<li>在读和写两种模式之间切换不需要调用 ByteBuffer 的 flip()方法</li>
+<li>读和写 使用了不同的索引</li>
+<li>支持方法的链式调用</li>
+<li>支持引用计数</li>
+<li>支持池化</li>
+</ul>
+
+<p>ByteBuf 维护了两个不同的索引，名称以 read 或者 write 开头的 ByteBuf 方法，将会推进其对应的索引，而名称以 set 或者 get 开头的操作则不会。</p>
+
+<p>可以指定 ByteBuf 的最大容量。试图移动写索引(即 writerIndex)超过这个值将会触发一个异常。(默认的限制是 Integer.MAX_VALUE)</p>
+
+<h3 id="toc_26">使用模式</h3>
+
+<h4 id="toc_27">堆缓冲区</h4>
+
+<p>最常用的 ByteBuf 模式是将数据存储在 JVM 的堆空间中。这种模式被称为支撑数组 (backing array)，它能在没有使用池化的情况下提供快速的分配和释放。可以由 hasArray() 来判断检查 ByteBuf 是否由数组支撑。如果不是，则这是一个直接缓冲区。</p>
+
+<h4 id="toc_28">直接缓冲区</h4>
+
+<p>直接缓冲区是另外一种 ByteBuf 模式。 直接缓冲区的主要缺点是，相对于基于堆的缓冲区，它们的分配和释放都较为昂贵</p>
+
+<h4 id="toc_29">复合缓冲区</h4>
+
+<p>复合缓冲区CompositeByteBuf，它为多个ByteBuf 提供一个聚合视图。比如HTTP 协议， 分为消息头和消息体，这两部分可能由应用程序的不同模块产生，各有各的 ByteBuf，将会 在消息被发送的时候组装为一个 ByteBuf，此时可以将这两个 ByteBuf 聚合为一个 CompositeByteBuf，然后使用统一和通用的 ByteBuf API 来操作。</p>
+
+<h4 id="toc_30">分配</h4>
+
+<p>如何在我们的应用程序中获得 ByteBuf的实例并使用呢，Netty 提供了两种方式：</p>
+
+<h5 id="toc_31">ByteBufAllocator 接口</h5>
+
+<p>Netty 通过接口 ByteBufAllocator 分配我们所描述过的任何类型的ByteBuf实例</p>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>buffer()</td>
+<td>返回一个基于堆或者直接内存的 ByteBuf</td>
+</tr>
+<tr>
+<td>heapBuffer()</td>
+<td>返回一个基于堆内存存储的 ByteBuf</td>
+</tr>
+<tr>
+<td>directBuffer()</td>
+<td>返回一个基于直接内存存储的 ByteBuf</td>
+</tr>
+<tr>
+<td>compositeBuffer()</td>
+<td>返回一个可以通过添加最大到指定数目的基于堆内存或者直接内存的缓冲区来扩展 CompositeButeBuf</td>
+</tr>
+<tr>
+<td>ioBuffer</td>
+<td>返回一个用于套接字的 IO 操作的 ByteBuf，当所运行的环境具有 sun.misc.Unsafe 支持时，返回基于直接内存存储的 ByteBuf，否则返回基于堆内存存储的 ByteBuf；当指定使用 PreferHeapByteBufAllocator时，则只会返回基于堆内存存储的 ByteBuf</td>
+</tr>
+</tbody>
+</table>
+
+<p>可以通过 Channel(每个都可以有一个不同的 ByteBufAllocator 实例)或者绑定到 ChannelHandler 的 ChannelHandlerContext 获取一个到 ByteBufAllocator 的引用。</p>
+
+<p>Netty 提供了两种 ByteBufAllocator 的实现: PooledByteBufAllocator 和 UnpooledByteBufAllocator。前者池化了 ByteBuf 的实例以提高性能并最大限度地减少内存碎片。后者的实现不池化 ByteBuf 实例，并且在每次它被调用时都会返回一个新的实例。</p>
+
+<h5 id="toc_32">Unpooled 缓冲区</h5>
+
+<p>Netty 提供了一个称为 Unpooled 的工具类，它提供了静态的辅助方法来创建未池化的 ByteBuf 实例。</p>
+
+<ul>
+<li>buffer() 返回一个未池化的基于堆内存存储的 ByteBuf</li>
+<li>directBuffer()返回一个未池化的基于直接内存存储的 ByteBuf</li>
+<li>wrappedBuffer() 返回一个包装了给定数据的 ByteBuf</li>
+<li>copiedBuffer() 返回一个复制了给定数据的 ByteBuf<br/>
+Unpooled 类还可用于 ByteBuf 同样可用于那些并不需要 Netty 的其他组件的非网络项目。</li>
+</ul>
+
+<h4 id="toc_33">随机访问索引/顺序访问索引/读写操作</h4>
+
+<p>如同在普通的 Java 字节数组中一样，ByteBuf 的索引是从零开始的:第一个字节的索 引是 0，最后一个字节的索引总是 capacity() - 1。使用那些需要一个索引值参数(随机访问, 也即是数组下标)的方法(的其中)之一来访问数据既不会改变 readerIndex 也不会改变 writerIndex。如果有需要，也可以通过调用 readerIndex(index)或者 writerIndex(index)来手动 移动这两者。</p>
+
+<p>顺序访问通过索引访问</p>
+
+<p>有两种类别的读/写操作:</p>
+
+<ul>
+<li>get()和 set()操作，从给定的索引开始，并且保持索引不变;get+数据字长<br/>
+(bool.byte,int,short,long,bytes)</li>
+<li>read()和 write()操作，从给定的索引开始，并且会根据已经访问过的字节数对索引进行调整</li>
+</ul>
+
+<p>其他操作 :</p>
+
+<ul>
+<li>isReadable() 如果至少有一个字节可供读取，则返回 true<br/></li>
+<li>isWritable() 如果至少有一个字节可被写入，则返回 true</li>
+<li>readableBytes() 返回可被读取的字节数</li>
+<li>writableBytes() 返回可被写入的字节数</li>
+<li>capacity() 返回 ByteBuf 可容纳的字节数。在此之后，它会尝试再次扩展直到达到 maxCapacity()</li>
+<li>maxCapacity() 返回 ByteBuf 可以容纳的最大字节数</li>
+<li>hasArray() 如果 ByteBuf 由一个字节数组支撑，则返回 true</li>
+<li>array() 如果 ByteBuf 由一个字节数组支撑则返回该数组;否则，它将抛出一个 UnsupportedOperationException 异常</li>
+</ul>
+
+<h4 id="toc_34">可丢弃字节</h4>
+
+<p>可丢弃字节的分段包含了已经被读过的字节。通过调用 discardReadBytes()方法，可以丢 弃它们并回收空间。这个分段的初始大小为 0，存储在 readerIndex 中，会随着 read 操作的 执行而增加(get*操作不会移动 readerIndex)。</p>
+
+<p>缓冲区上调用 discardReadBytes()方法后，可丢弃字节分段中的空间已经变为可写的了。 频繁地调用 discardReadBytes()方法以确保可写分段的最大化，但是请注意，这将极有可能会 导致内存复制，因为可读字节必须被移动到缓冲区的开始位置。建议只在有真正需要的时候 才这样做，例如，当内存非常宝贵的时候。<br/>
+s<br/>
+<figure><img src="media/16063167790102/16071921108204.jpg" alt="" style="width:1010px;"/></figure></p>
+
+<h4 id="toc_35">可读字节</h4>
+
+<p>ByteBuf 的可读字节分段存储了实际数据。新分配的、包装的或者复制的缓冲区的默认 的 readerIndex 值为 0。</p>
+
+<h4 id="toc_36">可写字节</h4>
+
+<p>可写字节分段是指一个拥有未定义内容的、写入就绪的内存区域。新分配的缓冲区的 writerIndex 的默认值为 0。任何名称以 write 开头的操作都将从当前的 writerIndex 处开始 写数据，并将它增加已经写入的字节数。</p>
+
+<h4 id="toc_37">索引管理</h4>
+
+<p>调用 markReaderIndex()、markWriterIndex()、resetWriterIndex()和 resetReaderIndex()来 标记和重置 ByteBuf 的 readerIndex 和 writerIndex。</p>
+
+<p>也可以通过调用 readerIndex(int)或者 writerIndex(int)来将索引移动到指定位置。试图将 任何一个索引设置到一个无效的位置都将导致一个 IndexOutOfBoundsException。</p>
+
+<p>可以通过调用 clear()方法来将 readerIndex 和 writerIndex 都设置为 0。注意，这并不会 清除内存中的内容。</p>
+
+<h4 id="toc_38">查找操作</h4>
+
+<p>在 ByteBuf 中有多重可以用来确定指定值得索引的方法。最简单的是使用 indexOf() 方法。 较复杂的查找可以通过调用 forEachByte()</p>
+
+<h4 id="toc_39">派生缓冲区</h4>
+
+<p>派生缓冲区为 ByteBuf 提供了以专门的方式来呈现其内容的视图。这类视图是通过以下方法被创建的：</p>
+
+<pre><code class="language-java">duplicate()
+slice()
+slice(int, int)
+Unpooled.unmodifiableBuffer()
+order(byteOrder)
+readSlice(int)
+</code></pre>
+
+<p>每个这些方法都将返回一个新的 ByteBuf 实例，它具有自己的读索引、写索引和标记索引。其内部存储和 JDK 的 ByteBuffer 一样也是共享。</p>
+
+<p>ByteBuf 复制 入股偶需要一个现有缓冲区的真是副本，请使用 copy() 或者 copy(int,int) 方法，不同于派生缓冲区，有这个调用所返回的 ByteBuf 拥有独立的数据副本。</p>
+
+<h4 id="toc_40">引用计数</h4>
+
+<p>引用计数是一个通过在某个对象所持有的资源不再被其他对象引用时释放该对象所持有的资源来优化内存使用和性能的计数。Netty 在第4 版中为ByteBuf引入了引用计数技术， interface ReferenceCounted。</p>
+
+<h4 id="toc_41">工具类</h4>
+
+<p>ByteBufUtil 提供了用于操作 ByteBuf 的静态的辅助方法。因为这个 API 是通用的，并 且和池化无关，所以这些方法已然在分配类的外部实现。</p>
+
+<p>这些静态方法中最有价值的可能就是 hexdump()方法，它以十六进制的表示形式打印 ByteBuf 的内容。这在各种情况下都很有用，例如，出于调试的目的记录 ByteBuf 的内容。 十六进制的表示通常会提供一个比字节值的直接表示形式更加有用的日志条目，此外，十六 进制的版本还可以很容易地转换回实际的字节表示。</p>
+
+<p>另一个有用的方法是 boolean equals(ByteBuf, ByteBuf)，它被用来判断两个 ByteBuf 实例 的相等性。</p>
+
+<h4 id="toc_42">资源释放</h4>
+
+<p>当某个 ChannelInboundHandler 的实现重写 channelRead() 时，它要负责显式的释放与池化的 ByteBuf 实例相关。Netty 为此提供了一个实用方法 ReferencceCountUtil.release()</p>
+
+<p>Netty 将实用 WARN 级别的日志消息记录未释放资源，使得可以非常简单的在代码中发现违规的实例。但是以这种方式管理资源可能很繁琐，一个更加简单的方式是使用 SimpleChannelInboundHandler 会自动释放资源。</p>
+
+<p>对于入站请求，Netty 的 EventLoop 在处理 Channel 的读操作时进行分配 ByteBuf，对于这列 ByteBuf 需要我们自行进行释放，有三种方式</p>
+
+<ul>
+<li>SimpleCHannelInboundHandler</li>
+<li>重写 channelRead()方法使用 ReferenceCountUtil.release()释放</li>
+<li>使用 ctx.fireChannelRead继续向后传递</li>
+</ul>
+
+<p>对于出站请求，不管 ByteBuf 是否哦由我们的业务创建，当调用了 write 或者 writeAndFlush 方法后，Netty 会自动替我们释放，不需要我们业务代码自行释放。</p>
 
 ]]></content>
   </entry>
@@ -1983,452 +2695,6 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 <li>channel.waitForConfirmsOrDie() 批量确认模式，使用同步方式等所有的消息发送之后才会执行后面代码，只要有一个小心未到达交换器就会抛出 IOException 异常</li>
 <li>channel.addConfirmListener()一步监听发送方确认模式</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RabbitMQ--AMQP 概论]]></title>
-    <link href="http://www.throne4j.com/16022252063226.html"/>
-    <updated>2020-10-09T14:33:26+08:00</updated>
-    <id>http://www.throne4j.com/16022252063226.html</id>
-    <content type="html"><![CDATA[
-<p>AMQP 是应用层协议的一个开放标准, 为面向消息的中间件设计。基于此协议的客户端与消息中间件可传递消息，并不受客户端/中间件不同产品，不同的开发语言等条件的限制。目标是实现一种在全行业广泛使用的标准消息中间件技术，以便降低企业和系统集成的开销，并且向大众提供工业级的集成服务。 主要实现有 RabbitMQ。</p>
-
-<h2 id="toc_0">客户端与 RabbitMQ 的通讯</h2>
-
-<h3 id="toc_1">连接</h3>
-
-<p>首先作为客户端(无论是生产者还是消费者)，如果要与 RabbitMQ 通讯的话，客户端与服务端之间必须创建一条 TCP 连接，当然同时建立连接后，客户端还必须发送一条“问候语”让彼此知道我们都是符合 AMQP 的语言的，比如你跟别人打招呼一般会说“你好!”，你跟国外的美女一般会说“hello!”一样。 你们确认好“语言”之后，就相当于客户端和 RabbitMQ 通过“认证”了。你们之间可以创建一条 AMQP 的信道。</p>
-
-<p>连接在 RabbitMQ 原生客户端(5.0.0)版本中默认使用 java 的原生 socket，但是也支持 NIO，需要手动设置修改。</p>
-
-<h3 id="toc_2">信道</h3>
-
-<p>信道是生产者/消费者与 RabbitMQ 通信的渠道。信道是建立在 TCP 连接上的虚拟连接，什么意思呢? 就是说 rabbitmq 在一条 TCP 上建立成百上千个信道来达到多个线程处理，这个 TCP 被多个线程共享，每个线程对应一个信道，信道在RabbitMQ 都有唯一的 ID ,保证了信道私有性，对应上唯一的线程使用。</p>
-
-<p>疑问: 为什么不建立多个 TCP 连接呢? </p>
-
-<p>原因是 rabbit 保证性能，系统为每个线程开辟一个 TCP 是非常消耗性能，每秒成百上千的建立销毁 TCP 会严重消耗系统。</p>
-
-<p>所以 rabbitmq 选择建立多个信道(建立在 tcp 的虚拟连接)连接到 rabbit 上。<br/>
-从技术上讲，这被称之为“多路复用”，对于执行多个任务的多线程或者异步应用程序来说，好使的很。</p>
-
-<h2 id="toc_3">RabbitMQ 中使用 AMQP</h2>
-
-<h3 id="toc_4">包括的要素</h3>
-
-<ul>
-<li>生产者<br/>
-消息的创建者，发送到RabbitMQ</li>
-<li>消费者<br/>
-连接到 RabbitMQ 订阅到队列上，消费消息，持续订阅(basicConsumer)和单条订阅(basicGet)</li>
-<li>包含有效载荷和标签，有效载荷指要传输的数据，标签描述了有效载荷，并且 RabbitMQ用它来决定谁获得消息，消费者只能拿到有效载荷，病不知道生产者是谁。</li>
-</ul>
-
-<h3 id="toc_5">交换器、队列、绑定、路由键</h3>
-
-<p>队列通过路由键(routing key，某种确定的规则)绑定到交换器，生产者将消息发布到交换器，交换器根据绑定的路由键将消息路由到特定队列， 然后由订阅这个队列的消费者进行接收。（routing_key和 丙丁见 binding_key 的最大长度是 255 个字节）</p>
-
-<p><figure><img src="media/16022252063226/16022280502106.jpg" alt="" style="width:882px;"/></figure></p>
-
-<h3 id="toc_6">消息的确认</h3>
-
-<p>消费者收到的每一条消息都必须进行确认(自动确认和自行确认)。</p>
-
-<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=false 时，RabbitMQ 会等待消费者显式发回 ack 信号后才从内存(和磁盘，如果是持久化消<br/>
-息的话)中移去消息。否则，RabbitMQ 会在队列中消息被消费后立即删除它。</p>
-
-<p>采用消息确认机制后，只要令 autoAck=false，消费者就有足够的时间处理消息(任务)，不用担心处理消息过程中消费者进程挂掉后消息丢失的问题， 因为 RabbitMQ 会一直持有消息直到消费者显式调用 basicAck 为止。</p>
-
-<p>当 autoAck=false 时，对于 RabbitMQ 服务器端而言，队列中的消息分成了两部分:一部分是等待投递给消费者的消息;一部分是已经投递给消费者， 但是还没有收到消费者 ack 信号的消息。如果服务器端一直没有收到消费者的 ack 信号，并且消费此消息的消费者已经断开连接，则服务器端会安排该消 息重新进入队列，等待投递给下一个消费者(也可能还是原来的那个消费者)。</p>
-
-<p>RabbitMQ 不会为未 ack 的消息设置超时时间，它判断此消息是否需要重新投递给消费者的唯一依据是消费该消息的消费者连接是否已经断开。这么 设计的原因是 RabbitMQ 允许消费者消费一条消息的时间可以很久很久</p>
-
-<h2 id="toc_7">虚拟主机</h2>
-
-<p>虚拟消息服务器，vhost，本质上就是一个 mini 版的 mq 服务器，有自己的队列、交换器和绑定，最重要的，自己的权限机制。Vhost 提供了逻辑上的 分离，可以将众多客户端进行区分，又可以避免队列和交换器的命名冲突。Vhost 必须在连接时指定，rabbitmq 包含缺省 vhost:“/”，通过缺省用户和 口令 guest 进行访问。</p>
-
-<p>rabbitmq 里创建用户，必须要被指派给至少一个 vhost，并且只能访问被指派内的队列、交换器和绑定。Vhost 必须通过 rabbitmq 的管理控制工具创建。</p>
-
-<h2 id="toc_8">交换器类型</h2>
-
-<p>共有四种 direct、fanout、topic、headers，其中headers和 direct 可以忽略。</p>
-
-<h3 id="toc_9">fanout</h3>
-
-<p>消息广播到绑定的队列，不管队列绑定了什么路由键，消息经过交换器，每个队列都有一份</p>
-
-<h3 id="toc_10">Topic</h3>
-
-<p><code>通过使用 “*”和“#”通配符进行处理，使来自不同源头的消息到达同一个队列，”.”将路由键分为了几个标识符，“*” 匹配 1 个，“#”匹配一个或多个。</code></p>
-
-<p><figure><img src="media/16022252063226/16022297347390.jpg" alt="" style="width:799px;"/></figure></p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[什么是消息中间件]]></title>
-    <link href="http://www.throne4j.com/16021705401610.html"/>
-    <updated>2020-10-08T23:22:20+08:00</updated>
-    <id>http://www.throne4j.com/16021705401610.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">消息中间件(MQ)的定义</h2>
-
-<p>其实并没有标准定义。一般认为，消息中间件属于分布式系统中一个子系统，关注于数据的发送和接收，利用高效可靠的异步消息传递机制对分布式系统中的其余各个子系统进行集成。</p>
-
-<ul>
-<li>高效:对于消息的处理处理速度快。 </li>
-<li>可靠:一般消息中间件都会有消息持久化机制和其他的机制确保消息不丢失。 </li>
-<li>异步:指发送完一个请求，不需要等待返回，随时可以再发送下一个请求，既不需要等待。 </li>
-</ul>
-
-<p>一句话总结，我们消息中间件不生产消息，只是消息的搬运工。</p>
-
-<h2 id="toc_1">为什么要用消息中间件?</h2>
-
-<p>所以消息中间件主要解决分布式系统之间消息的传递，同时为分布式系统中其他子系统提供了松耦合的架构，同时还有以下好处。</p>
-
-<ul>
-<li><p>低耦合<br/>
-低耦合，不管是程序还是模块之间，使用消息中间件进行间接通信。</p></li>
-<li><p>异步通信能力<br/>
-异步通信能力，使得子系统之间得以充分执行自己的逻辑而无需等待。</p></li>
-<li><p>缓冲能力<br/>
-缓冲能力，消息中间件像是一个巨大的蓄水池，将高峰期大量的请求存储下来慢慢交给后台进行处理，对于秒杀业务来说尤为重要。</p></li>
-<li><p>伸缩性<br/>
-伸缩性，是指通过不断向集群中加入服务器的手段来缓解不断上升的用户并发访问压力和不断增长的数据存储需求。就像弹簧一样挂东西一样，用 户多，伸一点，用户少，浅一点，啊，不对，缩一点。是伸缩，不是深浅。衡量架构是否高伸缩性的主要标准就是是否可用多台服务器构建集群，是否 容易向集群中添加新的服务器。加入新的服务器后是否可以提供和原来服务器无差别的服务。集群中可容纳的总的服务器数量是否有限制。</p></li>
-<li><p>扩展性<br/>
-扩展性，主要标准就是在网站增加新的业务产品时，是否可以实现对现有产品透明无影响，不需要任何改动或者很少改动既有业务功能就可以上线新产品。比如用户购买电影票的应用，现在我们要增加一个功能，用户买了铁血战士的票后，随机抽取用户送异形的限量周边。怎么做到不改动用户购票功能的基础上增加这个功能。熟悉设计模式的同学，应该很眼熟，这是设计模式中的开闭原则(对扩展开放，对修改关闭)在架构层面的一个原则。</p></li>
-</ul>
-
-<h2 id="toc_2">和 RPC 有何区别?</h2>
-
-<p>RPC 和消息中间件的场景的差异很大程度上在于就是“依赖性”和“同步性”。</p>
-
-<ul>
-<li>依赖性:<br/>
-比如短信通知服务并不是事交易环节必须的，并不影响下单流程，不是强依赖，所以交易系统不应该依赖短信服务。如果是 RPC 调用，短信通知服 务挂了，整个业务就挂了，这个就是依赖性导致的，而消息中间件则没有这个依赖性。</li>
-</ul>
-
-<p>消息中间件出现以后对于交易场景可能是调用库存中心等强依赖系统执行业务，之后发布一条消息(这条消息存储于消息中间件中)。像是短信通 知服务、数据统计服务等等都是依赖于消息中间件去消费这条消息来完成自己的业务逻辑。</p>
-
-<ul>
-<li>同步性:<br/>
-RPC 方式是典型的同步方式，让远程调用像本地调用。消息中间件方式属于异步方式。</li>
-</ul>
-
-<h2 id="toc_3">消息中间件有些什么使用场景?</h2>
-
-<h3 id="toc_4">异步处理</h3>
-
-<p>场景说明: 用户注册后，需要发注册邮件和注册短信。</p>
-
-<p>传统的做法有两种 </p>
-
-<ul>
-<li>串行的方式<br/>
-将注册信息写入数据库成功后，发送注册邮件，再发送注册短信。以上三个任务全部完成后，返回给客户端。</li>
-<li>并行方式<br/>
-将注册信息写入数据库成功后，发送注册邮件的同时，发送注册短信。以上三个任务完成后，返回给客户端。与串行的差别是，并 行的方式可以提高处理的时间。
-<figure><img src="media/16021705401610/16021728568093.jpg" alt="串行"/><figcaption>串行</figcaption></figure></li>
-</ul>
-
-<p><figure><img src="media/16021705401610/16021728464187.jpg" alt="并行"/><figcaption>并行</figcaption></figure></p>
-
-<p>上案例描述，传统的方式系统的性能(并发量，吞吐量，响应时间)会有瓶颈。如何解决这个问题呢? </p>
-
-<p>引入消息队列，将不是必须的业务逻辑，异步处理。</p>
-
-<p><figure><img src="media/16021705401610/16021712978489.jpg" alt="" style="width:560px;"/></figure></p>
-
-<p>按照以上约定，用户的响应时间相当于是注册信息写入数据库的时间，也就是 50 毫秒。注册邮件，发送短信写入消息队列后，直接返回，因此写入 消息队列的速度很快，基本可以忽略，因此用户的响应时间可能是 50 毫秒。因此架构改变后，系统的吞吐量提高到每秒 20 QPS。比串行提高了 3 倍，比 并行提高了两倍。</p>
-
-<h3 id="toc_5">应用解耦</h3>
-
-<p>场景说明:用户下单后，订单系统需要通知库存系统。传统的做法是，订单系统调用库存系统的接口。</p>
-
-<p>传统模式的缺点:</p>
-
-<ul>
-<li>1) 假如库存系统无法访问，则订单减库存将失败，从而导致订单失败;</li>
-<li>2) 订单系统与库存系统耦合;</li>
-</ul>
-
-<p>如何解决以上问题呢?引入应用消息队列后的方案</p>
-
-<p>订单系统:用户下单后，订单系统完成持久化处理，将消息写入消息队列，返回用户订单下单成功。 </p>
-
-<p>库存系统:订阅下单的消息，采用拉/推的方式，获取下单信息，库存系统根据下单信息，进行库存操作。</p>
-
-<p>假如:在下单时库存系统不能正常使用。也不影响正常下单，因为下单后，订单系统写入消息队列就不再关心其他的后续操作了。实现订单系统与 库存系统的应用解耦。</p>
-
-<h3 id="toc_6">流量削峰</h3>
-
-<p>流量削峰也是消息队列中的常用场景，一般在秒杀或团抢活动中使用广泛。</p>
-
-<p>应用场景:秒杀活动，一般会因为流量过大，导致流量暴增，应用挂掉。为解决这个问题，一般需要在应用前端加入消息队列:可以控制活动的人数;可以缓解短时间内高流量压垮应用。</p>
-
-<h3 id="toc_7">日志处理</h3>
-
-<p>日志处理是指将消息队列用在日志处理中，比如 Kafka 的应用，解决大量日志传输的问题。架构简化如下:<br/>
-<figure><img src="media/16021705401610/16022199054947.jpg" alt="" style="width:623px;"/></figure></p>
-
-<p>日志采集客户端，负责日志数据采集，定时写入 Kafka 队列:Kafka 消息队列，负责日志数据的接收，存储和转发;日志处理应用:订阅并消费 kafka 队列中的日志数据;</p>
-
-<h3 id="toc_8">消息通讯</h3>
-
-<p>消息通讯是指，消息队列一般都内置了高效的通信机制，因此也可以用在纯的消息通讯。比如实现点对点消息队列，或者聊天室等。 点对点通讯:客户端 A 和客户端 B 使用同一队列，进行消息通讯。<br/>
-聊天室通讯:客户端 A，客户端 B，客户端 N 订阅同一主题，进行消息发布和接收。实现类似聊天室效果。</p>
-
-<h2 id="toc_9">常见的消息中间件比较</h2>
-
-<p><figure><img src="media/16021705401610/16022199788204.jpg" alt="" style="width:1025px;"/></figure></p>
-
-<p>如果一般的业务系统要引入 MQ，怎么选型:</p>
-
-<p>用户访问量在 ActiveMQ 的可承受范围内，而且确实主要是基于解耦和异步来用的，可以考虑 ActiveMQ，也比较贴近 Java 工程师的使用习惯，但是<br/>
-ActiveMQ 现在停止维护了，同时 ActiveMQ 并发不高，所以业务量一定的情况下可以考虑使用。</p>
-
-<p>RabbitMQ 作为一个纯正血统的消息中间件，有着高级消息协议 AMQP 的完美结合，在消息中间件中地位无可取代，但是 erlang 语言阻止了我们去深入研究和掌控，对公司而言，底层技术无法控制，但是确实是开源的，有比较稳定的支持，活跃度也高。</p>
-
-<p>对自己公司技术实力有绝对自信的，可以用 RocketMQ，但是 RocketMQ 诞生比较晚，并且更新迭代很快，这个意味着在使用过程中有可能会遇到很多坑，所以如果你们公司 Java 技术不是很强，不推荐使用。</p>
-
-<p>如果是大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准的，绝对没问题，社区活跃度很高，几乎是全世界这个领域的事实性规范。 </p>
-
-<p>从性能上来看，使用文件系统的消息中间件(kafka、rokcetMq)性能是最好的，所以基于文件系统存储的消息中间件是发展趋势。(从存储方式和效率来看 文件系统&gt;KV存储&gt;关系型数据库)</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Collection 体系]]></title>
-    <link href="http://www.throne4j.com/16020916538677.html"/>
-    <updated>2020-10-08T01:27:33+08:00</updated>
-    <id>http://www.throne4j.com/16020916538677.html</id>
-    <content type="html"><![CDATA[
-<p>Collection 集合体系是 List、 Set 和 Queue 的接口</p>
-
-<p>List 特点： 存取有序，可以根据索引来直接取值<br/>
-Set 特点： 存取无序，元素不可以重复<br/>
-Queue特点： 存取有序，两端进出元素</p>
-
-<h2 id="toc_0">List 系集合</h2>
-
-<ul>
-<li>ArrayList: 底层由数组实现，排列有序，元素可重复，线程不安全，按照 当前容量*1.5 + 1 进行扩容。</li>
-<li>Vector ：</li>
-<li>LinkedList</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[伪共享]]></title>
-    <link href="http://www.throne4j.com/16020533928895.html"/>
-    <updated>2020-10-07T14:49:52+08:00</updated>
-    <id>http://www.throne4j.com/16020533928895.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">定义</h2>
-
-<p>缓存系统中是以缓存行（cache line）为单位存储的，当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。</p>
-
-<h2 id="toc_1">缓存行</h2>
-
-<p>CPU 缓存（Cache Memory）是位于 CPU 与内存之间的临时存储器，它的容量比内存小的多但是交换速度却比内存要快得多。</p>
-
-<p>高速缓存的出现主要是为了解决 CPU 运算速度与内存读写速度不匹配的矛盾，因为 CPU 运算速度要比内存读写速度快很多，这样会使 CPU 花费很长时间等待数据到来或把数据写入内存。</p>
-
-<p>在缓存中的数据是内存中的一小部分，但这一小部分是短时间内 CPU 即将访问的，当 CPU 调用大量数据时，就可避开内存直接从缓存中调用，从而加快读取速度。</p>
-
-<p>因此为了 CPU 更快从内存中读取数据，设置了多级缓存机制，如下图所示：<br/>
-<figure><img src="media/16020519457966/16020586138762.jpg" alt=""/></figure></p>
-
-<p>当 CPU 运算时，首先会从 L1 缓存查找所需要的数据，如果没有找到，再去 L2 缓存中去找，以此类推，直到从内存中获取数据，这也就意味着，越长的调用链，所耗费的执行时间也越长。</p>
-
-<p>那是不是可以从主内存拿数据的时候，顺便多拿一些呢？这样就可以避免频繁从主内存中获取数据了。聪明的计算机科学家已经想到了这个法子，这就是缓存行的由来。</p>
-
-<p>缓存是由多个缓存行组成的，而<strong>每个缓存行大小通常来说，大小为 64 字节</strong>，并且每个缓存行有效地引用主内存中的一块儿地址，CPU 每次从主内存中获取数据时，会将相邻的数据也一同拉取到缓存行中，这样当 CPU 执行运算时，就大大减少了与主内存的交互。</p>
-
-<pre><code class="language-java">public class CacheLineDemo {
-
-    //一般缓存行大小是64字节，一个 long 类型占8字节
-    static long[][] arr;
-
-    public static void main(String[] args) {
-
-        int size = 1024 * 1024;
-
-        arr = new long[size][];
-        for (int i = 0; i &lt; size; i++) {
-            arr[i] = new long[8];
-            for (int j = 0; j &lt; 8; j++) {
-                arr[i][j] = 0L;
-            }
-        }
-        long sum = 0L;
-        long marked = System.currentTimeMillis();
-        for (int i = 0; i &lt; size; i++) {
-            for (int j = 0; j &lt; 8; j++) {
-                sum = arr[i][j];
-            }
-        }
-        System.out.println(&quot;[cache line]Loop times:&quot; + (System.currentTimeMillis() - marked) + &quot;ms&quot;);
-
-        marked = System.currentTimeMillis();
-        for (int i = 0; i &lt; 8; i += 1) {
-            for (int j = 0; j &lt; size; j++) {
-                sum = arr[j][i];
-            }
-        }
-        System.out.println(&quot;[no cache line]Loop times:&quot; + (System.currentTimeMillis() - marked) + &quot;ms&quot;);
-    }
-
-}
-</code></pre>
-
-<h2 id="toc_2">伪共享问题</h2>
-
-<p>当 CPU 执行完后，还需要将数据回写到内存上，以便于别的线程可以从主内存中获取最新的数据。假设两个线程都加载了相同的 Cache line 数据，会产生什么样的影响呢？下面我用一张图解释：</p>
-
-<p><figure><img src="media/16020519457966/16020585354167.jpg" alt=""/></figure></p>
-
-<p>数据 A、B、C 被加载到同一个 Cache line，假设线程 1 在 core1 中修改 A，线程 2 在 core2 中修改 B。</p>
-
-<p>线程 1 首先对 A 进行修改，这时 core1 会告知其它 CPU 核，当前引用同一地址的 Cache line 已经无效，随后 core2 发起修改 B，会导致 core1 将数据回写到主内存中，core2 这时会重新从主内存中读取该 Cache line 数据。</p>
-
-<p>可见，如果同一个 Cache line 的内容被多个线程读取，就会产生相互竞争，频繁回写主内存，降低了性能。</p>
-
-<h2 id="toc_3">如何解决伪共享问题</h2>
-
-<p>要解决伪共享这个问题最简单的做法就是将线程间共享元素分开到不同的 Cache line 中，这种做法叫用空间换取时间，具体做法如下：</p>
-
-<pre><code class="language-java">public final static class ValuePadding {
-  // 前置填充对象
-  protected long p1, p2, p3, p4, p5, p6, p7;
-  // value 值
-  protected volatile long value = 0L;
-  // 后置填充对象
-  protected long p9, p10, p11, p12, p13, p14, p15;
-}
-</code></pre>
-
-<p>JDK1.8 有专门的注解 @Contended 来避免伪共享，为了更加直观，我使用了对象填充的方法，其中 protected long p1, p2, p3, p4, p5, p6, p7 作为前置填充对象，protected long p9, p10, p11, p12, p13, p14, p15作为后置填充对象，这样任意线程访问 ValuePadding 时，value 都处于不同的 Cache line 中，不会产生伪共享问题。</p>
-
-<p>下面的例子用来演示伪共享与解决伪共享后的性能差异：</p>
-
-<pre><code class="language-java">public class FakeShareDemo {
-
-    public static void main(String[] args) throws InterruptedException {
-        for (int i = 1; i &lt; 10; i++) {
-            System.gc();
-            final long start = System.currentTimeMillis();
-            runTest(Type.PADDING, i);
-            System.out.println(&quot;[PADDING]Thread num &quot; + i + &quot; duration = &quot; + (System.currentTimeMillis() - start));
-        }
-
-        for (int i = 1; i &lt; 10; i++) {
-            System.gc();
-            final long start = System.currentTimeMillis();
-            runTest(Type.NO_PADDING, i);
-            System.out.println(&quot;[NO_PADDING] Thread num &quot; + i + &quot; duration = &quot; + (System.currentTimeMillis() - start));
-        }
-    }
-
-    private static void runTest(Type type, int NUM_THREADS) throws InterruptedException {
-        Thread[] threads = new Thread[NUM_THREADS];
-
-        switch (type) {
-            case PADDING:
-                DataPadding.longs = new ValuePadding[NUM_THREADS];
-                for (int i = 0; i &lt; DataPadding.longs.length; i++) {
-                    DataPadding.longs[i] = new ValuePadding();
-                }
-                break;
-            case NO_PADDING:
-                Data.longs = new ValueNoPadding[NUM_THREADS];
-                for (int i = 0; i &lt; Data.longs.length; i++) {
-                    Data.longs[i] = new ValueNoPadding();
-                }
-                break;
-        }
-
-
-        for (int i = 0; i &lt; threads.length; i++) {
-            threads[i] = new Thread(new FakeSharing(type, i));
-        }
-        for (Thread t : threads) {
-            t.start();
-        }
-        for (Thread t : threads) {
-            t.join();
-        }
-    }
-
-    // 线程执行单元
-    static class FakeSharing implements Runnable {
-        public final static long ITERATIONS = 500L * 1000L * 100L;
-        private int arrayIndex;
-        private Type type;
-
-        public FakeSharing(Type type, final int arrayIndex) {
-            this.arrayIndex = arrayIndex;
-            this.type = type;
-        }
-
-        public void run() {
-            long i = ITERATIONS + 1;
-            // 读取共享变量中指定的下标对象，并对其value变量不断修改
-            // 由于每次读取数据都会写入缓存行，如果线程间有共享的缓存行数据，就会导致伪共享问题发生
-            // 如果对象已填充，那么线程每次读取到缓存行中的对象就不会产生伪共享问题
-            switch (type) {
-                case NO_PADDING:
-                    while (0 != --i) {
-                        Data.longs[arrayIndex].value = 0L;
-                    }
-                    break;
-                case PADDING:
-                    while (0 != --i) {
-                        DataPadding.longs[arrayIndex].value = 0L;
-                    }
-                    break;
-            }
-        }
-    }
-
-    // 线程间贡献的数据
-    public final static class Data {
-        public static ValueNoPadding[] longs;
-    }
-
-    public final static class DataPadding {
-        public static ValuePadding[] longs;
-    }
-
-    // 使用填充对象
-    public final static class ValuePadding {
-        // 前置填充对象
-        protected long p1, p2, p3, p4, p5, p6;
-        // value 值
-        protected volatile long value = 0L;
-        // 后置填充对象
-        protected long p9, p10, p11, p12, p13, p14, p15;
-    }
-
-    // 不填充对象
-    //    @sun.misc.Contended
-    public final static class ValueNoPadding {
-        protected volatile long value = 0L;
-    }
-
-    enum Type {
-        NO_PADDING,
-        PADDING
-    }
-}
-</code></pre>
 
 ]]></content>
   </entry>
