@@ -116,8 +116,72 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>为什么要用线程池?<br/>
-Java 中的线程池是运用场景最多的并发框架，几乎所有需要异步或并发执行 任务的程序都可以使用线程池。在开发过程中，合理地使用线程池能够带来 3 个好处。</p>
+                    <ul>
+<li>
+<a href="#toc_0">为什么要用线程池?</a>
+</li>
+<li>
+<a href="#toc_1">线程池的简单实现</a>
+</li>
+<li>
+<a href="#toc_2">jdk的线程池</a>
+<ul>
+<li>
+<a href="#toc_3">ThreadPoolExecutor类的构造函数</a>
+</li>
+<li>
+<a href="#toc_4">扩展ThreadPoolExecutor</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_5">线程池的工作机制</a>
+<ul>
+<li>
+<a href="#toc_6">提交任务</a>
+</li>
+<li>
+<a href="#toc_7">关闭线程池</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_8">如何合理使用线程池</a>
+</li>
+<li>
+<a href="#toc_9">预定义线程池</a>
+<ul>
+<li>
+<a href="#toc_10">FixedThreadPool</a>
+</li>
+<li>
+<a href="#toc_11">SingleThreadExecutor</a>
+</li>
+<li>
+<a href="#toc_12">CachedThreadPool</a>
+</li>
+<li>
+<a href="#toc_13">WorkStealingPool</a>
+</li>
+<li>
+<a href="#toc_14">ScheduledThreadPoolExecutor</a>
+<ul>
+<li>
+<a href="#toc_15">提交定时任务</a>
+</li>
+<li>
+<a href="#toc_16">定时任务超时问题</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h2 id="toc_0">为什么要用线程池?</h2>
+
+<p>Java 中的线程池是运用场景最多的并发框架，几乎所有需要异步或并发执行 任务的程序都可以使用线程池。在开发过程中，合理地使用线程池能够带来 3 个好处。</p>
 
 <ul>
 <li>第一:降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
@@ -125,7 +189,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 <li>第三:提高线程的可管理性。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</li>
 </ul>
 
-<h2 id="toc_0">线程池的简单实现</h2>
+<h2 id="toc_1">线程池的简单实现</h2>
 
 <pre><code class="language-java">public class MyThreadPool {
     // 任务队列
@@ -191,7 +255,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 }
 </code></pre>
 
-<h2 id="toc_1">jdk的线程池</h2>
+<h2 id="toc_2">jdk的线程池</h2>
 
 <pre><code class="language-text">Executor
 |----ThreadPerTaskExecutor in CompletableFuture
@@ -223,7 +287,7 @@ Java 中的线程池是运用场景最多的并发框架，几乎所有需要异
 
 <hr/>
 
-<h3 id="toc_2">ThreadPoolExecutor类的构造函数</h3>
+<h3 id="toc_3">ThreadPoolExecutor类的构造函数</h3>
 
 <pre><code class="language-java">public ThreadPoolExecutor(int corePoolSize,
                               int maximumPoolSize,
@@ -274,7 +338,7 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <hr/>
 
-<h3 id="toc_3">扩展ThreadPoolExecutor</h3>
+<h3 id="toc_4">扩展ThreadPoolExecutor</h3>
 
 <p>该类提供了在每个任务执行之前和之后调用的protected可悲子类覆写的beforeExecute(Thread, Runnable)和afterExecute(Runnable, Throwable)方法。 这些可以用来操纵执行环境; 例如，重新初始化ThreadLocals，收集统计信息或添加日志条目。 另外，方法terminated()可以被覆盖，以执行执行程序完全终止后需要执行的任何特殊处理。</p>
 
@@ -338,7 +402,7 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 
 <hr/>
 
-<h2 id="toc_4">线程池的工作机制</h2>
+<h2 id="toc_5">线程池的工作机制</h2>
 
 <ul>
 <li>如果当前运行的线程少于 corePoolSize，则创建新线程来执行任务(注意， 执行这一步骤需要获取全局锁)。</li>
@@ -347,19 +411,19 @@ workQueue 必须是 BlockingQueue 阻塞队列。当线程池中的线程数超�
 <li>如果创建新线程将使当前运行的线程超出 maximumPoolSize，任务将被拒绝，并调用 RejectedExecutionHandler.rejectedExecution()方法。</li>
 </ul>
 
-<h3 id="toc_5">提交任务</h3>
+<h3 id="toc_6">提交任务</h3>
 
 <p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程 池执行成功。</p>
 
 <p>submit()方法用于提交需要返回值的任务。线程池会返回一个 future 类型的对象，通过这个 future 对象可以判断任务是否执行成功，并且可以通过 future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get (long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。</p>
 
-<h3 id="toc_6">关闭线程池</h3>
+<h3 id="toc_7">关闭线程池</h3>
 
 <p>可以通过调用线程池的 shutdown 或 shutdownNow 方法来关闭线程池。它们 的原理是遍历线程池中的工作线程，然后逐个调用线程的 interrupt 方法来中断 线程，所以无法响应中断的任务可能永远无法终止。</p>
 
 <p>但是它们存在一定的区别， shutdownNow 首先将线程池的状态设置成 STOP，然后尝试停止所有的正在执行 或暂停任务的线程，并返回等待执行任务的列表，而 shutdown 只是将线程池的 状态设置成 SHUTDOWN 状态，然后中断所有没有正在执行任务的线程</p>
 
-<h2 id="toc_7">如何合理使用线程池</h2>
+<h2 id="toc_8">如何合理使用线程池</h2>
 
 <p>要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。</p>
 
@@ -395,9 +459,9 @@ W/C 是等待时间与计算时间的比率</p>
 
 <p>建议使用有界队列。有界队列能增加系统的稳定性和预警能力，可以根据需要设的大一点儿。</p>
 
-<h2 id="toc_8">预定义线程池</h2>
+<h2 id="toc_9">预定义线程池</h2>
 
-<h3 id="toc_9">FixedThreadPool</h3>
+<h3 id="toc_10">FixedThreadPool</h3>
 
 <p>创建使用固定线程数的 FixedThreadPool 的 API。适用于为了满足资源管理的 需求，而需要限制当前线程数量的应用场景，它适用于负载比较重的服务器。</p>
 
@@ -409,13 +473,13 @@ W/C 是等待时间与计算时间的比率</p>
 
 <p>FixedThreadPool 使用有界队列 LinkedBlockingQueue 作为线程池的工作队列 (队列的容量为 Integer.MAX_VALUE)。</p>
 
-<h3 id="toc_10">SingleThreadExecutor</h3>
+<h3 id="toc_11">SingleThreadExecutor</h3>
 
 <p>创建使用单个线程的 SingleThread-Executor 的 API，于需要保证顺序地执行 各个任务;并且在任意时间点，不会有多个线程是活动的应用场景。</p>
 
 <p>corePoolSize 和 maximumPoolSize 被设置为 1。其他参数与FixedThreadPool 相同。SingleThreadExecutor 使用有界队列LinkedBlockingQueue 作为线程池的工 作队列(队列的容量为Integer.MAX_VALUE)。</p>
 
-<h3 id="toc_11">CachedThreadPool</h3>
+<h3 id="toc_12">CachedThreadPool</h3>
 
 <p>创建一个会根据需要创建新线程的 CachedThreadPool 的 API。大小无界的线 程池，适用于执行很多的短期异步任务的小程序，或者是负载较轻的服务器。</p>
 
@@ -429,11 +493,11 @@ W/C 是等待时间与计算时间的比率</p>
 
 <p>这意味着，如果主线程提交任务的速度高于 maximumPool 中线程处理任务的速度时， CachedThreadPool 会不断创建新线程。极端情况下，CachedThreadPool 会因为创 建过多线程而耗尽 CPU 和内存资源。</p>
 
-<h3 id="toc_12">WorkStealingPool</h3>
+<h3 id="toc_13">WorkStealingPool</h3>
 
 <p>利用所有运行的处理器数目来创建一个工作窃取的线程池，使用 forkjoin 实现</p>
 
-<h3 id="toc_13">ScheduledThreadPoolExecutor</h3>
+<h3 id="toc_14">ScheduledThreadPoolExecutor</h3>
 
 <p>使用工厂类 Executors 来创建。Executors 可以创建 2 种类型的 ScheduledThreadPoolExecutor，如下。</p>
 
@@ -446,7 +510,7 @@ W/C 是等待时间与计算时间的比率</p>
 
 <p>SingleThreadScheduledExecutor 适用于需要单个后台线程执行周期任务，同 时需要保证顺序地执行各个任务的应用场景。</p>
 
-<h4 id="toc_14">提交定时任务</h4>
+<h4 id="toc_15">提交定时任务</h4>
 
 <ul>
 <li><p>public ScheduledFuture&lt;?&gt; schedule(Runnable command, long delay, TimeUnit unit)<br/>
@@ -463,7 +527,7 @@ TimeUnit unit);<br/>
 
 <p>固定延时间隔的任务是指每次执行完任务以后都延时一个固定的时间。由于 操作系统调度以及每次任务执行的语句可能不同，所以每次任务执行所花费的时 间是不确定的，也就导致了每次任务的执行周期存在一定的波动</p>
 
-<h4 id="toc_15">定时任务超时问题</h4>
+<h4 id="toc_16">定时任务超时问题</h4>
 
                   </article>
                   <div class="comments-wrap">

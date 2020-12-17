@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    并行和并发 - 大爷来玩儿啊~
+    JAVA显式锁 Lock 接口 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            并行和并发   
+                            JAVA显式锁 Lock 接口   
                       </h1>
                      
                     
@@ -114,46 +114,45 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>并发:指应用能够交替执行不同的任务,比如单 CPU 核心下执行多线程并非是 同时执行多个任务,如果你开两个线程执行,就是在你几乎不可能察觉到的速度不 断去切换这两个任务,已达到&quot;同时执行效果&quot;,其实并不是的,只是计算机的速度太 快,我们无法察觉到而已.</p>
+                    <p>首先我们先看一下 Lock 框架 和 工具类的关系图<br/>
+<figure><img src="media/16014331445574/16082238778057.jpg" alt="Lock 与 AQS 工具类关系"/><figcaption>Lock 与 AQS 工具类关系</figcaption></figure></p>
 
-<p>并行:指应用能够同时执行不同的任务,例:吃饭的时候可以边吃饭边打电话, 这两件事情可以同时执行</p>
+<p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
 
-<p>两者区别:一个是交替执行,一个是同时执行.</p>
+<p>问:java中有了synchronized，为什么又会出现java显式锁呢？</p>
 
-<h2 id="toc_0">高并发编程的意义</h2>
+<p>Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
 
-<p>由于多核多线程的CPU的诞生,多线程、高并发的编程越来越受重视和关注。 多线程可以给程序带来如下好处。</p>
+<p>使用 synchronized 方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
 
-<ul>
-<li>充分利用cpu资源</li>
-<li>加快相应用户的时间</li>
-<li>可以是我们的代码模块化、异步化、简单化</li>
-</ul>
+<p>lock的使用应使用如下的惯用写法:</p>
 
-<p>注意事项：</p>
+<pre><code class="language-java">Lock l = ...;
+l.lock();
+try{
+    // 访问被此锁保护起来的相关资源
+} finally{
+    l.unlock();
+}
+</code></pre>
 
-<ul>
-<li>线程之间的安全性</li>
-<li>线程之间的死锁问题</li>
-<li>线程太多将会耗尽服务器资源，使服务器宕机</li>
-</ul>
+<p>Lock 接口理解：</p>
 
-<h2 id="toc_1">线程的调度</h2>
-
-<p>线程调度是系统为线程分配 cpu 资源的过程，主要调度方式有两种</p>
-
-<ul>
-<li>协同式线程调度<br/>
-使用协同式线程调度的多线程系统，线程执行的时间由线程本身来控制，线 程把自己的工作执行完之后，要主动通知系统切换到另外一个线程上。</li>
-<li>抢占式线程调度<br/>
-使用抢占式线程调度的多线程系统，每个线程执行的时间以及是否切换都由 系统决定。</li>
-</ul>
-
-<p>Java 中的线程是通过映 射到操作系统的原生线程上实现的，所以线程的调度最终取决于操作系统，而操 作系统级别，OS 是以抢占式调度线程，我们可以认为线程是抢占式的。Java 虚 拟机采用抢占式调度模型，是指优先让可运行池中优先级高的线程占用 CPU，如 果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用 CPU。处 于运行状态的线程会一直运行，直至它不得不放弃 CPU。而且操作系统中线程的 优先级有时并不能和 Java 中的一一对应，所以 Java 优先级并不是特别靠谱。</p>
-
-<h2 id="toc_2">守护线程</h2>
-
-<p>Daemon(守护)线程是一种支持型线程，因为它主要被用作程序中后台调 度以及支持性工作。通过Thread.setDaemon(true)设置为后台线程，当jvm关闭的时候，不用等待后台线程执行完。</p>
+<pre><code class="language-text">public interface Lock {
+    // 枷锁获得锁资源
+    void lock();
+    // 尝试获得锁，如果当前线程被调用了interrupted则中断，并抛出异常，否则就获得锁
+    void lockInterruptibly() throws InterruptedException;
+    // 判断能否获得锁，如果能获得，则获得锁，并返回true(此时已经获得了锁)
+    boolean tryLock();
+    // 保持给定的等待时间，如果期间能拿到锁，则获得锁，同样如果期间被中断，则抛异常
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    // 解锁，释放锁资源
+    void unlock();
+    // 获取等待通知组件，该组件与当前锁绑定，当前线程只有获得了锁，才能调用该组件的wait()方法，而调用后，当前线程将释放锁。
+    Condition newCondition();
+}
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">
@@ -197,6 +196,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

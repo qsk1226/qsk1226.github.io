@@ -114,7 +114,7 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做s的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞,直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。</p>
+                    <p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞,直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。</p>
 
 <p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。</p>
 
@@ -131,14 +131,10 @@ CountDownLatch.await 一般阻塞工作线程，所有的进行预备工作的�
 
 <h2 id="toc_1">CyclicBarrier 实例代码</h2>
 
-<pre><code class="language-text">import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CyclicBarrier;
-
-public class UseCyclicBarrier {
+<pre><code class="language-java">public class HomeWorkCyclicBarrier {
 
     private static CyclicBarrier barrier
-            = new CyclicBarrier(4, new CollectThread());
+            = new CyclicBarrier(4, new Treacher());
 
     //存放子线程工作结果的容器
     private static ConcurrentHashMap&lt;String, Long&gt; resultMap
@@ -146,41 +142,40 @@ public class UseCyclicBarrier {
 
     public static void main(String[] args) {
         for (int i = 0; i &lt; 4; i++) {
-            Thread thread = new Thread(new SubThread());
+            Thread thread = new Thread(new Student());
             thread.start();
         }
 
     }
 
-    /*汇总的任务*/
-    private static class CollectThread implements Runnable {
+    /*汇总作业*/
+    private static class Treacher implements Runnable {
 
         @Override
         public void run() {
             StringBuilder result = new StringBuilder();
             for (Map.Entry&lt;String, Long&gt; workResult : resultMap.entrySet()) {
-                result.append(&quot;[&quot; + workResult.getValue() + &quot;]&quot;);
+                result.append( workResult.getValue()+&quot;、&quot;);
             }
-            System.out.println(&quot; the result = &quot; + result);
-            System.out.println(&quot;do other business........&quot;);
+            System.out.println(&quot;王老师批阅学生&quot; + result+&quot;的作业&quot;);
+            System.out.println(&quot;王老师看学生搞对象&quot;);
         }
     }
 
     /*相互等待的子线程*/
-    private static class SubThread implements Runnable {
+    private static class Student implements Runnable {
 
         @Override
         public void run() {
             long id = Thread.currentThread().getId();
-            resultMap.put(Thread.currentThread().getId() + &quot;&quot;, id);
+            resultMap.put(&quot;作业&quot;+Thread.currentThread().getId() + &quot;&quot;, id);
             try {
                 Thread.sleep(1000 + id);
-                System.out.println(&quot;Thread_&quot; + id + &quot; ....do something &quot;);
+                System.out.println(&quot;学生&quot; + id + &quot;写作业&quot;);
                 barrier.await();
-                // 这里CyclicBarrier 计数器再次使用
                 Thread.sleep(1000 + id);
-                System.out.println(&quot;Thread_&quot; + id + &quot; ....do its business &quot;);
-                barrier.await();
+                System.out.println(&quot;学生&quot; + id + &quot;搞对象&quot;);
+                //barrier.await();
             } catch (Exception e) {
                 e.printStackTrace();
             }

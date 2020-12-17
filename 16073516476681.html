@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Linux 网络包接收过程 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Linux 网络包接收过程   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/07</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%9C%8D%E5%8A%A1%E5%99%A8.html'>服务器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>首先看下网络包接收大概流程图</p>
+
+<p><figure><img src="media/16073516476681/Linux%20%E7%BD%91%E7%BB%9C%E5%8C%85%E6%8E%A5%E6%94%B6%E8%BF%87%E7%A8%8B.jpg" alt="Linux 网络包接收过程"/><figcaption>Linux 网络包接收过程</figcaption></figure></p>
+
+<ul>
+<li>SKB：struct sk_buffer 的简写<br/>
+Struct sk_buffer 是 linux TCP/IP stack 中，用于管理Data Buffer的结构。Sk_buffer 在数据包的发送和接收中起着重要的作用。为了提高网络处理的性能，应尽量避免数据包的拷贝。Linux 内核开发者们在设计 sk_buffer 结构的时候，充分考虑到这一点。目前 Linux 协议栈在接收数据的时候，需要拷贝两次：数据包进入网卡驱动后拷贝一次，从内核空间递交给用户空间的应用时再拷贝一次。</li>
+</ul>
+
+<p>当网卡上收到数据以后，Linux 中第一个工作的模块是网络驱动。 网络驱动会以 DMA 的 方式把网卡上收到的帧写到内存里。再向 CPU 发起一个中断，以通知 CPU 有数据到达。第 二，当 CPU 收到中断请求后，会去调用网络驱动注册的中断处理函数。 网卡的中断处理函 数并不做过多工作，发出软中断请求，然后尽快释放 CPU。ksoftirqd 检测到有软中断请求到 达，调用 poll 开始轮询收包，收到后交由各级协议栈处理。最后会被放到用户 socket 的接 收队列中。</p>
+
+<h2 id="toc_0">准备工作</h2>
+
+<p>1、创建 ksoftirqd 内核线程<br/>
+Linux 的软中断都是在专门的内核线程(ksoftirqd)中进行的，因此我们非常有必要看一 下这些进程是怎么初始化的，这样我们才能在后面更准确地了解收包过程。该进程数量不是 1 个，而是 N 个，其中 N 等于你的机器的核数。</p>
+
+<p>系统初始化的时候会创建出 softirqd 进程。</p>
+
+<p>当 ksoftirqd 被创建出来以后，它就会进入自己的线程循环函数不停地判断有没有软中断需要被处理。这里需要注意的一点是，软中断不仅仅只有网络软中断，还有其它类型。</p>
+
+<p>2、网络子系统初始化</p>
+
+<p>linux 内核通过 net/core/dev.c 中 net_dev_init 函数进行网络子系统的初始化，在这个函数里，会为每个 CPU 都申请一个 softnet_data 数据结构。</p>
+
+<p>同时会给每一种软中断都注册一个处理函数。比如网络处理中 NET_TX_SOFTIRQ 中断的处 理函数为 net_tx_action，NET_RX_SOFTIRQ 中断的为 net_rx_action。</p>
+
+<p>3、协议栈注册<br/>
+内核实现了网络层的 ip 协议，也实现了传输层的 tcp 协议和 udp 协议。 </p>
+
+<p>这些协议对应的实现函数分别是 ip_rcv()，tcp_v4_rcv()和 udp_rcv()。和我们平时写代码的方式不一样的是， 内核是通过注册的方式来实现的。 在 net/ipv4/af_inet.c 中的 inet_init(void)负责网络协议栈 注册。 通过 inet_init，将这些函数注册到了 inet_protos 和 ptype_base 两个数据结构中</p>
+
+<p>inet_protos记录着udp，tcp的处理函数地址，ptype_base存储着ip_rcv()函数的处理地址。 软中断中会通过 ptype_base 找到 ip_rcv 函数地址，进而将 ip 包正确地送到 ip_rcv()中执行。 在 ip_rcv 中将会通过 inet_protos 找到 tcp 或者 udp 的处理函数，再而把包转发给 udp_rcv() 或 tcp_v4_rcv()函数。</p>
+
+<p>4、网卡驱动初始化和启动网卡，中间的工作包括分配内存、注册中断处理函数，注册供 内核使用的函数、开启硬中断等等工作。</p>
+
+<h2 id="toc_1">Socket 的创建</h2>
+
+<p>调用链：<br/>
+net/Socket.c:sys_socket()-&gt;sock_create()-&gt;__sock_create()-&gt;sock_alloc();</p>
+
+<p>主要的工作则是:<br/>
+1、和 Linux 文件系统挂钩;<br/>
+2、使用协议族来初始化 socket，在前面的初始化过程中，我们知道有个协议栈注册过程， 找到内核初始化时注册的协议域，然后调用其 create 方法进行 socket 实例的创建;<br/>
+3、初始化和 socket 通信有关的缓冲区、队列等等;</p>
+
+<h2 id="toc_2">接受数据的到来</h2>
+
+<p>1、首先当数据帧从网线到达网卡上的时候，第一站是网卡的接收队列。网卡在分配给自己的RingBuffer中寻找可用的内存位置，找到后 DMA 引擎会把数据 DMA 到网卡之前关联的内存里，这个时候 CPU 都是无感的。</p>
+
+<p>当 DMA 操作完成以后，网卡会向 CPU 发起一个硬中断，通知 CPU 有数据到达。CPU 调用网卡注册的硬中断处理函数，这个处理过程非常短。只是记录了一个寄存器，修改了一下 CPU 的 softnet_data 中的列表，告诉 CPU 当前有设备有数据需要处理，然后发出个软中断， 硬中断工作就算是完成了。</p>
+
+<p>2、在网络子系统初始化小节，我们看到为 NET_RX_SOFTIRQ 注册了处理函数 net_rx_action， 这个函数中的核心逻辑执行就是执行网卡驱动注册到 softnet_data 中的函数，把数据帧从 RingBuffer 上取下来，被送到协议栈中，从数据包中取出协议信息，然后遍历注册在这个协议上的回调函数列表，调用到了协议层注册的处理函数了。</p>
+
+<p>对于 ip 包来讲，就会进入到 ip_rcv，IP 层处理完成后如协议注册小节看到 inet_protos 中 保存着 tcp_rcv()和 udp_rcv()的函数地址。</p>
+
+<p>这里将会根据包中的协议类型选择进行分发，在这里 skb 包将会进一步被派送到更上层的协议中，udp 和 tcp。</p>
+
+<p>udp 和 tcp 层根据 skb 来寻找对应的 socket，当找到以后将数据包放到 socket 的接收队列中。<br/>
+而我们一般网络编程里的读取数据方法，就是访问这个接收队列</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

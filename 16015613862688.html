@@ -183,6 +183,45 @@ public class UseCountDownLatch {
 }
 </code></pre>
 
+<pre><code class="language-java">public class MichaelShow {
+    private static final AtomicInteger COUNT = new AtomicInteger(0);
+    static class Customer extends Thread {
+        private final CountDownLatch beQuiet;
+        private final CountDownLatch beBoom;
+
+        public Customer(CountDownLatch beQuiet, CountDownLatch beBoom) {
+            this.beQuiet = beQuiet;
+            this.beBoom = beBoom;
+        }
+
+        @Override
+        public void run() {
+            try {
+                beQuiet.await();
+                System.out.println(&quot;观众大喊：Michael Jackson， 我爱你！！！晕厥~~~&quot;);
+                COUNT.getAndAdd(1);
+                beBoom.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch startShow = new CountDownLatch(1);
+        CountDownLatch beBoom = new CountDownLatch(100);
+        for (int i = 0; i &lt; 100; i++) {
+            new Customer(startShow,beBoom).start();
+        }
+
+        System.out.println(&quot;Michael号令，演唱会马上开始&quot;);
+        startShow.countDown(); // 开始演唱会
+        beBoom.await();// 等待晕厥到一定人数，将人送往医院
+        System.out.println(&quot;观众晕厥&quot;+COUNT.get()+&quot;个，都被送往医院&quot;);
+    }
+}
+</code></pre>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">

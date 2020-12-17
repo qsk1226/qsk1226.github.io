@@ -116,7 +116,11 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/15874857577712/15879543805684.jpg" alt="CAS流程"/><figcaption>CAS流程</figcaption></figure></p>
+                    <p>CAS，全称为Compare and Swap，即比较-替换。假设有三个操作数：内存值V、旧的预期值A、要修改的值B，当且仅当预期值A和内存值V相同时，才会将内存值修改为B并返回true，否则什么都不做并返回false。</p>
+
+<p>当然CAS一定要volatile变量配合，这样才能保证每次拿到的变量是主内存中最新的那个值，否则旧的预期值A对某条线程来说，永远是一个不会变的值A，只要某次CAS操作失败，永远都不可能成功。</p>
+
+<p><figure><img src="media/15874857577712/15879543805684.jpg" alt="CAS流程"/><figcaption>CAS流程</figcaption></figure></p>
 
 <h2 id="toc_0">什么是原子操作?如何实现原子操作?</h2>
 

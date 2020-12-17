@@ -145,6 +145,9 @@
 <li>
 <a href="#toc_7">线程不安全问题</a>
 </li>
+<li>
+<a href="#toc_8">ThreadLocal  如何向子线程传递数据</a>
+</li>
 </ul>
 
 
@@ -319,8 +322,6 @@ private void rehash() {
 }
 </code></pre>
 
-<p>Entry</p>
-
 <h3 id="toc_4">ThreadLocal的引用关系</h3>
 
 <p>ThreadLocal的引用关系 如下图所示：</p>
@@ -484,6 +485,31 @@ pool-1-thread-3 线程局部变量表：3</p>
 <hr/>
 
 <p><strong>综上所述 ThreadLocal使用完变量之后，千万要记着调用ThreadLocal的remove()完成擦除操作</strong></p>
+
+<h2 id="toc_8">ThreadLocal  如何向子线程传递数据</h2>
+
+<p>InheritableThreadLocal主要用于子线程创建时，需要自动继承父线程的ThreadLocal变量，方便必要信息的进一步传递。</p>
+
+<p>详情请参见： <a href="15867863097702.html">InheritableThreadLocal详解</a></p>
+
+<pre><code class="language-java">public class InheritableThreadLocal&lt;T&gt; extends ThreadLocal&lt;T&gt; {
+    protected T childValue(T parentValue) {
+        return parentValue;
+    }
+    
+    protected T childValue(T parentValue) {
+        return parentValue;
+    }
+    
+    ThreadLocalMap getMap(Thread t) {
+       return t.inheritableThreadLocals;
+    }
+    
+    void createMap(Thread t, T firstValue) {
+        t.inheritableThreadLocals = new ThreadLocalMap(this, firstValue);
+    }
+}
+</code></pre>
 
                   </article>
                   <div class="comments-wrap">

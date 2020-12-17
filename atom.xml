@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-12-06T22:39:36+08:00</updated>
+  <updated>2020-12-18T00:53:12+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,2687 +13,1622 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
+    <title type="html"><![CDATA[ResponseBodyAdvice]]></title>
+    <link href="http://www.throne4j.com/16079180311610.html"/>
+    <updated>2020-12-14T11:53:51+08:00</updated>
+    <id>http://www.throne4j.com/16079180311610.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HandlerInterceptor]]></title>
+    <link href="http://www.throne4j.com/16079177661857.html"/>
+    <updated>2020-12-14T11:49:26+08:00</updated>
+    <id>http://www.throne4j.com/16079177661857.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RequestContextHolder 类详解]]></title>
+    <link href="http://www.throne4j.com/16078839880324.html"/>
+    <updated>2020-12-14T02:26:28+08:00</updated>
+    <id>http://www.throne4j.com/16078839880324.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WebApplicationContext]]></title>
+    <link href="http://www.throne4j.com/16078839202895.html"/>
+    <updated>2020-12-14T02:25:20+08:00</updated>
+    <id>http://www.throne4j.com/16078839202895.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ContextLoaderListener]]></title>
+    <link href="http://www.throne4j.com/16078838973010.html"/>
+    <updated>2020-12-14T02:24:57+08:00</updated>
+    <id>http://www.throne4j.com/16078838973010.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HttpMessage]]></title>
+    <link href="http://www.throne4j.com/16078835677518.html"/>
+    <updated>2020-12-14T02:19:27+08:00</updated>
+    <id>http://www.throne4j.com/16078835677518.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[HttpMessageConverter]]></title>
+    <link href="http://www.throne4j.com/16078834576798.html"/>
+    <updated>2020-12-14T02:17:37+08:00</updated>
+    <id>http://www.throne4j.com/16078834576798.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WebApplicationContext]]></title>
+    <link href="http://www.throne4j.com/16078833088880.html"/>
+    <updated>2020-12-14T02:15:08+08:00</updated>
+    <id>http://www.throne4j.com/16078833088880.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[并发编程经典题]]></title>
+    <link href="http://www.throne4j.com/16078608737984.html"/>
+    <updated>2020-12-13T20:01:13+08:00</updated>
+    <id>http://www.throne4j.com/16078608737984.html</id>
+    <content type="html"><![CDATA[
+<ul>
+<li>
+<a href="#toc_0">多线程的出现是要解决什么问题的?</a>
+</li>
+<li>
+<a href="#toc_1">并发出现问题的根源</a>
+</li>
+<li>
+<a href="#toc_2">java 线程状态</a>
+</li>
+<li>
+<a href="#toc_3">并行和并发</a>
+</li>
+<li>
+<a href="#toc_4">进程与线程的区别</a>
+</li>
+<li>
+<a href="#toc_5">java中守护进程和本地进程的区别</a>
+</li>
+<li>
+<a href="#toc_6">通常线程有哪几种使用方式?</a>
+</li>
+<li>
+<a href="#toc_7">死锁和活锁的区别，死锁与饥饿的区别</a>
+</li>
+<li>
+<a href="#toc_8">怎么唤醒一个阻塞的线程？</a>
+</li>
+<li>
+<a href="#toc_9">不可变对象对多线程有什么帮助</a>
+</li>
+<li>
+<a href="#toc_10">什么是线程的上下文切换</a>
+</li>
+<li>
+<a href="#toc_11">java 中用到的线程调度算法是什么</a>
+</li>
+<li>
+<a href="#toc_12">Thread.sleep(0)的作用是什么？</a>
+</li>
+<li>
+<a href="#toc_13">Runnable接口和Callable接口的区别？</a>
+</li>
+<li>
+<a href="#toc_14">什么是线程组，为什么在 Java 中不推荐使用?</a>
+</li>
+<li>
+<a href="#toc_15">多线程同步和互斥有几种实现方法？</a>
+</li>
+<li>
+<a href="#toc_16">什么是java内存模型？</a>
+</li>
+<li>
+<a href="#toc_17">volatile关键字的作用？</a>
+</li>
+<li>
+<a href="#toc_18">什么是 CAS</a>
+</li>
+<li>
+<a href="#toc_19">ThreadLocal 有什么作用</a>
+</li>
+<li>
+<a href="#toc_20">为什么 wait, notify 和 notifyAll 这些方法不在 thread 类里面?</a>
+<ul>
+<li>
+<a href="#toc_21">为什么 wait 和 notify 方法要在同步块中调用?</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_22">怎么检测一个线程是否持有对象监视器</a>
+</li>
+<li>
+<a href="#toc_23">同步方法和同步块，哪个是更好的选择</a>
+</li>
+<li>
+<a href="#toc_24">乐观锁和悲观锁的理解及如何实现，有哪些实现方式?</a>
+</li>
+<li>
+<a href="#toc_25">什么是线程安全</a>
+</li>
+<li>
+<a href="#toc_26">线程类的构造方法、静态块是被哪个线程调用的？</a>
+</li>
+<li>
+<a href="#toc_27">Java中如何获取到线程dump文件？</a>
+</li>
+<li>
+<a href="#toc_28">一个线程如果出现了运行时异常会怎么样？</a>
+</li>
+<li>
+<a href="#toc_29">如何在两个线程之间共享数据？</a>
+</li>
+<li>
+<a href="#toc_30">sleep方法和wait方法有什么区别 ？</a>
+</li>
+<li>
+<a href="#toc_31">Java中interrupted 和 isInterrupted方法的区别？</a>
+</li>
+<li>
+<a href="#toc_32">单例模式的线程安全性？</a>
+</li>
+<li>
+<a href="#toc_33">Hashtable的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</a>
+</li>
+<li>
+<a href="#toc_34">介绍一下Executor 框架</a>
+<ul>
+<li>
+<a href="#toc_35">为什么使用 Executor 框架</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_36">Java 线程池中 submit() 和 execute()方法有什么区别?</a>
+</li>
+<li>
+<a href="#toc_37">如果你提交任务时，线程池队列已满，这时会发生什么？</a>
+</li>
+<li>
+<a href="#toc_38">高并发、任务执行时间短的业务怎样使用线程池？并发不高、任务执行时间长的业务怎样使用线程池？并发高、业务执行时间长的业务怎样使用线程池？</a>
+</li>
+<li>
+<a href="#toc_39">什么是 FutureTask</a>
+</li>
+<li>
+<a href="#toc_40">什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？</a>
+</li>
+<li>
+<a href="#toc_41">什么是 AQS</a>
+</li>
+<li>
+<a href="#toc_42">CyclicBarrier和CountDownLatch的区别？</a>
+</li>
+<li>
+<a href="#toc_43">Semaphore 有什么作用</a>
+</li>
+<li>
+<a href="#toc_44">写时复制容器可以用于什么应用场景</a>
+</li>
+<li>
+<a href="#toc_45">生产者消费者模型的作用是什么？</a>
+</li>
+<li>
+<a href="#toc_46">什么是可重入锁(ReentrantLock)?谈谈它的实现</a>
+</li>
+<li>
+<a href="#toc_47">synchronized 和 ReentrantLock 的对比</a>
+</li>
+<li>
+<a href="#toc_48">说一下 synchronized 的实现原理</a>
+</li>
+<li>
+<a href="#toc_49">什么是自旋？</a>
+</li>
+<li>
+<a href="#toc_50">ReadWriteLock 是什么</a>
+</li>
+<li>
+<a href="#toc_51">ConcurrentHashMap的并发度是什么？</a>
+</li>
+<li>
+<a href="#toc_52">Linux环境下如何查找哪个线程使用CPU最长</a>
+</li>
+</ul>
+
+
+<h2 id="toc_0">多线程的出现是要解决什么问题的?</h2>
+
+<p>随着计算机硬件技术的发展，CPU、内存、IO等设备的速度差异有了极大的差异，为了充分的利用 CPU 资源，平衡这三者的速度差异，计算机体系结构、操作系统、编译程序都做出了贡献。</p>
+
+<ul>
+<li>CPU 增加了缓存，以均衡与内存的速度差异， 导致了 可见性问题 </li>
+<li>操作系统增加了进程、线程，以分时复用 CPU，进而均衡 CPU 与 I/O 设备的速度差异，导致了原子性问题 </li>
+<li>编译程序优化指令执行次序，使得缓存能够得到更加合理地利用。导致了顺序性问题</li>
+</ul>
+
+<h2 id="toc_1">并发出现问题的根源</h2>
+
+<p>结合上一个问题看这个问题<br/>
+原子性、可见性、有序性：</p>
+
+<ul>
+<li><p>原子性<br/>
+原子性指的是一个或者多个操作，要么全部执行并且在执行的过程中不被其他操作打断，要么就全部都不执行。</p>
+<p>最有代表性的示例就是银行转账问题了：比如从账户A 向账户B 转1000元，那么必然包括2个操作：从账户A减去1000元，往账户B加上1000元。 </p>
+<p>如果这2个操作不具备原子性，会造成什么样的后果。假如从账户A减去1000元之后，操作突然中止。则只有 账户A 上面少了 1000元，而账户B 上却没有收到这笔钱，1000元就这样蒸发了，这种情况是不是很可怕，要是转账1000W的话，不知有多少人要跳楼喽。</p></li>
+<li><p>可见性<br/>
+可见性指多个线程操作一个共享变量时，其中一个线程对变量进行修改后，其他线程可以立即看到修改的结果。</p>
+<p>现在假设有两个线程，分别是 CPU1 和 CPU2, 现在要修改一个变量 count = 0，先是 CPU1 从主内存中加载到 CPU1 的高速缓冲区，并对 count 进行修改 count = 10，但是这时候，count = 10 还未刷新回主存，CPU2 从主内存中 读取count，这时候的 count 值仍然是 0，CPU2 未立即得到 CPU1 的计算结果 count = 10，这既是可见性问题</p></li>
+<li><p>有序性<br/>
+有序性，即程序的执行顺序按照代码的先后顺序来执行。</p>
+<p>在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型： </p>
+<ul>
+<li>编译器优化的重排序。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序。 </li>
+<li>指令级并行的重排序。现代处理器采用了指令级并行技术（Instruction-Level Parallelism， ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序。 </li>
+<li>内存系统的重排序。由于处理器使用缓存和 读/写 缓冲区，这使得加载和存储操作看上去可能是在乱序执行。</li>
+</ul></li>
+</ul>
+
+<h2 id="toc_2">java 线程状态</h2>
+
+<p><figure><img src="media/16078608737984/16078815638754.jpg" alt=""/></figure></p>
+
+<p>在Java中线程的状态一共被分成6种：</p>
+
+<ul>
+<li>初始态：</li>
+</ul>
+
+<p>创建一个Thread对象，但还未调用start()启动线程时，线程处于初始态。</p>
+
+<ul>
+<li><p>运行态：<br/>
+在Java中，运行态包括就绪态和运行态。</p>
+<ul>
+<li>就绪态该状态下的线程已经获得执行所需的所有资源，只要CPU分配执行权就能运行。所有就绪态的线程存放在就绪队列中。</li>
+<li>运行态获得CPU执行权，正在执行的线程。由于一个CPU同一时刻只能执行一条线程，因此每个CPU每个时刻只有一条运行态的线程。</li>
+</ul></li>
+<li><p>阻塞态：<br/>
+当一条正在执行的线程请求某一资源失败时，就会进入阻塞态。而在Java中，阻塞态专指请求锁失败时进入的状态。由一个阻塞队列存放所有阻塞态的线程。处于阻塞态的线程会不断请求资源，一旦请求成功，就会进入就绪队列，等待执行。PS：锁、IO、Socket等都资源。</p></li>
+<li><p>等待态：<br/>
+当前线程中调用wait、join、park 函数时，当前线程就会进入等待态。也有一个等待队列存放所有等待态的线程。线程处于等待态表示它需要等待其他线程的指示才能继续运行。进入等待态的线程会释放CPU执行权，并释放资源（如：锁）</p></li>
+<li><p>超时等待态：<br/>
+当运行中的线程调用sleep(time)、wait、join、parkNanos、parkUntil时，就会进入该状态；它和等待态一样，并不是因为请求不到资源，而是主动进入，并且进入后需要其他线程唤醒；进入该状态后释放CPU执行权 和 占有的资源。与等待态的区别：到了超时时间后自动进入阻塞队列，开始竞争锁。</p></li>
+<li><p>终止态：<br/>
+线程执行结束后的状态。</p></li>
+</ul>
+
+<p><strong>注意</strong>：</p>
+
+<ul>
+<li>wait()方法会释放CPU执行权和占有的锁。</li>
+<li>sleep(long)方法仅释放CPU使用权，锁仍然占用；线程被放入超时等待队列，与yield相比，它会使线程较长时间得不到运行。</li>
+<li>yield()方法仅释放CPU执行权，锁仍然占用，线程会被放入就绪队列，会在短时间内再次执行。</li>
+<li>wait和notify必须配套使用，即必须使用同一把锁调用；</li>
+<li>wait和notify必须放在一个同步块中调用wait和notify的对象必须是他们所处同步块的锁对象。</li>
+</ul>
+
+<h2 id="toc_3">并行和并发</h2>
+
+<p>并发:指应用能够交替执行不同的任务,比如单 CPU 核心下执行多线程并非是 同时执行多个任务,如果你开两个线程执行,就是在你几乎不可能察觉到的速度不 断去切换这两个任务,已达到&quot;同时执行效果&quot;,其实并不是的,只是计算机的速度太 快,我们无法察觉到而已.</p>
+
+<p>并行:指应用能够同时执行不同的任务,例:吃饭的时候可以边吃饭边打电话, 这两件事情可以同时执行</p>
+
+<p>两者区别:一个是交替执行,一个是同时执行.</p>
+
+<h2 id="toc_4">进程与线程的区别</h2>
+
+<p>线程具有许多传统进程锁具有的特征，故又称为轻型进程，而把传统的进程成为重型进程，它相当于只有一个线程的任务。在引入线程的操作系统中，通常一个进程都有若干个线程，至少包含一个线程。</p>
+
+<ul>
+<li>根本区别：进程是操作系统资源分配的基本单位，线程是处理器任务调度和执行的基本单位</li>
+<li>资源开销： 每个进程都有独立的代码和数据空间，程序之间的切换会有较大的开销；线程可以看做轻量级进程，同一类线程共享代码和数据空间，每个线程都有自己独立的运行栈和程序计数器，线程之间切换开销较小</li>
+<li>包含关系：如果一个进程内有多个线程，则执行过程不是一条线的，而是多线程共同完成的；线程是进程的一部分，所以线程也被成为轻量进程</li>
+<li>内存分配：同一个进程的线程共享本进程的地址空间和资源，而进程之间的地址空间和资源是相互独立的。</li>
+<li>影响关系： 一个进程崩溃后，在保护模式下不会对其它进程产生影响，但是一个线程崩溃整个进程都会crash，所以多进程要比多线程健壮</li>
+<li>执行过程：每个独立的进程有程序运行入口、顺序执行序列和程序出口，但是线程不能独立运行，必须依存在应用程序中，有应用程序提供多个线程执行控制，两者均可并发执行。</li>
+</ul>
+
+<h2 id="toc_5">java中守护进程和本地进程的区别</h2>
+
+<p>java中线程分为两种：守护线程和用户线程</p>
+
+<p>任何线程都可以设置为守护线程和用户线程，通过方法 Thread.setDaemon(boolean on) true则把该线程设置为守护线程，反之则为用户线程(这个方法必须在线程 start 之前设置才会生效)</p>
+
+<p>两者区别：</p>
+
+<ul>
+<li>当主线程结束时，结束其余的子线程（守护线程）自动关闭，就免去了还要继续关闭子线程的麻烦。</li>
+<li>在 Daemon 线程中产生的新线程也是 Daemon 的。</li>
+<li>Java自带的多线程框架，比如ExecutorService，会将守护线程转换为用户线程，所以如果要使用后台线程就不能用Java的线程池。</li>
+<li>不是所有的应用都可以分配给Daemon线程来进行服务，比如读写操作或者计算逻辑。因为在Daemon Thread还没来的及进行操作时，虚拟机可能已经退出了。</li>
+</ul>
+
+<h2 id="toc_6">通常线程有哪几种使用方式?</h2>
+
+<ul>
+<li>Runnable 不带返回值的任务</li>
+<li>Callable 带返回值的任务</li>
+<li>Thread</li>
+</ul>
+
+<p>实现 Runnable 和 Callable 接口的类只能当做一个可以在线程中运行的任务，不是真正意义上的线程，因此最后还需要通过 Thread 来调用。可以说任务是通过线程驱动从而执行的。</p>
+
+<h2 id="toc_7">死锁和活锁的区别，死锁与饥饿的区别</h2>
+
+<p>死锁与活锁请参见 <a href="16017068710077.html">死锁与活锁</a></p>
+
+<p>饥饿：一个或者多个线程因为种种原因无法获得所需的资源，导致一直无法执行的状态</p>
+
+<p>java中导致饥饿的原因：</p>
+
+<ul>
+<li>高优先级的线程侵占所有低优先级线程的 CPU 时间</li>
+<li>线程被永久堵塞在一个等待进入同步块的状态，因为其他线程总是能在它之前持续的对该同步代码块进行访问</li>
+<li>线程在等待一个本身也处于永久等待完成的对象（比如调用这个对象的 wait 方法，因为其它线程总是被持续的获得唤醒</li>
+</ul>
+
+<h2 id="toc_8">怎么唤醒一个阻塞的线程？</h2>
+
+<p>如果线程是因为调用了wait()、sleep()或者join()方法而导致的阻塞，可以中断线程，并且通过抛出InterruptedException来唤醒它；如果线程遇到了IO阻塞，无能为力，因为IO是操作系统实现的，Java代码并没有办法直接接触到操作系统。</p>
+
+<h2 id="toc_9">不可变对象对多线程有什么帮助</h2>
+
+<p>不可变对象保证了对象的内存可见性，对不可变对象的读取不需要进行额外的同步操作，提升了代码的执行效率</p>
+
+<h2 id="toc_10">什么是线程的上下文切换</h2>
+
+<p>多线程的上下文切换是指cpu控制权由一个正在运行的线程切换到另一个就绪并等待获取 cpu 执行权的线程的过程。cpu在切换线程的时候，要保留上一个线程的车祸现场，一遍下次轮到它的时候，可以恢复车祸线程方便警察叔叔执行公务。</p>
+
+<h2 id="toc_11">java 中用到的线程调度算法是什么</h2>
+
+<p>操作系统中线程调度是系统为线程分配 cpu 资源的过程，主要调度方式有两种</p>
+
+<ul>
+<li><p>协同式线程调度<br/>
+使用协同式线程调度的多线程系统，线程执行的时间由线程本身来控制，线 程把自己的工作执行完之后，要主动通知系统切换到另外一个线程上。</p></li>
+<li><p>抢占式线程调度<br/>
+使用抢占式线程调度的多线程系统，每个线程执行的时间以及是否切换都由 系统决定。</p></li>
+</ul>
+
+<p>Java 中的线程是通过映射到操作系统的原生线程上实现的，所以线程的调度最终取决于操作系统，而操作系统级别，OS 是以抢占式调度线程，我们可以认为线程是抢占式的。Java 虚拟机采用抢占式调度模型，是指优先让可运行池中优先级高的线程占用 CPU，如果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用 CPU。处于运行状态的线程会一直运行，直至它不得不放弃 CPU。而且操作系统中线程的优先级有时并不能和 Java 中的一一对应，所以 Java 优先级并不是特别靠谱。</p>
+
+<h2 id="toc_12">Thread.sleep(0)的作用是什么？</h2>
+
+<p>由于Java采用抢占式的线程调度算法，因此可能会出现某条线程常常获取到CPU控制权的情况，为了让某些优先级比较低的线程也能获取到CPU控制权，可以使用Thread.sleep(0)手动触发一次操作系统分配时间片的操作，这也是平衡CPU控制权的一种操作。</p>
+
+<h2 id="toc_13">Runnable接口和Callable接口的区别？</h2>
+
+<p>Runnable接口中的run()方法的返回值是void，它做的事情只是纯粹地去执行run()方法中的代码而已；Callable接口中的call()方法是有返回值的，是一个泛型，和Future、FutureTask配合可以用来获取异步执行的结果。</p>
+
+<p>这其实是很有用的一个特性，因为多线程相比单线程更难、更复杂的一个重要原因就是因为多线程充满着未知性，某条线程是否执行了？某条线程执行了多久？某条线程执行的时候我们期望的数据是否已经赋值完毕？无法得知，我们能做的只是等待这条多线程的任务执行完毕而已。而Callable+Future/FutureTask却可以获取多线程运行的结果，可以在等待时间太长没获取到需要的数据的情况下取消该线程的任务，真的是非常有用。</p>
+
+<h2 id="toc_14">什么是线程组，为什么在 Java 中不推荐使用?</h2>
+
+<p>线程组 ThreadGroup 对象中比较有用的方法是 stop、resume、suspend 等 方法，由于这几个方法会导致线程的安全问题(主要是死锁问题)，已经被官方 废弃掉了，所以线程组本身的应用价值就大打折扣了。</p>
+
+<p>线程组 ThreadGroup 不是线程安全的，这在使用过程中获取的信息并不全 是及时有效的，这就降低了它的统计使用价值。</p>
+
+<h2 id="toc_15">多线程同步和互斥有几种实现方法？</h2>
+
+<p>线程同步是指线程之间所具有的一种制约关系，一个线程的执行依赖另一个 线程的消息，当它没有得到另一个线程的消息时应等待，直到消息到达时才被唤醒。</p>
+
+<p>线程互斥是指对于共享的进程系统资源，在各单个线程访问时的排它性。当有若干个线程都要使用某一共享资源时，任何时刻最多只允许一个线程去使用，其它要使用该资源的线程必须等待，直到占用资源者释放该资源。线程互斥可以 看成是一种特殊的线程同步。</p>
+
+<p>线程间的同步方法大体可分为两类: 用户模式和内核模式。顾名思义，内核模式就是指利用系统内核对象的单一性来进行同步，使用时需要切换内核态与用户态，而用户模式就是不需要切换到内核态，只在用户态完成操作。</p>
+
+<p>用户模式下的方法有: 原子操作(例如一个单一的全局变量)，临界区。内核模式下的方法有: 事件，信号量，互斥量。</p>
+
+<h2 id="toc_16">什么是java内存模型？</h2>
+
+<p>详情请参见 ：<a href="16019058386155.html">java 内存模型之初识</a><br/>
+<a href="16020511412975.html">java内存模型之 volatile 同步原语详解</a><br/>
+<a href="16082130374121.html">java内存模型之 final 同步原语详解</a><br/>
+<a href="16005248987908.html">java内存模型之 Synchronized 同步原语详解</a></p>
+
+<h2 id="toc_17">volatile关键字的作用？</h2>
+
+<p>理解volatile关键字的作用的前提是要理解Java内存模型，这里就不讲Java内存模型了，可以参见<a href="16019058386155.html">java 内存模型</a><br/><br/>
+这里简要说明一下 volatile关键字的作用，主要有两个：</p>
+
+<ul>
+<li><p>多线程主要围绕可见性和原子性两个特性而展开，使用volatile关键字修饰的变量，保证了其在多线程之间的可见性，即每次读取到volatile变量，一定是最新的数据</p></li>
+<li><p>代码底层执行不像我们看到的高级语言----Java程序这么简单，它的执行是Java代码--&gt;字节码--&gt;根据字节码执行对应的C/C++代码--&gt;C/C++代码被编译成汇编语言--&gt;和硬件电路交互，现实中，为了获取更好的性能JVM可能会对指令进行重排序，多线程下可能会出现一些意想不到的问题。使用volatile则会对禁止语义重排序，当然这也一定程度上降低了代码执行效率。</p></li>
+</ul>
+
+<p>从实践角度而言，volatile的一个重要作用就是和CAS结合，保证了原子性，详细的可以参见java.util.concurrent.atomic包下的类，比如AtomicInteger。</p>
+
+<h2 id="toc_18">什么是 CAS</h2>
+
+<p>详情请参见 ：<a href="15874857577712.html">原子操作CAS 无锁操作</a></p>
+
+<h2 id="toc_19">ThreadLocal 有什么作用</h2>
+
+<p>简单说ThreadLocal就是一种以空间换时间的做法，在每个Thread里面维护了一个以开地址法实现的ThreadLocal.ThreadLocalMap，把数据进行隔离，数据不共享，自然就没有线程安全方面的问题了。详情请参见：<a href="ThreadLocal.html">ThreadLocal源码分析以及使用</a></p>
+
+<h2 id="toc_20">为什么 wait, notify 和 notifyAll 这些方法不在 thread 类里面?</h2>
+
+<p>JAVA 提供的锁是对象级的而不是线程级的，每个对象都有锁，通过线程获 得。如果线程需要等待某些锁那么调用对象中的 wait()方法就有意义了。如果 wait()方法定义在Thread类中，线程正在等待的是哪个锁就不明显了。简单的说， 由于 wait，notify 和 notifyAll 都是锁级别的操作，所以把他们定义在 Object 类中 因为锁属于对象。</p>
+
+<h3 id="toc_21">为什么 wait 和 notify 方法要在同步块中调用?</h3>
+
+<p>主要是因为 Java API 强制要求这样做，如果你不这么做，你的代码会抛出 IllegalMonitorStateException 异常。</p>
+
+<h2 id="toc_22">怎么检测一个线程是否持有对象监视器</h2>
+
+<p>Thread 类提供了一个 holdsLock(Object obj)方法，当且仅当对象obj的监视器被当前线程持有的时候才会返回true</p>
+
+<h2 id="toc_23">同步方法和同步块，哪个是更好的选择</h2>
+
+<p>同步块，这意味着同步块之外的代码是异步执行的，这比同步整个方法更提升代码的效率。请知道一条原则：同步的范围越小越好。</p>
+
+<p>借着这一条，我额外提一点，虽说同步的范围越少越好，但是在Java虚拟机中还是存在着一种叫做锁粗化的优化方法，这种方法就是把同步范围变大。这是有用的，比方说StringBuffer，它是一个线程安全的类，自然最常用的append()方法是一个同步方法，我们写代码的时候会反复append字符串，这意味着要进行反复的加锁-&gt;解锁，这对性能不利，因为这意味着Java虚拟机在这条线程上要反复地在内核态和用户态之间进行切换，因此Java虚拟机会将多次append方法调用的代码进行一个锁粗化的操作，将多次的append的操作扩展到append方法的头尾，变成一个大的同步块，这样就减少了加锁--&gt;解锁的次数，有效地提升了代码执行的效率。</p>
+
+<h2 id="toc_24">乐观锁和悲观锁的理解及如何实现，有哪些实现方式?</h2>
+
+<ul>
+<li>悲观锁:总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所 以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。 Java 里面的同步原语 synchronized 关键字的实现是悲观锁。</li>
+<li>乐观锁:顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改， 所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数 据，可以使用版本号等机制。在 Java 中 j 原子变量类就是使用了乐观锁的一种实现方式 CAS 实现的。 乐观锁的实现方式:
+<ul>
+<li>使用版本标识来确定读到的数据与提交时的数据是否一致。提交 后修改版本标识，不一致时可以采取丢弃和再次尝试的策略。</li>
+<li>java 中的 Compare and Swap 即 CAS ，当多个线程尝试使用 CAS 同时更新同一个变量时，只有其中一个线程能更新变量的值，而其它线程 都失败，失败的线程并不会被挂起，而是被告知这次竞争中失败，并可以 再次尝试。</li>
+</ul></li>
+</ul>
+
+<h2 id="toc_25">什么是线程安全</h2>
+
+<p>如果你的代码在多线程下执行和在单线程下执行永远都能获得一样的结果，那么你的代码就是线程安全的。</p>
+
+<h2 id="toc_26">线程类的构造方法、静态块是被哪个线程调用的？</h2>
+
+<p>线程类的构造方法、静态块是被new这个线程类所在的线程所调用的，而run方法里面的代码才是被线程自身所调用的。</p>
+
+<p>假设Thread2中new了Thread1，main函数中new了Thread2，那么：</p>
+
+<ul>
+<li>Thread2的构造方法、静态块是main线程调用的，Thread2的run()方法是Thread2自己调用的</li>
+<li>Thread1的构造方法、静态块是Thread2调用的，Thread1的run()方法是Thread1自己调用的</li>
+</ul>
+
+<h2 id="toc_27">Java中如何获取到线程dump文件？</h2>
+
+<p>死循环、死锁、阻塞、页面打开慢等问题，打线程dump是最好的解决问题的途径。所谓线程dump也就是线程堆栈，获取到线程堆栈有两步：</p>
+
+<ul>
+<li>获取到线程的pid，可以通过使用jps命令，在Linux环境下还可以使用ps -ef | grep java</li>
+<li>打印线程堆栈，可以通过使用jstack pid命令，在Linux环境下还可以使用kill -3 pid</li>
+</ul>
+
+<p>另外提一点，Thread类提供了一个getStackTrace()方法也可以用于获取线程堆栈。这是一个实例方法，因此此方法是和具体线程实例绑定的，每次获取获取到的是具体某个线程当前运行的堆栈，</p>
+
+<h2 id="toc_28">一个线程如果出现了运行时异常会怎么样？</h2>
+
+<p>如果这个线程的异常没有被捕获的话，这个线程会停止执行，如果这个线程持有某个对象的监视器，那么这个对象监视器也会被立即释放</p>
+
+<h2 id="toc_29">如何在两个线程之间共享数据？</h2>
+
+<p>通过共享对象，然后通过wait/notify/notifyAll、await/signal/signalAll进行唤起和等待，比方说阻塞队列BlockingQueue就是为线程之间共享数据而设计的。</p>
+
+<h2 id="toc_30">sleep方法和wait方法有什么区别 ？</h2>
+
+<p>这个问题常问，sleep方法和wait方法都可以用来放弃CPU一定的时间，不同点在于如果线程持有某个对象的监视器，sleep方法不会放弃这个对象的监视器，wait方法会放弃这个对象的监视器</p>
+
+<h2 id="toc_31">Java中interrupted 和 isInterrupted方法的区别？</h2>
+
+<p>interrupt方法用于中断线程。调用该方法的线程的状态为将被置为”中断”状态。<br/>
+注意：线程中断仅仅是置线程的中断状态位，不会停止线程。需要用户自己去监视线程的状态为并做处理。支持线程中断的方法（也就是线程中断后会抛出interruptedException的方法）就是在监视线程的中断状态，一旦线程的中断状态被置为“中断状态”，就会抛出中断异常。</p>
+
+<p>interrupted查询当前线程的中断状态，并且清除原状态。如果一个线程被中断了，第一次调用interrupted则返回true，第二次和后面的就返回false了。</p>
+
+<p>isInterrupted仅仅是查询当前线程的中断状态</p>
+
+<h2 id="toc_32">单例模式的线程安全性？</h2>
+
+<p><a href="15896032913368.html">单例模式</a></p>
+
+<h2 id="toc_33">Hashtable的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</h2>
+
+<p>同一时间只能有一条线程执行固定类的同步方法，但是对于类的非同步方法，可以多条线程同时访问。所以，这样就有问题了，可能线程A在执行Hashtable的put方法添加数据，线程B则可以正常调用size()方法读取Hashtable中当前元素的个数，那读取到的值可能不是最新的，可能线程A添加了完了数据，但是没有对size++，线程B就已经读取size了，那么对于线程B来说读取到的size一定是不准确的。而给size()方法加了同步之后，意味着线程B调用size()方法只有在线程A调用put方法完毕之后才可以调用，这样就保证了线程安全性</p>
+
+<h2 id="toc_34">介绍一下Executor 框架</h2>
+
+<p>Executor 框架是一个根据一组执行策略调用，调度，执行和控制的异步任务 的框架。它管理多个异步任务的执行，而无需程序员显式的管理线程的生命周期。这里的异步是指多个任务的执行互不干扰，不需要进行同步操作。</p>
+
+<p>Executor主要有三种: </p>
+
+<ul>
+<li>CachedThreadPool: 一个任务创建一个线程； </li>
+<li>FixedThreadPool: 所有任务只能使用固定大小的线程； </li>
+<li>SingleThreadExecutor: 相当于大小为 1 的 FixedThreadPool。</li>
+</ul>
+
+<h3 id="toc_35">为什么使用 Executor 框架</h3>
+
+<ul>
+<li>第一:降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
+<li>第二:提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立 即执行。</li>
+<li>第三:提高线程的可管理性。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</li>
+</ul>
+
+<h2 id="toc_36">Java 线程池中 submit() 和 execute()方法有什么区别?</h2>
+
+<p>两个方法都可以向线程池提交任务，execute()方法的返回类型是 void，它定 义在 Executor 接口中。<br/>
+而 submit()方法可以返回持有计算结果的 Future 对象，它定义在 ExecutorService 接口中，它扩展了 Executor 接口</p>
+
+<h2 id="toc_37">如果你提交任务时，线程池队列已满，这时会发生什么？</h2>
+
+<p>这里区分一下：</p>
+
+<p>如果使用的是无界队列LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务</p>
+
+<p>如果使用的是有界队列比如ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，会根据maximumPoolSize的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue继续满，那么则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy</p>
+
+<h2 id="toc_38">高并发、任务执行时间短的业务怎样使用线程池？并发不高、任务执行时间长的业务怎样使用线程池？并发高、业务执行时间长的业务怎样使用线程池？</h2>
+
+<p>这是我在并发编程网上看到的一个问题，把这个问题放在最后一个，希望每个人都能看到并且思考一下，因为这个问题非常好、非常实际、非常专业。关于这个问题，个人看法是：</p>
+
+<p>（1）高并发、任务执行时间短的业务，线程池线程数可以设置为CPU核数+1，减少线程上下文的切换</p>
+
+<p>（2）并发不高、任务执行时间长的业务要区分开看：</p>
+
+<p>　　a）假如是业务时间长集中在IO操作上，也就是IO密集型的任务，因为IO操作并不占用CPU，所以不要让所有的CPU闲下来，可以加大线程池中的线程数目，让CPU处理更多的业务</p>
+
+<p>　　b）假如是业务时间长集中在计算操作上，也就是计算密集型任务，这个就没办法了，和（1）一样吧，线程池中的线程数设置得少一些，减少线程上下文的切换</p>
+
+<p>（3）并发高、业务执行时间长，解决这种类型任务的关键不在于线程池而在于整体架构的设计，看看这些业务里面某些数据是否能做缓存是第一步，增加服务器是第二步，至于线程池的设置，设置参考其他有关线程池的文章。最后，业务执行时间长的问题，也可能需要分析一下，看看能不能使用中间件对任务进行拆分和解耦。</p>
+
+<h2 id="toc_39">什么是 FutureTask</h2>
+
+<p>FutureTask表示一个异步运算的任务。FutureTask里面可以传入一个Callable的具体实现类，可以对这个异步运算的任务的结果进行等待获取、判断是否已经完成、取消任务等操作。当然，由于FutureTask也是Runnable接口的实现类，所以FutureTask 也可以放入线程池中。</p>
+
+<h2 id="toc_40">什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？</h2>
+
+<p>阻塞队列是一个支持两个附加操作的队列。在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用。</p>
+
+<p>阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</p>
+
+<p>JDK7提供了7个阻塞队列。分别是：</p>
+
+<ul>
+<li><p>ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。</p></li>
+<li><p>LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。</p></li>
+<li><p>PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。</p></li>
+<li><p>DelayQueue：一个使用优先级队列实现的无界阻塞队列。</p></li>
+<li><p>SynchronousQueue：一个不存储元素的阻塞队列。</p></li>
+<li><p>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</p></li>
+<li><p>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</p></li>
+</ul>
+
+<p>BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容器，而是作为线程同步的的工具，因此他具有一个很明显的特性，当生产者线程试图向BlockingQueue放入元素时，如果队列已满，则线程被阻塞，当消费者线程试图从中取出一个元素时，如果队列为空，则该线程会被阻塞，正是因为它所具有这个特性，所以在程序中多个线程交替向BlockingQueue中放入元素，取出元素，它可以很好的控制线程之间的通信。</p>
+
+<p>阻塞队列使用最经典的场景就是socket客户端数据的读取和解析，读取数据的线程不断将数据放入队列，然后解析线程不断从队列取数据解析</p>
+
+<h2 id="toc_41">什么是 AQS</h2>
+
+<p>详情请参见 ： <a href="15867876320249.html">AQS--AbstractQueuedSynchronizer 详解</a></p>
+
+<h2 id="toc_42">CyclicBarrier和CountDownLatch的区别？</h2>
+
+<p>两个看上去有点像的类，都在java.util.concurrent下，都可以用来表示代码运行到某个点上，二者的区别在于：</p>
+
+<ul>
+<li><p>CyclicBarrier的某个线程运行到某个点上之后，该线程即停止运行，直到所有的线程都到达了这个点，所有线程才重新运行；CountDownLatch则不是，某线程运行到某个点上之后，只是给某个数值-1而已，该线程继续运行</p></li>
+<li><p>CyclicBarrier只能唤起一个任务，CountDownLatch可以唤起多个任务</p></li>
+<li><p>CyclicBarrier可重用，CountDownLatch不可重用，计数值为0该CountDownLatch就不可再用了</p></li>
+</ul>
+
+<h2 id="toc_43">Semaphore 有什么作用</h2>
+
+<p>详情请参见 <a href="16017007365424.html">Semaphore</a></p>
+
+<h2 id="toc_44">写时复制容器可以用于什么应用场景</h2>
+
+<p>CopyOnWrite 并发容器用于对于绝大部分访问都是读，且只是偶尔写的并发场景。比如白名单，黑名单，商品类目的访问和更新场景。</p>
+
+<p>CopyOnWriteArrayList(免锁容器) 的好处之一是当多个迭代器同时遍历和修改这个列表时，不会抛出ConcurrentModificationException。</p>
+
+<p>在CopyOnWriteArrayList中，写入将导致创建整个底层数组的副本，而源数组将保留在原地，使得复制的数组在被修改时，读取操作可以安全地执行。</p>
+
+<ul>
+<li><p>由于写操作的时候，需要拷贝数组，会消耗内存，如果原数组的内容比较多的情况下，可能导致young gc或者full gc；</p></li>
+<li><p>不能用于实时读的场景，像拷贝数组、新增元素都需要时间，所以调用一个set操作后，读取到数据可能还是旧的,虽然CopyOnWriteArrayList 能做到最终一致性,但是还是没法满足实时性要求；</p></li>
+</ul>
+
+<p>CopyOnWriteArrayList透露的思想：读写分离，读和写分开、最终一致性、使用另外开辟空间的思路，来解决并发冲突</p>
+
+<h2 id="toc_45">生产者消费者模型的作用是什么？</h2>
+
+<ul>
+<li>通过平衡生产者的生产能力和消费者的消费能力来提升整个系统的运行效率，这是生产者消费者模型最重要的作用</li>
+<li>解耦，这是生产者消费者模型附带的作用，解耦意味着生产者和消费者之间的联系少，联系越少越可以独自发展而不需要收到相互的制约</li>
+</ul>
+
+<h2 id="toc_46">什么是可重入锁(ReentrantLock)?谈谈它的实现</h2>
+
+<p>线程可以重复进入任何一个它已经拥有的锁所同步着的代码块， synchronized、ReentrantLock 都是可重入的锁。在实现上，就是线程每次获取锁时判定如果获得锁的线程是它自己时，简单将计数器累积即可，每释放一次锁， 进行计数器累减，直到计算器归零，表示线程已经彻底释放锁。</p>
+
+<h2 id="toc_47">synchronized 和 ReentrantLock 的对比</h2>
+
+<p>synchronized是和if、else、for、while一样的关键字，ReentrantLock是类，这是二者的本质区别。既然ReentrantLock是类，那么它就提供了比synchronized更多更灵活的特性，可以被继承、可以有方法、可以有各种各样的类变量，ReentrantLock比synchronized的扩展性体现在几点上：</p>
+
+<ul>
+<li>ReentrantLock可以对获取锁的等待时间进行设置，这样就避免了死锁</li>
+<li>ReentrantLock可以获取各种锁的信息</li>
+<li>ReentrantLock可以灵活地实现多路通知</li>
+</ul>
+
+<h2 id="toc_48">说一下 synchronized 的实现原理</h2>
+
+<p>详情请参见： <a href="16005248987908.html">Synchronized关键字解析</a></p>
+
+<h2 id="toc_49">什么是自旋？</h2>
+
+<p>很多synchronized里面的代码只是一些很简单的代码，执行时间非常快，此时等待的线程都加锁可能是一种不太值得的操作，因为线程阻塞涉及到用户态和内核态切换的问题。既然synchronized里面的代码执行得非常快，不妨让等待锁的线程不要被阻塞，而是在synchronized的边界做忙循环，这就是自旋。如果做了多次忙循环发现还没有获得锁，再阻塞，这样可能是一种更好的策略。</p>
+
+<h2 id="toc_50">ReadWriteLock 是什么</h2>
+
+<p>首先我们得直到 ReentrantLock 的局限性。</p>
+
+<p>如果使用ReentrantLock，可能本身是为了防止线程A在写数据、线程B在读数据造成的数据不一致，但这样，如果线程C在读数据、线程D也在读数据，读数据是不会改变数据的，没有必要加锁，但是还是加锁了，降低了程序的性能。</p>
+
+<p>因为这个，才诞生了读写锁 ReadWriteLock。ReadWriteLock 是一个读写锁接口，ReentrantReadWriteLock 是 ReadWriteLock 接口的一个具体实现，实现了读写的分离，读锁是共享的，写锁是独占的，读和读之间不会互斥，读和写、写和读、写和写之间才会互斥，提升了读写的性能。</p>
+
+<h2 id="toc_51">ConcurrentHashMap的并发度是什么？</h2>
+
+<p>ConcurrentHashMap把实际map划分成若干部分来实现它的可扩展性和线程安全。这种划分是使用并发度获得的，它是ConcurrentHashMap类构造函数的一个可选参数，默认值为16，这样在多线程情况下就能避免争用。</p>
+
+<p>在JDK8后，它摒弃了Segment（锁段）的概念，而是启用了一种全新的方式实现,利用CAS算法。同时加入了更多的辅助变量来提高并发度，具体内容还是查看源码吧。</p>
+
+<h2 id="toc_52">Linux环境下如何查找哪个线程使用CPU最长</h2>
+
+<ul>
+<li>获取项目的pid，jps 或者 ps -ef | grep java</li>
+<li>top -H -p pid，顺序不能改变</li>
+</ul>
+
+<p>这样就可以打印出当前的项目，每条线程占用CPU时间的百分比。</p>
+
+<p>注意这里打出的是LWP，也就是操作系统原生线程的线程号。</p>
+
+<p>使用&quot;top -H -p pid&quot; + &quot;jps pid&quot; 可以很容易地找到某条占用CPU高的线程的线程堆栈，从而定位占用CPU高的原因，一般是因为不当的代码操作导致了死循环。</p>
+
+<p>最后提一点，&quot;top -H -p pid&quot;打出来的LWP是十进制的，&quot;jps pid&quot;打出来的本地线程号是十六进制的，转换一下，就能定位到占用CPU高的线程的当前线程堆栈了。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[spring 面试题]]></title>
+    <link href="http://www.throne4j.com/16078475422536.html"/>
+    <updated>2020-12-13T16:19:02+08:00</updated>
+    <id>http://www.throne4j.com/16078475422536.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">什么是控制反转(IOC)？什么是依赖注入？</h2>
+
+<h2 id="toc_1">BeanFactory 和 ApplicationContext 有什么区别？</h2>
+
+<h2 id="toc_2">请解释 Spring Bean 的生命周期？</h2>
+
+<h2 id="toc_3">请举例解释@Autowired 注解？</h2>
+
+<h2 id="toc_4">Spring 框架中有哪些不同类型的事件？</h2>
+
+<ul>
+<li><p>1.上下文更新事件ContextRefreshedEvent： 该事件会在ApplicationContext 被初始化或者更新时发布。也可以在调用 ConfigurableApplicationContext 接口中的 refresh()方法时被触发。</p></li>
+<li><p>2.上下文开始事件ContextStartedEvent： 当容器调用ConfigurableApplicationContext的 Start()方法开始/重新开始容器时触发该事件。</p></li>
+<li><p>3.上下文停止事件ContextStoppedEvent： 当容器调用 ConfigurableApplicationContext的 Stop()方法停止容器时触发该事件。</p></li>
+<li><p>4.上下文关闭事件ContextClosedEvent： 当 ApplicationContext 被 关闭时触发该事件。容器被关闭时，其管理的所有单例 Bean 都被销毁。</p></li>
+<li><p>5.请求处理事件RequestHandledEvent： 在 Web 应用中，当一个 http 请求（request）结束触发该事件。除了上面介绍的事件以外，还可以通过扩展 ApplicationEvent 类来开发自定义的事件。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/16077870652991.html"/>
+    <updated>2020-12-12T23:31:05+08:00</updated>
+    <id>http://www.throne4j.com/16077870652991.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Netty 之 Channel]]></title>
+    <link href="http://www.throne4j.com/16075310570444.html"/>
+    <updated>2020-12-10T00:24:17+08:00</updated>
+    <id>http://www.throne4j.com/16075310570444.html</id>
+    <content type="html"><![CDATA[
+<p><figure><img src="media/16075310570444/NioSocketChannel.jpg" alt="NioSocketChannel"/><figcaption>NioSocketChannel</figcaption></figure><br/>
+<figure><img src="media/16075310570444/NioServerSocketChannel.jpg" alt="NioServerSocketChannel"/><figcaption>NioServerSocketChannel</figcaption></figure></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Netty 之 EventLoop 相关源码分析]]></title>
+    <link href="http://www.throne4j.com/16074361744050.html"/>
+    <updated>2020-12-08T22:02:54+08:00</updated>
+    <id>http://www.throne4j.com/16074361744050.html</id>
+    <content type="html"><![CDATA[
+<p><figure><img src="media/16074361744050/NioEventLoop.jpg" alt="NioEventLoop"/><figcaption>NioEventLoop</figcaption></figure><br/>
+<figure><img src="media/16074361744050/NioEventLoopGroup.jpg" alt="NioEventLoopGroup"/><figcaption>NioEventLoopGroup</figcaption></figure></p>
+
+<h2 id="toc_0">EventLoopGroup 和 EventLoop 代码分析</h2>
+
+<pre><code class="language-text">EventLoopGroup group = new NioEventLoopGroup();
+</code></pre>
+
+<p>执行这行代码时会发生什么?，由 NioEventLoopGroup 开始，一路调用，到达 MultithreadEventLoopGroup，如果没有指定创建的线程数量，则默认创建的线程个数为 DEFAULT_EVENT_LOOP_THREADS，该数值为:处理器数量 x2。</p>
+
+<pre><code class="language-java">private static final int DEFAULT_EVENT_LOOP_THREADS;
+
+static {
+    DEFAULT_EVENT_LOOP_THREADS = Math.max(1, SystemPropertyUtil.getInt(
+            &quot;io.netty.eventLoopThreads&quot;, NettyRuntime.availableProcessors() * 2));
+}
+
+protected MultithreadEventLoopGroup(int nThreads, Executor executor, Object... args) {
+    super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, executor, args);
+}
+</code></pre>
+
+<p>最终由 MultithreadEventExecutorGroup 实例化</p>
+
+<p>由此可见，每个 NioEventLoop 的执行器为 ThreadPerTaskExecutor，ThreadPerTaskExecutor 实现了 Executor 接口，并会在 execute 方法中启动真正的线程，但是要和 NioEventLoop 的线 程挂钩则在 SingleThreadEventExecutor 的 doStartThread 方法里</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[spring AOP]]></title>
+    <link href="http://www.throne4j.com/16073961967770.html"/>
+    <updated>2020-12-08T10:56:36+08:00</updated>
+    <id>http://www.throne4j.com/16073961967770.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">execution 表达式</h2>
+
+<pre><code class="language-text">execution(* com.loongshawn.method..*.*(..))
+</code></pre>
+
+<p>execution 表达式主体</p>
+
+<ul>
+<li>第一个 * 表示任何返回对象</li>
+<li>com.loongshawn.method 包</li>
+<li>后来的 .. 表示当前包以及子包</li>
+<li>第二个 * 表示类名</li>
+<li>*.(..) 表示任何方法名，括号表示参数，两个点表示任何参数类型</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[redis 常见问题与解决方案]]></title>
+    <link href="http://www.throne4j.com/16073594276390.html"/>
+    <updated>2020-12-08T00:43:47+08:00</updated>
+    <id>http://www.throne4j.com/16073594276390.html</id>
+    <content type="html"><![CDATA[
+<p>考虑到绝大部分写业务的程序员，在实际开发中使用 Redis 的时候，只会 Set Value 和 Get Value 两个操作，对 Redis 整体缺乏一个认知。</p>
+
+<p>本文围绕以下几点进行阐述：</p>
+
+<ul>
+<li><p>为什么使用 Redis</p></li>
+<li><p>使用 Redis 有什么缺点</p></li>
+<li><p>单线程的 Redis 为什么这么快</p></li>
+<li><p>Redis 的数据类型，以及每种数据类型的使用场景</p></li>
+<li><p>Redis 的过期策略以及内存淘汰机制</p></li>
+<li><p>Redis 和数据库双写一致性问题</p></li>
+<li><p>如何应对缓存穿透和缓存雪崩问题</p></li>
+<li><p>如何解决 Redis 的并发竞争 Key 问题</p></li>
+</ul>
+
+<h2 id="toc_0">为什么使用 Redis？</h2>
+
+<p>我觉得在项目中使用 Redis，主要是从两个角度去考虑：性能和并发。</p>
+
+<p>当然，Redis 还具备可以做分布式锁等其他功能，但是如果只是为了分布式锁这些其他功能，完全还有其他中间件，如 ZooKpeer 等代替，并不是非要使用 Redis。因此，这个问题主要从性能和并发两个角度去答。</p>
+
+<ul>
+<li>性能：</li>
+</ul>
+
+<p>如下图所示，我们在碰到需要执行耗时特别久，且结果不频繁变动的 SQL，就特别适合将运行结果放入缓存。这样，后面的请求就去缓存中读取，使得请求能够迅速响应。</p>
+
+<p><figure><img src="media/16073594276390/16073594942888.jpg" alt=""/></figure></p>
+
+<ul>
+<li>并发：<br/>
+如下图所示，在大并发的情况下，所有的请求直接访问数据库，数据库会出现连接异常。</li>
+</ul>
+
+<p><figure><img src="media/16073594276390/16073595299526.jpg" alt=""/></figure></p>
+
+<p>这个时候，就需要使用 Redis 做一个缓冲操作，让请求先访问到 Redis，而不是直接访问数据库。</p>
+
+<h2 id="toc_1">使用 Redis 有什么缺点？</h2>
+
+<p>大家用 Redis 这么久，这个问题是必须要了解的，基本上使用 Redis 都会碰到一些问题，常见的也就几个。</p>
+
+<p>回答主要是四个问题：</p>
+
+<ul>
+<li>缓存和数据库双写一致性问题</li>
+<li>缓存雪崩问题</li>
+<li>缓存击穿问题</li>
+<li>缓存的并发竞争问题</li>
+</ul>
+
+<p>这四个问题，我个人觉得在项目中是常遇见的，具体解决方案，后文给出。</p>
+
+<h2 id="toc_2">单线程的 Redis 为什么这么快？</h2>
+
+<p>这个问题是对 Redis 内部机制的一个考察。根据我的面试经验，很多人都不知道 Redis 是单线程工作模型。所以，这个问题还是应该要复习一下的。</p>
+
+<p>回答主要是以下三点：</p>
+
+<ul>
+<li>纯内存操作</li>
+<li>单线程操作，避免了频繁的上下文切换</li>
+<li>采用了非阻塞 I/O 多路复用机制</li>
+</ul>
+
+<p>多路复用在 Redis 中的应用，如图所示：</p>
+
+<p><figure><img src="media/16073594276390/16073599141241.jpg" alt=""/></figure></p>
+
+<p>简单来说，就是我们的 redis-client 在操作的时候，会产生具有不同事件类型的 Socket。</p>
+
+<p>在服务端，有一段 I/O 多路复用程序，将其置入队列之中。然后，文件事件分派器，依次去队列中取，转发到不同的事件处理器中。</p>
+
+<p>需要说明的是，这个 I/O 多路复用机制，Redis 还提供了 select、epoll、evport、kqueue 等多路复用函数库，大家可以自行去了解。</p>
+
+<h2 id="toc_3">Redis 的数据类型以及每种数据类型的使用场景</h2>
+
+<p>是不是觉得这个问题很基础？我也这么觉得。然而根据面试经验发现，至少百分之八十的人答不上这个问题。</p>
+
+<p>建议，在项目中用到后，再类比记忆，体会更深，不要硬记。基本上，一个合格的程序员，五种类型都会用到。</p>
+
+<ul>
+<li>String</li>
+</ul>
+
+<p>这个没啥好说的，最常规的 set/get 操作，Value 可以是 String 也可以是数字。一般做一些复杂的计数功能的缓存。</p>
+
+<ul>
+<li>Hash</li>
+</ul>
+
+<p>这里 Value 存放的是结构化的对象，比较方便的就是操作其中的某个字段。</p>
+
+<p>我在做单点登录的时候，就是用这种数据结构存储用户信息，以 CookieId 作为 Key，设置 30 分钟为缓存过期时间，能很好的模拟出类似 Session 的效果。</p>
+
+<ul>
+<li>List</li>
+</ul>
+
+<p>使用 List 的数据结构，可以做简单的消息队列的功能。另外还有一个就是，可以利用 lrange 命令，做基于 Redis 的分页功能，性能极佳，用户体验好。</p>
+
+<ul>
+<li>Set</li>
+</ul>
+
+<p>因为 Set 堆放的是一堆不重复值的集合。所以可以做全局去重的功能。为什么不用 JVM 自带的 Set 进行去重？<br/>
+因为我们的系统一般都是集群部署，使用 JVM 自带的 Set，比较麻烦，难道为了一个做一个全局去重，再起一个公共服务，太麻烦了。</p>
+
+<p>另外，就是利用交集、并集、差集等操作，可以计算共同喜好，全部的喜好，自己独有的喜好等功能。</p>
+
+<ul>
+<li>Sorted Set</li>
+</ul>
+
+<p>Sorted Set多了一个权重参数 Score，集合中的元素能够按 Score 进行排列。</p>
+
+<p>可以做排行榜应用，取 TOP N 操作。Sorted Set 可以用来做延时任务。最后一个应用就是可以做范围查找。</p>
+
+<h2 id="toc_4">Redis 的过期策略以及内存淘汰机制</h2>
+
+<p>这个问题相当重要，到底 Redis 有没用到家，这个问题就可以看出来。</p>
+
+<p>比如你 Redis 只能存 5G 数据，可是你写了10G，那会删 5G 的数据。怎么删的，这个问题思考过么？</p>
+
+<p>还有，你的数据已经设置了过期时间，但是时间到了，内存占用率还是比较高，有思考过原因么?</p>
+
+<h3 id="toc_5">Redis 采用的是定期删除+惰性删除策略。</h3>
+
+<p>为什么不用定时删除策略</p>
+
+<p>定时删除，用一个定时器来负责监视 Key，过期则自动删除。虽然内存及时释放，但是十分消耗 CPU 资源。</p>
+
+<p>在大并发请求下，CPU 要将时间应用在处理请求，而不是删除 Key，因此没有采用这一策略。</p>
+
+<p>定期删除 + 惰性删除是如何工作</p>
+
+<p>定期删除，Redis 默认每个 100ms 检查，是否有过期的 Key，有过期 Key 则删除。<br/>
+需要说明的是，Redis 不是每个 100ms 将所有的 Key 检查一次，而是随机抽取进行检查(如果每隔 100ms，全部 Key 进行检查，Redis 岂不是卡死)。</p>
+
+<p>因此，如果只采用定期删除策略，会导致很多 Key 到时间没有删除。于是，惰性删除派上用场。<br/>
+也就是说在你获取某个 Key 的时候，Redis 会检查一下，这个 Key 如果设置了过期时间，那么是否过期了？如果过期了此时就会删除。</p>
+
+<p>采用定期删除+惰性删除就没其他问题了么?</p>
+
+<p>不是的，如果定期删除没删除 Key。然后你也没即时去请求 Key，也就是说惰性删除也没生效。这样，Redis的内存会越来越高。那么就应该采用内存淘汰机制。</p>
+
+<p>在 redis.conf 中有一行配置：</p>
+
+<pre><code class="language-text"># maxmemory-policy volatile-lru
+</code></pre>
+
+<p>该配置就是配内存淘汰策略的(什么，你没配过？好好反省一下自己)：</p>
+
+<ul>
+<li><p>noeviction：当内存不足以容纳新写入数据时，新写入操作会报错。应该没人用吧。</p></li>
+<li><p>allkeys-lru：当内存不足以容纳新写入数据时，在键空间中，移除最近最少使用的 Key。推荐使用，目前项目在用这种。</p></li>
+<li><p>allkeys-random：当内存不足以容纳新写入数据时，在键空间中，随机移除某个 Key。应该也没人用吧，你不删最少使用 Key，去随机删。</p></li>
+<li><p>volatile-lru：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，移除最近最少使用的 Key。这种情况一般是把 Redis 既当缓存，又做持久化存储的时候才用。不推荐。</p></li>
+<li><p>volatile-random：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，随机移除某个 Key。依然不推荐。</p></li>
+<li><p>volatile-ttl：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，有更早过期时间的 Key 优先移除。不推荐。</p></li>
+</ul>
+
+<p>PS：如果没有设置 expire 的 Key，不满足先决条件(prerequisites)；那么 volatile-lru，volatile-random 和 volatile-ttl 策略的行为，和 noeviction(不删除) 基本上一致。</p>
+
+<h2 id="toc_6">Redis 和数据库双写一致性问题</h2>
+
+<p>一致性问题是分布式常见问题，还可以再分为最终一致性和强一致性。数据库和缓存双写，就必然会存在不一致的问题。</p>
+
+<p>答这个问题，先明白一个前提。就是如果对数据有强一致性要求，不能放缓存。我们所做的一切，只能保证最终一致性。</p>
+
+<p>另外，我们所做的方案从根本上来说，只能说降低不一致发生的概率，无法完全避免。因此，有强一致性要求的数据，不能放缓存。</p>
+
+<p>回答：首先，采取正确更新策略，先更新数据库，再删缓存。其次，因为可能存在删除缓存失败的问题，提供一个补偿措施即可，例如利用消息队列。</p>
+
+<h2 id="toc_7">如何应对缓存穿透和缓存雪崩问题</h2>
+
+<p>这两个问题，说句实在话，一般中小型传统软件企业，很难碰到这个问题。如果有大并发的项目，流量有几百万左右。这两个问题一定要深刻考虑。</p>
+
+<p>缓存穿透，即黑客故意去请求缓存中不存在的数据，导致所有的请求都怼到数据库上，从而数据库连接异常。</p>
+
+<h3 id="toc_8">缓存穿透解决方案：</h3>
+
+<ul>
+<li><p>利用互斥锁，缓存失效的时候，先去获得锁，得到锁了，再去请求数据库。没得到锁，则休眠一段时间重试。</p></li>
+<li><p>采用异步更新策略，无论 Key 是否取到值，都直接返回。Value 值中维护一个缓存失效时间，缓存如果过期，异步起一个线程去读数据库，更新缓存。需要做缓存预热(项目启动前，先加载缓存)操作。</p></li>
+<li><p>提供一个能迅速判断请求是否有效的拦截机制，比如，利用布隆过滤器，内部维护一系列合法有效的 Key。迅速判断出，请求所携带的 Key 是否合法有效。如果不合法，则直接返回。</p></li>
+</ul>
+
+<p>缓存雪崩，即缓存同一时间大面积的失效，这个时候又来了一波请求，结果请求都怼到数据库上，从而导致数据库连接异常。</p>
+
+<h3 id="toc_9">缓存雪崩解决方案：</h3>
+
+<ul>
+<li><p>给缓存的失效时间，加上一个随机值，避免集体失效。</p></li>
+<li><p>使用互斥锁，但是该方案吞吐量明显下降了。</p></li>
+<li><p>双缓存。我们有两个缓存，缓存 A 和缓存 B。缓存 A 的失效时间为 20 分钟，缓存 B 不设失效时间。自己做缓存预热操作。</p></li>
+</ul>
+
+<p>然后细分以下几个小点：从缓存 A 读数据库，有则直接返回；A 没有数据，直接从 B 读数据，直接返回，并且异步启动一个更新线程，更新线程同时更新缓存 A 和缓存 B。</p>
+
+<h2 id="toc_10">如何解决 Redis 的并发竞争 Key 问题</h2>
+
+<p>这个问题大致就是，同时有多个子系统去 Set 一个 Key。这个时候大家思考过要注意什么呢？</p>
+
+<p>需要说明一下，我提前百度了一下，发现答案基本都是推荐用 Redis 事务机制。</p>
+
+<p>我并不推荐使用 Redis 的事务机制。因为我们的生产环境，基本都是 Redis 集群环境，做了数据分片操作。</p>
+
+<p>你一个事务中有涉及到多个 Key 操作的时候，这多个 Key 不一定都存储在同一个 redis-server 上。因此，Redis 的事务机制，十分鸡肋。</p>
+
+<p>如果对这个 Key 操作，不要求顺序</p>
+
+<p>这种情况下，准备一个分布式锁，大家去抢锁，抢到锁就做 set 操作即可，比较简单。</p>
+
+<p>如果对这个 Key 操作，要求顺序</p>
+
+<p>假设有一个 key1，系统 A 需要将 key1 设置为 valueA，系统 B 需要将 key1 设置为 valueB，系统 C 需要将 key1 设置为 valueC。</p>
+
+<p>期望按照 key1 的 value 值按照 valueA &gt; valueB &gt; valueC 的顺序变化。这种时候我们在数据写入数据库的时候，需要保存一个时间戳。</p>
+
+<p>假设时间戳如下：</p>
+
+<p>系统A key1 {valueA 3:00}<br/>
+系统B key1 {valueB 3:05}<br/>
+系统C key1 {valueC 3:10}</p>
+
+<p>那么，假设这会系统 B 先抢到锁，将 key1 设置为{valueB 3:05}。接下来系统 A 抢到锁，发现自己的 valueA 的时间戳早于缓存中的时间戳，那就不做 set 操作了，以此类推。</p>
+
+<p>其他方法，比如利用队列，将 set 方法变成串行访问也可以。总之，灵活变通。</p>
+
+<h2 id="toc_11">总结</h2>
+
+<p>本文对 Redis 的常见问题做了一个总结。大部分是自己在工作中遇到，以及之前面试别人的时候，爱问的一些问题。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[epoll 高效的原理和底层机制]]></title>
+    <link href="http://www.throne4j.com/16073533164404.html"/>
+    <updated>2020-12-07T23:01:56+08:00</updated>
+    <id>http://www.throne4j.com/16073533164404.html</id>
+    <content type="html"><![CDATA[
+<p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体，在内核 cache 里建了个红黑树用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
+
+<p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是 说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback， 它会把这样的事件放到上面的 rdllist 双向链表中。</p>
+
+<p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内 存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
+
+<h2 id="toc_0">从网卡接收数据开始</h2>
+
+<p>一个典型的计算机结构图，计算机有 CPU、存储器、网络接口等部件组成，了解 epoll 本质的第一步，要从硬件的角度看计算机怎样接收网络数据。<br/>
+<a href="16073516476681.html">Linux 网络包接收过程</a></p>
+
+<p>了解一下计算机的结构：</p>
+
+<p><figure><img src="media/16073533164404/16073539371404.jpg" alt="计算机结构"/><figcaption>计算机结构</figcaption></figure></p>
+
+<p>网卡接收数据的过程：网卡收到网线传来的数据;经过硬件电路的传输;最终将数据写入到内存中的某个地址上。这个过程涉及到 DMA 传输、IO 通路选择等硬件有关的知识， 但我们只需知道，网卡会把接收到的数据写入内存，操作系统就可以去读取它们。</p>
+
+<h3 id="toc_1">如何知道接收了数据</h3>
+
+<p>CPU 的如何知道网络上有数据要接收? 可以详细了解一下 中断机制</p>
+
+<h3 id="toc_2">进程阻塞</h3>
+
+<p>问题1：进程阻塞为什么不占用 cpu 资源？<br/>
+问题2：那么阻塞的原理是什么?</p>
+
+<p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
+
+<p>我们看下如下伪代码</p>
+
+<pre><code class="language-text">//创建 socket
+int s = socket(AF_INET, SOCK_STREAM, 0);
+//绑定
+bind(s, ...)
+//监听
+listen(s, ...) 
+//接受客户端连接 
+int c = accept(s, ...) 
+//接收客户端数据 
+recv(c, ...); 
+//将数据打印出来 
+printf(...)
+</code></pre>
+
+<p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
+
+<p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
+
+<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，会分时执行。</p>
+
+<p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
+
+<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
+
+<p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
+
+<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
+
+<h3 id="toc_3">内核接收网络数据全过程</h3>
+
+<p>进程在 recv 阻塞期间，计算机收到了对端传送的数据(步骤1)。数据经由网卡传送 到内存(步骤2)，然后网卡通过中断信号通知 cpu 有数据到达，cpu 执行中断程序(步骤3)。此处的中断程序主要有两项功能，先将网络数据写入到对应 socket 的接收缓冲区里 面(步骤4)，再唤醒进程 A(步骤5)，重新将进程 A 放入工作队列中</p>
+
+<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
+
+<p>通过上面的步骤可能有小伙伴会想，操作系统是怎么直到网络数据对应于哪个 socket的呢？</p>
+
+<p>因为一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
+
+<p>那么操作系统是如何同时监视多个 socket 的数据的呢？</p>
+
+<p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此编写操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始吧</p>
+
+<p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
+
+<p>为方便理解，我们先复习 select 的用法。</p>
+
+<pre><code class="language-text">int fds[] = 存放需要监听的 socket 
+while(1){
+    int n = select(..., fds, ...) 
+    for(int i=0; i &lt; fds.count; i++) {
+        if(FD_ISSET(fds[i], ...)) { 
+            //fds[i]的数据处理
+    
+ 
+        }
+    }
+}
+</code></pre>
+
+<p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
+
+<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
+<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
+
+<p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
+
+<p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
+
+<p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
+
+<p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
+
+<ul>
+<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
+<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
+</ul>
+
+<p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
+
+<h2 id="toc_4">epoll 的设计思路</h2>
+
+<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。epoll 通过以下一些措施来改进效率。</p>
+
+<h3 id="toc_5">措施一：功能分离</h3>
+
+<p>select 低效的原因之一是将 维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护 等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
+
+<p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
+
+<pre><code class="language-text">int epfd = epoll_create(...);
+//将所有需要监听的 socket 添加到 epfd 中 
+epoll_ctl(epfd, ...); 
+while(1){
+    int n = epoll_wait(...) 
+    for(接收到数据的 socket) {
+        //处理 
+    }
+}
+</code></pre>
+
+<p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
+
+<h3 id="toc_6">就绪列表</h3>
+
+<p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
+
+<h2 id="toc_7">epoll 的原理和流程</h2>
+
+<p>当某个进程 调用 epoll_create 方法时，内核会创建一个 eventpoll 对象(也就是程序中 epfd 所代表的对象)。eventpoll 对象也是文件系统中的一员，和 socket 一样，它也会有 等待队列。</p>
+
+<p>创建 epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
+
+<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
+
+<p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程 序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
+
+<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
+
+<p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
+
+<p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
+
+<p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
+
+<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
+
+<p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中 的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
+
+<h2 id="toc_8">epoll 实现细节</h2>
+
+<h3 id="toc_9">eventpoll</h3>
+
+<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
+首先思考两个问题</p>
+
+<ul>
+<li>就绪队列应该应使用什么数据结构?</li>
+<li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
+</ul>
+
+<p>下面我们来看下 eventpoll 的数据结构</p>
+
+<pre><code class="language-c">struct eventpoll {
+    // 用于锁定这个eventpoll数据结构，
+    // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
+    // 内核用这个mutex帮你搞定
+    struct mutex mtx;
+
+    // 等待队列，epoll_wait时如果当前没有拿到有效的事件，将当前task加入这个等待队列后作进程切换，等待被唤醒
+    wait_queue_head_t wq;
+
+    /* Wait queue used by file-&gt;poll() */
+    // eventpoll对象在使用时都会对应一个struct file对象，赋值到其private_data，
+    // 其本身也可以被 poll， 那也就需要一个wait queue
+    wait_queue_head_t poll_wait;
+
+    // 所有有事件触发的被监控的fd都会加入到这个列表
+    struct list_head rdllist;
+
+    /* Lock which protects rdllist and ovflist */
+    rwlock_t lock;
+
+    // 所有被监控的 fd 使用红黑树来存储
+    struct rb_root_cached rbr;
+
+    //  当将ready的fd复制到用户进程中，会使用上面的 lock锁锁定rdllist,
+    //  此时如果有新的ready状态fd, 则临时加入到 ovflist表示的单链表中
+    struct epitem *ovflist;
+
+    // 会autosleep准备的唤醒源
+    struct wakeup_source *ws;
+
+    /* The user that created the eventpoll descriptor */
+    struct user_struct *user;
+
+    // linux下一切皆文件，epoll实例被创建时，同时会创建一个file, file的private_data
+    // 指向当前这个eventpoll结构
+    struct file *file;
+
+    /* used to optimize loop detection check */
+    int visited;
+    struct list_head visited_list_link;
+
+#ifdef CONFIG_NET_RX_BUSY_POLL
+    /* used to track busy poll napi_id */
+    unsigned int napi_id;
+#endif
+};
+</code></pre>
+
+<p>就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
+
+<p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
+
+<p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
+
+<p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
+
+<p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
+
+<h3 id="toc_10">epitem 结构</h3>
+
+<p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
+
+<pre><code class="language-c">struct epitem {
+    // 用于构建红黑树
+    union {
+        /* RB tree node links this structure to the eventpoll RB tree */
+        struct rb_node rbn;
+        /* Used to free the struct epitem */
+        struct rcu_head rcu;
+    };
+
+    // 用于将当前epitem链接到eventpoll-&gt;rdllist中
+    struct list_head rdllink;
+
+    //用于将当前epitem链接到&quot;struct eventpoll&quot;-&gt;ovflist这个单链表中
+    struct epitem *next;
+
+    /* The file descriptor information this item refers to */
+    struct epoll_filefd ffd;
+
+    /* Number of active wait queue attached to poll operations */
+    int nwait;
+
+    /* List containing poll wait queues */
+    struct list_head pwqlist;
+
+    // 对应的eventpoll对象
+    struct eventpoll *ep;
+
+    /* List header used to link this item to the &quot;struct file&quot; items list */
+    struct list_head fllink;
+
+    /* wakeup_source used when EPOLLWAKEUP is set */
+    struct wakeup_source __rcu *ws;
+
+    // 需要关注的读，写事件等
+    struct epoll_event event;
+};
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux 网络包接收过程]]></title>
+    <link href="http://www.throne4j.com/16073516476681.html"/>
+    <updated>2020-12-07T22:34:07+08:00</updated>
+    <id>http://www.throne4j.com/16073516476681.html</id>
+    <content type="html"><![CDATA[
+<p>首先看下网络包接收大概流程图</p>
+
+<p><figure><img src="media/16073516476681/Linux%20%E7%BD%91%E7%BB%9C%E5%8C%85%E6%8E%A5%E6%94%B6%E8%BF%87%E7%A8%8B.jpg" alt="Linux 网络包接收过程"/><figcaption>Linux 网络包接收过程</figcaption></figure></p>
+
+<ul>
+<li>SKB：struct sk_buffer 的简写<br/>
+Struct sk_buffer 是 linux TCP/IP stack 中，用于管理Data Buffer的结构。Sk_buffer 在数据包的发送和接收中起着重要的作用。为了提高网络处理的性能，应尽量避免数据包的拷贝。Linux 内核开发者们在设计 sk_buffer 结构的时候，充分考虑到这一点。目前 Linux 协议栈在接收数据的时候，需要拷贝两次：数据包进入网卡驱动后拷贝一次，从内核空间递交给用户空间的应用时再拷贝一次。</li>
+</ul>
+
+<p>当网卡上收到数据以后，Linux 中第一个工作的模块是网络驱动。 网络驱动会以 DMA 的 方式把网卡上收到的帧写到内存里。再向 CPU 发起一个中断，以通知 CPU 有数据到达。第 二，当 CPU 收到中断请求后，会去调用网络驱动注册的中断处理函数。 网卡的中断处理函 数并不做过多工作，发出软中断请求，然后尽快释放 CPU。ksoftirqd 检测到有软中断请求到 达，调用 poll 开始轮询收包，收到后交由各级协议栈处理。最后会被放到用户 socket 的接 收队列中。</p>
+
+<h2 id="toc_0">准备工作</h2>
+
+<p>1、创建 ksoftirqd 内核线程<br/>
+Linux 的软中断都是在专门的内核线程(ksoftirqd)中进行的，因此我们非常有必要看一 下这些进程是怎么初始化的，这样我们才能在后面更准确地了解收包过程。该进程数量不是 1 个，而是 N 个，其中 N 等于你的机器的核数。</p>
+
+<p>系统初始化的时候会创建出 softirqd 进程。</p>
+
+<p>当 ksoftirqd 被创建出来以后，它就会进入自己的线程循环函数不停地判断有没有软中断需要被处理。这里需要注意的一点是，软中断不仅仅只有网络软中断，还有其它类型。</p>
+
+<p>2、网络子系统初始化</p>
+
+<p>linux 内核通过 net/core/dev.c 中 net_dev_init 函数进行网络子系统的初始化，在这个函数里，会为每个 CPU 都申请一个 softnet_data 数据结构。</p>
+
+<p>同时会给每一种软中断都注册一个处理函数。比如网络处理中 NET_TX_SOFTIRQ 中断的处 理函数为 net_tx_action，NET_RX_SOFTIRQ 中断的为 net_rx_action。</p>
+
+<p>3、协议栈注册<br/>
+内核实现了网络层的 ip 协议，也实现了传输层的 tcp 协议和 udp 协议。 </p>
+
+<p>这些协议对应的实现函数分别是 ip_rcv()，tcp_v4_rcv()和 udp_rcv()。和我们平时写代码的方式不一样的是， 内核是通过注册的方式来实现的。 在 net/ipv4/af_inet.c 中的 inet_init(void)负责网络协议栈 注册。 通过 inet_init，将这些函数注册到了 inet_protos 和 ptype_base 两个数据结构中</p>
+
+<p>inet_protos记录着udp，tcp的处理函数地址，ptype_base存储着ip_rcv()函数的处理地址。 软中断中会通过 ptype_base 找到 ip_rcv 函数地址，进而将 ip 包正确地送到 ip_rcv()中执行。 在 ip_rcv 中将会通过 inet_protos 找到 tcp 或者 udp 的处理函数，再而把包转发给 udp_rcv() 或 tcp_v4_rcv()函数。</p>
+
+<p>4、网卡驱动初始化和启动网卡，中间的工作包括分配内存、注册中断处理函数，注册供 内核使用的函数、开启硬中断等等工作。</p>
+
+<h2 id="toc_1">Socket 的创建</h2>
+
+<p>调用链：<br/>
+net/Socket.c:sys_socket()-&gt;sock_create()-&gt;__sock_create()-&gt;sock_alloc();</p>
+
+<p>主要的工作则是:<br/>
+1、和 Linux 文件系统挂钩;<br/>
+2、使用协议族来初始化 socket，在前面的初始化过程中，我们知道有个协议栈注册过程， 找到内核初始化时注册的协议域，然后调用其 create 方法进行 socket 实例的创建;<br/>
+3、初始化和 socket 通信有关的缓冲区、队列等等;</p>
+
+<h2 id="toc_2">接受数据的到来</h2>
+
+<p>1、首先当数据帧从网线到达网卡上的时候，第一站是网卡的接收队列。网卡在分配给自己的RingBuffer中寻找可用的内存位置，找到后 DMA 引擎会把数据 DMA 到网卡之前关联的内存里，这个时候 CPU 都是无感的。</p>
+
+<p>当 DMA 操作完成以后，网卡会向 CPU 发起一个硬中断，通知 CPU 有数据到达。CPU 调用网卡注册的硬中断处理函数，这个处理过程非常短。只是记录了一个寄存器，修改了一下 CPU 的 softnet_data 中的列表，告诉 CPU 当前有设备有数据需要处理，然后发出个软中断， 硬中断工作就算是完成了。</p>
+
+<p>2、在网络子系统初始化小节，我们看到为 NET_RX_SOFTIRQ 注册了处理函数 net_rx_action， 这个函数中的核心逻辑执行就是执行网卡驱动注册到 softnet_data 中的函数，把数据帧从 RingBuffer 上取下来，被送到协议栈中，从数据包中取出协议信息，然后遍历注册在这个协议上的回调函数列表，调用到了协议层注册的处理函数了。</p>
+
+<p>对于 ip 包来讲，就会进入到 ip_rcv，IP 层处理完成后如协议注册小节看到 inet_protos 中 保存着 tcp_rcv()和 udp_rcv()的函数地址。</p>
+
+<p>这里将会根据包中的协议类型选择进行分发，在这里 skb 包将会进一步被派送到更上层的协议中，udp 和 tcp。</p>
+
+<p>udp 和 tcp 层根据 skb 来寻找对应的 socket，当找到以后将数据包放到 socket 的接收队列中。<br/>
+而我们一般网络编程里的读取数据方法，就是访问这个接收队列</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java 生态圈中的零拷贝]]></title>
+    <link href="http://www.throne4j.com/16072730714201.html"/>
+    <updated>2020-12-07T00:44:31+08:00</updated>
+    <id>http://www.throne4j.com/16072730714201.html</id>
+    <content type="html"><![CDATA[
+<p>Linux 提供的零拷贝技术 Java 并不是全支持，支持 2种(内存映射 mmap、sendfile);</p>
+
+<h2 id="toc_0">NIO 提供的内存映射 MappedByteBuffer</h2>
+
+<p>NIO 中的 FileChannel.map()方法其实就是采用了操作系统中的内存映射方式，底层就是 调用 Linux mmap()实现的。</p>
+
+<p>将内核缓冲区的内存和用户缓冲区的内存做了一个地址映射。这种方式适合读取大文件， 同时也能对文件内容进行更改，但是如果其后要通过 SocketChannel 发送，还是需要 CPU 进 行数据的拷贝。</p>
+
+<h2 id="toc_1">NIO 提供的 sendfile</h2>
+
+<p>Java NIO 中提供的 FileChannel 拥有 transferTo 和 transferFrom 两个方法，可直接把 FileChannel 中的数据拷贝到另外一个 Channel，或者直接把另外一个 Channel 中的数据拷 贝到 FileChannel。</p>
+
+<p>该接口常被用于高效的 网络/文件 的数据传输和大文件拷贝。在操作系统支持的情况下，通过该方法传输数据并不需要将源数据从内核态拷贝到用户态，再从用户态拷贝到目标通道的内核态，同时也避免了两次用户态和内核态间的上下文切换，也即使用了“零拷贝”，所以其性能一般高于 Java IO 中提供的方法。</p>
+
+<h2 id="toc_2">Kafka 中的零拷贝</h2>
+
+<p>Kafka 两个重要过程都使用了零拷贝技术，且都是操作系统层面的狭义零拷贝，</p>
+
+<ul>
+<li>Producer 生产的数据存到 broker<br/>
+Producer 生产的数据持久化到 broker，采用 mmap 文件映射，实现顺序的快速写入</li>
+<li>Consumer 从 broker 读取数据。<br/>
+Customer 从 broker 读取数据，采用 sendfile，将磁盘文件读到 OS 内核缓冲区后，直接转到 socket buffer 进行网络发送</li>
+</ul>
+
+<h2 id="toc_3">Netty 的零拷贝实现</h2>
+
+<p>Netty 的零拷贝主要包含几个方面:</p>
+
+<p>在网络通信上，Netty 的接收和发送 ByteBuffer 采用 DIRECT BUFFERS，使用堆外直接 内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝。如果使用传统的堆内存(HEAP BUFFERS)进行 Socket 读写，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写 入 Socket 中。相比于堆外直接内存，消息在发送过程中多了一次缓冲区的内存拷贝。</p>
+
+<p>在缓存操作上，Netty 提供了 CompositeByteBuf 类，它可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf，避免了各个 ByteBuf 之间的拷贝。</p>
+
+<p>通过 wrap 操作，我们可以将 byte[]数组、ByteBuf、 ByteBuffer 等包装成一个 Netty ByteBuf 对象，进而避免了拷贝操作。</p>
+
+<p>ByteBuf支持slice 操作，因此可以将ByteBuf分解为多个共享同一个存储区域的ByteBuf， 避免了内存的拷贝。</p>
+
+<p>在文件传输上，Netty 的通过 FileRegion 包装的 FileChannel.tranferTo 实现文件传输，它可以直接将文件缓冲区的数据发送到目标 Channel，避免了传统通过循环 write 方式导致的内存拷贝问题。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux 零拷贝技术]]></title>
+    <link href="http://www.throne4j.com/16072680119143.html"/>
+    <updated>2020-12-06T23:20:11+08:00</updated>
+    <id>http://www.throne4j.com/16072680119143.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">第一个问题：什么是零拷贝？</h2>
+
+<p>零拷贝技术是指计算机执行操作时， CPU 不需要先将数据从某处内存复制到另一个特定区域。这种技术通常用于通过网络传输文件时节省 CPU 周期和内存带宽。</p>
+
+<ul>
+<li>零拷贝技术可以减少数据拷贝和共享总线操作次数，消除传输数据在存储器之间不必要的中间拷贝次数，从而有效的提高数据传输效率</li>
+<li>零拷贝技术减少了用户进程地址空间和内核地址空间之间因为上下文切换而带来的开销</li>
+</ul>
+
+<p>广泛的说就是减少不必要的拷贝即被称为零拷贝</p>
+
+<h2 id="toc_1">Linux 的 IO 机制与 DMA</h2>
+
+<p>在早期的计算机中，用户进程需要读取磁盘数据，需要 CPU 中断和 CPU 参与，因此效率比较低，发起 IO 请求，每次的 IO 中断，都带来了 CPU 的上下文切换，因此出现了 DMA 技术</p>
+
+<p>DMA(Direct Memory Access，直接内存存取)是所有现代电脑的重要特色，它允许不同速度的硬件装置来沟通，而不需要依赖于 CPU 的大量中断负载。</p>
+
+<p>DMA 控制器接管了数据读写请求，减少了 CPU 的负担，这样一来 CPU 可以高效工作了。现代硬盘基本都支持 DMA</p>
+
+<p>实际 IO 读取涉及两个过程：</p>
+
+<ul>
+<li>DMA 等待数据准备好，把磁盘数据读取到操作系统内核缓冲区</li>
+<li>用户进程将内核缓冲区的数据 拷贝到用户空间</li>
+</ul>
+
+<p>这两个过程都是阻塞的。</p>
+
+<h2 id="toc_2">传统数据传送机制</h2>
+
+<p>比如：读取文件，再用 socket 发送出去，实际经过四次 copy。</p>
+
+<p>伪代码如下：</p>
+
+<pre><code class="language-text">buffer = File.read()
+Socket.send(buffer)
+</code></pre>
+
+<ul>
+<li>第一次：将磁盘文件读取到操作系统内核缓冲区</li>
+<li>第二次：将内核缓冲区的数据拷贝到应用程序的 buffer</li>
+<li>第三次：将应用程序 buffer 中的数据拷贝到 socket 网络发送缓冲区(属于操作系统内核的缓冲区)</li>
+<li>第四次：将 socket buffer 的数据拷贝到网卡，由网卡进行网络传输</li>
+</ul>
+
+<p>图示如下：<br/>
+<figure><img src="media/16072680119143/16072705633200.jpg" alt="传统数据传送机制"/><figcaption>传统数据传送机制</figcaption></figure></p>
+
+<p>分析上述的过程，虽然引入 DMA 来接管 CPU 的中断请求，但四次 copy 是存在“不必 要的拷贝”的。实际上并不需要第二个和第三个数据副本。应用程序除了缓存数据并将其传输回套接字缓冲区之外什么都不做。相反，数据可以直接从读缓冲区传输到套接字缓冲区</p>
+
+<p>显然，第二次和第三次数据 copy 其实在这种场景下没有什么帮助反而带来开销，这也 正是零拷贝出现的背景和意义。</p>
+
+<p>传统的数据传送所消耗的成本: 4 次拷贝，4 次上下文切换。</p>
+
+<h2 id="toc_3">Linux 支持的零拷贝</h2>
+
+<p>零拷贝的目的：减少 IO 流程中不必要的拷贝，当然零拷贝需要操作系统的支持。</p>
+
+<h3 id="toc_4">mmap内存映射</h3>
+
+<p>首先了解一下 <a href="15972869856630.html">mmap 是什么，能做什么 </a></p>
+
+<p>硬盘上文件的位置和应用程序缓冲区(application buffers)进行映射(建立一种一一对应 关系)，由于 mmap()将文件直接映射到用户空间，所以实际文件读取时根据这个映射关系， 直接将文件从硬盘拷贝到用户空间，只进行了一次数据拷贝，不再有文件内容从硬盘拷贝到 内核空间的一个缓冲区。</p>
+
+<p><figure><img src="media/16072680119143/16072711819766.jpg" alt="mmap零拷贝"/><figcaption>mmap零拷贝</figcaption></figure></p>
+
+<p>再次看下mmap的数据传输所消耗的成本：3次拷贝(1次 CPU 拷贝，2次 DMA 拷贝)和 4 次上下文切换</p>
+
+<h3 id="toc_5">sendfile</h3>
+
+<p>linux 2.1 支持的 sendfile，当调用 sendfile()时，DMA 将磁盘数据复制到 kernel buffer，然后将内核中的 kernel buffer 直接拷贝到 socket buffer; </p>
+
+<p>但是数据并未被真正复制到 socket 关联的缓冲区内。取而代之的是，只有记录数据位置和长度的描述符被加入到 socket 缓冲区中。DMA 模块将数据直接从内核缓冲区传递给协议引擎，从而消除了遗留的最后一次复制。</p>
+
+<p>一旦数据全都拷贝到 socket buffer，sendfile()系统调用将会 return、代表数据转化的完成。socket buffer 里的数据就能在网络传输了。</p>
+
+<p><figure><img src="media/16072680119143/16072720825690.jpg" alt="sendfile"/><figcaption>sendfile</figcaption></figure></p>
+
+<p>sendfile 会经历:3 次拷贝(1 次 CPU 拷贝,2 次 DMA 拷贝)和2次上下文切换</p>
+
+<h3 id="toc_6">splice</h3>
+
+<p>Linux 从 2.6.17 支持 splice<br/>
+数据从磁盘读取到 OS 内核缓冲区后，在内核缓冲区直接可将其转成内核空间其他数据 buffer，而不需要拷贝到用户空间。</p>
+
+<p>如下图所示，从磁盘读取到内核 buffer 后，在内核空间直接与 socket buffer 建立 pipe 管道。</p>
+
+<p>和 sendfile()不同的是，splice()不需要硬件支持。</p>
+
+<p>注意 splice 和 sendfile 的不同，sendfile 是将磁盘数据加载到 kernel buffer 后，需要一次 CPU 拷贝，拷贝到 socket buffer。而 splice 是更进一步，连这个 CPU 拷贝 也不需要了，直接将两个内核空间的 buffer 进行 pipe。</p>
+
+<p><figure><img src="media/16072680119143/16072728727089.jpg" alt="splice"/><figcaption>splice</figcaption></figure></p>
+
+<p>splice 会经历 2 次拷贝: 0 次 cpu 拷贝 2 次 DMA 拷贝;</p>
+
+<h2 id="toc_7">总结 Linux 中零拷贝</h2>
+
+<p>最早的零拷贝定义来源于 Linux 2.4 内核新增 sendfile 系统调用，提供了零拷贝。</p>
+
+<p>磁盘数据通过 DMA 拷贝到内核 态 Buffer 后，直接通过 DMA 拷贝到 NIO Buffer(socket buffer)，无需 CPU 拷贝。这也是零拷贝这一说法的来源。这是真正操作系统意义上的零拷贝(也就是狭义零拷贝)。</p>
+
+<p>但是我们知道，由 OS 内核提供的 操作系统意义上的零拷贝，发展到目前也并没有很 多种，也就是这样的零拷贝并不是很多;</p>
+
+<p>随着发展，零拷贝的概念得到了延伸，就是目前的减少不必要的数据拷贝都算作零拷贝 的范畴。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[直接内存]]></title>
     <link href="http://www.throne4j.com/16072655636252.html"/>
     <updated>2020-12-06T22:39:23+08:00</updated>
     <id>http://www.throne4j.com/16072655636252.html</id>
     <content type="html"><![CDATA[
+<p>在所有的网络通信和应用程序中，每个 TCP 的 Socket 的内核中都有一个发送缓冲区 (SO_SNDBUF)和一个接收缓冲区(SO_RECVBUF)，可以使用相关套接字选项来更改该缓冲区大 小。</p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[UDT]]></title>
-    <link href="http://www.throne4j.com/16072579547979.html"/>
-    <updated>2020-12-06T20:32:34+08:00</updated>
-    <id>http://www.throne4j.com/16072579547979.html</id>
-    <content type="html"><![CDATA[
-<p>基于 UDP 的数据传输协议(UDP-based Data Transfer Protocol，简称 UDT)是一种互联 网数据传输协议。UDT 的主要目的是支持高速广域网上的海量数据传输，最典型的例子就是 建立在光纤广域网上的网格计算，一些研究所在这样的网络上运行他们的分布式的数据密集 程式，例如，远程访问仪器、分布式数据挖掘和高分辨率的多媒体流。</p>
+<p><figure><img src="media/16072655636252/16072674138718.jpg" alt=""/></figure></p>
 
-<p>而互联网上的标准数据传输协议 TCP 在高带宽长距离网络上性能很差。顾名思义，UDT 建于 UDP 之上，并引入新的拥塞控制和数据可靠性控制机制。UDT 是面向连接的<strong>双向的应用层协议</strong>。</p>
+<p>当某个应用进程调用 write 时，内核从该应用进程的缓冲区中复制所有数据到所写套接 字的发送缓冲区。如果该套接字的发送缓冲区容不下该应用进程的所有数据(或是应用进程 的缓冲区大于套接字的发送缓冲区，或是套接字的发送缓冲区中已有其他数据)，假设该套 接字是阻塞的，则该应用进程将被投入睡眠。</p>
 
-<p>UDT 的特性主要包括在以下几个方面:</p>
+<p>内核将不从 write 系统调用返回，直到应用进程缓冲区中的所有数据都复制到套接字发送缓冲区。因此，从写一个 TCP 套接字的 write 调用成功返回仅仅表示我们可以重新使用原来的应用进程缓冲区，并不表明对端的 TCP 或应用进程已接收到数据。</p>
 
-<ul>
-<li><p>基于 UDP 的应用层协议: 有基本网络知识的朋友都知道 TCP 和 UDP 的区别和使用场 景，但是有没有一种协议能同时兼顾 TCP 协议的安全可靠和 UDP 协议的高效，那么 UDT 就是一种。</p></li>
-<li><p>面向连接的协议:面向连接意味着两个使用协议的应用在彼此交换数据之前必须先建立 一个连接，当然 UDT 是逻辑上存在的连接通道。这种连接的维护是基于握手、Keep-alive(保活)以及关闭连接。</p></li>
-<li><p>可靠的协议:依靠包序号机制、接收者的 ACK 响应和丢包报告、ACK 序号机制、重传机 制(基于丢包报告和超时处理)来实现数据传输的可靠性。</p></li>
-<li><p>双工的协议:每个 UDT 实例包含发送端和接收端的信息。</p>
-<ul>
-<li>新的拥塞算法，并且具有可扩展的拥塞控制框架:新的拥塞控制算法不同于基于窗口的 TCP 拥塞控制算法(慢启动和拥塞避免)，是混合的基于窗口的、基于速率的拥塞控制算法。</li>
-</ul></li>
-<li><p>带宽估计:UDT 使用对包(PP -- Packet pair)的机制来估计带宽值。即每 16 个包为一组, 最后一个是对包,即发送方不用等到下一个发送周期内再发送。接收方接收到对包后对其到 达时间进行记录,可结合上次记录的值计算出链路的带宽(计算的方法称为中值过滤法), 并 在下次 ACK 中进行反馈。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[服务器推送技术-短轮询和 Comet]]></title>
-    <link href="http://www.throne4j.com/16072486450593.html"/>
-    <updated>2020-12-06T17:57:25+08:00</updated>
-    <id>http://www.throne4j.com/16072486450593.html</id>
-    <content type="html"><![CDATA[
-<p>服务器推送技术干嘛用?就是让用户在使用网络应用的时候，不需要一遍又一遍的去手 动刷新就可以及时获得更新的信息。大家平时在上各种视频网站时，对视频节目进行欢乐的 吐槽和评论，会看到各种弹幕，当然，他们是用 flash 技术实现的，对于我们没有用 flash 的 应用，一样可以实现弹幕。又比如在股票网站，往往可以看到，各种股票信息的实时刷新， 上面的这些都是基于服务器推送技术。</p>
-
-<h2 id="toc_0">Ajax 短轮询</h2>
-
-<p>就是用一个定时器不停的去网站上请求数据。</p>
-
-<h2 id="toc_1">Comet</h2>
-
-<p>服务器推送 是一种很早就存在的技术，以前在实现上主要是通过客户端的套接口，或是服务器端的远程调用。因为浏览器技术的发展比较缓慢，没有为“服务器推”的实现提供很好的支持，在纯浏览器的应用中很难有一个完善的方案去实现“服务器推”并用于商业程序。 因为 AJAX 技术的普及，gmail 等等在实现中使用了这些新技术;同时“服务器推送”在现实应用中确实存在很多需求。称这种基于 HTTP 长连接、无须在浏览器端安装插件的“服务器推” 技术为“Comet”。</p>
-
-<h3 id="toc_2">基于 AJAX 的长轮询</h3>
-
-<p>DeferredResult : spring mvc 的控制层接收用户的请求之后，如果要采用异步处理，那么就要返回 DeferredResult 泛型对象。在调用完控制层之后，立即返回 DeferredResult 对象，此时驱动控制层的容器在主线程，可处理更多的请求</p>
-
-<p>可以将 DeferredResult 对象作为真实响应数据的代理，而真实的数据是该对象的成员变量 result ，它可以是 String 类型或者 ModelAndView类型等</p>
-
-<p>业务处理完毕之后，要执行 setResult 方法，将真实的响应数据赋值到 DeferredResult 对象中。此时，异步线程会唤醒容器主线程。那么容器主线程会继续执行 getResult 方法， 将真实数据响应到客户端。</p>
-
-<h3 id="toc_3">SSE</h3>
-
-<p>严格地说，HTTP 协议无法做到服务器主动推送信息。但是，有一种变通方法，就是服 务器向客户端声明，接下来要发送的是流信息(streaming)。</p>
-
-<p>也就是说，发送的不是一次性的数据包，而是一个数据流，会连续不断地发送过来。这 时，客户端不会关闭连接，会一直等着服务器发过来的新的数据流，视频播放就是这样的例子。本质上，这种通信就是以流信息的方式，完成一次用时很长的下载。</p>
-
-<p>SSE 就是利用这种机制，使用流信息向浏览器推送信息。它基于 HTTP 协议，目前除了 IE/Edge，其他浏览器都支持。</p>
-
-<p>SSE 与 WebSocket 作用相似，都是建立浏览器与服务器之间的通信渠道，然后服务器向浏览器推送信息。</p>
-
-<p>总体来说，WebSocket 更强大和灵活。因为它是全双工通道，可以双向通信;SSE 是单 向通道，只能服务器向浏览器发送，因为流信息本质上就是下载。如果浏览器向服务器发送信息，就变成了另一次 HTTP 请求。</p>
-
-<ul>
-<li>SSE 使用 HTTP协议，现有的服务器软件都支持，WebSocket 是一个独立的协议</li>
-<li>SSE 比较轻量，使用简单，WebSocket 协议相对复杂</li>
-<li>SSE 默认支持断线重连，WebSocket 需要自己实现</li>
-<li>SSE 一般只用来传送文本，二进制数据需要编码后传送，WebSocket 默认支持传送二进制数据</li>
-<li>SSE支持自定义发送的消息类型</li>
-</ul>
-
-<h4 id="toc_4">HTTP 头信息</h4>
-
-<p>服务器向浏览器发送的 SSE 数据必须是 UTF-8 编码的文本，具有如下的 HTTP 头信息</p>
-
-<ul>
-<li>Content-Type: text/event-stream (MIME 类型必须是 event-stream类型)</li>
-<li>Cache-Control: no-cache</li>
-<li>Connection: keep-alive</li>
-</ul>
-
-<h4 id="toc_5">消息格式</h4>
-
-<p>每次发送的信息由若干个message 组成，每个 message 之间用 \n\n 分割。每个 message 内部由若干行组成，每行都是如下格式：</p>
-
-<p>上面的 field 可以取 4 个值：</p>
-
-<ul>
-<li>data</li>
-<li>event</li>
-<li>id<br/></li>
-<li>retry</li>
-</ul>
-
-<p>此外还可以有冒号开头的行，表示注释。通常服务器每隔一段时间就会向浏览器发送一个注释，保持连接不中断</p>
-
-<h5 id="toc_6">data字段</h5>
-
-<p>数据内容，如果数据很长，可以分成多行，最后一行用 \n\n 结尾，前面行用 \n 结尾。例如：</p>
-
-<p>data:hello ,\n<br/>
-data:world\n\n</p>
-
-<h5 id="toc_7">id字段</h5>
-
-<p>数据标识符用 id 字段表示，相当于每一条数据的编号</p>
-
-<p>id:msg\n<br/>
-data:gou zei\n\n</p>
-
-<p>浏览器用 lastEventId 属性读取这个值。一旦连接断线，浏览器会发送一个 HTTP 头， 里面包含一个特殊的 Last-Event-ID 头信息，将这个值发送回来，用来帮助服务器端重建连接。 因此，这个头信息可以被视为一种同步机制。</p>
-
-<h5 id="toc_8">event 字段</h5>
-
-<p>event 字段表示自定义的事件类型，默认是 message 事件。浏览器可以用 addEventListener()监听该事件。</p>
-
-<p>event: foo\n<br/>
-data: a foo event\n\n<br/>
-data: an unnamed event\n\n<br/>
-event: bar\n<br/>
-data: a bar event\n\n</p>
-
-<p>上面的代码创造了三条信息。第一条的名字是 foo，触发浏览器的 foo 事件;第二条未 取名，表示默认类型，触发浏览器的 message 事件;第三条是 bar，触发浏览器的 bar 事件。</p>
-
-<h5 id="toc_9">retry 字段</h5>
-
-<p>服务器可以用 retry 字段，指定浏览器重新发起连接的时间间隔。</p>
-
-<p>retry: 10000\n</p>
-
-<p>两种情况会导致浏览器重新发起连接:一种是时间间隔到期，二是由于网络错误等原因， 导致连接出错。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Netty 编解码器]]></title>
-    <link href="http://www.throne4j.com/16072474529189.html"/>
-    <updated>2020-12-06T17:37:32+08:00</updated>
-    <id>http://www.throne4j.com/16072474529189.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">什么是编解码器</h2>
-
-<p>每个网络应用程序都必须定义如何解析在两个节点之间来回传输的原始字节，以及如何 将其和目标应用程序的数据格式做相互转换。这种转换逻辑由编解码器处理，编解码器由编码器和解码器组成，它们每种都可以将字节流从一种格式转换为另一种格式。</p>
-
-<p>那么它们的区别是什么呢?</p>
-
-<p>如果将消息看作是对于特定的应用程序具有具体含义的结构化的字节序列。 </p>
-
-<p>那么编码器是将消息转换为适合于传输的格式(最有可能的就是字节流);而对应的解码器则是将网络字节流转换回应用程序的消息格式。</p>
-
-<p>因此，编码器操作出站数据，而解码器处理入站数据。</p>
-
-<h2 id="toc_1">Netty 编解码解决粘包拆包问题</h2>
-
-<p>首先需要回顾下什么是 <a href="15998898223293.html">TCP 粘包/拆包</a></p>
-
-<p>下面我们看下 Netty是如何解决 粘包chai包问题提的</p>
-
-<p>由于底层的 TCP 无法理解上层的业务数据，所以在底层是无法保证数据包不被拆分和重 组的，这个问题只能通过上层的应用协议栈设计来解决，根据业界的主流协议的解决方案， 可以归纳如下：</p>
-
-<ul>
-<li>在包尾增加分割符，比如回车换行符进行分割，例如FTP协议; 使用LineBasedFrameDecoder、DelimiterBasedFrameDecoder 实现</li>
-<li>消息定长，例如每个报文的大小为固定长度 200 字节，如果不够，空位补空格，使用 FixedLengthFrameDecoder 实现</li>
-<li>将消息分为消息头和消息体，消息头中包含表示消息总长度(或者消息体长度) 的字段，通常设计思路为消息头的第一个字段使用 int32 来表示消息的总长度，使用 LengthFieldBasedFrameDecoder 实现。</li>
-</ul>
-
-<h2 id="toc_2">解码器</h2>
-
-<p>因为解码器是负责将入站数据从一种格式转换到另一种格式的，所以 Netty 的解码器实现了 ChannelInboundHandler。</p>
-
-<p>什么时候会用到解码器呢? </p>
-
-<p>每当需要为 ChannelPipeline 中的下一个 ChannelInboundHandler 转换入站数据时会用到。此外，得益于 ChannelPipeline 的设计，可 以将多个解码器链接在一起，以实现任意复杂的转换逻辑。</p>
-
-<p>加码器相关的接口：</p>
-
-<ul>
-<li>将字节解码为消息 ByteToMessageDecoder</li>
-<li>将一种消息类型解码为另一种 MessageToMessageDecoder。</li>
-</ul>
-
-<h3 id="toc_3">ByteToMessageDecoder 将字节解码为消息</h3>
-
-<p>将字节解码为消息(或者另一个字节序列)是一项如此常见的任务，以至于 Netty 为它 提供了一个抽象的基类:ByteToMessageDecoder。由于你不可能知道远程节点是否会一次性 地发送一个完整的消息，所以这个类会对入站数据进行缓冲，直到它准备好处理。</p>
-
-<pre><code class="language-text">decode(ChannelHandlerContext ctx,ByteBuf in,List&lt;Object&gt; out)
-</code></pre>
-
-<p>这是你必须实现的唯一抽象方法。decode()方法被调用时将会传入一个包含了传入数据 的 ByteBuf，以及一个用来添加解码消息的 List。对这个方法的调用将会重复进行，直到确 定没有新的元素被添加到该 List，或者该 ByteBuf 中没有更多可读取的字节时为止。然后， 如果该 List 不为空，那么它的内容将会被传递给 ChannelPipeline 中的下一个 ChannelInboundHandler。</p>
-
-<h3 id="toc_4">MessageToMessageDecoder 将一种消息类型解码为另一种</h3>
-
-<p>在两个消息格式之间进行转换 (例如，从 String-&gt;Integer)</p>
-
-<pre><code class="language-text">decode(ChannelHandlerContext ctx,I msg,List&lt;Object&gt; out)
-</code></pre>
-
-<p>对于每个需要被解码为另一种格式的入站消息来说，该方法都将会被调用。</p>
-
-<p>解码消息随 后会被传递给 ChannelPipeline 中的下一个 ChannelInboundHandler</p>
-
-<p>MessageToMessageDecoder<T>，T 代表源数据的类型</p>
-
-<h2 id="toc_5">编码器</h2>
-
-<p>解码器的功能正好相反。</p>
-
-<p>Netty 提供了一组类，用于帮助你编写具有以下功能的编码器: </p>
-
-<ul>
-<li>将消息编码为字节 : MessageToByteEncoder<I></li>
-<li>将消息编码为消息:MessageToMessageEncoder<T>，T 代表源数据的类型</li>
-</ul>
-
-<h3 id="toc_6">将消息编码为字节</h3>
-
-<p>需要实现接口 MessageToByteEncoder，并实现其定义的方法：</p>
-
-<pre><code class="language-text">encode(ChannelHandlerContext ctx,I msg,ByteBuf out)
-</code></pre>
-
-<p>它被调用时将会传入要被该类编码为 ByteBuf 的出站消息(类型为 I 的)。该 ByteBuf 随后将会被转发给 ChannelPipeline 中的下一个 ChannelOutboundHandler</p>
-
-<h3 id="toc_7">将消息编码为消息</h3>
-
-<p>需要实现接口 MessageToMessageEncoder，并实现其定义的方法：</p>
-
-<pre><code class="language-text">encode(ChannelHandlerContext ctx,I msg,List&lt;Object&gt; out)
-</code></pre>
-
-<p>每个通过 write() 方法写入的消息都将会被传递给 encode() 方法，以编码为一个或者多个出站消息。随后，这些出站消息将会被转发给 ChannelPipeline 中的下一个 ChannelOutboundHandler</p>
-
-<h2 id="toc_8">编解码器类</h2>
-
-<p>又是我们需要在同一个类中管理入站和出站的数据和消息转换，Netty 提供了如下两个类。他们每一个都捆绑了一对解码器/编码器</p>
-
-<ul>
-<li>抽象类 ByteToMessageCodec </li>
-<li>抽象类 MessageToMessageCodec</li>
-</ul>
-
-<h2 id="toc_9">Netty 内置的编解码器和 ChannelHandler</h2>
-
-<h3 id="toc_10">通过 SSL/TLS 保护 Netty 应用程序</h3>
-
-<p>SSL 和 TLS 这样的安全协议，它们层叠在其他协议之上，用以实现数据安全。我们在访 问安全网站时遇到过这些协议，但是它们也可用于其他不是基于 HTTP 的应用程序，如安全 SMTP(SMTPS)邮件服务器甚至是关系型数据库系统。</p>
-
-<p>为了支持 SSL/TLS，Java 提供了 javax.net.ssl 包，它的 SSLContext 和 SSLEngine 类使得 实现解密和加密相当简单直接。</p>
-
-<p>Netty 通过一个名为 SslHandler 的 ChannelHandler 实现利用了这个 API，其中 SslHandler 在内部使用 SSLEngine 来完成实际的工作。在大多数情况下，SslHandler 将是 ChannelPipeline 中的第一个 ChannelHandler。</p>
-
-<h3 id="toc_11">HTTP 相关编解码</h3>
-
-<p>HTTP 是基于请求/响应模式的，客户端向服务器发送一个 HTTP 请求，然后服务器将会返回一个 HTTP 响应。 Netty 提供了多种编码器和解码器以简化对这个协议的使用。</p>
-
-<p>一个HTTP 请求/响应可能由多个数据部分组成，FullHttpRequest 和FullHttpResponse 消息是特殊的子类型，分别代表了完整的请求和响应。所有类型的 HTTP 消息(FullHttpRequest、 LastHttpContent 等等)都实现了 HttpObject 接口。</p>
-
-<ul>
-<li><p>HttpRequestEncoder 将 HttpRequest、HttpContent 和 LastHttpContent 消息编码为字节 </p></li>
-<li><p>HttpResponseEncoder 将 HttpResponse、HttpContent 和 LastHttpContent 消息编码为字节</p></li>
-<li><p>HttpResponseDecoder 将字节解码为 HttpResponse、HttpContent 和 LastHttpContent 消息</p></li>
-<li><p>HttpClientCodec 和 HttpServerCodec 则将请求和响应做了一个组合</p></li>
-</ul>
-
-<h4 id="toc_12">聚合 HTTP 消息</h4>
-
-<p>由于 HTTP 的请求和响应可能由许多部分组成，因此你需要聚合它们以形成完整的消息。</p>
-
-<p>为了消除这项繁琐的任务，Netty 提供了一个聚合器 HttpObjectAggregator，它可以将多个消息部分合并为 FullHttpRequest 或者 FullHttpResponse 消息。</p>
-
-<h4 id="toc_13">HTTP 压缩</h4>
-
-<p>当使用 HTTP 时，建议开启压缩功能以尽可能多地减小传输数据的大小。</p>
-
-<p>虽然压缩会带来一些 CPU 时钟周期上的开销，但是通常来说它都是一个好主意，特别是对于文本数据来说。</p>
-
-<p>Netty 为压缩和解压缩提供了 ChannelHandler 实现，它们同时支持 gzip 和 deflate 编码 : HttpContentDecompressor 、HttpContentCompressor</p>
-
-<h3 id="toc_14">空闲的连接和超时</h3>
-
-<p>检测空闲连接以及超时对于及时释放资源来说是至关重要的。由于这是一项常见的任务， Netty 特地为它提供了几个 ChannelHandler 实现：</p>
-
-<ul>
-<li><p>IdleStateHandler 当连接空闲时间太长时，将会触发一个 IdleStateEvent 事件。然后，你 可以通过在你的 ChannelInboundHandler 中重写 userEventTriggered()方法来处理该 IdleStateEvent 事件。</p></li>
-<li><p>ReadTimeoutHandler 如果在指定的时间间隔内没有收到任何的入站数据，则抛出一个 Read-TimeoutException 并关闭对应的 Channel。可以通过重写你的 ChannelHandler 中的 exceptionCaught()方法来检测该 Read-TimeoutException。</p></li>
-<li><p>WriteTimeoutHandler 如果在指定的时间间隔内没有任何出站数据写入，则抛出一个 Write-TimeoutException 并关闭对应的 Channel 。可以通过重写你的 ChannelHandler 的 exceptionCaught()方法检测该 WriteTimeout-Exception。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[UDP 用户数据报协议]]></title>
-    <link href="http://www.throne4j.com/16069200648740.html"/>
-    <updated>2020-12-02T22:41:04+08:00</updated>
-    <id>http://www.throne4j.com/16069200648740.html</id>
-    <content type="html"><![CDATA[
-<p>UDP 是一个简单的面向数据报的运输层协议: 进程的每个输出操作都正好产生一个<br/>
-UDP 数据报，并组装成一份待发送的 IP 数据报</p>
-
-<p>UDP 数据报封装成一份 IP 数据报的格式 如下图所示:<br/>
-<figure><img src="media/16069200648740/16072567321465.jpg" alt=""/></figure></p>
-
-<p>UDP 是面向无连接的通讯协议，UDP 报头由 4 个域组成，其中每个域各占用 2 个字节， 其中包括目的端口号 和 源端口号信息，数据报的长度域是指包括报头和数据部分在内的总字节数，校验值域来保证数据的安全。由于通讯不需要连接，所以可以实现广播发送。</p>
-
-<p>UDP 通讯时不需要接收方确认，属于不可靠的传输，可能会出现丢包现象，实际应用中 要求程序员编程验证。</p>
-
-<p>UDP 与 TCP 位于同一层，但它不管数据包的顺序、错误或重发。因此，UDP 不被应用于那些使用虚电路的面向连接的服务，UDP 主要用于那些面向查询---应答的服务，例如 NFS。 相对于 FTP 或 Telnet，这些服务需要交换的信息量较小。</p>
-
-<p>使用 UDP 的服务包括 </p>
-
-<ul>
-<li>NTP(网络时 间协议)和 DNS(DNS 也使用 TCP)，包总量较少的通信(DNS、SNMP 等);</li>
-<li>视频、音频等多媒体通信(即时通信)</li>
-<li>限定于 LAN 等特定网络中的应用通信</li>
-<li>广播通信(广播、 多播)、单播通信
-<ul>
-<li>单播 : 定义为发送消息给一个由唯一的地址所标识的单一的网络目的地。面向连接的协议和无连接协议都支持这种模式。</li>
-<li>广播 : 传输到网络(或者子网)上的所有主机</li>
-</ul></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[原生 NIO 非阻塞通信]]></title>
-    <link href="http://www.throne4j.com/16068260624844.html"/>
-    <updated>2020-12-01T20:34:22+08:00</updated>
-    <id>http://www.throne4j.com/16068260624844.html</id>
-    <content type="html"><![CDATA[
-<p>java.nio 包提供了非阻塞的通信能力</p>
-
-<h2 id="toc_0">线程阻塞的概念</h2>
-
-<p>所有处于阻塞状态的线程的共同特征是：放弃 CPU ,暂停运行，只有等到导致阻塞的原因消除，才能恢复运行；或者被其他线程中断，该线程退出阻塞状态，并且抛出 InterruptedException异常</p>
-
-<h2 id="toc_1">线程阻塞的原因</h2>
-
-<ul>
-<li>线程执行了 Thread.sleep(int n) 方法，线程放弃 CPU ，睡眠 n 毫秒之后，恢复运行。</li>
-<li>线程无法获取要执行代码的同步锁，进入阻塞状态</li>
-<li>线程执行一个对象的 wait()方法，进入阻塞状态，直至其他线程唤醒该对象</li>
-<li>线程执行 IO 操作或进行远程通信时，会因为等待相关资源进入阻塞状态</li>
-<li>请求与服务器建立连接时会进入阻塞状态</li>
-<li>线程从 socket 的输入流读取数据时，没有足够的数据，就会进入阻塞状态，直到读到了足够欧的数据，或者到达输入流的末尾，或出现异常，才会从输入流的 read()方法返回或者中断</li>
-<li>线程向 socket 的输出流写数据时，肯能会进入阻塞状态</li>
-<li>调用 socket 的 setSoLinger()方法设置了关闭 Socket 的延迟时间，那么线程执行 socket 的 close() 方法时，会进入阻塞状态</li>
-</ul>
-
-<p>服务器程序中线程遇到如下情况可能会进入阻塞状态</p>
-
-<ul>
-<li>线程执行 ServerSocket 的 accept()方法，等待客户的连接，直到接收到了客户的连接才从 accept()方法返回</li>
-<li>线程从 socket 的输入流读入数据时，可能会进入阻塞状态</li>
-<li>线程向 socket 的输出流写数据时，可能会进入阻塞状态</li>
-</ul>
-
-<h2 id="toc_2">服务器程序用多线程来处理阻塞通信的局限性</h2>
-
-<p><figure><img src="media/16068260624844/16069196524116.jpg" alt="" style="width:733px;"/></figure></p>
-
-<ul>
-<li>JVM 会为每个线程分配独立的堆栈空间，工作线程数目越多，系统开销越大，而且增加了 JVM 调度线程的负担，增加了线程之间同步的复杂性，提高了线程死锁的可能性</li>
-<li>工作线程的许多时间都浪费在阻塞IO操作上，JVM 需要频繁的转让 CPU 的使用权，使进入阻塞状态的线程放弃 CPU，再把 CPU 分配给处于可运行状态的线程。</li>
-</ul>
-
-<p>因此，工作线程并不是越多越好，适量的工作线程会提高服务器的并发能力，但是超出了系统的负荷时，反而降低并发性能。</p>
-
-<h2 id="toc_3">和 BIO 的主要区别</h2>
-
-<p>Java NIO 和 IO 之间第一个最大的区别是，IO 是面向流的，NIO 是面向缓冲区的。 Java IO 面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地 方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它 缓存到一个缓冲区。 Java NIO 的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓 冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查 是否该缓冲区中包含所有需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。</p>
-
-<h2 id="toc_4">NIO 组件</h2>
-
-<h3 id="toc_5">Channel</h3>
-
-<p>通道 channel 用来连接缓冲区与数据源</p>
-
-<p>java.nio.channels.Channel接口只声明了两个方法</p>
-
-<ul>
-<li>isOpen() 判断通道是否打开</li>
-<li>close() 关闭通道</li>
-</ul>
-
-<h4 id="toc_6">SelectableChannel</h4>
-
-<p>SelectableChannel 支持阻塞IO、非阻塞IO，他有两个子类：</p>
-
-<ul>
-<li>ServerSocketChannel: 相当于 ServerSocket 的替代类，支持阻塞通信和非阻塞通信,通过 ServerSocketChannel.open()创建</li>
-<li>SocketChannel : 相当于 Socket 的替代类，支持阻塞通信和非阻塞通信，通过 SocketChannel.open()创建</li>
-</ul>
-
-<p>SelectableChannel可以向 Selector 注册读就绪和写就绪事件。<br/>
-Selector负责监控这些事件，等到事件发生时，SelectableChannel就可以执行相应的操作，比如读事件或写事件。</p>
-
-<p>主要方法：</p>
-
-<ul>
-<li>configureBlocking(boolean block) block 为 true表示 阻塞模式，false非阻塞模式，默认阻塞模式，isBlocking()方法返回它的阻塞模式</li>
-<li>SelectionKey register(Selector sel, int ops)</li>
-<li>SelectionKey register(Selector sel, int ops, Object attachment)<br/>
-向Selector注册事件;ops: 感兴趣的事件，见 SelectionKey; attachment用于为SelectionKey关联一个附件，当被注册事件发生后，需要处理该事件时，可以从SelectionKey中获得这个附件，该附件可用来包含与处理这个事件相关的信息。</li>
-</ul>
-
-<pre><code class="language-text">MyHandler handler = new MyHandler();
-SelectionKey key = socketChannel.register(selector, SelectionKey.OP_READ, handler);
-
-之后 可以从SelectionKey中获取 handler,然后执行handler相关处理方法 ：
-
-MyHandler handler =  (MyHandler) key.attachment()
-</code></pre>
-
-<h4 id="toc_7">ServerSocketChannel 只可能发生一种事件</h4>
-
-<ul>
-<li>SelectionKey.OP_ACCEPT: 接收连接就绪事件，表示至少有了一个客户连接，服务器可以接收这个连接</li>
-</ul>
-
-<h4 id="toc_8">SocketChannel 可能发生 3 中事件</h4>
-
-<ul>
-<li>SelectionKey.OP_CONNECT: 连接就绪事件，表示客户端与服务器的连接已经建立成功</li>
-<li>SelectionKey.OP_READ: 度就绪事件，表示输入流中已经有了可读数据，可以执行读操作了</li>
-<li>SelectionKey.OP_WRITE: 写就绪事件，表示已经可以向输出流写数据了。</li>
-</ul>
-
-<p>SocketChannel提供了 读和写数据的方法</p>
-
-<ul>
-<li>read(ByteBuffer buffer): 读数据，把他们放到参数指定的 ByteBuffer中</li>
-<li>write(ByteBuffer buffer): 把参数指定的ByteBuffer中的数据发送出去</li>
-</ul>
-
-<h4 id="toc_9">服务端和客户端可以监听的事件表：</h4>
-
-<table>
-<thead>
-<tr>
-<th>CHANNEL</th>
-<th>OP_READ</th>
-<th>OP_WRITE</th>
-<th>OP_CONNECT</th>
-<th>OP_ACCEPT</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>服务器ServerSocketChannel</td>
-<td></td>
-<td></td>
-<td></td>
-<td>Y</td>
-</tr>
-<tr>
-<td>服务器SocketChannel</td>
-<td>Y</td>
-<td>Y</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>客户端SocketChannel</td>
-<td>Y</td>
-<td>Y</td>
-<td>Y</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_10">SelectionKey</h3>
-
-<p>代表 SocketChannel、ServerSocketChannel向 Selector 注册事件的句柄，包括接收连接就绪事件、连接就绪事件、读事件就绪、写事件就绪</p>
-
-<ul>
-<li>OP_READ : 当操作系统读缓冲区有数据可读时就绪。并非时刻都有数据可读，所 以一般需要注册该操作，仅当有就绪时才发起读操作，有的放矢，避免浪 费 CPU。</li>
-<li>OP_WRITE : 当操作系统写缓冲区有空闲空间时就绪。一般情况下写缓冲区都有空 闲空间，小块数据直接写入即可，没必要注册该操作类型，否则该条件不 断就绪浪费 CPU;但如果是写密集型的任务，比如文件下载等，缓冲区很 可能满，注册该操作类型就很有必要，同时注意写完后取消注册。</li>
-<li>OP_CONNECT : 当 SocketChannel.connect()请求连接成功后就绪。该操作只给客户端 使用。</li>
-<li>OP_ACCEPT : 当接收到一个客户端连接请求时就绪。该操作只给服务器使用。</li>
-</ul>
-
-<p>以下情况下 SelectionKey 对象会失效：</p>
-
-<ul>
-<li>程序调用 SelectionKey 的 cancel() 方法</li>
-<li>关闭 与 SelectionKey 关联的 Channel</li>
-<li>与 SelectionKey 关联的 selector 被关闭</li>
-</ul>
-
-<p>主要方法：</p>
-
-<ul>
-<li>SelectableChannel channel()</li>
-<li>Selector selector()</li>
-<li>boolean isValid()</li>
-<li>void cancel()</li>
-<li>int interestOps()</li>
-<li>SelectionKey interestOps(int ops)</li>
-<li>boolean isReadable()</li>
-<li>boolean isWritable()</li>
-<li>boolean isConnectable()</li>
-<li>boolean isAcceptable()</li>
-<li>attach(Object obj)</li>
-<li>Object attachment()</li>
-</ul>
-
-<h3 id="toc_11">Selector 多路复用器</h3>
-
-<p>Selector 多路复用器提供选择已经就绪事件的能力。</p>
-
-<p>为 ServerSocketChannel 监控接收连接就绪事件，为 SocketChannel 监控连接就绪、写就绪、读就绪事件。</p>
-
-<p>一个Selector对象会包含 3中类型 SelectionKey集合：</p>
-
-<ul>
-<li>all-keys: 当前所有向 Selector 注册的 SelectionKey 的集合， Selector 的 keys() 方法返回该集合</li>
-<li>selected-keys: 相关事件已经被 Selector 捕获的 SelectionKey 的集合，Selector的 selectedKeys()方法返回该集合</li>
-<li>cancelled-keys: 已经被取消的 SelectionKey 集合，暂无访问该集合的方法。</li>
-</ul>
-
-<p>执行 Selector 的 select() 方法时，与 SelectionKey 相关的事件发生了，这个 SelectionKey 就被加入到 selected-keys 集合中。</p>
-
-<p>主要方法：</p>
-
-<ul>
-<li>static Selector open() 创建 Selector对象</li>
-<li>isOpen() 是否处于打开状态，创建 Selector 之后就处于打开状态，直到 执行close()方法</li>
-<li>Set<SelectionKey> keys() 返回 all-keys集合</li>
-<li>int selectNow() 返回相关事件已经发生的 SelectionKey 对象数目</li>
-<li>int select() 或 int select(long timeout) 返回相关事件已经发生的SelectionKey对象的数目，如果一个都没有进入阻塞状态，直到出现以下情况之一：
-<ul>
-<li>至少有一个 SelectionKey 的相关事件已经发生</li>
-<li>其他线程调用了 Selector 的 wakeup()方法，导致执行 select()方法的线程立即从 select()方法中返回</li>
-<li>当执行 sselect()方法的线程被其他线程中断</li>
-<li>超出了等待时间</li>
-</ul></li>
-<li>Selector wakeup() 唤醒执行 Selector 的 select()方法的线程</li>
-<li>close() 关闭 Selector，使它占用的所有资源都被释放，所有与Selector 关联的 SelectionKey 都被取消</li>
-</ul>
-
-<h3 id="toc_12">缓冲区 buffer</h3>
-
-<p>缓冲区从两个方面提高 IO 效能 ：</p>
-
-<ul>
-<li>减少实际的物理读写次数</li>
-<li>缓冲区在创建的时候被分配内存，这块缓冲区一直被重用，减少了动态分配内存和回收内存的次数。</li>
-</ul>
-
-<p>以下是Buffer 类的层次结构</p>
-
-<pre><code class="language-text">Buffer (java.nio)
-|---IntBuffer (java.nio)
-|---FloatBuffer (java.nio)
-|---CharBuffer (java.nio)
-|---DoubleBuffer (java.nio)
-|---ShortBuffer (java.nio)
-|---LongBuffer (java.nio)
-|---ByteBuffer (java.nio)
-</code></pre>
-
-<p>所有的缓冲区都由以下属性</p>
-
-<ul>
-<li>容量 capacity: 表示该缓冲区可以保存多少数据</li>
-<li>极限 limit: 表示缓冲区当前的终点，不能对缓冲区中超过极限的区域进行读写操作。极限是可以修改的，这有利于缓冲区的重用。</li>
-<li>位置 position: 表示缓冲区中下一个读写单元的位置，每次读写缓冲区的数据时，都会改变该值，为下一次读写数据做准备</li>
-</ul>
-
-<p>以上三个属性的关系为 容量 &gt;= 极限 &gt;= 位置 &gt;= 0</p>
-
-<p>Buffer 提供了用于改变以上 3 个属性的方法：</p>
-
-<ul>
-<li>clear()  把极限设为容量，再把位置设为 0</li>
-<li>flip()  把极限设置为位置，再把位置设置为 0</li>
-<li>rewind() 不改变极限，把位置设为 0</li>
-</ul>
-
-<p>Buffer类的其他方法：</p>
-
-<ul>
-<li>remaining()方法返回缓冲区的剩余容量 = 极限 - 位置</li>
-<li>compact() 删除缓冲区内 从 0 到当前位置 position 的内容，然后把从当前位置 position 到极限 limit 的内容复制到 0 到 limit - position的区域内，当前位置 position 和 极限 limit 的取值也作相应的变化。</li>
-<li>get() 相对读数据，从当前位置读取一个单元的数据，读完后位置 +1</li>
-<li>get(index) 从指定位置 index 读取一个单元的数据</li>
-<li>put()</li>
-<li>put(index)</li>
-</ul>
-
-<p>由于 Buffer 是一个冲向类，不能直接实例化，通过如下方式获取</p>
-
-<ul>
-<li>allocate(int capacity) 返回一个 ByteBuffer 对象，参数 capacity 指定缓冲区的容量</li>
-<li>directAllocate(int capacity) 返回ByteBuffer 对象，参数 capacity 指定缓冲区的容量，推荐缓冲区较大且长期存在或者需要重用的时候，使用这种缓冲区。</li>
-</ul>
-
-<h4 id="toc_13">直接内存</h4>
-
-<p>HeapByteBuffer 与 DirectByteBuffer，在原理上，前者可以看出分配的 buffer 是在 heap 区域的，其实真正 flush 到远程的时候会先拷贝到直接内存，再做下一步操作;在 NIO 的框 架下，很多框架会采用 DirectByteBuffer 来操作，这样分配的内存不再是在 java heap 上，经 过性能测试，可以得到非常快速的网络交互，在大量的网络交互下，一般速度会比 HeapByteBuffer 要快速好几倍。</p>
-
-<p>直接内存(Direct Memory)并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用，而且也可能导致 OutOfMemoryError 异常出现。</p>
-
-<p>NIO 可以使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆里面的 DirectByteBuffer 对象作为这块内存的引用进行操作。</p>
-
-<p>DirectByteBuffer继承自 MappedByteBuffer 能把缓冲区和文件的某个区域直接映射。</p>
-
-<p>这样能在一些场景中显著提高性能， 因为避免了在 Java 堆和 Native 堆中来回复制数据。</p>
-
-<h5 id="toc_14">直接内存(堆外内存)与堆内存比较</h5>
-
-<p>直接内存申请空间耗费更高的性能，当频繁申请到一定量时尤为明显<br/>
-直接内存 IO 读写的性能要优于普通的堆内存，在多次读写操作的情况下差异明显</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux 文件描述符]]></title>
-    <link href="http://www.throne4j.com/16064609884543.html"/>
-    <updated>2020-11-27T15:09:48+08:00</updated>
-    <id>http://www.throne4j.com/16064609884543.html</id>
-    <content type="html"><![CDATA[
-<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，其是一个非负整数（通常是小整数），用于指代被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。</p>
-
-<p>程序刚刚启动的时候，0是标准输入，1是标准输出，2是标准错误。如果此时去打开一个新的文件，它的文件描述符会是3。</p>
-
-<p>POSIX标准要求每次打开文件时（含socket）必须使用当前进程中最小可用的文件描述符号码，因此，在网络通信过程中稍不注意就有可能造成串话。</p>
-
-<h2 id="toc_0">文件描述符的限制</h2>
-
-<p>在编写文件操作的或者网络通信的软件时，初学者一般可能会遇到“Too many open files”的问题。</p>
-
-<p>这主要是因为文件描述符是系统的一个重要资源，虽然说系统内存有多少就可以打开多少的文件描述符，但是在实际实现过程中内核是会做相应的处理的，一般最大打开文件数会是系统内存的10%（以KB来计算）（称之为系统级限制）。</p>
-
-<p>查看系统级别的最大打开文件数可以使用</p>
-
-<p><code>&gt; sysctl -a | grep fs.file-max</code>命令查看。</p>
-
-<p>与此同时，内核为了不让某一个进程消耗掉所有的文件资源，其也会对单个进程最大打开文件数做默认值处理（称之为用户级限制），默认值一般是1024，使用 ulimit -n命令可以查看。在Web服务器中，通过更改系统默认值文件描述符的最大值来优化服务器是最常见的方式之一。</p>
-
-<h2 id="toc_1">文件描述符合打开文件之间的关系</h2>
-
-<p>每一个文件文件描述符会与一个打开文件相对应，同时，不同的文件描述符也会指向同一个文件。相同的文件可以被不同的进程打开，也可以在同一个进程中被打开多次。系统为每一个进程维护了一个文件描述符表，该表的值都是从 0 开始的，所以在不同的进程中你看到相同的文件描述符，这种情况下，相同文件描述符有可能指向同一个文件，也有可能指向不同的文件。</p>
-
-<p>具体情况要具体分析，要理解具体概况如何，需要查看3个数据结构：</p>
-
-<ul>
-<li>进程级别的文件描述符表</li>
-<li>系统级别的打开文件描述符表</li>
-<li>文件系统的 i-node 表</li>
-</ul>
-
-<p>进程级别的文件描述符表的每一条目记录了单个文件描述符的相关信息：</p>
-
-<ul>
-<li>控制文件描述符从操作的一组标识（目前此类标志仅仅定义了一个：close-on-exec标志）</li>
-<li>对打开文件句柄的引用</li>
-</ul>
-
-<p>内核对所有打开的文件的文件维护有一个系统级的描述符表格（open file description table）。有时，也称之为打开文件表（open file table），并将表格中各条目称为打开文件句柄（open file handle）。一个打开文件句柄存储了与一个打开文件相关的全部信息，如下所示：</p>
-
-<ul>
-<li>当前文件偏移量（调用read()和write()时更新，或使用lseek()直接修改）</li>
-<li>打开文件时所使用的状态标识（即，open()的flags参数）</li>
-<li>文件访问模式（如调用open()时所设置的只读模式、只写模式或读写模式）</li>
-<li>与信号驱动相关的设置</li>
-<li>对该文件i-node对象的引用</li>
-<li>文件类型（例如：常规文件、套接字或FIFO）和访问权限</li>
-<li>一个指针，指向该文件所持有的锁列表</li>
-<li>文件的各种属性，包括文件大小以及与不同类型操作相关的时间戳</li>
-</ul>
-
-<p><figure><img src="media/16064609884543/16064916468169.jpg" alt=""/></figure></p>
-
-<p>在进程A中，文件描述符1和30都指向了同一个打开的文件句柄（标号23）。这可能是通过调用dup()、dup2()、fcntl()或者对同一个文件多次调用了open()函数而形成的。</p>
-
-<p>进程A的文件描述符2和进程B的文件描述符2都指向了同一个打开的文件句柄（标号73）。这种情形可能是在调用fork()后出现的（即，进程A、B是父子进程关系），或者当某进程通过UNIX域套接字将一个打开的文件描述符传递给另一个进程时，也会发生。再者是不同的进程独自去调用open函数打开了同一个文件，此时进程内部的描述符正好分配到与其他进程打开该文件的描述符一样。</p>
-
-<p>此外，进程A的描述符0和进程B的描述符3分别指向不同的打开文件句柄，但这些句柄均指向i-node表的相同条目（1976），换言之，指向同一个文件。发生这种情况是因为每个进程各自对同一个文件发起了open()调用。同一个进程两次打开同一个文件，也会发生类似情况。</p>
-
-<h2 id="toc_2">inode</h2>
-
-<p>文件储存在硬盘上，硬盘的最小存储单位叫做”扇区”（Sector）。每个扇区储存512字节（相当于0.5KB）。</p>
-
-<p>操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，即一次性读取一个”块”（block）。这种由多个扇区组成的”块”，是文件存取的最小单位。”块”的大小，最常见的是4KB，即连续八个 sector组成一个 block。</p>
-
-<p>文件数据都储存在”块”中，那么很显然，我们还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、文件的大小等等。这种储存文件元信息的区域就叫做inode，中文译名为”索引节点”。每一个文件都有对应的inode，里面包含了与该文件有关的一些信息。</p>
-
-<h3 id="toc_3">inode的内容</h3>
-
-<p>inode包含文件的元信息，具体来说有以下内容：</p>
-
-<ul>
-<li>文件的字节数</li>
-<li>文件拥有者的 user id</li>
-<li>文件的 group id</li>
-<li>文件的读、写、执行权限</li>
-<li>文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</li>
-<li>链接数，即有多少文件名指向这个inode</li>
-<li>文件数据block的位置</li>
-</ul>
-
-<p>可以用 stat 命令，查看某个文件的inode信息：</p>
-
-<pre><code class="language-text">Documents stat MySql性能优化.itmz
-16777221 20069263 -rw-r--r-- 1 qinshengke staff 0 56688 &quot;Nov 22 17:58:39 2020&quot; &quot;Oct  8 22:59:08 2020&quot; &quot;Nov 25 21:16:16 2020&quot; &quot;Oct  8 22:59:08 2020&quot; 4096 112 0x40 MySql性能优化.itmz
-</code></pre>
-
-<h3 id="toc_4">inode 大小</h3>
-
-<p>inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是数据区，存放文件数据；另一个是inode区（inode table），存放inode所包含的信息。</p>
-
-<p>每个inode节点的大小，一般是128字节或256字节。inode节点的总数，在格式化时就给定，一般是每1KB或每2KB就设置一个inode。假定在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode table的大小就会达到128MB，占整块硬盘的12.8%。</p>
-
-<p>查看每个硬盘分区的inode总数和已经使用的数量，可以使用df命令。</p>
-
-<pre><code class="language-text">Documents df -i
-Filesystem     512-blocks      Used Available Capacity iused      ifree %iused  Mounted on
-/dev/disk1s5s1  489620264  29178328 279123384    10%  563932 2447537388    0%   /
-devfs                 689       689         0   100%    1192          0  100%   /dev
-/dev/disk1s4    489620264   4194344 279123384     2%       2 2448101318    0%   /System/Volumes/VM
-/dev/disk1s2    489620264    559648 279123384     1%     788 2448100532    0%   /System/Volumes/Preboot
-/dev/disk1s6    489620264       512 279123384     1%      14 2448101306    0%   /System/Volumes/Update
-/dev/disk1s1    489620264 175013440 279123384    39%  915827 2447185493    0%   /System/Volumes/Data
-map auto_home           0         0         0   100%       0          0  100%   /System/Volumes/Data/home
-/dev/disk2s2    976066560 760332288 215734272    78% 2970048     842712   78%   /Volumes/QSK
-/dev/disk3s2      3366848   2497576    869272    75%    4547 4294962732    0%   /Volumes/VMware Fusion 12.1.0 for Mac
-</code></pre>
-
-<p>查看每个inode节点的大小，可以用如下命令：</p>
-
-<p>sudo dumpe2fs -h /dev/hda | grep &quot;Inode size&quot;</p>
-
-<p>由于每个文件都必须有一个inode，因此有可能发生inode已经用光，但是硬盘还未存满的情况。这时，就无法在硬盘上创建新文件。</p>
-
-<h3 id="toc_5">inode 号码</h3>
-
-<p>每个inode都有一个号码，操作系统用inode号码来识别不同的文件。</p>
-
-<p>这里值得重复一遍，Unix/Linux系统内部不使用文件名，而使用inode号码来识别文件。对于系统来说，文件名只是inode号码便于识别的别称或者绰号。</p>
-
-<p>表面上，用户通过文件名，打开文件。实际上，系统内部这个过程分成三步：首先，系统找到这个文件名对应的inode号码；其次，通过inode号码，获取inode信息；最后，根据inode信息，找到文件数据所在的block，读出数据。</p>
-
-<p>使用ls -i命令，可以看到文件名对应的inode号码</p>
-
-<h3 id="toc_6">inode的特殊作用</h3>
-
-<p>由于inode号码与文件名分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
-
-<ul>
-<li>有时，文件名包含特殊字符，无法正常删除。这时，直接删除inode节点，就能起到删除文件的作用。</li>
-<li>移动文件或重命名文件，只是改变文件名，不影响inode号码。</li>
-<li>打开一个文件以后，系统就以inode号码来识别这个文件，不再考虑文件名。因此，通常来说，系统无法从inode号码得知文件名。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Netty入门]]></title>
-    <link href="http://www.throne4j.com/16063167790102.html"/>
-    <updated>2020-11-25T23:06:19+08:00</updated>
-    <id>http://www.throne4j.com/16063167790102.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">Netty是什么？</h2>
-
-<p>Netty 是JBOSS 提供的一个java开源框架，它提供异步的、事件驱动的网络应用程序和工具，用以快速开发高性能、高可靠性的网络服务器和客户端程序。</p>
-
-<h2 id="toc_1">为什么使用Netty</h2>
-
-<p>有以下几点致使我们去使用 Netty：</p>
-
-<ul>
-<li><p>JAVA NIO 异步框架虽然提供了多路复用 IO 的支持，但是没有提供上层的 “信息格式” 的封装。例如JAVA NIO没有提供针对JSON、protocol这些信息的封装。</p></li>
-<li><p>NIO的类库和API比较复杂，学习成本很高，需要熟练的掌握 Selector、ByteBuffer、ServerSocketChannel、SocketChannel等组件，要能正常使用 NIO 需要了解 NIO涉及到的 Reactor线程模型、多线程、网络编程等技能的支持。</p></li>
-<li><p>要编写一个可靠的、已维护的、高可用的NIO服务器应用，除了框架本身要兼容实现各类操作系统之外，更重要的是它还要处理很多长层特有的服务，例如客户端权限、信息格式的封装、数据读取、断线重连、半包读写、心跳机制等，这些是 Netty 提供了相应的支持。</p></li>
-<li><p>JAVA NIO 框架存在一个 poll/epoll 的bug： Selector 不能在 Selector.select(timeout) 上 阻塞，这也就意味着CPU资源占用率会达到 100%（linux内核上，JDK1.7 以及之前的版本会重现）</p></li>
-</ul>
-
-<h2 id="toc_2">Netty 为什么要使用 NIO 而不是 AIO</h2>
-
-<p>Netty 不看重 Windows 上的使用，在 Linux 系统上，AIO 的底层实现仍使用 EPOLL，没有很好实现 AIO，因此在性能上没有明显的优势，而且被 JDK 封装了一层不容易深度优化。</p>
-
-<p>AIO 还有个缺点是接收数据需要预先分配缓存, 而不是 NIO 那种需要接收时才需要分配缓存, 所以对连接数量非常大但流量小的情况, 内存浪费很多。</p>
-
-<h2 id="toc_3">Netty核心组件初步了解</h2>
-
-<ul>
-<li>EventLoop、EventLoopGroup<br/>
-EventLoop：可以看做是一个线程、EventLoopGroup可以看做是线程组。</li>
-<li>Channel<br/>
-Channel 是java NIO的一个基本组件，它代表一个实体(如硬件设备、文件、网络套接字等)的开放连接，可以将它看做是入站或出站的数据载体，可以被打开或者别关闭</li>
-<li>事件和ChannelHandler、ChannelPipeline<br/>
-事件: Netty事件可依据他们是入站还是出站的数据流进行划分<br/>
-ChannelHandler: 处理或拦截 IO 事件，并将其转发到其ChannelPipeline下一个处理程序。<br/>
-ChannelPipeline: ChannelHandler的链表容器，用于处理在该链上传播Channel入站和出站事件。</li>
-<li>ChannelFuture、Promise<br/>
-Netty 中所有的 I/O 操作都是异步的。这两个对象可以看作是一个异步操作的结果的占位符;它将在未来的某个时刻完成，并提供对其结果的访问</li>
-</ul>
-
-<h2 id="toc_4">EventLoop、EventLoopGroup、Channel之间的关系</h2>
-
-<ul>
-<li>EventLoopGroup包含一个或多个EventLoop</li>
-<li>一个EventLoop在他的声明周期内只和一个Thread线程绑定</li>
-<li>所有的EventLoop处理的 IO 事件都将在它专有的 Thread线程上被处理</li>
-<li>一个Channel 在它的生命周期内只注册一个 EventLoop</li>
-<li>一个EventLoop 可能被分配各个一个或多个Channel</li>
-</ul>
-
-<p>下面用图来说明他们之间的关系：<br/>
-<figure><img src="media/16063167790102/16063195145545.jpg" alt=""/></figure></p>
-
-<h3 id="toc_5">Channel 接口</h3>
-
-<p>基本的 I/O 操作(bind()、connect()、read()和 write())依赖于底层网络传输所提供的原语。</p>
-
-<p>在基于 Java 的网络编程中，其基本的构造是类 Socket。Netty 的 Channel 接口所提供 的 API，被用于所有的 I/O 操作。大大地降低了直接使用 Socket 类的复杂性。</p>
-
-<h4 id="toc_6">Channel 生命周期</h4>
-
-<ul>
-<li>ChannelRegistered : Channel 已经被注册到了 EventLoop</li>
-<li>ChannelActive : Channel 处于活动状态(已经连接到它的远程节点)。它现在可以接收和发送数据了</li>
-<li>ChannelInactive : Channel 没有连接到远程节点</li>
-<li>ChannelUnregistered : Channel 从 EventLoop 中取消注册</li>
-</ul>
-
-<p><figure><img src="media/16063167790102/16071923273555.jpg" alt="channel生命周期"/><figcaption>channel生命周期</figcaption></figure></p>
-
-<h4 id="toc_7">Channel 接口中重要的方法</h4>
-
-<ul>
-<li>eventLoop: 返回分配给 Channel 的 EventLoop</li>
-<li>pipeline: 返回分配给 Channel 的 ChannelPipeline</li>
-<li>isActive: 如果 Channel 是活动的，则返回 true。活动的意义可能依赖于底层的传输。 例如，一个 Socket 传输一旦连接到了远程节点便是活动的，而一个 Datagram 传输一旦被打开便是活动的。</li>
-<li>localAddress: 返回本地的 SocketAddress</li>
-<li>remoteAddress: 返回远程的 SocketAddress</li>
-<li>write: 将数据写到远程节点。这个数据将被传递给 ChannelPipeline，并且排队直到它被冲刷</li>
-<li>flush: 将之前已写的数据冲刷到底层传输，如一个 Socket </li>
-<li>writeAndFlush: 一个简便的方法，等同于调用 write()并接着调用 flush()</li>
-</ul>
-
-<h3 id="toc_8">EventLoop 和 EventLoopGroup</h3>
-
-<p>EventLoop 定义了 Netty 的核心抽象，用于处理网络连接的生命周期中所发生的事件。<br/>
-一个 EventLoop 将由一个永远都不会改变的 Thread 驱动，同时任务(Runnable 或者 Callable)可以直接提交给 EventLoop 实现，以立即执行或者调度执行。</p>
-
-<p><figure><img src="media/16063167790102/EventLoop.jpg" alt="EventLoop"/><figcaption>EventLoop</figcaption></figure></p>
-
-<p>根据配置和可用核心的不同，可能会创建多个 EventLoop 实例用以优化资源的使用，并 且单个 EventLoop 可能会被指派用于服务多个 Channel。</p>
-
-<h4 id="toc_9">任务调度</h4>
-
-<p>有时你将需要调度一个任务以便稍后(延迟)执行或者周期性地执行，常见的一个用例就是发送心跳消息到远程节点，以检查连接是否仍然还活着。如果没有响应，你便知道可以关闭该 Channel 了。</p>
-
-<h4 id="toc_10">线程管理</h4>
-
-<p>当提交任务到如果(当前)调用线程正是支撑 EventLoop 的线程，那么所提交 的代码块将会被(直接)执行。否则，EventLoop 将调度该任务以便稍后执行，并将它放入 到内部队列中。当 EventLoop 下次处理它的事件时，它会执行队列中的那些任务/事件。</p>
-
-<p><figure><img src="media/16063167790102/16070090935626.jpg" alt=""/></figure></p>
-
-<h4 id="toc_11">线程的分配</h4>
-
-<p>服务于 Channel 的 IO 和事件的 EventLoop 则包含在 EventLoopGroup 中。</p>
-
-<p>异步传输实现只使用了少量的 EventLoop(以及和它们相关联的 Thread)，而且在当前 的线程模型中，它们可能会被多个Channel 所共享。这使得可以通过尽可能少量的Thread 来 支撑大量的 Channel，而不是每个 Channel 分配一个 Thread。EventLoopGroup 负责为每个 新创建的 Channel 分配一个 EventLoop。</p>
-
-<p><figure><img src="media/16063167790102/16070093180963.jpg" alt=""/></figure></p>
-
-<p>一旦一个 Channel 被分配给一个 EventLoop，它将在它的整个生命周期中都使用这个 EventLoop(以及相关联的 Thread)。</p>
-
-<p>这里就需要特别注意一个类了 ThreadLocal，因为一个 EventLoop 通 常会被用于支撑多个 Channel，所以对于所有相关联的 Channel 来说，ThreadLocal 都将是 一样的。这使得它对于实现状态追踪等功能来说是个糟糕的选择。然而，在一些无状态的上下文中，它仍然可以被用于在多个 Channel 之间共享一些重度的或者代价昂贵的对象，甚至是事件。</p>
-
-<h2 id="toc_12">ChannelFuture 接口</h2>
-
-<p>Netty 中所有的 I/O 操作都是异步的。因为一个操作可能不会立即返回，所以我们需要 一种用于在之后的某个时间点确定其结果的方法。为此，Netty 提供了 ChannelFuture 接口， 其 addListener()方法注册了一个 ChannelFutureListener，以便在某个操作完成时(无论是否 成功)得到通知。</p>
-
-<h2 id="toc_13">ChannelHandler</h2>
-
-<p>ChannelHandler 承担了所有处理入站和出站数据的处理。ChannelHandler 的方法是由网络事件触发的。</p>
-
-<p>在ChannelHandler被添加到ChannelPipeline 中或者被从ChannelPipeline 中移除时会调用下面这些代表 ChannelHandler 生命周期的方法方法。这些方法中的每一个都接受一个ChannelHandlerContext 参数。</p>
-
-<ul>
-<li>handlerAdded 当把 ChannelHandler 添加到 ChannelPipeline 中时被调用 </li>
-<li>handlerRemoved 当从 ChannelPipeline 中移除 ChannelHandler 时被调用 </li>
-<li>exceptionCaught 当处理过程中在 ChannelPipeline 中有错误产生时被调用</li>
-</ul>
-
-<p>Netty 定义了下面两个重要的 ChannelHandler 子接口：</p>
-
-<ul>
-<li>ChannelInboundHandler——处理入站数据以及各种状态变化; </li>
-<li>ChannelOutboundHandler——处理出站数据并且允许拦截所有的操作</li>
-</ul>
-
-<h3 id="toc_14">ChannelInboundHandler</h3>
-
-<p>ChannelInboundHandler 会在数据被接收时或者与其对应的 Channel 状态发生改变时被调用。下面我们来看下它所定义的相关方法：</p>
-
-<ul>
-<li>channelRegistered : 当 Channel 已经注册到它的 EventLoop 并且能够处理 I/O 时被调用</li>
-<li>channelUnregistered : 当 Channel 从它的 EventLoop 注销并且无法处理任何 I/O 时被调用</li>
-<li>channelActive : 当 Channel 处于活动状态时被调用;Channel 已经连接/绑定并且已经就绪</li>
-<li>channelInactive : 当 Channel 离开活动状态并且不再连接它的远程节点时被调用</li>
-<li>channelReadComplete : 当 Channel 的一个读操作完成时被调用</li>
-<li>channelRead : 当从 Channel 读取数据时被调用</li>
-<li>channelWritabilityChanged : 当 Channel 的可写状态发生改变时被调用。可以通过调用 Channel 的 isWritable()方法 来检测 Channel 的可写性。与可写性相关的阈值可以通过Channel.config().setWriteHighWaterMark()和Channel.config().setWriteLowWaterMark()方法来设置</li>
-<li>userEventTriggered : 当 ChannelnboundHandler.fireUserEventTriggered() 方法被调用时被 调用。</li>
-</ul>
-
-<h3 id="toc_15">ChannelOutboundHandler</h3>
-
-<p>出站操作和数据将由 ChannelOutboundHandler 处理。它的方法将被 Channel、ChannelPipeline 以及 ChannelHandlerContext 调用</p>
-
-<p>所有由 ChannelOutboundHandler 本身所定义的方法：</p>
-
-<ul>
-<li>bind(ChannelHandlerContext,SocketAddress,ChannelPromise)<br/>
-当请求将 Channel 绑定到本地地址时被调用</li>
-<li>connect(ChannelHandlerContext,SocketAddress,SocketAddress,ChannelPromise)<br/>
-当请求将 Channel 连接到远程节点时被调用</li>
-<li>disconnect(ChannelHandlerContext,ChannelPromise)<br/>
-当请求将 Channel 从远程节点断开时被调用</li>
-<li>close(ChannelHandlerContext,ChannelPromise) 当请求关闭 Channel 时被调用</li>
-<li>deregister(ChannelHandlerContext,ChannelPromise)<br/>
-当请求将 Channel 从它的 EventLoop 注销时被调用</li>
-<li>read(ChannelHandlerContext)<br/>
-当请求从 Channel 读取更多的数据时被调用</li>
-<li>flush(ChannelHandlerContext)<br/>
-当请求通过 Channel 将入队数据冲刷到远程节点时被调 用</li>
-<li>write(ChannelHandlerContext,Object,ChannelPromise)<br/>
-当请求通过 Channel 将数据写到 远程节点时被调用</li>
-</ul>
-
-<h3 id="toc_16">ChannelHandler 适配器</h3>
-
-<p>有一些适配器类可以将编写自定义的 ChannelHandler 所需要的工作降到最低限度，因 为它们提供了定义在对应接口中的所有方法的默认实现。因为你有时会忽略那些不感兴趣的 事件，所以 Netty 提供了抽象基类 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter。</p>
-
-<p>可以使用 ChannelInboundHandlerAdapter 和 ChannelOutboundHandlerAdapter 类作为 自己的 ChannelHandler 的起始点。这两个适配器分别提供了 ChannelInboundHandler 和 ChannelOutboundHandler 的基本实现。通过扩展抽象类 ChannelHandlerAdapter，它们获得 了它们共同的超接口 ChannelHandler 的方法。</p>
-
-<p>ChannelHandlerAdapter 还提供了实用方法 isSharable()。如果其对应的实现被标注为 Sharable，那么这个方法将返回 true，表示它可以被添加到多个 ChannelPipeline。</p>
-
-<p><figure><img src="media/16063167790102/16070173055991.jpg" alt=""/></figure></p>
-
-<h3 id="toc_17">资源管理和 SimpleChannelInboundHandler</h3>
-
-<p>Netty 在处理网络数据时，同样也需要 Buffer，在 Read 网络数据时由 Netty 创建 Buffer， Write 网络数据时 Buffer 往往是由业务方创建的。不管是读和写，Buffer 用完后都必须进行释放，否则可能会造成内存泄露。</p>
-
-<p>在 Write 网络数据时，可以确保数据被写往网络，Netty 会自动进行 Buffer 的释放，但是如果 Write 网络数据时， 我们有 outBouondHandler 处理了 write()操作并丢弃了数据，没有继续往下写，要有我们自己负责释放这个 Buffer，就必须调用 ReferenceCountUtil.release 方法，否则就可能会造成内存泄漏。</p>
-
-<p>在 read 网络数据的时候，如果我们可以确保每个 inboundHandler 都把数据往后传递了，也就是调用了相关的 fireChannelRead 方法， Netty 也会帮我们释放；如果我们有 InboundHandler 处理了数据，又不继续往后传递，又不调用负责释放的 ReferenceCountUtil.release 方法，就可能会造成内存泄漏。</p>
-
-<p>为了让用户更加简单的找到遗漏的释放，Netty 包含了一个ResourceLeakDetector ，将会从已分配的缓冲区 1% 作为样品来检查是否存在在应用程序泄漏。因为 1% 的抽样,开销很小。</p>
-
-<p>对于检测泄漏，将看到如下日志：</p>
-
-<pre><code class="language-text">LEAK: ByteBuf.release() was not called before it’s garbage-collected. Enable advanced leak reporting to find out where the leak occurred. To enable advanced
-leak reporting, specify the JVM option ’-Dio.netty.leakDetectionLevel=advanced’ or call ResourceLeakDetector.setLevel()
-
-Relaunch your application with the JVM option mentioned above, then you’ll see the recent locations of your application where the leaked buffer was accessed. The following output shows a leak from our unit test (XmlFrameDecoderTest.testDecodeWithXml()):
-
-Running io.netty.handler.codec.xml.XmlFrameDecoderTest
-
-15:03:36.886 [main] ERROR io.netty.util.ResourceLeakDetector - LEAK:
-ByteBuf.release() was not called before it’s garbage-collected.
-
-Recent access records: 1
-
-#1:
-
-io.netty.buffer.AdvancedLeakAwareByteBuf.toString(AdvancedLeakAwareByteBuf.java:697)
-
-io.netty.handler.codec.xml.XmlFrameDecoderTest.testDecodeWithXml(XmlFrameDecoderTest.java:157)
-    io.netty.handler.codec.xml.XmlFrameDecoderTest.testDecodeWithTwoMessages(XmlFrameDecoderTest.java:133)
-</code></pre>
-
-<p>泄漏检测等级 :</p>
-
-<ul>
-<li>Disables: 禁用</li>
-<li>SIMPLE 告知是否发现泄漏。再次使用1％的采样率，默认级别和大多数情况下的合适值。</li>
-<li>ADVANCED: 使用1％的采样率告诉是否发现泄漏以及在何处访问该消息。</li>
-<li>PARANOID: 与“高级”级别相同，主要区别在于每个访问都经过采样。这会对性能产生巨大影响。仅在调试阶段使用它。</li>
-</ul>
-
-<p>如需修改检测等级，只需修改 io.netty.leakDetectionLevel 系统属性</p>
-
-<pre><code class="language-text"># java -Dio.netty.leakDetectionLevel=paranoid
-</code></pre>
-
-<p>但是由于消费入站数据是一项常规任务，所以 Netty 提供了一个特殊的被称为 SimpleChannelInboundHandler 的 ChannelInboundHandler 实现，这个实现会在数据被 channelRead0 方法消费之后自动释放数据。</p>
-
-<p>如果消息是被 消耗/丢弃 并不会被传入下个 ChannelPipeline 的 ChannelOutboundHandler ，调用 ReferenceCountUtil.release(message) 。一旦消息经过实际的传输，在消息被写或者 Channel 关闭时，它将会自动释放。</p>
-
-<h2 id="toc_18">ChannelPipeline 和 ChannelHandlerContext</h2>
-
-<h3 id="toc_19">ChannelPipeline接口</h3>
-
-<p>当 Channel 被创建时， 它将会被自动的分配一个新的 ChannelPipeline，这项关联是永久性的；Channel 既不能附加另外一个 ChannelPipeline 也不能分离其当前的。在 Netty 组件的生命周期中，这是一项固定的操作，不需要开发人员的干涉。</p>
-
-<p>是的事件流经 ChannelPipeline 是 ChannelHandler 的工作，他们是在应用程序的初始化或者引导阶段别安装的。这些对象接收事件、执行他们所实现的处理逻辑，并将数据传递给链中的下一个 ChannelHandler，他们的执行的顺序是由她们被添加的顺序决定的。</p>
-
-<h3 id="toc_20">ChannelPipeline 中的 ChannelHandler</h3>
-
-<p>入站和出站 ChannelHandler 可以别安装到同一个 ChannelPipeline 中，如果一个消息或者任何其他的入站事件被读取，那么它会从 ChannelPipeline 的头部开始流动，最终，数据将会到达 ChannelPipeline 的尾端，此时所有处理就都结束了。</p>
-
-<p>数据的出站将从 channelOutboundHandler 链的尾端开始流动，直到它到达链的头部为止，之后出站数据将会到达网络传输层，然后将触发一个写事件。</p>
-
-<p>ChannelPipeline 的主要方法：</p>
-
-<ul>
-<li>addFirst、addBefore、addAfter、addLast 将一个 ChannelHandler 添加到 ChannelPipeline</li>
-<li>remove 将一个 ChannelHandler 添加到 ChannelPipeline</li>
-<li>replace 将 ChannelPipeline 中的一个 ChannelHandler 替换为另一个 ChannelHandler</li>
-<li>get 通过类型或者名称返回 ChannelHandler</li>
-<li>context 返回和 ChannelHandler 绑定的 chanelHandlerContext</li>
-<li>names 返回 ChannelPipeline 中所有的 ChannelHandler 的名称</li>
-</ul>
-
-<h3 id="toc_21">ChannelHandlerContext</h3>
-
-<p>通过使用作为参数传递到每个方法的 channelHandlerContext，事件可以被传递给当前 ChannelHandler 链中的下一个 ChannelHandler，虽然这个对象可以被用于获取底层的 Channel，但是它主要还是被用于写出站数据。</p>
-
-<p>ChannelHandlerContext 代表了 ChannelHandler 和 CHannelPipeline 之间的关联，每当有 ChannelHandler 添加到 ChannelPipeline 中，都会创建 ChannelHandlerContext。</p>
-
-<p>ChannelHandlerContext 有很多的方法，其中一些方法也存在于 Channel 和 Channel-Pipeline 本身上，但是有一点重要的不同。如果调用Channel 或者ChannelPipeline 上 的这些方法，它们将沿着整个 ChannelPipeline 进行传播。而调用位于 ChannelHandlerContext 上的相同方法，则将从当前所关联的 ChannelHandler 开始，并且只会传播给位于该 ChannelPipeline 中的下一个(入站下一个，出站上一个)能够处理该事件的 ChannelHandler。</p>
-
-<p>ChannelHandlerContext的主要方法：</p>
-
-<ul>
-<li>alloc : 返回和这个实力相关的 Channel 所配置的 ByteBufAllocator</li>
-<li>bind : 绑定到给定的 SSocketAddress，并返回 ChannelFuture</li>
-<li>channel : 返回绑定到这个实例的 Channel</li>
-<li>close : 关闭Channel，并返回 ChanelFuture</li>
-<li>connect : 连接给定的 SocketAddress，并返回 ChannelFuture</li>
-<li>deregister : 从之前分配的 EventExecutor 注销，并返回 ChannelFuture</li>
-<li>disconnect : 从远程节点断开，并返回 ChannelFuture</li>
-<li>executor : 返回调度事件的 EventExecutor</li>
-<li>fireChannelActive : 触发对下一个 ChannelInboundHandler 上的 channelActive()方法(已连接)的调用</li>
-<li>fireChannelInactive : 触发对下一个 ChannelInboundHandler 上的 channelInactive()方法 (已关闭)的调用</li>
-<li>fireChannelRead : 触发对下一个 ChannelInboundHandler 上的 channelRead()方法(已接 收的消息)的调用</li>
-<li>fireChannelReadComplete : 触发对下一个 ChannelInboundHandler 上的 channelReadComplete()方法的调用</li>
-<li>fireChannelRegistered : 触发对下一个 ChannelInboundHandler 上的 fireChannelRegistered()方法的调用</li>
-<li>fireChannelUnregistered 触发对下一个 ChannelInboundHandler 上的 fireChannelUnregistered()方法的调用</li>
-<li>fireChannelWritabilityChanged : 触发对下一个ChannelInboundHandler 上的 fireChannelWritabilityChanged()方法的调用</li>
-<li>fireExceptionCaught : 触发对下一个 ChannelInboundHandler 上的 fireExceptionCaught(Throwable)方法的调用</li>
-<li>fireUserEventTriggered : 触发对下一个 ChannelInboundHandler 上的 fireUserEventTriggered(Object evt)方法的调用</li>
-<li>handler : 返回绑定到这个实例的 ChannelHandler</li>
-<li>isRemoved : 如果所关联的 ChannelHandler 已经被从 ChannelPipeline 中移除则返回 true</li>
-<li>name : 返回这个实例的唯一名称</li>
-<li>pipeline : 返回这个实例所关联的 ChannelPipeline</li>
-<li>read : 将数据从 Channel 读取到第一个入站缓冲区;如果读取成功则触发一个 channelRead 事件，并(在最后一个消息被读取完成后)通知 ChannelInboundHandler 的 channelReadComplete(ctx)方法</li>
-<li>write : 通过这个实例写入消息并经过 ChannelPipeline</li>
-<li>writeAndFlush : 通过这个实力写入并冲刷消息，此消息会经过 ChannelPipeline</li>
-</ul>
-
-<h2 id="toc_22">内置通信传输模式</h2>
-
-<p>NIO io.netty.channel.socket.nio 使用 java.nio.channels 包作为基础，基于多路复用选择器的方式</p>
-
-<p>Epoll io.netty.channel.epoll 由 JNI 驱动的 epoll() 和非阻塞 IO。这个传输支持只有在 Linux 上可用的多种特性，如 SO_REUSEPORT，比 NIO 传输更快，而且是完全非阻塞的。将 NioEventLoopGroup 替换为 EpollEventLoopGroup，并且将 NioServerSocketChannel.class 替换为 EpollServerSocketChannel.class</p>
-
-<p>OIO io.netty.channel.socket.oio 使用 java.net 包作为基础使用阻塞流</p>
-
-<p>Local io.netty.channel.local 可以在VM内部通过管道进行通信的本地传输</p>
-
-<p>Embedded io.netty.channel.embedded Embedded 传输，允许使用 ChannelHandler 而又不需要一个真正的基于网络的传输。在测试 ChannelHandler实现时非常有用</p>
-
-<h2 id="toc_23">引导类 Bootstrap、ServerBootStrap</h2>
-
-<p>网络编程里，服务器和客户端实际上表示了不同的网络行为，换句话说，是监听传入的连接还是建立到一个或多个进程的连接。</p>
-
-<p>有两种类型的引导，一种(Bootstrap)用于客户端，另一种(ServerBootStrap)用于服务器。</p>
-
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Bootstrap</th>
-<th>ServerBootStrap</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>网络编程中的作用</td>
-<td>连接到远程主机和端口</td>
-<td>绑定到一个本地端口</td>
-</tr>
-<tr>
-<td>EventLoopGroup的数目</td>
-<td>1</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-
-<p>服务器需要两组不同的 Channel，第一组将只包含一个 ServerChannel，代表服务器自身的已绑定到某个本地端口的正在监听的套接字，而第二组将包含所有已创建的用来处理传入客户端连接的 Channel。</p>
-
-<p>与 ServerChannel 相关联的  EventLoopGroup 将分配一个负责为传入的连接请求创建 Channel 的 EventLoop。一旦连接被接受，第二个 EventLoopGroup 就会给它的 Channel 分配一个 EventLoop。</p>
-
-<p>在引导过程中添加多个 ChannelHandler <br/>
-Netty 提供了一个特殊的 ChannelInboundHandlerAdapter 子类 ChannelInitializer，它提供了下面一个方法：</p>
-
-<pre><code class="language-text">protected abstract void initChannel(C ch) throws Exception;
-</code></pre>
-
-<p>这个方法提供了一种将多个ChannelHandler 添加到一个 ChannelPipeline 中的便捷方法，该方法返回之后， ChannelInitializer 的实例将会从 ChannelPipeline 中移除自己，正所谓功成身退之典范。</p>
-
-<h2 id="toc_24">ChannelOption</h2>
-
-<p>ChannelOption 的各种属性在套接字选项中都由对应</p>
-
-<ul>
-<li>ChannelOption.SO_BACKLOG <br/>
-此参数对应的是 TCP/IP 协议 listen 函数中的 backlog 参数，函数 listen(int socketfd, int backlog) 用来初始化服务端可连接队列</li>
-</ul>
-
-<p>服务器处理客户端的连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog 参数制定了队列的大小</p>
-
-<ul>
-<li><p>ChannelOption.SO_REUSEADDR<br/>
-此参数对应套接字选项中的 SO_REUSEADDR，表示允许重复使用本地地址和端口。</p></li>
-<li><p><strong>ChannelOption.SO_KEEPALIVE</strong><br/>
-此参数对应套接字选项中的 SO_KEEPALIVE ，用于设置 TCP 连接，当设置该选项之后，连接会测试连接的状态，这个选项用于可能长时间没有数据交流的连接，当设置这个参数之后，如果两个小时内， TCP 会自动发送一个活动的探测数据报文进行连接状态的维护，服务端可以探测客户端的连接是否还存活着,如果客户端因为断电或者网络问题或者客户端挂掉了等,那么服务端的连接可以关闭掉,释放资源。</p></li>
-<li><p><strong>ChannelOption.SO_SNDBUF</strong> 和 <strong>ChannelOption.SO_RCVBUF</strong><br/>
-这两个参数用用操作连接缓冲区和发送缓冲区的大小，接收缓冲区用于保存网络协议站内收到的数据，知道应用程序读取成功，发送缓冲区用于保存发送数据，直到发送成功。</p></li>
-<li><p>ChannelOption.SO_LINGER<br/>
-Linux内核默认的处理方式是当用户调用 close() 方法的时候，函数返回，在可能的情况下，尽量发送数据，不一定保证会发送剩余的数据，造成了数据的不确定性，使用 SO_LINGER 可以阻塞 close()的调用时间，直到数据完全发送</p></li>
-<li><p>ChannelOption.TCP_NODELAY<br/>
-该参数与 Nagle 算法有关， Nagle 算法是将小的数据包组装为更大的帧然后进行发送，而不是输入一次发送一次，因此在数据包不足的时候会等待其他数据的到来，组装成大的数据包进行发送，虽然该方式有效的提高了网络的有效负载，但是却造成了延时，该参数的作用是禁止使用 Nagle 算法，使用于小数据即时传输，与 TCP_NODELAY 相对应的是 TCP_CORK，该选项是需要等到发送的数据量最大的时候，一次性发送数据，适用于文件传输。</p></li>
-</ul>
-
-<h2 id="toc_25">ByteBuf</h2>
-
-<p>ByteBuf API的优点：</p>
-
-<ul>
-<li>可以被用户自定义的缓冲类型扩展</li>
-<li>通过内置的复合缓冲区类型实现了透明的零拷贝</li>
-<li>容量可以按需增长</li>
-<li>在读和写两种模式之间切换不需要调用 ByteBuffer 的 flip()方法</li>
-<li>读和写 使用了不同的索引</li>
-<li>支持方法的链式调用</li>
-<li>支持引用计数</li>
-<li>支持池化</li>
-</ul>
-
-<p>ByteBuf 维护了两个不同的索引，名称以 read 或者 write 开头的 ByteBuf 方法，将会推进其对应的索引，而名称以 set 或者 get 开头的操作则不会。</p>
-
-<p>可以指定 ByteBuf 的最大容量。试图移动写索引(即 writerIndex)超过这个值将会触发一个异常。(默认的限制是 Integer.MAX_VALUE)</p>
-
-<h3 id="toc_26">使用模式</h3>
-
-<h4 id="toc_27">堆缓冲区</h4>
-
-<p>最常用的 ByteBuf 模式是将数据存储在 JVM 的堆空间中。这种模式被称为支撑数组 (backing array)，它能在没有使用池化的情况下提供快速的分配和释放。可以由 hasArray() 来判断检查 ByteBuf 是否由数组支撑。如果不是，则这是一个直接缓冲区。</p>
-
-<h4 id="toc_28">直接缓冲区</h4>
-
-<p>直接缓冲区是另外一种 ByteBuf 模式。 直接缓冲区的主要缺点是，相对于基于堆的缓冲区，它们的分配和释放都较为昂贵</p>
-
-<h4 id="toc_29">复合缓冲区</h4>
-
-<p>复合缓冲区CompositeByteBuf，它为多个ByteBuf 提供一个聚合视图。比如HTTP 协议， 分为消息头和消息体，这两部分可能由应用程序的不同模块产生，各有各的 ByteBuf，将会 在消息被发送的时候组装为一个 ByteBuf，此时可以将这两个 ByteBuf 聚合为一个 CompositeByteBuf，然后使用统一和通用的 ByteBuf API 来操作。</p>
-
-<h4 id="toc_30">分配</h4>
-
-<p>如何在我们的应用程序中获得 ByteBuf的实例并使用呢，Netty 提供了两种方式：</p>
-
-<h5 id="toc_31">ByteBufAllocator 接口</h5>
-
-<p>Netty 通过接口 ByteBufAllocator 分配我们所描述过的任何类型的ByteBuf实例</p>
-
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>buffer()</td>
-<td>返回一个基于堆或者直接内存的 ByteBuf</td>
-</tr>
-<tr>
-<td>heapBuffer()</td>
-<td>返回一个基于堆内存存储的 ByteBuf</td>
-</tr>
-<tr>
-<td>directBuffer()</td>
-<td>返回一个基于直接内存存储的 ByteBuf</td>
-</tr>
-<tr>
-<td>compositeBuffer()</td>
-<td>返回一个可以通过添加最大到指定数目的基于堆内存或者直接内存的缓冲区来扩展 CompositeButeBuf</td>
-</tr>
-<tr>
-<td>ioBuffer</td>
-<td>返回一个用于套接字的 IO 操作的 ByteBuf，当所运行的环境具有 sun.misc.Unsafe 支持时，返回基于直接内存存储的 ByteBuf，否则返回基于堆内存存储的 ByteBuf；当指定使用 PreferHeapByteBufAllocator时，则只会返回基于堆内存存储的 ByteBuf</td>
-</tr>
-</tbody>
-</table>
-
-<p>可以通过 Channel(每个都可以有一个不同的 ByteBufAllocator 实例)或者绑定到 ChannelHandler 的 ChannelHandlerContext 获取一个到 ByteBufAllocator 的引用。</p>
-
-<p>Netty 提供了两种 ByteBufAllocator 的实现: PooledByteBufAllocator 和 UnpooledByteBufAllocator。前者池化了 ByteBuf 的实例以提高性能并最大限度地减少内存碎片。后者的实现不池化 ByteBuf 实例，并且在每次它被调用时都会返回一个新的实例。</p>
-
-<h5 id="toc_32">Unpooled 缓冲区</h5>
-
-<p>Netty 提供了一个称为 Unpooled 的工具类，它提供了静态的辅助方法来创建未池化的 ByteBuf 实例。</p>
-
-<ul>
-<li>buffer() 返回一个未池化的基于堆内存存储的 ByteBuf</li>
-<li>directBuffer()返回一个未池化的基于直接内存存储的 ByteBuf</li>
-<li>wrappedBuffer() 返回一个包装了给定数据的 ByteBuf</li>
-<li>copiedBuffer() 返回一个复制了给定数据的 ByteBuf<br/>
-Unpooled 类还可用于 ByteBuf 同样可用于那些并不需要 Netty 的其他组件的非网络项目。</li>
-</ul>
-
-<h4 id="toc_33">随机访问索引/顺序访问索引/读写操作</h4>
-
-<p>如同在普通的 Java 字节数组中一样，ByteBuf 的索引是从零开始的:第一个字节的索 引是 0，最后一个字节的索引总是 capacity() - 1。使用那些需要一个索引值参数(随机访问, 也即是数组下标)的方法(的其中)之一来访问数据既不会改变 readerIndex 也不会改变 writerIndex。如果有需要，也可以通过调用 readerIndex(index)或者 writerIndex(index)来手动 移动这两者。</p>
-
-<p>顺序访问通过索引访问</p>
-
-<p>有两种类别的读/写操作:</p>
-
-<ul>
-<li>get()和 set()操作，从给定的索引开始，并且保持索引不变;get+数据字长<br/>
-(bool.byte,int,short,long,bytes)</li>
-<li>read()和 write()操作，从给定的索引开始，并且会根据已经访问过的字节数对索引进行调整</li>
-</ul>
-
-<p>其他操作 :</p>
-
-<ul>
-<li>isReadable() 如果至少有一个字节可供读取，则返回 true<br/></li>
-<li>isWritable() 如果至少有一个字节可被写入，则返回 true</li>
-<li>readableBytes() 返回可被读取的字节数</li>
-<li>writableBytes() 返回可被写入的字节数</li>
-<li>capacity() 返回 ByteBuf 可容纳的字节数。在此之后，它会尝试再次扩展直到达到 maxCapacity()</li>
-<li>maxCapacity() 返回 ByteBuf 可以容纳的最大字节数</li>
-<li>hasArray() 如果 ByteBuf 由一个字节数组支撑，则返回 true</li>
-<li>array() 如果 ByteBuf 由一个字节数组支撑则返回该数组;否则，它将抛出一个 UnsupportedOperationException 异常</li>
-</ul>
-
-<h4 id="toc_34">可丢弃字节</h4>
-
-<p>可丢弃字节的分段包含了已经被读过的字节。通过调用 discardReadBytes()方法，可以丢 弃它们并回收空间。这个分段的初始大小为 0，存储在 readerIndex 中，会随着 read 操作的 执行而增加(get*操作不会移动 readerIndex)。</p>
-
-<p>缓冲区上调用 discardReadBytes()方法后，可丢弃字节分段中的空间已经变为可写的了。 频繁地调用 discardReadBytes()方法以确保可写分段的最大化，但是请注意，这将极有可能会 导致内存复制，因为可读字节必须被移动到缓冲区的开始位置。建议只在有真正需要的时候 才这样做，例如，当内存非常宝贵的时候。<br/>
-s<br/>
-<figure><img src="media/16063167790102/16071921108204.jpg" alt="" style="width:1010px;"/></figure></p>
-
-<h4 id="toc_35">可读字节</h4>
-
-<p>ByteBuf 的可读字节分段存储了实际数据。新分配的、包装的或者复制的缓冲区的默认 的 readerIndex 值为 0。</p>
-
-<h4 id="toc_36">可写字节</h4>
-
-<p>可写字节分段是指一个拥有未定义内容的、写入就绪的内存区域。新分配的缓冲区的 writerIndex 的默认值为 0。任何名称以 write 开头的操作都将从当前的 writerIndex 处开始 写数据，并将它增加已经写入的字节数。</p>
-
-<h4 id="toc_37">索引管理</h4>
-
-<p>调用 markReaderIndex()、markWriterIndex()、resetWriterIndex()和 resetReaderIndex()来 标记和重置 ByteBuf 的 readerIndex 和 writerIndex。</p>
-
-<p>也可以通过调用 readerIndex(int)或者 writerIndex(int)来将索引移动到指定位置。试图将 任何一个索引设置到一个无效的位置都将导致一个 IndexOutOfBoundsException。</p>
-
-<p>可以通过调用 clear()方法来将 readerIndex 和 writerIndex 都设置为 0。注意，这并不会 清除内存中的内容。</p>
-
-<h4 id="toc_38">查找操作</h4>
-
-<p>在 ByteBuf 中有多重可以用来确定指定值得索引的方法。最简单的是使用 indexOf() 方法。 较复杂的查找可以通过调用 forEachByte()</p>
-
-<h4 id="toc_39">派生缓冲区</h4>
-
-<p>派生缓冲区为 ByteBuf 提供了以专门的方式来呈现其内容的视图。这类视图是通过以下方法被创建的：</p>
-
-<pre><code class="language-java">duplicate()
-slice()
-slice(int, int)
-Unpooled.unmodifiableBuffer()
-order(byteOrder)
-readSlice(int)
-</code></pre>
-
-<p>每个这些方法都将返回一个新的 ByteBuf 实例，它具有自己的读索引、写索引和标记索引。其内部存储和 JDK 的 ByteBuffer 一样也是共享。</p>
-
-<p>ByteBuf 复制 入股偶需要一个现有缓冲区的真是副本，请使用 copy() 或者 copy(int,int) 方法，不同于派生缓冲区，有这个调用所返回的 ByteBuf 拥有独立的数据副本。</p>
-
-<h4 id="toc_40">引用计数</h4>
-
-<p>引用计数是一个通过在某个对象所持有的资源不再被其他对象引用时释放该对象所持有的资源来优化内存使用和性能的计数。Netty 在第4 版中为ByteBuf引入了引用计数技术， interface ReferenceCounted。</p>
-
-<h4 id="toc_41">工具类</h4>
-
-<p>ByteBufUtil 提供了用于操作 ByteBuf 的静态的辅助方法。因为这个 API 是通用的，并 且和池化无关，所以这些方法已然在分配类的外部实现。</p>
-
-<p>这些静态方法中最有价值的可能就是 hexdump()方法，它以十六进制的表示形式打印 ByteBuf 的内容。这在各种情况下都很有用，例如，出于调试的目的记录 ByteBuf 的内容。 十六进制的表示通常会提供一个比字节值的直接表示形式更加有用的日志条目，此外，十六 进制的版本还可以很容易地转换回实际的字节表示。</p>
-
-<p>另一个有用的方法是 boolean equals(ByteBuf, ByteBuf)，它被用来判断两个 ByteBuf 实例 的相等性。</p>
-
-<h4 id="toc_42">资源释放</h4>
-
-<p>当某个 ChannelInboundHandler 的实现重写 channelRead() 时，它要负责显式的释放与池化的 ByteBuf 实例相关。Netty 为此提供了一个实用方法 ReferencceCountUtil.release()</p>
-
-<p>Netty 将实用 WARN 级别的日志消息记录未释放资源，使得可以非常简单的在代码中发现违规的实例。但是以这种方式管理资源可能很繁琐，一个更加简单的方式是使用 SimpleChannelInboundHandler 会自动释放资源。</p>
-
-<p>对于入站请求，Netty 的 EventLoop 在处理 Channel 的读操作时进行分配 ByteBuf，对于这列 ByteBuf 需要我们自行进行释放，有三种方式</p>
-
-<ul>
-<li>SimpleCHannelInboundHandler</li>
-<li>重写 channelRead()方法使用 ReferenceCountUtil.release()释放</li>
-<li>使用 ctx.fireChannelRead继续向后传递</li>
-</ul>
-
-<p>对于出站请求，不管 ByteBuf 是否哦由我们的业务创建，当调用了 write 或者 writeAndFlush 方法后，Netty 会自动替我们释放，不需要我们业务代码自行释放。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[redis rehash]]></title>
-    <link href="http://www.throne4j.com/16027453677170.html"/>
-    <updated>2020-10-15T15:02:47+08:00</updated>
-    <id>http://www.throne4j.com/16027453677170.html</id>
-    <content type="html"><![CDATA[
-<p>作为一个内存数据库，redis内部采用了字典的数据结构实现了键值对的存储，字典也就是我们平时所说的哈希表。随着数据量的不断增加，数据必然会产生hash碰撞，而redis采用链地址法解决hash冲突。我们知道如果哈希表数据量达到了一个很大的量级，那么冲突的链的元素数量就会很大，这时查询效率就会变慢，因为取值的时候redis会遍历链表。而随着数据量的缩减，也会产生一定的内存浪费。redis在设计时充分考虑了字典的增加和缩减，为了优化数据量增加时的查询效率和缩减时的内存利用率，redis进行了一系列操作，而处理的这个过程被称作rehash。</p>
-
-<h2 id="toc_0">redis 哈希表结构</h2>
-
-<p><figure><img src="media/16027453677170/16027455213851.jpg" alt=""/></figure></p>
-
-<pre><code class="language-c">// 哈希表定义
-
-typedef struct dictht {
-
-    dictEntry **table;
-
-    unsigned long size;
-
-    unsigned long sizemask;
-
-    unsigned long used; 
-
-} dictht;
-
-
-
-// 字典定义
-
-typedef struct dict {
-
-    dictType *type;
-
-    void *privdata;    dictht ht[2]; /* 两个hashtable */
-
-    long rehashidx; /* rehashing 如果没有进行则 rehashidx == -1  否则 rehash则表示rehash进行到的索引位置 */ 
-
-    unsigned long iterators; /* number of iterators currently running */
-
-} dict;
-</code></pre>
-
-<p>从结构上看每个字典中都包含了两个hashtable。那么为什么一个字典会需要两个hashtable？首先redis在正常读写时会用到一个hashtable，而另一个hashtable的作用实际上是作为字典在进行rehash时的一个临时载体。我们可以这么理解，redis开始只会用一个hashtable去读写，如果这个hashtable的数据量增加或者缩减到某个值，到达了rehash的条件，redis便会开始根据数据量和链（bucket）的个数初始化那个备用的hashtable，来使这个hashtable从容量上满足后续的使用，并开始把之前的hashtable的数据迁移到这个新的hashtable上来，当然这种迁移是对每个节点值进行一次hash运算。等到数据全部迁移完成，再进行一次hashtable的地址更名，把这个备用的hashtable为正式的hashtable，同时清空另一个hashtable以供下一次rehash使用。</p>
-
-<h2 id="toc_1">rehash 条件</h2>
-
-<p>hashtable元素总个数 / 字典的链个数 = 每个链平均存储的元素个数(load_factor)</p>
-
-<ul>
-<li><p>服务器目前没有在执行BGSAVE命令或者BGREWRITEAOF命令，load_factor &gt;= 1，dict就会触发扩大操作rehash</p></li>
-<li><p>服务器目前正在执行BGSAVE命令或者BGREWRITEAOF命令，load_factor &gt;= 5，dict就会触发扩大操作rehash</p></li>
-<li><p>load_factor &lt; 0.1，dict就会触发缩减操作rehash</p></li>
-</ul>
-
-<h2 id="toc_2">rehash 过程</h2>
-
-<p>我们假设 ht[0]为正在使用的hashtable，ht[1]为rehash之后的备用hashtable<br/>
-步骤如下：</p>
-
-<ul>
-<li><p>为字典的备用哈希表分配空间：</p></li>
-<li><p>如果执行的是扩展操作，那么备用哈希表的大小为第一个大于等于(已用节点个数)*2的2n（2的n次方幂）</p></li>
-<li><p>如果执行的是收缩操作，那么备用哈希表的大小为第一个大于等于(已用节点个数)的2n</p></li>
-<li><p>在字典中维持一个索引计数器变量rehashidx，并将它的值设置为0，表示rehash工作正式开始（为-1时表示没有进行rehash）。</p></li>
-<li><p>rehash进行期间，每次对字典执行添加、删除、查找或者更新操作时，程序除了执行指定的操作以外，还会顺带将ht[0]哈希表在rehashidx索引上的所有键值对rehash到ht[1]，当一次rehash工作完成之后，程序将rehashidx属性的值+1。同时在serverCron中调用rehash相关函数，在1ms的时间内，进行rehash处理，每次仅处理少量的转移任务(100个元素)。</p></li>
-<li><p>随着字典操作的不断执行，最终在某个时间点上，ht[0]的所有键值对都会被rehash至ht[1]，这时程序将rehashidx属性的值设为-1，表示rehash操作已完成。</p></li>
-</ul>
-
-<h2 id="toc_3">rehash 总结</h2>
-
-<p><strong><em>在Hash 表扩容或者收缩的时候，程序需要将现有的哈希表中的所有键值对rehash 到新的 Hash表里面，此rehash 过程不是一次性完成的，而是渐进式的完成。</em></strong></p>
-
-<p>这种渐进式的 rehash 避免了集中式rehash带来的庞大计算量和内存操作，但是需要注意的是redis在进行rehash的时候，正常的访问请求可能需要做多要访问两次hashtable（ht[0]， ht[1]），例如键值被rehash到新ht[1]，则需要先访问ht[0]，如果ht[0]中找不到，则去ht[1]中找。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CPU缓存一致性协议MESI]]></title>
-    <link href="http://www.throne4j.com/16026440050146.html"/>
-    <updated>2020-10-14T10:53:25+08:00</updated>
-    <id>http://www.throne4j.com/16026440050146.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">CPU高速缓存（Cache Memory）</h2>
-
-<h3 id="toc_1">CPU为何要有高速缓存</h3>
-
-<p>CPU在摩尔定律的指导下以每18个月翻一番的速度在发展，然而内存和硬盘的发展速度远远不及CPU。这就造成了高性能能的内存和硬盘价格及其昂贵。然而CPU的高度运算需要高速的数据。为了解决这个问题，CPU厂商在CPU中内置了少量的高速缓存以解决I\O速度和CPU运算速度之间的不匹配问题。</p>
-
-<p>在CPU访问存储设备时，无论是存取数据抑或存取指令，都趋于聚集在一片连续的区域中，这就被称为局部性原理。</p>
-
-<p>时间局部性（Temporal Locality）：如果一个信息项正在被访问，那么在近期它很可能还会被再次访问。</p>
-
-<p>比如循环、递归、方法的反复调用等。</p>
-
-<p>空间局部性（Spatial Locality）：如果一个存储器的位置被引用，那么将来他附近的位置也会被引用。</p>
-
-<p>比如顺序执行的代码、连续创建的两个对象、数组等。</p>
-
-<h3 id="toc_2">带有高速缓存的CPU执行计算的流程</h3>
-
-<p>程序以及数据被加载到主内存</p>
-
-<p>指令和数据被加载到CPU的高速缓存</p>
-
-<p>CPU执行指令，把结果写到高速缓存</p>
-
-<p>高速缓存中的数据写回主内存</p>
-
-<p><figure><img src="media/16026440050146/16026440570104.jpg" alt=""/></figure></p>
-
-<h3 id="toc_3">目前流行的多级缓存结构</h3>
-
-<p>由于CPU的运算速度超越了1级缓存的数据I\O能力，CPU厂商又引入了多级的缓存结构。</p>
-
-<p>多级缓存结构<br/>
-<figure><img src="media/16026440050146/16026440832590.jpg" alt=""/></figure></p>
-
-<h2 id="toc_4">多核CPU多级缓存一致性协议MESI</h2>
-
-<p>多核CPU的情况下有多个一级缓存，如何保证缓存内部数据的一致,不让系统数据混乱。这里就引出了一个一致性的协议MESI。</p>
-
-<h3 id="toc_5">MESI协议缓存状态</h3>
-
-<p>MESI 是指4中状态的首字母。每个 缓存行Cache line (缓存存储数据的单元)有4个状态，可用2个bit表示，它们分别是：</p>
-
-<table>
-<thead>
-<tr>
-<th>状态</th>
-<th>描述</th>
-<th>监听任务</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>M 修改 (Modified)</td>
-<td>该Cache line有效，数据被修改了，和内存中的数据不一致，数据只存在于本Cache中。</td>
-<td>缓存行必须时刻监听所有试图读该缓存行相对就主存的操作，这种操作必须在缓存将该缓存行写回主存并将状态变成S（共享）状态之前被延迟执行。</td>
-</tr>
-<tr>
-<td>E 独享、互斥 (Exclusive)</td>
-<td>该Cache line有效，数据和内存中的数据一致，数据只存在于本Cache中。</td>
-<td>缓存行也必须监听其它缓存读主存中该缓存行的操作，一旦有这种操作，该缓存行需要变成S（共享）状态。</td>
-</tr>
-<tr>
-<td>S 共享 (Shared)</td>
-<td>该Cache line有效，数据和内存中的数据一致，数据存在于很多Cache中。</td>
-<td>缓存行也必须监听其它缓存使该缓存行无效或者独享该缓存行的请求，并将该缓存行变成无效（Invalid）。</td>
-</tr>
-<tr>
-<td>I 无效 (Invalid)</td>
-<td>该Cache line无效。</td>
-<td>无</td>
-</tr>
-</tbody>
-</table>
-
-<p>注意：<br/>
-<strong>对于M和E状态而言总是精确的，他们在和该缓存行的真正状态是一致的，而S状态可能是非一致的</strong>。如果一个缓存将处于S状态的缓存行作废了，而另一个缓存实际上可能已经独享了该缓存行，但是该缓存却不会将该缓存行升迁为E状态，这是因为其它缓存不会广播他们作废掉该缓存行的通知，同样由于缓存并没有保存该缓存行的copy的数量，因此（即使有这种通知）也没有办法确定自己是否已经独享了该缓存行。</p>
-
-<p>从上面的意义看来E状态是一种投机性的优化：如果一个CPU想修改一个处于S状态的缓存行，总线事务需要将所有该缓存行的copy变成invalid状态，而修改E状态的缓存不需要使用总线事务。</p>
-
-<h3 id="toc_6">MESI 状态转换</h3>
-
-<p><figure><img src="media/16026440050146/16026444223626.jpg" alt=""/></figure></p>
-
-<p>理解该图的前置说明：</p>
-
-<h4 id="toc_7">触发事件</h4>
-
-<table>
-<thead>
-<tr>
-<th>触发事件</th>
-<th>描述</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>本地读取（Local read）</td>
-<td>本地cache读取本地cache数据</td>
-</tr>
-<tr>
-<td>本地写入（Local write）</td>
-<td>本地cache写入本地cache数据</td>
-</tr>
-<tr>
-<td>远端读取（Remote read）</td>
-<td>其他cache读取本地cache数据</td>
-</tr>
-<tr>
-<td>远端写入（Remote write）</td>
-<td>其他cache写入本地cache数据</td>
-</tr>
-</tbody>
-</table>
-
-<h4 id="toc_8">cache分类</h4>
-
-<p>前提：所有的cache共同缓存了主内存中的某一条数据。</p>
-
-<p>本地cache:指当前cpu的cache。<br/>
-触发cache:触发读写事件的cache。<br/>
-其他cache:指既除了以上两种之外的cache。<br/>
-注意：本地的事件触发 本地cache和触发cache为相同。</p>
-
-<p><figure><img src="media/16026440050146/16026616087435.jpg" alt="" style="width:1121px;"/></figure></p>
-
-<p>当一个cache line的调整的状态的时候，另外一个cache line 需要调整的状态。</p>
-
-<p><figure><img src="media/16026440050146/16045611186544.jpg" alt="" style="width:1198px;"/></figure></p>
-
-<p>举个栗子来说：<br/>
-假设cache 1 中有一个变量x = 0的cache line 处于S状态(共享)。<br/>
-那么其他拥有x变量的cache 2、cache 3等x的cache line调整为S状态（共享）或者调整为 I 状态（无效）。</p>
-
-<p>假设有三个CPU A、B、C，对应三个缓存分别是cache a、b、 c。在主内存中定义了变量 x 的引用值为0。</p>
-
-<ul>
-<li><p>单核读取<br/>
-执行流程是：<br/>
-CPU A发出了一条指令，从主内存中读取x。从主内存通过bus读取到缓存中（远端读取Remote read）,这是该Cache line修改为E状态（独享）.</p></li>
-<li><p>双核读取<br/>
-执行流程是：<br/>
-CPU A发出了一条指令，从主内存中读取x。<br/>
-CPU A从主内存通过bus读取到 cache a中并将该cache line 设置为E状态。<br/>
-CPU B发出了一条指令，从主内存中读取x。<br/>
-CPU B试图从主内存中读取x时，CPU A检测到了地址冲突。这时CPU A对相关数据做出响应。此时x 存储于cache a和cache b中，x在chche a和cache b中都被设置为S状态(共享)。</p></li>
-<li><p>修改数据<br/>
-执行流程是：<br/>
-CPU A 计算完成后发指令需要修改x.<br/>
-CPU A 将x设置为M状态（修改）并通知缓存了x的CPU B, CPU B将本地cache b中的x设置为I状态(无效)<br/>
-CPU A 对x进行赋值。</p></li>
-<li><p>同步数据<br/>
-执行流程是：<br/>
-CPU B 发出了要读取x的指令。<br/>
-CPU B 通知CPU A, CPU A将修改后的数据同步到主内存时cache a 修改为E（独享）<br/>
-CPU A同步CPU B的x,将cache a和同步后cache b中的x设置为S状态（共享）。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[serversocketChannel]]></title>
-    <link href="http://www.throne4j.com/16024819837796.html"/>
-    <updated>2020-10-12T13:53:03+08:00</updated>
-    <id>http://www.throne4j.com/16024819837796.html</id>
-    <content type="html"><![CDATA[
-<p>socketChannel， begin()</p>
-
-<p>selector --&gt; selectorImpl 初始化两个集合，<br/>
-EpollSelectorImpl</p>
-
-<p><figure><img src="media/16024819837796/16065704639756.jpg" alt=""/></figure></p>
-
-<p>publicKey 存放所有注册的selectionKey<br/>
-publicSelectedKey  已经就绪的key</p>
-
-<p><figure><img src="media/16024819837796/16065707769531.jpg" alt=""/></figure></p>
-
-<p>fd0 管道的读端文件描述符<br/>
-fd1 管道的写端文件描述符</p>
-
-<p>线程中断的时候写入一个字节来唤醒线程。</p>
-
-<p>管道本质上是一块内存</p>
-
-<p>在两个进程之间如何进行通信，</p>
-
-<p>selector.select()  --&gt; lockAndDoSelect(long timeout)</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TCP 与 HTTP]]></title>
-    <link href="http://www.throne4j.com/16024149950927.html"/>
-    <updated>2020-10-11T19:16:35+08:00</updated>
-    <id>http://www.throne4j.com/16024149950927.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">1、TCP三次握手过程</h2>
-
-<p><figure><img src="media/16024149950927/16066243723651.jpg" alt=""/></figure></p>
-
-<h2 id="toc_1">2、为什么TCP需要3次握手</h2>
-
-<p>TCP 是可靠的传输控制协议，而三次握手是保证数据可靠传输又能提高传输效率的最小次数。为什么?RFC793，也就是 TCP 的协议 RFC 中就谈到了原因，这是因为:</p>
-
-<p>为了实现可靠数据传输， TCP 协议的通信双方，都必须维护一个序列号， 以标识发送出去的数据包中，哪些是已经被对方收到的。三次握手的过程即是通信双方相互告知序列号起始值，并确认对方已经收到了序列号 起始值的必经步骤。</p>
-
-<h2 id="toc_2">3、TCP的四次挥手</h2>
-
-<p><figure><img src="media/16024149950927/16066246987650.jpg" alt=""/></figure></p>
-
-<ul>
-<li>第一次挥手：客户端发送一个FIN=M，用来关闭客户端到服务器端的数据传送，客户端进入FIN_WAIT_1状态。意思是说&quot;我客户端没有数据要发给你了&quot;，但是如果你服务器端还有数据没有发送完成，则不必急着关闭连接，可以继续发送数据。</li>
-<li>第二次挥手：服务器端收到FIN后，先发送ack=M+1，告诉客户端，你的请求我收到了，但是我还没准备好，请继续你等我的消息。这个时候客户端就进入FIN_WAIT_2 状态，继续等待服务器端的FIN报文。</li>
-<li>第三次挥手：当服务器端确定数据已发送完成，则向客户端发送FIN=N报文，告诉客户端，好了，我这边数据发完了，准备好关闭连接了。服务器端进入LAST_ACK状态。</li>
-<li>第四次挥手：客户端收到FIN=N报文后，就知道可以关闭连接了，但是他还是不相信网络，怕服务器端不知道要关闭，所以发送ack=N+1后进入TIME_WAIT状态，如果Server端没有收到ACK则可以重传。服务器端收到ACK后，就知道可以断开连接了。客户端等待了2MSL后依然没有收到回复，则证明服务器端已正常关闭，那好，我客户端也可以关闭连接了。最终完成了四次握手。</li>
-</ul>
-
-<h2 id="toc_3">4、为什么要有TIME_WAIT状态</h2>
-
-<ul>
-<li>可靠终止 TCP 连接。如果最后一个 ACK 报文因为网络原因被丢弃，此时 server 因为 没有收到ACK而超时重传FIN报文，处于TIME_WAIT状态的client可以继续对FIN报文做回 复，向 server 发送 ACK 报文。</li>
-<li>保证让迟来的 TCP 报文段有足够的时间被识别和丢弃。连接结束了，网络中的延迟 报文也应该被丢弃掉，以免影响立刻建立的新连接。</li>
-</ul>
-
-<h2 id="toc_4">5、为什么 TCP 需要四次挥手</h2>
-
-<p>TCP 是全双工的连接，必须两端同时关闭连接，连接才算真正关闭。如果一方已经准备关闭写，但是它还可以读另一方发送的数据。发送给 FIN 结束报文给 对方对方收到后，回复 ACK 报文。当这方也已经写完了准备关闭，发送 FIN 报文，对方回复 ACK。两端都关闭，TCP 连接正常关闭。</p>
-
-<h2 id="toc_5">概述NIO</h2>
-
-<p>NIO编程中涉及到如下几个</p>
-
-<ul>
-<li><p>Buffer:与 Channel 进行交互，数据是从 Channel 读入缓冲区，从缓冲区写入 Channel中的</p>
-<ul>
-<li>flip 方法 : 反转此缓冲区，将 position 给 limit，然后将 position 置为 0，其实就是切换 读写模式</li>
-<li>clear 方法 :清除此缓冲区，将 position 置为 0，把 capacity 的值给 limit。</li>
-<li>rewind 方法 : 重绕此缓冲区，将 position 置为 0<br/>
-DirectByteBuffer 可减少一次系统空间到用户空间的拷贝。但 Buffer 创建和销毁的成本 更高，不可控，通常会用内存池来提高性能。直接缓冲区主要分配给那些易受基础系统的本 机 I/O 操作影响的大型、持久的缓冲区。如果数据量比较小的中小应用情况下，可以考虑使 用 heapBuffer，由 JVM 进行管理。</li>
-</ul></li>
-<li><p>Channel: 表示 IO 源与目标打开的连接，是双向的，但不能直接访问数据，只能与 Buffer 进行交互。通过源码可知，FileChannel 的 read 方法和 write 方法都导致数据复制了两次!</p></li>
-<li><p>Selector 可使一个单独的线程管理多个 Channel</p>
-<ul>
-<li>open 方法: 创建 Selector</li>
-<li>register 方法: 向多路复用器器注册通道，可以监听的事件类型:读、写、连接、accept。注册事件后会产生一个SelectionKey
-<ul>
-<li>SelectionKey: 它表示 SelectableChannel 和 Selector 之间的注册关系，</li>
-</ul></li>
-<li>wakeup 方法: 使尚未返回的第一个选择操作立即返回，唤醒的原因是:注册了新的 channel 或者事件; channel 关闭，取消注册;优先级更高的事件触发(如定时器事件)，希望及时处理</li>
-</ul></li>
-</ul>
-
-<p>NIO 的服务端建立过程:Selector.open():打开一个 Selector;ServerSocketChannel.open(): 创建服务端的 Channel;bind():绑定到某个端口上。并配置非阻塞模式;register():注册 Channel 和关注的事件到 Selector 上;select()轮询拿到已经就绪的事件。</p>
-
-<h2 id="toc_6">HTTP1.0 与HTTP1.1的区别</h2>
-
-<p>HTTP1.0 最早在网页中使用是在 1996 年，那个时候只是使用一些较为简单的网页上和 网络请求上，而 HTTP1.1 则在 1999 年才开始广泛应用于现在的各大浏览器网络请求中，同时 HTTP1.1 也是当前使用最为广泛的 HTTP 协议。 </p>
-
-<p>主要区别主要体现在如下几点：</p>
-
-<ul>
-<li>缓存处理，在HTTP1.0中主要使用header里的 if-Modified-Since，Expires来做缓存判断的标准，HTTP1.1 则引入了更多的缓存控制策略，如：Entity Tag、If-Unmodified-Since、If-Match、If-None-Match等更多可供选择的缓存头来控制缓存策略</li>
-<li>带块优化以及网络连接的使用，HTTP1.0 中，存在一些浪费带宽的现象，例如客户端 只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能， HTTP1.1 则在请求头引入了 range 头域，它允许只请求资源的某个部分，即返回码是 206 (Partial Content)，这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
-<li>错误通知的管理，在 HTTP1.1 中新增了 24 个错误状态响应码，如 409(Conflict)表 示请求的资源与资源的当前状态发生冲突;410(Gone)表示服务器上的某个资源被永久性 的删除。</li>
-<li>Host头处理，在 HTTP1.0 中认为每台服务器都绑定一个唯一的 IP 地址，因此，请求 消息中的 URL 并没有传递主机名(hostname)。但随着虚拟主机技术的发展，在一台物理 服务器上可以存在多个虚拟主机(Multi-homed Web Servers)，并且它们共享一个 IP 地址。 HTTP1.1 的请求消息和响应消息都应支持 Host 头域，且请求消息中如果没有 Host 头域会报 告一个错误(400 Bad Request)。</li>
-<li>长连接，HTTP 1.1 支持长连接(PersistentConnection)和请求的流水线(Pipelining) 处理，在一个 TCP 连接上可以传送多个 HTTP 请求和响应，减少了建立和关闭连接的消耗和延迟，在 HTTP1.1 中默认开启 Connection: keep-alive，一定程度上弥补了 HTTP1.0 每次请 求都要创建连接的缺点。</li>
-</ul>
-
-<h2 id="toc_7">HTTP2.0 和 HTTP1.X 相比的新特性</h2>
-
-<p>新的二进制格式(Binary Format)，HTTP1.x 的解析是基于文本。基于文本协议的格式 解析存在天然缺陷，文本的表现形式有多样性，要做到健壮性考虑的场景必然很多，二进制 则不同，只认 0 和 1 的组合。基于这种考虑 HTTP2.0 的协议解析决定采用二进制格式，实现方便且健壮。</p>
-
-<p>多路复用(MultiPlexing)，即连接共享，即每一个 request 都是是用作连接共享机制的。 一个 request 对应一个 id，这样一个连接上可以有多个 request，每个连接的 request 可以随 机的混杂在一起，接收方可以根据 request 的 id 将 request 再归属到各自不同的服务端请求里面。</p>
-
-<p>header 压缩，如上文中所言，对前面提到过 HTTP1.x 的 header 带有大量信息，而且每 次都要重复发送，HTTP2.0 使用 encoder 来减少需要传输的 header 大小，通讯双方各自 cache 一份 header fields 表，既避免了重复 header 的传输，又减小了需要传输的大小。</p>
-
-<p>服务端推送(server push)，HTTP2.0 也具有 server push 功能。</p>
-
-<h2 id="toc_8">HTTP2.0 的多路复用和 HTTP1.X 中的长连接复用有什么区别</h2>
-
-<ul>
-<li>HTTP/1.0 一次请求-响应，建立一个连接，用完关闭;每一个请求都要建立一个连接;</li>
-<li>HTTP/1.1 Pipeling 解决方式为，若干个请求排队串行化单线程处理，后面的请求等待前面请求的返回才能获得执行机会，一旦有某请求超时等，后续请求只能被阻塞，毫无办法， 也就是人们常说的线头阻塞;</li>
-<li>HTTP/2.0 多个请求可同时在一个连接上并行执行。某个请求任务耗时严重，不会影响到其它连接的正常执行</li>
-</ul>
-
-<h2 id="toc_9">Http 与 Https 的区别</h2>
-
-<p>HTTPS 协议(HyperText Transfer Protocol over Secure Socket Layer):一般理解为 HTTP+SSL/TLS，通过 SSL 证书来验证服务器的身份，并为浏览器和服务器之间的通信进行加密。</p>
-
-<ul>
-<li><p>HTTP 的 URL 以 http:// 开头，而 HTTPS 的 URL 以 https:// 开头<br/>
-HTTP 是不安全的，而 HTTPS 是安全的</p></li>
-<li><p>HTTP 标准端口是 80 ，而 HTTPS 的标准端口是 443</p></li>
-<li><p>在 OSI 网络模型中，HTTP 工作于应用层，而 HTTPS 的安全传输机制工作在传输层 </p></li>
-<li><p>HTTP 无法加密，而 HTTPS 对传输的数据进行加密</p></li>
-<li><p>HTTP 无需证书，而 HTTPS 需要 CA 机构颁发的 SSL 证书</p></li>
-</ul>
-
-<h2 id="toc_10">HTTPS 方式与 Web 服务器通信时的步骤</h2>
-
-<ul>
-<li>客户使用 https 的 URL 访问 Web 服务器，要求与 Web 服务器建立 SSL 连接。</li>
-<li>Web 服务器收到客户端请求后，会将网站的证书信息(证书中包含服务器公 钥&lt;非对称加密&gt;)传送一份给客户端。(HTTPS 中，服务端将公钥发给数字证书认证机构进行安全认证并对公钥进行数字签名，完成后公钥和签名组合成数字证书。在和客户端通信时， 服务端将数字证书发给客户端，客户端通过第三方安全认证机构(一般会在浏览器开发时， 内置在浏览器中)对数字证书上的签名进行验证。)</li>
-<li>客户端的浏览器与 Web 服务器开始协商 SSL 连接的安全等级，也就是信息加 密的等级。</li>
-<li>客户端的浏览器根据双方同意的安全等级，建立会话密钥&lt;对称加密&gt;，然后 利用服务器公钥将会话密钥加密，并传送给网站。</li>
-<li>Web 服务器利用自己的私钥解密出会话密钥。</li>
-<li>Web 服务器利用会话密钥加密与客户端之间的通信。</li>
-</ul>
-
-<h2 id="toc_11">什么是 Http 协议无状态协议?怎么解决?</h2>
-
-<p>无状态协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息,却无法获取到，也就是说，当客户端一次 HTTP 请求完成以后，客户端再发送一次 HTTP 请求，HTTP 并不知道当前客户端是一个”老用户“。</p>
-
-<p>可以使用 Cookie 来解决无状态的问题，Cookie 就相当于一个通行证，第一次访问的时 候给客户端发送一个 Cookie，当客户端再次来的时候，拿着 Cookie(通行证)，那么服务器就 知道这个是”老用户“</p>
-
-<h2 id="toc_12">一次完整的 HTTP 请求所经历的步骤</h2>
-
-<ul>
-<li><p>首先进行 DNS 域名解析(本地浏览器缓存、操作系统缓存或者 DNS 服务器)，首先会搜索浏览器自身的 DNS 缓存(缓存时间比较短，大概只有 1 分钟，且只能容纳 1000 条缓存)</p>
-<ul>
-<li>如果浏览器自身的缓存里面没有找到，那么浏览器会搜索系统自身的 DNS 缓存</li>
-<li>如果还没有找到，那么尝试从 hosts 文件里面去找</li>
-<li>在前面三个过程都没获取到的情况下，就去域名服务器去查找</li>
-</ul></li>
-<li><p>三次握手建立 TCP 连接<br/>
-在 HTTP 工作开始之前，客户端首先要通过网络与服务器建立连接，HTTP 连接是通过 TCP 来完成的。HTTP 是比 TCP 更高层次的应用层协议，根据规则，只有低层协议建立之后，才能进行高层协议的连接，因此，首先要建立 TCP 连接，一般 TCP 连接的端口号是 80;</p></li>
-<li><p>客户端发起 HTTP 请求</p></li>
-<li><p>服务器响应 HTTP 请求</p></li>
-<li><p>客户端解析 html 代码，并请求html代码中的资源。浏览器拿到 html 文件后，就开始解析其中的 html 代码，遇到 js/css/image 等静态资源 时，就向服务器端去请求下载</p></li>
-<li><p>客户端渲染展示内容</p></li>
-<li><p>关闭 TCP 连接</p></li>
-</ul>
-
-<p>一般情况下，一旦服务器向客户端返回了请求数据，它就要关闭 TCP 连接，然后如果 客户端或者服务器在其头信息加入了这行代码 Connection:keep-alive ，TCP 连接在发送后 将仍然保持打开状态，于是，客户端可以继续通过相同的连接发送请求，也就是说前面的 3 到 6，可以反复进行。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</p>
-
-<h2 id="toc_13">常见的 HTTP 相应状态码</h2>
-
-<ul>
-<li>200:请求被正常处理</li>
-<li>204:请求被受理但没有资源可以返回 </li>
-<li>206:客户端只是请求资源的一部分，服务器只对请求的部分资源执行 GET 方法，相应报文中通过 Content-Range 指定范围的资源。</li>
-<li>301:永久性重定向</li>
-<li>302:临时重定向</li>
-<li>303:与 302 状态码有相似功能，只是它希望客户端在请求一个 URI 的时候，能通过 GET 方法重定向到另一个 URI 上</li>
-<li>304:发送附带条件的请求时，条件不满足时返回，与重定向无关 </li>
-<li>307:临时重定向，与 </li>
-<li>302 类似，只是强制要求使用 POST 方法 </li>
-<li>400:请求报文语法有误，服务器无法识别</li>
-<li>401:请求需要认证</li>
-<li>403:请求的对应资源禁止被访问 </li>
-<li>404:服务器无法找到对应资源 </li>
-<li>500:服务器内部错误 </li>
-<li>503:服务器正忙</li>
-</ul>
-
-<h2 id="toc_14">常用的 HTTP 方法有哪些</h2>
-
-<ul>
-<li>GET: 用于请求访问已经被 URI(统一资源标识符)识别的资源，可以通过 URL 传参给服务器</li>
-<li>POST:用于传输信息给服务器，主要功能与 GET 方法类似，但一般推荐使用 POST 方式。</li>
-<li>PUT: 传输文件，报文主体中包含文件内容，保存到对应 URI 位置。</li>
-<li>HEAD: 获得报文首部，与 GET 方法类似，只是不返回报文主体，一般用于验证 URI 是否有效。</li>
-<li>DELETE:删除文件，与 PUT 方法相反，删除对应 URI 位置的文件。 OPTIONS:查询相应 URI 支持的 HTTP 方法</li>
-</ul>
-
-<h2 id="toc_15">HTTP 请求报文与响应报文格式</h2>
-
-<p><a href="15955594725422.html">HTTP协议（二）-- HTTP 协议报文结构</a></p>
-
-<h2 id="toc_16">URI 和 URL 的区别</h2>
-
-<p>URI，是 uniform resource identifier，统一资源标识符，用来唯一的标识一个资源。</p>
-
-<p>Web 上可用的每种资源如 HTML 文档、图像、视频片段、程序等都是一个来 URI 来定位 的</p>
-
-<p>URI 一般由三部组成:</p>
-
-<ul>
-<li>访问资源的命名机制</li>
-<li>存放资源的主机名</li>
-<li>3资源自身的名称，由路径表示，着重强调于资源。</li>
-</ul>
-
-<p>URL 是 uniform resource locator，统一资源定位器，它是一种具体的 URI，即 URL 可以用 来标识一个资源，而且还指明了如何 locate 这个资源。</p>
-
-<p>URL是Internet上用来描述信息资源的字符串，主要用在各种WWW客户程序和服务器 程序上，特别是著名的 Mosaic。</p>
-
-<p>采用 URL 可以用一种统一的格式来描述各种信息资源，包括文件、服务器的地址和目 录等。</p>
-
-<p>URL 一般由三部组成:</p>
-
-<ul>
-<li>协议(或称为服务方式)</li>
-<li>存有该资源的主机 IP 地址(有时也包括端口号) </li>
-<li>主机资源的具体地址。如目录和文件名等</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Dubbo]]></title>
-    <link href="http://www.throne4j.com/16024075158165.html"/>
-    <updated>2020-10-11T17:11:55+08:00</updated>
-    <id>http://www.throne4j.com/16024075158165.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">Dubbo 简介</h2>
-
-<p>在分布式服务架构下，各个服务间的相互 rpc 调用会越来越复杂。最终形成网状结构，此时服务的治理极为关键。</p>
-
-<p>Dubbo 是一个带有服务治理功能的 RPC 框架，提供了一套较为完整的服务治理方案，其底层直接实现了 rpc 调用的全过程，并尽力做事 rpc 远程对 使用者透明。下图展示了 Dubbo 服务治理的功能。</p>
-
-<p><figure><img src="media/16024075158165/16024075991851.jpg" alt="" style="width:751px;"/></figure></p>
-
-<p>简单的说，Dubbo 就是个服务调用的框架，如果没有分布式的需求，其实是不需要用的，只有在分布式的时候，才有使用 Dubbo 这样的分布式服务框架的需求，并且本质上是个服务调用的东东。</p>
-
-<p>其核心部分包括：</p>
-
-<ul>
-<li>远程通讯:提供对多种基于长连接的 NIO 框架抽象封装，包括多种线程 模型、序列化以及“请求-响应”模式的信息交换方式。</li>
-<li>集群容错:提供基于接口方法的透明远程过程调用，包括多协议支持以 及软负载均衡，失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现:基于注册中心目录服务，使服务消费方能动态的查某服务的提供方，使地址透明，使服务提供方可以平滑增加或减少机器。</li>
-</ul>
-
-<h2 id="toc_1">dubbo 的架构</h2>
-
-<p>dubbo 的整体结构如下图所示：</p>
-
-<p><figure><img src="media/16024075158165/16024078552797.jpg" alt=""/></figure></p>
-
-<ul>
-<li>图中左边淡蓝背景的为服务消费方使用的接口，右边淡绿色背景的为服务提供方使用的接口，位于中轴线上的为双方都用到的接口。</li>
-<li>图中从下至上分为十层，各层均为单向依赖，右边的黑色箭头代表层之间的依赖关系，每一层都可以剥离上层被复用，其中，Service 和 Config 层为 API，其它各层均为 SPI。</li>
-<li>图中绿色小块的为扩展接口，蓝色小块为实现类，图中只显示用于关联各层的实现类。</li>
-<li>图中蓝色虚线为初始化过程，即启动时组装链，红色实线为方法调用过程，即运行时调时链，紫色三角箭头为继承，可以把子类看作父类的同一个节点，线上的文字为调用的方法。</li>
-</ul>
-
-<p>Dubbo总体架构设计一共划分了10层：</p>
-
-<ul>
-<li><p>服务接口层(Service)<br/>
-该层是与实际业务逻辑相关的，根据服务提供方 和 服务消费方的业务设计对应的接口和实现。</p></li>
-<li><p>配置层(Config)<br/>
-对外配置接口，以 ServiceConfig 和 ReferenceConfig 为中 心，可以直接 new 配置类，也可以通过 Spring 解析配置生成配置类。</p></li>
-<li><p>服务代理层(Proxy)<br/>
-服务接口透明代理，生成服务的客户端 Stub 和服务 器端 Skeleton，以 ServiceProxy 为中心，扩展接口为 ProxyFactory。</p></li>
-<li><p>服务注册层(Registry)<br/>
-封装服务地址的注册与发现，以服务 URL 为中心， 扩展接口为RegistryFactory、Registry 和 RegistryService。可能没有服务注册中心，此时服务提供方直接暴露服务。</p></li>
-<li><p>集群层(Cluster)<br/>
-封装多个提供者的路由及负载均衡，并桥接注册中心，以 Invoker 为中心，扩展接口为 Cluster、Directory、Router 和 LoadBalance。 将多个服务提供方组合为一个服务提供方，实现对服务消费方透明，只 需要与一个服务提供方进行交互。</p></li>
-<li><p>监控层(Monitor)<br/>
-RPC 调用次数和调用时间监控，以 Statistics 为中心， 扩展接口为 MonitorFactory、Monitor 和 MonitorService。</p></li>
-<li><p>远程调用层(Protocol)<br/>
-封将 RPC 调用，以 Invocation 和 Result 为中心， 扩展接口为 Protocol、Invoker 和 Exporter。Protocol 是服务域，它是 Invoker 暴露和引用的主功能入口，它负责 Invoker 的生命周期管理。Invoker 是 实体域，它是 Dubbo 的核心模型，其他模型都向它靠扰，或转换成它，它代表一个可执行体，可向它发起invoke 调用。它有可能是一个本地的实现，也可能是一个远程的实现，也可能是一个集群实现。</p></li>
-<li><p>信息交换层(Exchange)<br/>
-封装请求响应模式，同步转异步，以 Request 和 Response 为中心，扩展接口为 Exchanger、ExchangeChannel、ExchangeClient 和 ExchangeServer。</p></li>
-<li><p>网络传输层(Transport)<br/>
-抽象 mina 和 netty 为统一接口，以 Message 为中心，扩展接口为 Channel、Transporter、Client、Server 和 Codec。</p></li>
-<li><p>数据序列化层(Serialize)<br/>
-可复用的一些工具，扩展接口为 Serialization、ObjectInput、ObjectOutput 和 ThreadPool。</p></li>
-</ul>
+<p><figure><img src="media/16072655636252/16072675181930.jpg" alt=""/></figure></p>
 
-<p>各层之间的关系：</p>
+<p>Java 程序自然也要遵守上述的规则。</p>
 
-<ul>
-<li>在 RPC 中，Protocol 是核心层，也就是只要有 Protocol + Invoker + Exporter 就可以完成非透明的 RPC 调用，然后在 Invoker 的主过程上 Filter 拦截点。</li>
-<li>图中的 Consumer 和 Provider 是抽象概念，只是想让看图者更直观的了解哪些类分属于客户端与服务器端，不用 Client 和 Server 的原因是 Dubbo 在很多场景下都使用 Provider, Consumer, Registry, Monitor 划分逻辑拓普节点，保持统一概念。</li>
-<li>而 Cluster 是外围概念，所以 Cluster 的目的是将多个 Invoker 伪装成一个 Invoker，这样其它人只要关注 Protocol 层 Invoker 即可，加上 Cluster 或者去掉 Cluster 对其它层都不会造成影响，因为只有一个提供者时，是不需要 Cluster 的。</li>
-<li>Proxy 层封装了所有接口的透明化代理，而在其它层都以 Invoker 为中心，只有到了暴露给用户使用时，才用 Proxy 将 Invoker 转成接口，或将接口实现转成 Invoker，也就是去掉 Proxy 层 RPC 是可以 Run 的，只是不那么透明，不那么看起来像调本地服务一样调远程服务。</li>
-<li>而 Remoting 实现是 Dubbo 协议的实现，如果你选择 RMI 协议，整个 Remoting 都不会用上，Remoting 内部再划为 Transport 传输层和 Exchange 信息交换层，Transport 层只负责单向消息传输，是对 Mina, Netty, Grizzly 的抽象，它也可以扩展 UDP 传输，而 Exchange 层是在传输层之上封装了 Request-Response 语义。</li>
-<li>Registry 和 Monitor 实际上不算一层，而是一个独立的节点，只是为了全局概览，用层的方式画在一起。</li>
-</ul>
-
-<h2 id="toc_2">Dubbo 架构具有以下几个特点，分别是连通性、健壮性、伸缩性、以及向未来架构的升级性。</h2>
-
-<h3 id="toc_3">连通性</h3>
-
-<ul>
-<li>注册中心负责服务地址的注册与查找，相当于目录服务，服务提供者和消费者只在启动时与注册中心交互，注册中心不转发请求，压力较小</li>
-<li>监控中心负责统计各服务调用次数，调用时间等，统计先在内存汇总后每分钟一次发送到监控中心服务器，并以报表展示</li>
-<li>服务提供者向注册中心注册其提供的服务，并汇报调用时间到监控中心，此时间不包含网络开销</li>
-<li>服务消费者向注册中心获取服务提供者地址列表，并根据负载算法直接调用提供者，同时汇报调用时间到监控中心，此时间包含网络开销</li>
-<li>注册中心，服务提供者，服务消费者三者之间均为长连接，监控中心除外</li>
-<li>注册中心通过长连接感知服务提供者的存在，服务提供者宕机，注册中心将立即推送事件通知消费者</li>
-<li>注册中心和监控中心全部宕机，不影响已运行的提供者和消费者，消费者在本地缓存了提供者列表</li>
-<li>注册中心和监控中心都是可选的，服务消费者可以直连服务提供者</li>
-</ul>
-
-<h3 id="toc_4">健壮性</h3>
-
-<ul>
-<li>监控中心宕掉不影响使用，只是丢失部分采样数据</li>
-<li>数据库宕掉后，注册中心仍能通过缓存提供服务列表查询，但不能注册新服务</li>
-<li>注册中心对等集群，任意一台宕掉后，将自动切换到另一台</li>
-<li>注册中心全部宕掉后，服务提供者和服务消费者仍能通过本地缓存通讯</li>
-<li>服务提供者无状态，任意一台宕掉后，不影响使用</li>
-<li>服务提供者全部宕掉后，服务消费者应用将无法使用，并无限次重连等待服务提供者恢复</li>
-</ul>
-
-<h3 id="toc_5">伸缩性</h3>
-
-<ul>
-<li>注册中心为对等集群，可动态增加机器部署实例，所有客户端将自动发现新的注册中心</li>
-<li>服务提供者无状态，可动态增加机器部署实例，注册中心将推送新的服务提供者信息给消费者</li>
-</ul>
-
-<h2 id="toc_6">Dubbo 服务的角色关系</h2>
-
-<p>服务提供方 和 服务消费方 之间的调用关系，如下图所示：<br/>
-<figure><img src="media/16024075158165/16024093724823.jpg" alt=""/></figure></p>
-
-<h3 id="toc_7">节点角色说明：</h3>
-
-<table>
-<thead>
-<tr>
-<th>节点</th>
-<th>角色说明</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Provider</td>
-<td>暴露服务的服务提供方</td>
-</tr>
-<tr>
-<td>Consumer</td>
-<td>调用远程服务的服务消费方</td>
-</tr>
-<tr>
-<td>Registry</td>
-<td>服务注册与发现的注册中心</td>
-</tr>
-<tr>
-<td>Monitor</td>
-<td>统计服务的调用次数和调用时间的监控中心</td>
-</tr>
-<tr>
-<td>Container</td>
-<td>服务运行容器</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="toc_8">调用关系说明</h3>
-
-<ul>
-<li>0：服务容器负责启动，加载，运行服务提供者。</li>
-<li>1：服务提供者在启动时，向注册中心注册自己提供的服务。</li>
-<li>2：服务消费者在启动时，向注册中心订阅自己所需的服务。</li>
-<li>3：注册中心返回服务提供者地址列表给消费者，如果有变更，注册中心将基于长连接推送变更数据给消费者。</li>
-<li>4：服务消费者，从提供者地址列表中，基于软负载均衡算法，选一台提供者进行调用，如果调用失败，再选另一台调用。</li>
-<li>5：服务消费者和提供者，在内存中累计调用次数和调用时间，定时每分钟发送一次统计数据到监控中心。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[解答 Kafka]]></title>
-    <link href="http://www.throne4j.com/16022540100685.html"/>
-    <updated>2020-10-09T22:33:30+08:00</updated>
-    <id>http://www.throne4j.com/16022540100685.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">kafka 中的 zookeeper 起到什么作用，可以不用zookeeper 么?(初级)</h2>
-
-<p>zookeeper 是一个分布式的协调组件，早期版本的 kafka 用 zk 做 meta 信息存储， consumer 的消费状态，group 的管理以及 offset 的值。考虑到 zk 本身的一些因素以及整个 架构较大概率存在单点问题，新版本中逐渐弱化了 zookeeper 的作用。新的 consumer 使用 了 kafka 内部的 group coordination 协议，也减少了对 zookeeper 的依赖，但是 broker 依然依 赖于 ZK，zookeeper 在 kafka 中还用来选举和检测 broker 是否存活等等。</p>
-
-<h2 id="toc_1">kafka 中 consumer group 是什么概念(初级)</h2>
-
-<p>同样是逻辑上的概念，是 Kafka 实现单播和广播两种消息模型的手段。同一个 topic 的 数据，会广播给不同的 group;同一个 group 中的 worker，只有一个 worker 能拿到这个数 据。换句话说，对于同一个 topic，每个 group 都可以拿到同样的所有数据，但是数据进入 group 后只能被其中的一个 worker 消费。group 内的 worker 可以使用多线程或多进程来实 现，也可以将进程分散在多台机器上，worker 的数量通常不超过 partition 的数量，且二者 最好保持整数倍关系，因为Kafka在设计时假定了一个partition只能被一个worker消费(同 一 group 内)。</p>
-
-<h2 id="toc_2">kafka 为什么那么快?(中级)</h2>
-
-<p>系统缓存，页面缓存技术。<br/>
-顺序写:由于现代的操作系统提供了预读和写技术，磁盘的顺序写大多数情况下比随机 写内存还要快。<br/>
-Zero-copy 零拷技术减少拷贝次数。 批量量处理。合并小的请求，然后以流的方式进行交互，直顶网络上限。 Pull 拉模式 使用拉模式进行消息的获取消费，与消费端处理能力相符。</p>
-
-<h2 id="toc_3">Kafka 中是怎么体现消息顺序性的?(中级) kafka 每个 partition 中的消息在写入时都是有序的，消费时，每个 partition 只能被每一</h2>
-
-<p>个 group 中的一个消费者消费，保证了消费时也是有序的。<br/>
-整个 topic 不保证有序。如果为了保证 topic 整个有序，那么将 partition 调整为 1.</p>
-
-<h2 id="toc_4">kafka follower 如何与 leader 同步数据(高级)</h2>
-
-<p>Kafka 的复制机制既不是完全的同步复制，也不是单纯的异步复制。完全同步复制要求 All Alive Follower 都复制完，这条消息才会被认为 commit，这种复制方式极大的影响了吞吐 率。而异步复制方式下，Follower 异步的从 Leader 复制数据，数据只要被 Leader 写入 log 就被认为已经 commit，这种情况下，如果 leader 挂掉，会丢失数据，kafka 使用 ISR 的方式 很好的均衡了确保数据不丢失以及吞吐率。</p>
-
-<p>kafka producer 如何优化生产速度 增加线程<br/>
-提高 batch.size<br/>
-增加更多 producer 实例<br/>
-增加 partition 数<br/>
-设置 acks=-1 时，如果延迟增大:可以增大 num.replica.fetchers(follower 同步数据的<br/>
-线程数)来调解;<br/>
-跨数据中心的传输:增加 socket 缓冲区设置以及 OS tcp 缓冲区设置。</p>
-
-<h2 id="toc_5">为什么 Kafka 不支持读写分离?(高级)</h2>
-
-<p>在 Kafka 中，生产者写入消息、消费者读取消息的操作都是与 leader 副本进行交互的，<br/>
-从而实现的是一种主写主读的生产消费模型。<br/>
-Kafka 并不支持主写从读，因为主写从读有 2 个很明显的缺点:<br/>
-(1)数据一致性问题。数据从主节点转到从节点必然会有一个延时的时间窗口，这个时 间 窗口会导致主从节点之间的数据不一致。某一时刻，在主节点和从节点中 A 数据的值 都为 X， 之后将主节点中 A 的值修改为 Y，那么在这个变更通知到从节点之前，应用读 取从节点中的 A 数据的值并不为最新的 Y，由此便产生了数据不一致的问题。<br/>
-(2)延时问题。类似 Redis 这种组件，数据从写入主节点到同步至从节点中的过程需要 经 历网络→主节点内存→网络→从节点内存这几个阶段，整个过程会耗费一定的时间。而 在 Kafka 中，主从同步会比 Redis 更加耗时，它需要经历网络→主节点内存→主节点磁盘 →网络→从节 点内存→从节点磁盘这几个阶段。对延时敏感的应用而言，主写从读的功能 并不太适用。</p>
-
-<h2 id="toc_6">有几百万消息持续积压几小时怎么解决?(高级)</h2>
-
-<p>发生了线上故障，几千万条数据在 MQ 里积压很久。是修复 consumer 的问题，让他恢 复消费速度，然后等待几个小时消费完毕?这是个解决方案。不过有时候我们还会进行临时 紧急扩容。</p>
-
-<p>一个消费者一秒是 1000 条，一秒 3 个消费者是 3000 条，一分钟是 18 万条。1000 多万 条，所以如果积压了几百万到上千万的数据，即使消费者恢复了，也需要大概 1 小时的时间 才能恢复过来。</p>
-
-<p>一般这个时候，只能操作临时紧急扩容了，具体操作步骤和思路如下:</p>
-
-<p>先修复 consumer 的问题，确保其恢复消费速度，然后将现有 consumer 都停掉。<br/>
-新建一个 topic，partition 是原来的 10 倍，临时建立好原先 10 倍或者 20 倍的 queue 数 量。然后写一个临时的分发数据的 consumer 程序，这个程序部署上去消费积压的数据，消 费之后不做耗时的处理，直接均匀轮询写入临时建立好的 10 倍数量的 queue。</p>
-
-<p>接着临时征用 10 倍的机器来部署 consumer，每一批 consumer 消费一个临时 queue 的 数据。</p>
-
-<p>这种做法相当于是临时将 queue 资源和 consumer 资源扩大 10 倍，以正常的 10 倍速度 来消费数据。</p>
-
-<p>等快速消费完积压数据之后，再恢复原先部署架构，重新用原先的 consumer 机器来消费消息。</p>
-
-<h2 id="toc_7">Kafka 是如何实现高性能的?(高级)</h2>
-
-<p>宏观架构层面利用 Partition 实现并行处理</p>
-
-<p>Kafka 中每个 Topic 都包含一个或多个 Partition，不同 Partition 可位于不同节点。同时 Partition 在物理上对应一个本地文件夹，每个 Partition 包含一个或多个 Segment，每个 Segment 包含一个数据文件和一个与之对应的索引文件。在逻辑上，可以把一个 Partition 当 作一个非常长的数组，可通过这个“数组”的索引(offset)去访问其数据。</p>
-
-<p>一方面，由于不同 Partition 可位于不同机器，因此可以充分利用集群优势，实现机器间 的并行处理。另一方面，由于 Partition 在物理上对应一个文件夹，即使多个 Partition 位于同 一个节点，也可通过配置让同一节点上的不同 Partition 置于不同的 disk drive 上，从而实现 磁盘间的并行处理，充分发挥多磁盘的优势。</p>
-
-<p>利用多磁盘的具体方法是，将不同磁盘mount到不同目录，然后server.properties中， 将 log.dirs 设置为多目录(用逗号分隔)。Kafka 会自动将所有Partition 尽可能均匀分配到不 同目录也即不同目录(也即不同 disk)上。</p>
-
-<p>Partition 是最小并发粒度，Partition 个数决定了可能的最大并行度。。 </p>
-
-<h3 id="toc_8">ISR 实现可用性与数据一致性的动态平衡</h3>
-
-<p>常用数据复制及一致性方案</p>
-
-<ul>
-<li><p>Master-Slave</p>
-<ul>
-<li>RDBMS 的读写分离即为典型的 Master-Slave 方案</li>
-<li>同步复制可保证强一致性但会影响可用性</li>
-<li>异步复制可提供高可用性但会降低一致性</li>
-</ul></li>
-<li><p>WNR</p>
-<ul>
-<li>主要用于去中心化的分布式系统中。</li>
-<li>N 代表总副本数，W 代表每次写操作要保证的最少写成功的副本数，R 代表每次读至少要读取的副本数</li>
-<li>当 W+R&gt;N 时，可保证每次读取的数据至少有一个副本拥有最新的数据</li>
-<li>多个写操作的顺序难以保证，可能导致多副本间的写操作顺序不一致。Dynamo 通过 向量时钟保证最终一致性</li>
-</ul></li>
-<li><p>Paxos 及其变种</p>
-<ul>
-<li>Google 的 Chubby，Zookeeper 的原子广播协议(Zab)，RAFT 等</li>
-</ul></li>
-</ul>
-
-<h3 id="toc_9">基于 ISR 的数据复制方案</h3>
-
-<p>Kafka 的数据复制是以 Partition 为单位的。而多个备份间的数据复制，通过 Follower 向 Leader 拉取数据完成。从一这点来讲，Kafka 的数据复制方案接近于上文所讲的 Master-Slave 方案。不同的是，Kafka 既不是完全的同步复制，也不是完全的异步复制，而是基于 ISR 的 动态复制方案。</p>
-
-<p>ISR，也即 In-sync Replica。每个 Partition 的 Leader 都会维护这样一个列表，该列表中， 包含了所有与之同步的 Replica(包含 Leader 自己)。每次数据写入时，只有 ISR 中的所有 Replica 都复制完，Leader 才会将其置为 Commit，它才能被 Consumer 所消费。</p>
-
-<p>这种方案，与同步复制非常接近。但不同的是，这个 ISR 是由 Leader 动态维护的。如果 Follower 不能紧“跟上”Leader，它将被 Leader 从 ISR 中移除，待它又重新“跟上”Leader 后，会被 Leader 再次加加 ISR 中。每次改变 ISR 后，Leader 都会将最新的 ISR 持久化到 Zookeeper 中。</p>
-
-<p>由于 Leader 可移除不能及时与之同步的 Follower，故与同步复制相比可避免最慢的 Follower 拖慢整体速度，也即 ISR 提高了系统可用性。</p>
-
-<p>ISR 中的所有 Follower 都包含了所有 Commit 过的消息，而只有 Commit 过的消息才会被 Consumer 消费，故从 Consumer 的角度而言，ISR 中的所有Replica 都始终处于同步状态，从 而与异步复制方案相比提高了数据一致性。</p>
-
-<p>ISR 可动态调整，极限情况下，可以只包含 Leader，极大提高了可容忍的宕机的 Follower 的数量。与 Majority Quorum 方案相比，容忍相同个数的节点失败，所要求的总节点数少了 近一半。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MySql 事务]]></title>
-    <link href="http://www.throne4j.com/16022490047332.html"/>
-    <updated>2020-10-09T21:10:04+08:00</updated>
-    <id>http://www.throne4j.com/16022490047332.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">数据库事务具备ACID特性</h2>
-
-<ul>
-<li>原子性(A)：要执行的事务是一个独立的操作单元，要么全部执行，要么全部不执行</li>
-<li>一致性(C)：事务的一致性是指事务的执行不能破坏数据库的一致性，一致性也称为完整性。一个事务在执行后，数据库必须从一个一致性状态转变为另一个一致性状态</li>
-<li>隔离性(I)：多个事务并发执行时，一个事务的执行不应影响其他事务的执行</li>
-<li>持久性(D)：是事务的保证，事务终结的标志(内存的数据持久到硬盘文件中)</li>
-</ul>
-
-<h2 id="toc_1">无隔离性会出现的问题：</h2>
-
-<ul>
-<li><p>丢失更新<br/>
-A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种错误可能造成很严重的问 题，通过下面的账户取款转账就可以看出来，MySQL 通过三级封锁协议的第一级解决了丢 失更新，事务 T 要修改数据 A 时必须加 X 锁，直到 T 结束才释放锁。</p></li>
-<li><p>脏读<br/>
-脏读主要是读取到了其他事务的数据，而其他事务随后发生回滚。MySQL 通过三级封锁 协议的第二级解决了脏读，在一级的基础上，要求读取数据 A 时必须加 S 锁，读取完马上 释放 S 锁。</p></li>
-<li><p>不可重复度<br/>
-不可重复读是读取到数据后，随后其他事务对数据发生了修改，无法再次读取。MySQL 通过三级封锁协议的第三级解决了不可重复读。在二级的基础上，要求读取数据 A 时必须 加 S 锁，直到事务结束了才能释放 S 锁。</p></li>
-<li><p>幻读 <br/>
-幻读是读取到数据后，随后其他事务对数据发生了新增，无法再次读取。在 InnoDB 引擎 Repeatable Read 的隔离级别下，MySQL 通过 Next-Key Lock 以及 MVCC 解决了幻读，事务中 分为当前读以及快照读。</p></li>
-</ul>
-
-<h2 id="toc_2">事务隔离性</h2>
-
-<p>SQL92规范中对隔离性定义了 4 种隔离级别（隔离性从上向下依次增强，但是导致的问题是并发能力的减弱）：</p>
-
-<ul>
-<li>读未提交(READ UNCOMMITED)
-<ul>
-<li>事物A和事物B，事物A未提交的数据，事物B可以读取到</li>
-<li>这种隔离级别最低，这种级别一般是在理论上存在，数据库隔离级别一般都高于该级别</li>
-<li>这里读取到的数据叫做“脏数据”</li>
-</ul></li>
-<li>读已提交(READ COMMITTED)
-<ul>
-<li>事物A和事物B，事物A提交的数据，事物B才能读取到</li>
-<li>这种隔离级别高于读未提交</li>
-<li>换句话说，对方事物提交之后的数据，我当前事物才能读取到</li>
-<li>这种级别可以避免“脏数据”</li>
-<li>这种隔离级别会导致“不可重复读取”</li>
-</ul></li>
-<li>可重复读(REPEATABLE READ)
-<ul>
-<li>事务A和事务B，事务A提交之后的数据，事务B读取不到</li>
-<li>事务B是可重复读取数据</li>
-<li>这种隔离级别高于读已提交</li>
-<li>换句话说，对方提交之后的数据，我还是读取不到</li>
-<li>这种隔离级别可以避免“不可重复读取”，达到可重复读取</li>
-<li>比如1点和2点读到数据是同一个</li>
-<li>MySQL默认级别</li>
-<li>虽然可以达到可重复读取，但是会导致“幻读”</li>
-</ul></li>
-<li>序列化(SERIALIZABLE)。
-<ul>
-<li>事务A和事务B，事务A在操作数据库时，事务B只能排队等待</li>
-<li>这种隔离级别很少使用，吞吐量太低，用户体验差</li>
-<li>这种级别可以避免“幻像读”，每一次读取的都是数据库中真实存在数据，事务A与事务B串行，而不并发</li>
-</ul></li>
-</ul>
-
-<table>
-<thead>
-<tr>
-<th>隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-<th>概念</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>READ UNCOMMITED</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-<td>事务能够看到其他事务没有提交的修改，当另一个事务又回滚了修改后的情况，又被称为脏读dirty read</td>
-</tr>
-<tr>
-<td>READ COMMITTED</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-<td>事务能够看到其他事务提交后的修改，这时会出现一个事务内两次读取数据可能因为其他事务提交的修改导致不一致的情况，称为不可重复读</td>
-</tr>
-<tr>
-<td>REPEATABLE READ</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-<td>事务在两次读取时读取到的数据的状态是一致的</td>
-</tr>
-<tr>
-<td>SERIALIZABLE</td>
-<td>×</td>
-<td>×</td>
-<td>×</td>
-<td>可重复读中可能出现第二次读读到第一次没有读到的数据，也就是被其他事务插入的数据，这种情况称为幻读phantom read, 该级别中不能出现幻读</td>
-</tr>
-</tbody>
-</table>
-
-<p>大多数数据库系统的默认隔离级别都是READ COMMITTED（但MySQL不是)，InnoDB存储引擎默认隔离级别REPEATABLE READ，通过多版本并发控制（MVCC，Multiversion Concurrency Control）解决了幻读的问题。</p>
-
-<h3 id="toc_3">隔离级别的实现原理</h3>
-
-<p>为了解决更新丢失、脏读、不可重复读、幻读的问题，MySQL事务提出了4个不同的隔离级别，而这些隔离级别的实现本质上就是通过加锁，解锁来实现的。</p>
-
-<p>那么我们该何时加锁，占锁多长时间，何时解锁呢？这就是我们今天的主题三级封锁协议。三级封锁协议顾名思义是3个不同级别的封锁协议，它们是以何时加锁，何时解锁来区分的。下面我们看一下具体的定义：</p>
-
-<ul>
-<li><p>一级封锁协议<br/>
-事务T在修改数据R之前必须先对其加X锁，直到事务结束才释放。事务结束包括正常结束（COMMIT）和非正常结束（ROLLBACK）。 一级封锁协议可以防止丢失修改，并保证事务T是可恢复的。使用一级封锁协议可以解决丢失修改问题。在一级封锁协议中，如果仅仅是读数据不对其进行修改，是不需要加锁的，它不能保证可重复读和不读“脏”数据。</p></li>
-<li><p>二级封锁协议<br/>
-在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，读完后方可释放S锁。 二级封锁协议除防止了丢失修改，还可以进一步防止读“脏”数据。但在二级封锁协议中，由于读完数据后即可释放S锁，所以它不能保证可重复读。</p></li>
-<li><p>三级封锁协议<br/>
-在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，直到事务结束才释放。 三级封锁协议除防止了丢失修改和不读“脏”数据外，还进一步防止了不可重复读。</p></li>
-</ul>
-
-<p>在继续往下之前，我们需要先搞清楚什么是X锁，S锁。如果我们直接在网上搜索，我们能得到这样的一个关系：</p>
-
-<p>排它锁 == 写锁 == X锁 ， 共享锁 == 读锁 == S锁</p>
-
-<p>简单理解就是如果我对资源A加上了排它锁，那么我既可以读取资源A，也可以插入或更新资源A，而其他人都无法对资源A再加排它锁或共享锁。 如果我对资源A加上了共享锁，那么所有人都不能再对资源A加上排它锁 （包括我自己），而其他人也都可以对资源A再加共享锁。</p>
-
-<p>关于X锁和S锁，我们需要了解，普通的select语句是不需要加锁的，而insert，update，delete，select ... for update 需要加X锁，select ... lock in share mode 这样的语句会加S锁。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[解答RabbitMQ]]></title>
-    <link href="http://www.throne4j.com/16022464930141.html"/>
-    <updated>2020-10-09T20:28:13+08:00</updated>
-    <id>http://www.throne4j.com/16022464930141.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">为什么使用消息队列</h2>
-
-<p>首先 消息队列关注于数据的发送和接收，利用高效可靠的异步消息传递机制对分布式系统中的其余各个子系统进行集成。但是它拥有以下优点：</p>
-
-<ul>
-<li>高效:对于消息的处理处理速度快。 </li>
-<li>可靠:一般消息中间件都会有消息持久化机制和其他的机制确保消息不丢失。 </li>
-<li>异步:指发送完一个请求，不需要等待返回，随时可以再发送下一个请求，既不需要等待。</li>
-</ul>
-
-<p>使用消息队列可以实现应用之间的解耦、异步调用和削峰填谷。</p>
-
-<p>但是引入消息队列也有如下一些问题：</p>
-
-<ul>
-<li>系统的可用性降低</li>
-<li>系统的复杂度变高</li>
-<li>一致性问题</li>
-</ul>
-
-<h2 id="toc_1">使用了消息中间件之后消息可能重复的原因，如何解决？</h2>
-
-<h3 id="toc_2">重复的原因：</h3>
-
-<ul>
-<li><p>消息发送端应用重复发送</p>
-<ul>
-<li>消息发送端发送消息给消息中间件,消息中间件收到消息并成功存储,而这时消息中 间件出现了问题,导致应用端没有收到消息发送成功的返回因而进行重试产生了重 复。</li>
-<li>消息中间件因为负载高响应变慢,成功把消息存储到消息存储中后,返回“成功”这 个结果时超时。</li>
-<li>消息中间件将消息成功写入消息存储,在返回结果时网络出现问题,导致应用发送端 重试,而重试时网络恢复,由此导致重复。</li>
-</ul></li>
-<li><p>消息到达了消息存储，由消息中间件进行向外的投递时产生重复</p>
-<ul>
-<li>消息被投递到消息接收者进行处理，处理完毕后应用出现问题，消息中间件不知道消息的处理结果，会再次投递消息</li>
-<li>消息被投递到消息接收者进行处理，处理完毕后网络出现问题，消息中间件不知道消息的处理结果，会再次投递消息</li>
-<li>消息被投递到消息接收者进行处理，处理时间比较长，消息中间件因为消息超时会再次投递</li>
-<li>消息被投递到消息接收者进行处理，处理完毕后消息中间件出现问题没能收到消息结果并处理，会再次投递消息</li>
-<li>消息被投递到消息接收者进行处理，处理完毕消息中间件收到结果，但是遇到消息存储故障，没能更新投递状态，会再次投递消息</li>
-</ul></li>
-</ul>
-
-<h3 id="toc_3">如何解决消息重复的问题？</h3>
-
-<p>主要是要求消息接收者来处理这种重复的情况,也就是要 求消息接收者的消息处理是幂等操作。</p>
-
-<h4 id="toc_4">什么是幂等性</h4>
-
-<p>对于消息接收端的情况,幂等的含义是采用同样的输入多次调用处理函数,得到同样的结 果。</p>
-
-<h4 id="toc_5">常见幂等的方法</h4>
-
-<p>因此应对消息重复的办法是,使消息接收端的处理是一个幂等操作。这样的做法降低了 消息中间件的整体复杂性,不过也给使用消息中间件的消息接收端应用带来了一定的限制和门槛。</p>
-
-<h5 id="toc_6">MVCC</h5>
-
-<p>多版本并发控制，乐观锁的一种实现，在生产者发送消息时进行数据更新时需要带上数据的版本号，消费者去更新时需要去比较持有的数据版本号，版本号不一致的操作无法成功。</p>
-
-<h5 id="toc_7">去重表</h5>
-
-<p>利用数据库表单的特性来实现幂等，常用的一个思路是在表上构建唯一性索引，保证某<br/>
-一类数据一旦执行完毕，后续同样的请求不再重复处理了</p>
-
-<h2 id="toc_8">RabbitMQ中 channel、exchange、queue概念及作用</h2>
-
-<p>Queue 就是消息队列，用于存储消息，具有自己的 erlang 进程。</p>
-
-<p>exchange 内部实现为 保存 binding 关系的查找表;</p>
-
-<p>channel 是实际进行路由工作的实体，即负责按照 routing_key 将 message 投递给 queue 。</p>
-
-<p>在 RabbitMQ 中所有客户端与 RabbitMQ 之间的通讯都是在 channel 上，channel 是真实 TCP 连接之上的虚拟连接，所有 AMQP 命令都是通过 channel 发送的。</p>
+<p>但在 Java 中存在着堆、垃圾回收等特性，所以在实际的 IO 中，在 JVM 内部的存在着这样一种机制: 在 IO 读写上，如果是使用堆内存，JDK 会先创建一个 DirectBuffer，再去执行真正的写操作。</p>
 
-<h2 id="toc_9">RabbitMQ 中的元数据有哪些？</h2>
+<p>这是因为，当我们把一个地址通过 JNI 传递给底层的 C 库的时候，有一个基本的要求， 就是这个地址上的内容不能失效。然而，在 GC 管理下的对象是会在 Java 堆中移动的。也就是说，有可能我把一个地址传给底层的 write，但是这段内存却因为 GC 整理内存而失效了。 所以必须要把待发送的数据放到一个 GC 管不着的地方。这就是调用 native 方法之前，数据—定要在堆外内存的原因。</p>
 
-<p>元数据主要分为 </p>
+<p>可见，DirectBuffer 并没有节省什么内存拷贝，只是因为 HeapBuffer 必须多做一次拷贝， 使用 DirectBuffer 就会少一次内存拷贝。相比没有使用堆内存的 Java 程序，使用直接内存的 Java 程序当然更快一点。</p>
 
-<ul>
-<li>Queue 元数据(queue 名字和属性等)</li>
-<li>Exchange 元数据(exchange 名字、类型和属性等)</li>
-<li>Binding 元数据(存放路由关系的查找表)</li>
-<li>Vhost 元数据(vhost 范围内针对前三者的名字空间约束和安全属性设置)，另外在集群中，元数据都是在一个 broker 中都是全局复制的。</li>
-</ul>
-
-<h2 id="toc_10">RabbitMQ中的vhost 是什么?起什么作用?</h2>
-
-<p>vhost 可以理解为虚拟 broker ，即一个迷你版的 RabbitMQ server。其内部均含有独立 的 queue、exchange 和 binding 等，但最最重要的是，其拥有独立的权限系统，可以做到 vhost 范围的用户控制。当然，从 RabbitMQ 的全局角度，vhost 可以作为不同权限隔离的手段。</p>
-
-<h2 id="toc_11">RabbitMQ 上的一个 queue 中存放的 message 是 否有数量限制?</h2>
-
-<p>默认情况下一般是无限制，因为限制取决于机器的内存，但是消息过多会导致处理效率 的下降。同时可以通过参数来限制， x-max-length :对队列中消息的条数进行限制 ， x-max-length-bytes :对队列中消息的总量进行限制。</p>
-
-<h2 id="toc_12">为什么对所有的 message 都使用持久化机制?</h2>
-
-<p>首先，必然导致性能的下降，因为写磁盘比写内存慢的多，Rabbit 的吞吐量有 10 倍的差距。</p>
-
-<p>其次，message 的持久化机制用在 RabbitMQ 的集群时会出现“坑爹”问题。矛盾点 在于，要实现持久化的话，必须消息、消息队列、交换器三者持久化，如果集群中不同机器 中三者属性有差异，会发生不可预料的问题。</p>
-
-<p>所以一般处理原则是:仅对关键消息作持久化 处理(根据业务重要程度)，且应该保证关键消息的量不会导致性能瓶颈。 </p>
-
-<h2 id="toc_13">RAM node 和 Disk node 的区别？</h2>
-
-<p>RAM node 就是内存节点，Rabbit 中的 queue、exchange 和 binding 等 RabbitMQ 基础 构件中相关元数据保存到内存中，</p>
-
-<p>Disk node 是磁盘节点，上述数据会在内存和磁盘中均进 行存储。</p>
-
-<p>一般在 RabbitMQ 集群中至少存在一个 Disk node.</p>
-
-<h2 id="toc_14">RabbitMQ 如何确保消息的可靠性传输</h2>
-
-<p>因为 MQ 中涉及到了 MQ 本身，生产者和消费，所以需要从三个角度来看</p>
-
-<h3 id="toc_15">生产者</h3>
-
-<p>生产者将数据发送到 RabbitMQ 的时候，可能数据就在半路给搞丢了，因为网络充斥着不稳定性，有以下几种方案：</p>
-
-<h4 id="toc_16">选择RabbitMQ 提供的事务功能</h4>
-
-<p>选择RabbitMQ的事务功能 就是生产者发送数据之前开启 RabbitMQ 事务(channel.txSelect)，然后发送消息，如果消息没有成功被 RabbitMQ 接收到， 那么生产者会收到异常报错，此时就可以回滚事务(channel.txRollback)，然后重试发送消 息;如果收到了消息，那么可以提交事务(channel.txCommit)。但是问题是，RabbitMQ 事 务机制一搞，基本上吞吐量会下来，因为太耗性能。</p>
-
-<h4 id="toc_17">开启confirm 模式</h4>
-
-<p>在生产者 那里设置开启 confirm 模式之后，你每次写的消息都会分配一个唯一的 id，然后如果写入了 RabbitMQ 中，RabbitMQ 会给你回传一个 ack 消息，告诉你说这个消息 ok 了。</p>
-
-<p>如果 RabbitMQ 没能处理这个消息，会回调你一个 nack 接口，告诉你这个消息接收失败，你可以重试。而 且你可以结合这个机制自己在内存里维护每个消息 id 的状态，如果超过一定时间还没接收 到这个消息的回调，那么你可以重发。</p>
-
-<p>事务机制和 cnofirm 机制最大的不同在于，事务机制是同步的，你提交一个事务之后会 阻塞在那儿，但是 confirm 机制是异步的，你发送个消息之后就可以发送下一个消息，然后 那个消息 RabbitMQ 接收了之后会异步回调你一个接口通知你这个消息接收到了。</p>
-
-<p>所以一般在生产者这块避免数据丢失，都是用 confirm 机制的。</p>
-
-<h3 id="toc_18">RabbitMQ 自身</h3>
-
-<p>RabbitMQ 自己丢数据，这个时候我们就必须开启 RabbitMQ 的持久化，结合confirm模式，等到消息持久化到磁盘之后才会通知生产者，就算这时RabbitMQ挂掉了，我们也可以自己重发。</p>
-
-<h3 id="toc_19">消费端</h3>
-
-<p>RabbitMQ 如果丢失了数据，主要是因为你消费的时候，刚消费到，还没处理，结果进程挂了，比如重启了，那么就尴尬了，RabbitMQ 认为你都消费了，这数据就丢了。</p>
-
-<p>这个时候得用 RabbitMQ 提供的 ack 机制，简单来说，就是你关闭 RabbitMQ 自动 ack，进行手动确认，只有程序手动确认消息已消费才会在RabbitMQ中删除消息，这样消息就不会丢啦。</p>
-
-<h2 id="toc_20">RabbitMQ 如何保证消息的顺序性</h2>
-
-<p>从根本上说，异步消息是不应该有顺序依赖的。在 MQ 上估计是没法解决。要实现严格 的顺序消息，简单且可行的办法就是:保证生产者 - MQServer - 消费者是一对一对一的关系。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RabbitMQ--队列]]></title>
-    <link href="http://www.throne4j.com/16022443352683.html"/>
-    <updated>2020-10-09T19:52:15+08:00</updated>
-    <id>http://www.throne4j.com/16022443352683.html</id>
-    <content type="html"><![CDATA[
-<p>RabbitMQ 中消费行为主要跟队列有直接关系，那么我们接下来深入的分析队列。</p>
-
-<h2 id="toc_0">临时队列</h2>
-
-<p>临时队列对应的是没有持久化的队列，也就是如果 RabbitMQ 服务器重启，那么这些队列就不会存在，所以我们称之为临时队列。</p>
-
-<h2 id="toc_1">自动删除队列</h2>
-
-<p>自动删除队列和普通队列在使用上没有什么区别，唯一的区别是，当消费者断开连接时，队列将会被删除。</p>
-
-<p>自动删除队列允许的消费者没有限制， 也就是说当这个队列上最后一个消费者断开连接才会执行删除。</p>
-
-<p>自动删除队列只需要在声明队列时，设置属性 auto-delete 标识为 true 即可</p>
-
-<h2 id="toc_2">单消费者队列</h2>
-
-<p>普通队列允许的消费者没有限制，多个消费者绑定到多个队列时，RabbitMQ 会采用轮询进行投递。如果需要消费者独占队列，在队列创建的时候， 设定属性参数exclusive 为 true。</p>
-
-<h2 id="toc_3">自动过期队列</h2>
-
-<p>指队列在超过一定时间没使用，队列会从 RabbitMQ 中被删除。</p>
-
-<p>什么是没使用?</p>
-
-<ul>
-<li>一定时间内没有 Get 操作发生。</li>
-<li>没有 Consumer 连接在队列上</li>
-</ul>
-
-<p>就算一直有消息进入队列，也不算队列在被使用。 通过声明队列时，设定x-expires 参数即可，单位毫秒。</p>
-
-<h2 id="toc_4">队列的持久性</h2>
-
-<p>持久化队列和非持久化队列的区别是，持久化队列会被保存在磁盘中，固定并持久的存储，当 RabbitMQ 服务重启后，该队列会保持原来的状态在 RabbitMQ 中被管理，而非持久化队列不会被保存在磁盘中，RabbitMQ 服务重启后队列就会消失。</p>
-
-<h2 id="toc_5">队列级别消息过期</h2>
-
-<p>就是为每个队列设置消息的超时时间。只要给队列设置 x-message-ttl 参数，就设定了该队列所有消息的存活时间，时间单位是毫秒。如果声明队列时指定了死信交换器，则过期消息会成为死信消息。</p>
-
-<h2 id="toc_6">队列参数列表</h2>
-
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>目的</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>x-dead-letter-exchange</td>
-<td>死信交换机</td>
-</tr>
-<tr>
-<td>x-dead-letter-routing-key</td>
-<td>死信消息的可选路由键</td>
-</tr>
-<tr>
-<td>x-expires</td>
-<td>队列在指定毫秒数后被删除</td>
-</tr>
-<tr>
-<td>x-ha-policy</td>
-<td>创建 HA 队列</td>
-</tr>
-<tr>
-<td>x-ha-nodes</td>
-<td>HA 队列的分布节点</td>
-</tr>
-<tr>
-<td>x-max-length</td>
-<td>队列的最大消息条数</td>
-</tr>
-<tr>
-<td>x-max-length-bytes</td>
-<td>消息的最大总量</td>
-</tr>
-<tr>
-<td>x-message-ttl</td>
-<td>毫秒为单位的消息过期时间，队列级别</td>
-</tr>
-<tr>
-<td>x-max-prority</td>
-<td>最大优先值为255的队列优先排序功能</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="toc_7">消息的属性</h2>
-
-<p>按照 AMQP 的协议单个最大的消息大小为 16EB(2 的 64 次方)，但是 RabbitMQ 将消息大小限定为 2GB(2的31次方)。<br/>
-<figure><img src="media/16022443352683/16022456945696.jpg" alt="" style="width:882px;"/></figure></p>
-
-<p><figure><img src="media/16022443352683/16022457151235.jpg" alt=""/></figure></p>
-
-<h3 id="toc_8">消息存活时间</h3>
-
-<p>当队列消息的 TTL 和消息 TTL 都被设置，时间短的 TTL 设置生效。<br/>
-如果将一个过期消息发送给 RabbitMQ，该消息不会路由到任何队列，而是直接丢弃。</p>
-
-<p>为消息设置 TTL 有一个问题:RabbitMQ 只对处于队头的消息判断是否过期(即不会扫描队列)，所以，很可能队列中已存在死消息，但是队列并不 知情。这会影响队列统计数据的正确性，妨碍队列及时释放资源。</p>
-
-<h3 id="toc_9">消息的持久化</h3>
-
-<p>默认情况下，队列和交换器在服务器重启后都会消失，消息当然也是。将队列和交换器的 durable 属性设为 true，缺省为 false，但是消息要持久化还 不够，还需要将消息在发布前，将投递模式设置为 2。消息要持久化，必须要有持久化的队列、交换器和投递模式都为 2 。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RabbitMQ--死信交换器 DLX]]></title>
-    <link href="http://www.throne4j.com/16022411349774.html"/>
-    <updated>2020-10-09T18:58:54+08:00</updated>
-    <id>http://www.throne4j.com/16022411349774.html</id>
-    <content type="html"><![CDATA[
-<p><figure><img src="media/16022411349774/16022427035514.jpg" alt="" style="width:851px;"/></figure></p>
+<p>从垃圾回收的角度而言，直接内存不受 GC(新生代的 Minor GC) 影响，只有当执行老 年代的 Full GC 时候才会顺便回收直接内存，整理内存的压力也比数据放到 HeapBuffer 要小。</p>
 
-<p>如果使用消息拒绝机制，同时 requeue 参数设置为 false 时，消息丢失了，这点作为程序员我们不能忍。</p>
+<h2 id="toc_0">堆外内存的优点和缺点</h2>
 
-<p>所以 RabbitMQ 作为一个高级消息中间件，提出了死信交换器的概念，死信，意思就是死了的信息。这种交换器专门处理死了的信息(被拒绝可以重新投递的信息不能算死的)。</p>
+<p>堆外内存相比于堆内内存有几个优势:</p>
 
-<p>死信交换器是 RabbitMQ 对 AMQP 规范的一个扩展，往往用在对问题消息的诊断上(主要针对消费者)，还有延时队列的功能。</p>
-
-<p>消息变成死信一般是以下三种情况:</p>
-
-<ul>
-<li>消息被拒绝，并且设置 requeue 参数为 false</li>
-<li>消息过期(默认情况下 Rabbit 中的消息不过期，但是可以设置队列的过期时间和消息的过期时间以达到消息过期的效果) </li>
-<li>队列达到最大长度(一般当设置了最大队列长度或大小并达到最大值时)</li>
-</ul>
-
-<p>死信交换器仍然只是一个普通的交换器，创建时并没有特别要求和操作。在创建队列的时候，声明该交换器将用作保存被拒绝的消息即可，即设置参数 x-dead-letter-exchange 指定哪个交换机为死信交换机。参数 x-dead-letter-routing-key 指定 死信routing-key。</p>
-
-<p><figure><img src="media/16022411349774/16022418380839.jpg" alt=""/></figure></p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RabbitMQ--消息的消费]]></title>
-    <link href="http://www.throne4j.com/16022373268306.html"/>
-    <updated>2020-10-09T17:55:26+08:00</updated>
-    <id>http://www.throne4j.com/16022373268306.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">消息的获取方式</h2>
-
-<h3 id="toc_1">拉取 Get</h3>
-
-<p>属于一种轮询模型，发送一次 get 请求，获得一个消息。如果此时 RabbitMQ 中没有消息，会获得一个表示空的回复。总的来说，这种方式性能比较 差，很明显，每获得一条消息，都要和 RabbitMQ 进行网络通信发出请求。而且对 RabbitMQ 来说，RabbitMQ 无法进行任何优化，因为它永远不知道应用 程序何时会发出请求。对我们实现者来说，要在一个循环里，不断去服务器 get 消息。</p>
-
-<h3 id="toc_2">推送 Consume</h3>
-
-<p>属于一种推送模型。注册一个消费者后，RabbitMQ 会在消息可用时，自动将消息进行推送给消费者，这种模式我们已经使用过很多次。</p>
-
-<h3 id="toc_3">消息的应答</h3>
-
-<p>消费者收到的每一条消息都必须进行确认。消息确认后，RabbitMQ 才会从队列删除这条消息，RabbitMQ 不会为未确认的消息设置超时时间，它判断此消息是否需要重新投递给消费者的唯一依据是消费该消息的消费者连接是否已经断开。这么设计的原因是 RabbitMQ 允许消费者消费一条消 息的时间可以很久很久。</p>
-
-<h3 id="toc_4">自动确认</h3>
-
-<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=true 时，一旦消费者接收到了消息，就视为自动确认了消息。如果消费者在处理消息的过 程中，出了错，就没有什么办法重新处理这条消息，所以我们很多时候，需要在消息处理成功后，再确认消息，这就需要手动确认。</p>
-
-<h3 id="toc_5">手动确认</h3>
-
-<p>当 autoAck=false 时，RabbitMQ 会等待消费者显式发回 ack 信号后才从内存(和磁盘，如果是持久化消息的话)中移去消息。否则，RabbitMQ 会在队列 中消息被消费后立即删除它。</p>
-
-<p>采用消息确认机制后，只要令 autoAck=false，消费者就有足够的时间处理消息(任务)，不用担心处理消息过程中消费者进程挂掉后消息丢失的问题， 因为 RabbitMQ 会一直持有消息直到消费者显式调用 basicAck 为止。</p>
-
-<p>当 autoAck=false 时，对于 RabbitMQ 服务器端而言，队列中的消息分成了两部分:一部分是等待投递给消费者的消息;一部分是已经投递给消费者， 但是还没有收到消费者 ack 信号的消息。如果服务器端一直没有收到消费者的 ack 信号，并且消费此消息的消费者已经断开连接，则服务器端会安排该消 息重新进入队列，等待投递给下一个消费者(也可能还是原来的那个消费者)</p>
-
-<h3 id="toc_6">QoS 预取模式</h3>
-
-<p>在确认消息被接收之前，消费者可以预先要求接收一定数量的消息，在处理完一定数量的消息后，批量进行确认。如果消费者应用程序在确认消息之前崩溃，则所有未确认的消息将被重新发送给其他消费者。所以这里存在着一定程度上的可靠性风险。</p>
-
-<p>这种机制一方面可以实现限速(将消息暂存到 RabbitMQ 内存中)的作用，一方面可以保证消息确认质量(比如确认了但是处理有异常的情况)。</p>
-
-<p><strong>注意</strong>: 消费确认模式必须是非自动 ACK 机制(这个是使用 baseQos 的前提条件，否则会 Qos 不生效)，然后设置 basicQos 的值;另外，还可以基于 consume 和 channel 的粒度进行设置(global)。</p>
-
-<p>basicQos 方法参数详细解释:</p>
-
-<ul>
-<li>prefetchSize:最多传输的内容的大小的限制，0 为不限制，但据说 prefetchSize 参数，rabbitmq 没有实现。</li>
-<li>prefetchCount:会告诉 RabbitMQ 不要同时给一个消费者推送多于 N 个消息，即一旦有 N 个消息还没有 ack，则该 consumer 将 block 掉，直到有消息 ack</li>
-<li>global:true\false 是否将上面设置应用于 channel，简单点说，就是上面限制是 channel 级别的还是 consumer 级别。</li>
-</ul>
-
-<p>如果同时设置 channel 和消费者，会怎么样?AMQP 规范没有解释如果使用不同的全局值多次调用 basic.qos 会发生什么。 RabbitMQ 将此解释为意味着两个预取限制应该彼此独立地强制执行; 消费者只有在未达到未确认消息限制时才会收到新消息。 </p>
-
-<h2 id="toc_7">消费者中的事务</h2>
-
-<p>使用方法和生产者一致 假设消费者模式中使用了事务，并且在消息确认之后进行了事务回滚，会是什么样的结果? 结果分为两种情况:</p>
-
-<ul>
-<li>autoAck=false 手动应对的时候是支持事务的，也就是说即使你已经手动确认了消息已经收到了，但 RabbitMQ 对消息的确认会等事务的 返回结果，再做最终决定是确认消息还是重新放回队列，如果你手动确认之后，又回滚了事务，那么以事务回滚为准，此条消息会重新放回队列;</li>
-<li>autoAck=true 如果自动确认为 true 的情况是不支持事务的，也就是说你即使在收到消息之后在回滚事务也是于事无补的，队列已经把 消息移除了。</li>
-</ul>
-
-<h2 id="toc_8">消息的拒绝</h2>
-
-<h3 id="toc_9">Reject 和 Nack</h3>
-
-<p>消息确认可以让 RabbitMQ 知道消费者已经接受并处理完消息。但是如果消息本身或者消息的处理过程出现问题怎么办?需要一种机制通知 RabbitMQ 这个消息我无法处理，请让别的消费者处理。</p>
-
-<p>这里就有两种机制，Reject 和 Nack。</p>
-
-<ul>
-<li>Reject 在拒绝消息时，可以使用 requeue 标识，告诉 RabbitMQ 是否需要重新发送给别的消费者。如果是 false 则不重新发送，一般这个消息就会被RabbitMQ 丢弃。Reject 一次只能拒绝一条消息。如果是 true 则消息发生了重新投递。</li>
-<li>Nack 跟 Reject 类似，只是它可以一次性拒绝多个消息。也可以使用 requeue 标识，这是 RabbitMQ 对 AMQP 规范的一个扩展。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RabbitMQ--消息发布时的权衡]]></title>
-    <link href="http://www.throne4j.com/16022331778802.html"/>
-    <updated>2020-10-09T16:46:17+08:00</updated>
-    <id>http://www.throne4j.com/16022331778802.html</id>
-    <content type="html"><![CDATA[
-<p>在 RabbitMQ 中，有不同的投递机制(生产者)，但是每一种机制都对性能有一定的影响。一般来讲速度快的可靠性低，可靠性好的性能差，具体怎 么使用需要根据你的应用程序来定，所以说没有最好的方式，只有最合适的方式。只有把你的项目和技术相结合，才能找到适合你的平衡。</p>
-
-<p><figure><img src="media/16022331778802/16022332641946.jpg" alt=""/></figure></p>
-
-<p>在 RabbitMQ 中实际项目中，生产者和消费者都是客户端，它们都可以完成申明交换器、申明队列和绑定关系，但是在我们的实战过程中，我们在生产者代码中申明交换器，在消费者代码中申明队列和绑定关系。</p>
-
-<p>另外还要申明的就是，生产者发布消息时不一定非得需要消费者，对于 RabbitMQ 来说，如果是单纯的生产者你只需要生产者客户端、申明交换器、 申明队列、确定绑定关系，数据就能从生产者发送至 RabbitMQ。</p>
-
-<h2 id="toc_0">无保障</h2>
-
-<p>通过 basicPublish 发布你的消息并使用正确的交换器和路由信息，你的消息会被接收并发送到合适的队列中, 但是如果有网络问题，或者消息不可路由，或者RabbitMQ 自身有问题的话，这种方式就有风险。所以无保证的消息发送一般情况下不推荐。</p>
-
-<h2 id="toc_1">失败确认</h2>
-
-<p>在发送消息时设置 mandatory = true 标志，告诉 RabbitMQ，如果消息不可路由，应该将消息返回给发送者，并通知失败。可以这样认为，开启 mandatory 是开启故障检测模式。</p>
-
-<p>注意:它只会让 RabbitMQ 向你通知失败，而不会通知成功。如果消息正确路由到队列，则发布者不会受到任何通知。带来的问题是无法确保发布消 息一定是成功的，因为通知失败的消息可能会丢失。</p>
-
-<p>channel.addConfirmListener 则用来监听 RabbitMQ 发回的信息。</p>
-
-<h2 id="toc_2">事务</h2>
-
-<p>事务的实现主要是对信道(Channel)的设置，主要的方法有三个:</p>
-
-<ul>
-<li>channel.txSelect()声明启动事务模式;</li>
-<li>channel.txComment()提交事务;</li>
-<li>channel.txRollback()回滚事务;</li>
-</ul>
-
-<p>在发送消息之前，需要声明 channel 为事务模式，提交或者回滚事务即可。 开启事务后，客户端和 RabbitMQ 之间的通讯交互流程:</p>
-
 <ul>
-<li>客户端发送给服务器 Tx.Select(开启事务模式)</li>
-<li>服务器端返回 Tx.Select-Ok(开启事务模式 ok)  推送消息</li>
-<li>客户端发送给事务提交 Tx.Commit</li>
-<li>服务器端返回 Tx.Commit-Ok</li>
+<li>减少了垃圾回收的工作，因为垃圾回收会暂停其他的工作线程</li>
+<li>加快了复制的速度。因为堆内在 flush 到远程时，会先复制到直接内存(非堆内存)，然后再发送，而堆外内存相当于省略了这个操作。</li>
 </ul>
-
-<p>以上就完成了事务的交互流程，如果其中任意一个环节出现问题，就会抛出 IoException，这样用户就可以拦截异常进行事务回滚，或决定要不要重<br/>
-复消息。</p>
-
-<p>既然已经有事务了，为何还要使用发送方确认模式呢，原因是因为事务的性能是非常差的。根据相关资料，事务会降低 2~10 倍的性能。</p>
-
-<h2 id="toc_3">发送方确认模式</h2>
-
-<p>基于事务的性能问题，RabbitMQ 团队为我们拿出了更好的方案，即采用发送方确认模式，该模式比事务更轻量，性能影响几乎可以忽略不计。</p>
-
-<p>原理:生产者将信道设置成 confirm 模式，一旦信道进入 confirm 模式，所有在该信道上面发布的消息都将会被指派一个唯一的 ID(从 1 开始)，由这个 id 在生产者和 RabbitMQ 之间进行消息的确认。 </p>
-
-<p>不可路由的消息，当交换器发现，消息不能路由到任何队列，会进行确认操作，表示收到了消息。如果发送方设置了 mandatory 模式,则会先调用 addReturnListener 监听器。</p>
-
-<p>可路由的消息，要等到消息被投递到所有匹配的队列之后，broker 会发送一个确认给生产者(包含消息的唯一 ID)，这就使得生产者知道消息已经正确 到达目的队列了，如果消息和队列是可持久化的，那么确认消息会在将消息写入磁盘之后发出，broker 回传给生产者的确认消息中 delivery-tag 域包含了 确认消息的序列号。</p>
-
-<p>confirm 模式最大的好处在于它可以是异步的，一旦发布一条消息，生产者应用程序就可以在等信道返回确认的同时继续发送下一条消息，当消息最终得到确认之后，生产者应用便可以通过回调方法来处理该确认消息，如果 RabbitMQ 因为自身内部错误导致消息丢失，就会发送一条 nack 消息，生产者应用程序同样可以在回调方法中处理该 nack 消息决定下一步的处理。</p>
 
-<p>Confirm 的三种实现方式:</p>
+<p>相对来说堆外内存的劣势如下：</p>
 
 <ul>
-<li>channel.waitForConfirms() 普通发送方确认模式，消息到达交换机，机会返回 true</li>
-<li>channel.waitForConfirmsOrDie() 批量确认模式，使用同步方式等所有的消息发送之后才会执行后面代码，只要有一个小心未到达交换器就会抛出 IOException 异常</li>
-<li>channel.addConfirmListener()一步监听发送方确认模式</li>
+<li>堆外内存难以控制，如果内存泄漏，很难排查</li>
+<li>堆外内存相对来说，不适合存储很复杂的对象。一般简单的对象或者扁平化的对象比较合适</li>
 </ul>
 
 ]]></content>

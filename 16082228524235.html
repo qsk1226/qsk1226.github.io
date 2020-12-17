@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    ReadWriteLock - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            ReadWriteLock   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/18</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>读写锁接口只定义了两个获取读锁和写锁的接口方法，需要具体实现类ReentrantReadWriteLock实现</p>
+
+<pre><code class="language-java">public interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+</code></pre>
+
+<h2 id="toc_0">ReentrantReadWriteLock</h2>
+
+<h3 id="toc_1">读写状态的设计</h3>
+
+<p>读写锁同样依赖自定义同步器来实现同步功能，而读写状态就是其同步器的 同步状态。<br/>
+回想 ReentrantLock 中自定义同步器的实现，同步状态表示锁被一个线程重 复获取的次数，而读写锁的自定义同步器需要在同步状态(一个整型变量)上维 护多个读线程和一个写线程的状态，使得该状态的设计成为读写锁实现的关键。<br/>
+如果在一个整型变量上维护多种状态，就一定需要“按位切割使用”这个变 量，读写锁将变量切分成了两个部分，高 16 位表示读，低 16 位表示写，读写锁 是如何迅速确定读和写各自的状态呢?<br/>
+答案是通过位运算。假设当前同步状态值为 S，写状态等于 S&amp;0x0000FFFF (将高 16 位全部抹去)，读状态等于 S&gt;&gt;&gt;16(无符号补 0 右移 16 位)。当写 状态增加 1 时，等于 S+1，当读状态增加 1 时，等于 S+(1&lt;<16)，也就是 S+0x00010000。 根据状态的划分能得出一个推论:S 不等于 0 时，当写状态(S&0x0000FFFF)等 于 0 时，则读状态(S>&gt;&gt;16)大于 0，即读锁已被获取。</p>
+
+<h3 id="toc_2">写锁的获取与释放</h3>
+
+<p>写锁是一个支持重进入的排它锁。如果当前线程已经获取了写锁，则增加写 状态。如果当前线程在获取写锁时，读锁已经被获取(读状态不为 0)或者该线 程不是已经获取写锁的线程，则当前线程进入等待状态。</p>
+
+<p>该方法除了重入条件(当前线程为获取了写锁的线程)之外，增加了一个读 锁是否存在的判断。如果存在读锁，则写锁不能被获取，原因在于:读写锁要确 保写锁的操作对读锁可见，如果允许读锁在已被获取的情况下对写锁的获取，那么正在运行的其他读线程就无法感知到当前写线程的操作。因此，只有等待其他 读线程都释放了读锁，写锁才能被当前线程获取，而写锁一旦被获取，则其他读 写线程的后续访问均被阻塞。</p>
+
+<p>写锁的释放与ReentrantLock的释放过程基本类似，每次释放均减少写状态， 当写状态为 0 时表示写锁已被释放，从而等待的读写线程能够继续访问读写锁， 同时前次写线程的修改对后续读写线程可见</p>
+
+<h3 id="toc_3">读锁的获取与释放</h3>
+
+<p>读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他 写线程访问(或者写状态为 0)时，读锁总会被成功地获取，而所做的也只是(线 程安全的)增加读状态。如果当前线程已经获取了读锁，则增加读状态。</p>
+
+<p>如果当前线程在获取读锁时，写锁已被其他线程获取，则进入等待状态。读 状态是所有线程获取读锁次数的总和，而每个线程各自获取读锁的次数只能选择 保存在 ThreadLocal 中，由线程自身维护。在 tryAcquireShared(int unused)方法中， 如果其他线程已经获取了写锁，则当前线程获取读锁失败，进入等待状态。如果 当前线程获取了写锁或者写锁未被获取，则当前线程(线程安全，依靠 CAS 保证) 增加读状态，成功获取读锁。读锁的每次释放(线程安全的，可能有多个读线程 同时释放读锁)均减少读状态。</p>
+
+<h3 id="toc_4">锁的升降级</h3>
+
+<p>锁降级指的是写锁降级成为读锁。如果当前线程拥有写锁，然后将其释放， 最后再获取读锁，这种分段完成的过程不能称之为锁降级。</p>
+
+<p>锁降级是指把持住(当前拥有的)写锁，再获取到读锁，随后释放(先前拥有的)写锁的过程。</p>
+
+<p>RentrantReadWriteLock 不支持锁升级(把持读锁、获取写锁，最后释放读锁 的过程)。目的是保证数据可见性，如果读锁已被多个线程获取，其中任意线程 成功获取了写锁并更新了数据，则其更新对其他获取到读锁的线程是不可见的。<br/>
+ReadLock<br/>
+WriteLock </p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

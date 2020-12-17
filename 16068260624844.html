@@ -160,16 +160,134 @@
 
 <h3 id="toc_5">Channel</h3>
 
-<p>通道 channel 用来连接缓冲区与数据源</p>
+<p>通道 channel 用来连接缓冲区与数据源<br/>
+首先看下Channel的类关系图</p>
 
-<p>java.nio.channels.Channel接口只声明了两个方法</p>
+<p><figure><img src="media/16068260624844/16074301955346.jpg" alt="ServerSocketChannel"/><figcaption>ServerSocketChannel</figcaption></figure></p>
+
+<p><figure><img src="media/16068260624844/16074302290552.jpg" alt="" style="width:1320px;"/></figure></p>
+
+<p>通过对类关系图的查看，我们可以看到 SocketChannel 和 ServerSocketChannel 父类几乎 是一样的，都有 AbstractInterruptibleChannel、SelectableChannel、AbstractSelectableChannel。</p>
+
+<p>java.nio.channels.Channel 接口只声明了两个方法</p>
 
 <ul>
 <li>isOpen() 判断通道是否打开</li>
 <li>close() 关闭通道</li>
 </ul>
 
-<h4 id="toc_6">SelectableChannel</h4>
+<h3 id="toc_6">AbstractInterruptibleChannel</h3>
+
+<p>AbstractInterruptibleChannel 表示可异步关闭和中断的 Channel</p>
+
+<p>1、实现 InterruptibleChannel 接口的 Channel 支持异步关闭：如果一个线程IO 阻塞在一个可中断的 Channel，另一个线程可以执行 channel 的 close 方法。这将导致阻塞线程收到 AsynchronousCloseException 异常</p>
+
+<p>2、实现 InterruptibleChannel 接口欧的 Channel 支持中断：如果一个线程 IO 阻塞在一个 可中断的 Channel，另一个线程可以执行阻塞线程的 interrupt 方法。浙江导致 Channel 关闭，阻塞线程收到 ClosedByInterruptException 异常，阻塞线程将是 interrupted 状态</p>
+
+<p>3、如果线程已经中断，然后在 Channel 执行 阻塞 IO 操作，channel 将关闭，线程将立即收到 ClosedInterruptException 异常，且中断状态会保持。</p>
+
+<p>怎么实现线程中断时关闭 channel 的呢？可不能指望着调用者调用 thread.interrupt() 之后，再去调用 channel.close() 方法。</p>
+
+<p>我们看下 Thread 源码中的这一段</p>
+
+<pre><code class="language-java">/* The object in which this thread is blocked in an interruptible I/O
+ * operation, if any.  The blocker&#39;s interrupt method should be invoked
+ * after setting this thread&#39;s interrupt status.
+ */
+private volatile Interruptible blocker;
+private final Object blockerLock = new Object();
+
+/* Set the blocker field; invoked via sun.misc.SharedSecrets from java.nio code
+ */
+void blockedOn(Interruptible b) {
+    synchronized (blockerLock) {
+        blocker = b;
+    }
+}
+</code></pre>
+
+<pre><code class="language-text">public interface Interruptible {
+    void interrupt(Thread var1);
+}
+</code></pre>
+
+<p>blockedOn 方法可以设置 blocker 字段</p>
+
+<pre><code class="language-java">public void interrupt() {
+    if (this != Thread.currentThread())
+        checkAccess();
+
+    synchronized (blockerLock) {
+        Interruptible b = blocker;
+        if (b != null) {
+            interrupt0();           // Just to set the interrupt flag
+            b.interrupt(this);
+            return;
+        }
+    }
+    interrupt0();
+}
+</code></pre>
+
+<p>这两段代码允许我们在线程 interrupt()的时候调用 Interruptible blocker 这个接口(需要自己实现)</p>
+
+<p>然后我们把目光再次集中到  AbstractInterruptibleChannel</p>
+
+<pre><code class="language-java">protected final void begin() {
+    if (interruptor == null) {
+        interruptor = new Interruptible() {
+                public void interrupt(Thread target) {
+                    synchronized (closeLock) {
+                        if (!open)
+                            return;
+                        open = false;
+                        interrupted = target;
+                        try {
+                            // 关闭channel
+                            AbstractInterruptibleChannel.this.implCloseChannel();
+                        } catch (IOException x) { }
+                    }
+                }};
+    }
+    blockedOn(interruptor);
+    Thread me = Thread.currentThread();
+    if (me.isInterrupted())
+        interruptor.interrupt(me);
+}
+</code></pre>
+
+<p>给 AbstractInterruptibleChannel 里的 Interruptible 接口类型的成员变量 interruptor 赋予初值，在赋值语句中，被赋予的值是一个实现了 Interruptible 接口的匿名类</p>
+
+<p>在这个匿名类的 interrupt 方法中做了两件事</p>
+
+<ul>
+<li>保存当前被中断的线程是谁</li>
+<li>对Channel 进行了关闭</li>
+</ul>
+
+<p>接下来，这个 interruptor 设置给当前调用 begin 的线程，按照我们之前对 Thread 类的查看我们会了解到，Thread 的 interrupt 方法除了常规的 interrupt 操作之外，还对线程 Interruptible 接口类型的成员变量 blocker 的 interrupt 方法的调用。</p>
+
+<p>所以线程在中断的时候，除了线程常规的 interrupt 操作外，还有可能对channel进行关闭。</p>
+
+<pre><code class="language-java">protected final void end(boolean completed) throws AsynchronousCloseException {
+     // 清空线程的 blocker 字段
+    blockedOn(null);
+    // 如果线程被中断，则在 begin 里面初始化的 Interruptible 对象的 interrupt 方法里面设置了 interrupted 变量为被中断的线程
+    Thread interrupted = this.interrupted;
+    if (interrupted != null &amp;&amp; interrupted == Thread.currentThread()) {
+        interrupted = null;
+        // 如果被中断，则抛出 ClosedByInterruptException
+        throw new ClosedByInterruptException();
+    }
+    // 如果被 closse，则抛出 AsynchronousCloseException
+    if (!completed &amp;&amp; !open)
+        throw new AsynchronousCloseException();
+}
+</code></pre>
+
+<h4 id="toc_7">SelectableChannel</h4>
+
+<p>SelectableChannel则在AbstractInterruptibleChannel的基础之上，加入对SelectionKey 注册到 selector 上的支持，SelectableChannel 本身是个抽象类而且基本都是抽象方法，并没有什么实现。</p>
 
 <p>SelectableChannel 支持阻塞IO、非阻塞IO，他有两个子类：</p>
 
@@ -198,13 +316,47 @@ SelectionKey key = socketChannel.register(selector, SelectionKey.OP_READ, handle
 MyHandler handler =  (MyHandler) key.attachment()
 </code></pre>
 
-<h4 id="toc_7">ServerSocketChannel 只可能发生一种事件</h4>
+<p>接下来我们看下 register 方法是如何实现的,在其实现类 AbstractSelectableChannel 中</p>
+
+<pre><code class="language-java">public final SelectionKey register(Selector sel, int ops,
+                                   Object att)
+    throws ClosedChannelException
+{
+    synchronized (regLock) {
+        if (!isOpen())
+            throw new ClosedChannelException();
+        if ((ops &amp; ~validOps()) != 0)
+            throw new IllegalArgumentException();
+        if (blocking)
+            throw new IllegalBlockingModeException();
+        SelectionKey k = findKey(sel);
+        if (k != null) {
+            k.interestOps(ops);
+            k.attach(att);
+        }
+        if (k == null) {
+            // New registration
+            synchronized (keyLock) {
+                if (!isOpen())
+                    throw new ClosedChannelException();
+                k = ((AbstractSelector)sel).register(this, ops, att);
+                addKey(k);
+            }
+        }
+        return k;
+    }
+}
+</code></pre>
+
+<p>首先进行检查，比如通道是否打开，注册键值是否有效，通道是否非阻塞模式等等，然 后检查数组 keys 中的 key 能否在 selector 找到，找到则直接修改 key 关注的键值并替换附件， 没找到，则在 selector 中注册这个 key，并加入到内部 SelectionKey 的数组 keys 中。</p>
+
+<h4 id="toc_8">ServerSocketChannel 只可能发生一种事件</h4>
 
 <ul>
 <li>SelectionKey.OP_ACCEPT: 接收连接就绪事件，表示至少有了一个客户连接，服务器可以接收这个连接</li>
 </ul>
 
-<h4 id="toc_8">SocketChannel 可能发生 3 中事件</h4>
+<h4 id="toc_9">SocketChannel 可能发生 3 中事件</h4>
 
 <ul>
 <li>SelectionKey.OP_CONNECT: 连接就绪事件，表示客户端与服务器的连接已经建立成功</li>
@@ -212,14 +364,14 @@ MyHandler handler =  (MyHandler) key.attachment()
 <li>SelectionKey.OP_WRITE: 写就绪事件，表示已经可以向输出流写数据了。</li>
 </ul>
 
-<p>SocketChannel提供了 读和写数据的方法</p>
+<p>SocketChannel提供了 读数据和写数据的方法</p>
 
 <ul>
 <li>read(ByteBuffer buffer): 读数据，把他们放到参数指定的 ByteBuffer中</li>
 <li>write(ByteBuffer buffer): 把参数指定的ByteBuffer中的数据发送出去</li>
 </ul>
 
-<h4 id="toc_9">服务端和客户端可以监听的事件表：</h4>
+<h4 id="toc_10">服务端和客户端可以监听的事件表：</h4>
 
 <table>
 <thead>
@@ -257,7 +409,7 @@ MyHandler handler =  (MyHandler) key.attachment()
 </tbody>
 </table>
 
-<h3 id="toc_10">SelectionKey</h3>
+<h3 id="toc_11">SelectionKey</h3>
 
 <p>代表 SocketChannel、ServerSocketChannel向 Selector 注册事件的句柄，包括接收连接就绪事件、连接就绪事件、读事件就绪、写事件就绪</p>
 
@@ -293,7 +445,7 @@ MyHandler handler =  (MyHandler) key.attachment()
 <li>Object attachment()</li>
 </ul>
 
-<h3 id="toc_11">Selector 多路复用器</h3>
+<h3 id="toc_12">Selector 多路复用器</h3>
 
 <p>Selector 多路复用器提供选择已经就绪事件的能力。</p>
 
@@ -327,7 +479,51 @@ MyHandler handler =  (MyHandler) key.attachment()
 <li>close() 关闭 Selector，使它占用的所有资源都被释放，所有与Selector 关联的 SelectionKey 都被取消</li>
 </ul>
 
-<h3 id="toc_12">缓冲区 buffer</h3>
+<p>我们着重看一下 open() 方法</p>
+
+<pre><code class="language-java">public static Selector open() throws IOException {
+    return SelectorProvider.provider().openSelector();
+}
+</code></pre>
+
+<p>通过 SelectorProvider.provider()静态方法，获取到 SelectorProvider，首次获取时会通过 配置等方式注入，若没有配置，则使用 DefaultSelectorProvider 生成。</p>
+
+<p>不同平台的 DefaultSelectorProvider 实现是不一样的，例如 Linux 平台的实现是 EpollSelectorProvider ，通过openSelector() 方法，拿到 Selector 的实现 EpollSelectorImpl</p>
+
+<p>SelectorImpl 的原始 Java 文件可以在 jdk\src\share\classes\sun\nio\ch 下找到。</p>
+
+<p>在创建 SelectorImpl 首先会初始化2个 HashSet，publicKeys 存放用于一个存放所有注册的 SelectionKey，publicSelectedKeys 用于存放已就绪的 SelectionKey</p>
+
+<pre><code class="language-java">private Set&lt;SelectionKey&gt; publicKeys;
+private Set&lt;SelectionKey&gt; publicSelectedKeys;
+
+protected SelectorImpl(SelectorProvider var1) {
+    super(var1);
+    if (Util.atBugLevel(&quot;1.4&quot;)) {
+        this.publicKeys = this.keys;
+        this.publicSelectedKeys = this.selectedKeys;
+    } else {
+        this.publicKeys = Collections.unmodifiableSet(this.keys);
+        this.publicSelectedKeys = Util.ungrowableSet(this.selectedKeys);
+    }
+
+}
+</code></pre>
+
+<p>当代码执行 select() 方法的时候，加载已就绪的文件描述符<br/>
+具体内部主要执行 3 件事:</p>
+
+<ul>
+<li>1、调用 native 方法获取已就绪的文件描述符。
+<ul>
+<li>在 updateRegistrations 方法中，更新 epoll 事件，实际调用 epollCtl 加入到 epollfd 中</li>
+<li>调用 epollWait 方法，获取到已就绪的文件描述符，存放在 pollArrayAddress 地址中</li>
+</ul></li>
+<li>2、调用 updateSelectedKeys 更新已就绪事件的 SelectorKey，当获取到已就绪的 SelectionKey 后，我们就可以在 Java 代码中遍历他们，根据 SelectionKey 的事件类型决定需要执行的具体逻辑。</li>
+<li>3、使用 processDeregisterQueue 方法会遍历所有调用了 key.cancel 方法的 key 并执行实 际的取消注册。因为考虑到在“获取已就绪的文件描述符(poll 方法)”期间可能会有 channel 被关闭，因此需要再次调用删除取消 key。</li>
+</ul>
+
+<h3 id="toc_13">缓冲区 buffer</h3>
 
 <p>缓冲区从两个方面提高 IO 效能 ：</p>
 
@@ -384,7 +580,7 @@ MyHandler handler =  (MyHandler) key.attachment()
 <li>directAllocate(int capacity) 返回ByteBuffer 对象，参数 capacity 指定缓冲区的容量，推荐缓冲区较大且长期存在或者需要重用的时候，使用这种缓冲区。</li>
 </ul>
 
-<h4 id="toc_13">直接内存</h4>
+<h4 id="toc_14">直接内存</h4>
 
 <p>HeapByteBuffer 与 DirectByteBuffer，在原理上，前者可以看出分配的 buffer 是在 heap 区域的，其实真正 flush 到远程的时候会先拷贝到直接内存，再做下一步操作;在 NIO 的框 架下，很多框架会采用 DirectByteBuffer 来操作，这样分配的内存不再是在 java heap 上，经 过性能测试，可以得到非常快速的网络交互，在大量的网络交互下，一般速度会比 HeapByteBuffer 要快速好几倍。</p>
 
@@ -396,10 +592,16 @@ MyHandler handler =  (MyHandler) key.attachment()
 
 <p>这样能在一些场景中显著提高性能， 因为避免了在 Java 堆和 Native 堆中来回复制数据。</p>
 
-<h5 id="toc_14">直接内存(堆外内存)与堆内存比较</h5>
+<h5 id="toc_15">直接内存(堆外内存)与堆内存比较</h5>
 
 <p>直接内存申请空间耗费更高的性能，当频繁申请到一定量时尤为明显<br/>
 直接内存 IO 读写的性能要优于普通的堆内存，在多次读写操作的情况下差异明显</p>
+
+<h2 id="toc_16">BIO和NIO的区别</h2>
+
+<p>Java NIO 和 IO 之间第一个最大的区别是，IO 是面向流的，NIO 是面向缓冲 区的。 </p>
+
+<p>Java IO 的各种流是阻塞的，Java NIO 的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它 仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不 是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。</p>
 
                   </article>
                   <div class="comments-wrap">

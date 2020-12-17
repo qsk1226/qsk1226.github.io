@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    Disruptor - 大爷来玩儿啊~
+    java内存模型之 volatile 同步原语详解 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            Disruptor   
+                            java内存模型之 volatile 同步原语详解   
                       </h1>
                      
                     
@@ -114,41 +114,205 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>Disruptor 是英国外汇交易公司 LMAX 开发的一个高性能队列，研发的初衷是 解决内部的内存队列的延迟问题，而不是分布式队列。基于 Disruptor 开发的系 统单线程能支撑每秒 600 万订单，2010 年在 QCon 演讲后，获得了业界关注。</p>
+                    <h2 id="toc_0">volatile 相关问题</h2>
 
-<p>Disruptor 是一个高性能的线程间异步通信的框架，即在同一个 JVM 进程中 的多线程间消息传递。</p>
+<ul>
+<li>volatile关键字的作用是什么? </li>
+<li>volatile能保证原子性吗? </li>
+<li>之前32位机器上共享的long和double变量的为什么要用volatile? 现在64位机器上是否也要设置呢? </li>
+<li>i++为什么不能保证原子性? </li>
+<li>volatile是如何实现可见性的?  内存屏障。 </li>
+<li>volatile是如何实现有序性的?  happens-before等 </li>
+<li>说下volatile的应用场景?</li>
+</ul>
 
-<h2 id="toc_0">传统队列问题</h2>
+<h2 id="toc_1">volatile 作用</h2>
 
-<p>在 JDK 中，Java 内部的队列 BlockQueue 的各种实现，仔细分析可以得知， 队列的底层数据结构一般分成三种:数组、链表和堆，堆这里是为了实现带有优先级特性的队列暂且不考虑。</p>
+<h3 id="toc_2">保证可见性，对于一个volatile 变量的读 总是能看到对这个volatile变量最后的写入</h3>
 
-<p>在稳定性和性能要求特别高的系统中，为了防止生产者速度过快，导致内存 溢出，只能选择有界队列;同时，为了减少 Java 的垃圾回收对系统性能的影响， 会尽量选择 Array 格式的数据结构。这样筛选下来，符合条件的队列就只有 ArrayBlockingQueue。但是 ArrayBlockingQueue 是通过加锁的方式保证线程安全， 而且 ArrayBlockingQueue 还存在伪共享问题，这两个问题严重影响了性能。</p>
+<p>为了说明这个问题，看如下代码，ready 被声明为 volatile 变量，主线程中 改变 ready 的值，在子线程中能立刻感知到 ready被修改为了true 而停止while循环</p>
 
-<p>ArrayBlockingQueue 的这个伪共享问题存在于哪里呢，分析下核心的部分源 码，其中最核心的三个成员变量为：takeIndex、putIndex、count，在 ArrayBlockingQueue 的核心 enqueue 和 dequeue 方法中经常会用到的，这三 个变量很容易放到同一个缓存行中，进而产生伪共享问题。</p>
+<pre><code class="language-java">public class VolatileDemo {
+    private volatile static boolean ready;
+    private static int number = 1;
 
-<h2 id="toc_1">高性能的原理</h2>
+    private static class PrintThread extends Thread {
+        public PrintThread(String name) {
+            super(name);
+        }
+        @Override
+        public void run() {
+            while (!ready) {
+                System.out.println(&quot;number: &quot; + number++);
+            }
+        }
+    }
 
-<p>引入环形的数组结构:数组元素不会被回收，避免频繁的 GC， </p>
+    public static void main(String[] args) throws InterruptedException {
+        new PrintThread(&quot;volatile apply&quot;).start();
+        Thread.sleep(2000);
+        ready = true;
+    }
+}
+</code></pre>
 
-<p>无锁的设计:采用 CAS 无锁方式，保证线程的安全性 </p>
+<h3 id="toc_3">原子性：对任意单个 volatile 变量的 读/写 具有原子性，但类似于 volatile++ 这种复合操作不具有原子性</h3>
 
-<p>属性填充:通过添加额外的无用信息，避免伪共享问题</p>
+<p>对于原子性，需要强调一点，也是大家容易误解的一点：对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证i++这种操作的原子性，因为本质上i++是读、写两次操作。</p>
 
-<p>环形数组结构是整个 Disruptor 的核心所在。</p>
+<p>i++其实是一个复合操作，包括三步骤： 读取i的值。 对i加1。 将i的值写回内存。<br/>
+volatile是无法保证这三个操作是具有原子性的，我们可以通过AtomicInteger或者Synchronized来保证+1操作的原子性。</p>
 
-<p><figure><img src="media/16020511412975/16020523609287.jpg" alt="" style="width:738px;"/></figure></p>
+<h3 id="toc_4">防止重排序</h3>
 
-<p>首先，因为是数组，所以要比链表快，而且根据我们对上面缓存行的解释知道， 数组中的一个元素加载，相邻的数组元素也是会被预加载的，因此在这样的结构中，cpu 无需时不时去主存加载数组中的下一个元素。而且，你可以为数组预先分配内存，使得数组对象一直存在(除非程序终止)。</p>
+<p>使用我们经常使用的双重检查加锁(DCL)实现的代理代码来说明：</p>
 
-<p>这就意味着不需要花大量的时间用于垃圾回收。此外，不像链表那样，需要为每一个添加到其上面的对象创造节点对象，对应的，当删除节点时，需要执行相应的内存清理操作。环形数组中的元素采用覆盖方式，避免了 jvm 的 GC。</p>
+<pre><code class="language-java">public class Singleton {
+    // 为什么 要 volatile 修饰 singleton 呢
+    public static volatile Singleton singleton;
+    /**
+     * 构造函数私有，禁止外部实例化
+     */
+    private Singleton() {};
+    public static Singleton getInstance() {
+        if (singleton == null) {
+            synchronized (singleton) {
+                if (singleton == null) {
+                    singleton = new Singleton();
+                }
+            }
+        }
+        return singleton;
+    }
+}
 
-<p>其次，结构作为环形，数组的大小为 2 的 n 次方，这样元素定位可以通过位运算效率会更高，这个跟一致性哈希中的环形策略有点像。在 disruptor 中，这个牛逼的环形结构就是 RingBuffer，既然是数组，那么就有大小，而且这个大小必须是2的n次方。</p>
+</code></pre>
 
-<p>其实质只是一个普通的数组，只是当放置数据填充满队列(即到达 2<sup>n-1</sup> 位 置)之后，再填充数据，就会从 0 开始，覆盖之前的数据，于是就相当于一个环。</p>
+<p>现在我们分析一下为什么要在变量singleton之间加上volatile关键字。</p>
 
-<p>每个生产者首先通过 CAS 竞争获取可以写的空间，然后再进行慢慢往里放数据，如果正好这个时候消费者要消费数据，那么每个消费者都需要获取最大可消费的下标。</p>
+<p>要理解这个问题，先要了解对象的构造过程，实例化一个对象其实可以分为三个步骤： - 分配内存空间。 </p>
 
-<p>同时，Disruptor 不像传统的队列，分为一个队头指针和一个队尾指针，而是只有一个角标(上图的 seq)，它属于一个 volatile 变量，同时也是我们能够不用锁操作就能实现 Disruptor 的原因之一，而且通过缓存行补充，避免伪共享 问题。该指针是通过一直自增的方式来获取下一个可写或者可读数据。</p>
+<ul>
+<li>初始化对象。 </li>
+<li>将内存空间的地址赋值给对应的引用。</li>
+</ul>
+
+<p>但是由于操作系统可以对指令进行重排序，所以上面的过程也可能会变成如下过程： </p>
+
+<ul>
+<li>分配内存空间。 </li>
+<li>将内存空间的地址赋值给对应的引用。 </li>
+<li>初始化对象 </li>
+</ul>
+
+<p>如果是这个流程，多线程环境下就可能将一个未初始化的对象引用暴露出来，从而导致不可预料的结果。因此，为了防止这个过程的重排序，我们需要将变量设置为volatile类型的变量</p>
+
+<h2 id="toc_5">volatile 的内存语义</h2>
+
+<p>内存语义： 可以简单理解为 volatile， synchronize，atomic，lock 之类的在 JVM 中的内存方面实现原则。</p>
+
+<p>volatile 写的内存语义： 当写一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值刷新到主内存。</p>
+
+<p>volatile读的内存语义： 当读一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值刷新到主内存。</p>
+
+<pre><code class="language-java">public class VolatileDemo {
+    private volatile static boolean ready;
+    private static int number = 1;
+
+    private static class PrintThread extends Thread {
+        public PrintThread(String name) {
+            super(name);
+        }
+        @Override
+        public void run() {
+            while (!ready) {
+                System.out.println(&quot;number: &quot; + number++);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        new PrintThread(&quot;volatile apply&quot;).start();
+        Thread.sleep(2000);
+        ready = true;
+    }
+}
+</code></pre>
+
+<h2 id="toc_6">volatile 内存屏障</h2>
+
+<p>内存屏障，又称内存栅栏，是一个 CPU 指令。<br/>
+在java中 对volatile 修饰的变量，编译器在生成字节码的时候，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序问题，同时也保证了 volatile 变量的可见性问题</p>
+
+<p><figure><img src="media/16019058386155/16020040859402.jpg" alt="volatile 写"/><figcaption>volatile 写</figcaption></figure></p>
+
+<p><figure><img src="media/16019058386155/16020041276962.jpg" alt="volatile 读"/><figcaption>volatile 读</figcaption></figure></p>
+
+<h2 id="toc_7">volatile 的实现原理</h2>
+
+<pre><code class="language-java">public class Test {
+    private volatile int a;
+    public void update() {
+        a = 1;
+    }
+    public static void main(String[] args) {
+        Test test = new Test();
+        test.update();
+    }
+}
+</code></pre>
+
+<p>通过 jitwatch 工具得到编译后的汇编代码:</p>
+
+<pre><code class="language-text">......
+  0x0000000002951563: and    $0xffffffffffffff87,%rdi
+  0x0000000002951567: je     0x00000000029515f8
+  0x000000000295156d: test   $0x7,%rdi
+  0x0000000002951574: jne    0x00000000029515bd
+  0x0000000002951576: test   $0x300,%rdi
+  0x000000000295157d: jne    0x000000000295159c
+  0x000000000295157f: and    $0x37f,%rax
+  0x0000000002951586: mov    %rax,%rdi
+  0x0000000002951589: or     %r15,%rdi
+  0x000000000295158c: lock cmpxchg %rdi,(%rdx)  //在 volatile 修饰的共享变量进行写操作的时候会多出 lock 前缀的指令
+  0x0000000002951591: jne    0x0000000002951a15
+  0x0000000002951597: jmpq   0x00000000029515f8
+  0x000000000295159c: mov    0x8(%rdx),%edi
+  0x000000000295159f: shl    $0x3,%rdi
+  0x00000000029515a3: mov    0xa8(%rdi),%rdi
+  0x00000000029515aa: or     %r15,%rdi
+......
+</code></pre>
+
+<p>volatile 关键字修饰的变量会存在一个“lock”的前缀。</p>
+
+<p>Lock 前缀，Lock 不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock<br/>
+会对 CPU 总线和高速缓存加锁，可以理解为 CPU 指令级的一种锁。</p>
+
+<p>lock 前缀的指令在多核处理器下会引发两件事情:</p>
+
+<ul>
+<li>将当前处理器缓存行的数据写回到系统内存。</li>
+<li>写回内存的操作会使在其他 CPU 里缓存了该内存地址的额数据无效。</li>
+</ul>
+
+<p>为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存(L1，L2 或其他)后再进行操作，但操作完不知道何时会写到内存。 </p>
+
+<p>如果对声明了 volatile 的变量进行写操作，JVM 就会向处理器发送一条 lock 前缀的指令，将这个变量所在缓存行的数据写回到系统内存。 </p>
+
+<p>为了保证各个处理器的缓存是一致的，实现了缓存一致性协议(MESI)，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。</p>
+
+<p>所有多核处理器下还会完成：当处理器发现本地缓存失效后，就会从内存中重读该变量数据，即可以获取当前最新值。</p>
+
+<h2 id="toc_8">volatile 的应用场景</h2>
+
+<p>使用 volatile 必须具备的条件</p>
+
+<ul>
+<li>对变量的写操作不依赖于当前值。</li>
+<li>该变量没有包含在具有其他变量的不变式中。</li>
+<li>只有在状态真正独立于程序内其他内容时才能使用 volatile。</li>
+</ul>
 
                   </article>
                   <div class="comments-wrap">
@@ -192,6 +356,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 
