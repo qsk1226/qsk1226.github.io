@@ -116,13 +116,15 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>CAS，全称为Compare and Swap，即比较-替换。假设有三个操作数：内存值V、旧的预期值A、要修改的值B，当且仅当预期值A和内存值V相同时，才会将内存值修改为B并返回true，否则什么都不做并返回false。</p>
+                    <h2 id="toc_0">什么是 CAS</h2>
 
-<p>当然CAS一定要volatile变量配合，这样才能保证每次拿到的变量是主内存中最新的那个值，否则旧的预期值A对某条线程来说，永远是一个不会变的值A，只要某次CAS操作失败，永远都不可能成功。</p>
+<p>CAS，全称为Compare and Swap，即比较-替换。假设有三个操作数：内存值V、旧的预期值A、要修改的值B，当且仅当预期值A和内存值V相同时，才会将内存值修改为B并返回true，否则什么都不做并返回false。</p>
+
+<p>当然CAS一定要 volatile 变量配合，这样才能保证每次拿到的变量是主内存中最新的那个值，否则旧的预期值A对某条线程来说，永远是一个不会变的值A，只要某次CAS操作失败，永远都不可能成功。</p>
 
 <p><figure><img src="media/15874857577712/15879543805684.jpg" alt="CAS流程"/><figcaption>CAS流程</figcaption></figure></p>
 
-<h2 id="toc_0">什么是原子操作?如何实现原子操作?</h2>
+<h2 id="toc_1">如何实现原子操作?</h2>
 
 <p>假定有两个操作 A 和 B，如果从执行 A 的线程来看，当另一个线程执行 B 时， 要么将 B 全部执行完，要么B完全不执行，那么 A 和 B 对彼此来说是原子的。</p>
 
@@ -138,15 +140,17 @@
 
 <hr/>
 
-<h2 id="toc_1">CAS 实现原子操作的三大问题</h2>
+<h2 id="toc_2">CAS 实现原子操作的三大问题</h2>
 
 <ul>
 <li>ABA问题</li>
 </ul>
 
-<p>因为 CAS 需要在操作值的时候，检查值有没有发生变化，如果没有发生变化 则更新，但是如果一个值原来是 A，变成了 B，又变成了 A，那么使用 CAS 进行 检查时会发现它的值没有发生变化，但是实际上却变化了。<br/>
-ABA 问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量 更新的时候把版本号加 1，那么 A→B→A 就会变成 1A→2B→3A。举个通俗点的 例子，你倒了一杯水放桌子上，干了点别的事，然后同事把你水喝了又给你重新 倒了一杯水，你回来看水还在，拿起来就喝，如果你不管水中间被人喝过，只关 心水还在，这就是 ABA 问题。 <br/>
-如果你是一个讲卫生讲文明的小伙子，不但关心水在不在，还要在你离开的 时候水被人动过没有，因为你是程序员，所以就想起了放了张纸在旁边，写上初 始值 0，别人喝水前麻烦先做个累加才能喝水。</p>
+<p>因为 CAS 需要在操作值的时候，检查值有没有发生变化，如果没有发生变化 则更新，但是如果一个值原来是 A，变成了 B，又变成了 A，那么使用 CAS 进行 检查时会发现它的值没有发生变化，但是实际上却变化了。</p>
+
+<p>ABA 问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量 更新的时候把版本号加 1，那么 A→B→A 就会变成 1A→2B→3A。举个通俗点的 例子，你倒了一杯水放桌子上，干了点别的事，然后同事把你水喝了又给你重新 倒了一杯水，你回来看水还在，拿起来就喝，如果你不管水中间被人喝过，只关心水还在，这就是 ABA 问题。</p>
+
+<p>如果你是一个讲卫生讲文明的小伙子，不但关心水在不在，还要在你离开的时候水被人动过没有，因为你是程序员，所以就想起了放了张纸在旁边，写上初始值 0，别人喝水前麻烦先做个累加才能喝水。</p>
 
 <ul>
 <li>循环时间长开销大。</li>
@@ -161,7 +165,7 @@ ABA 问题的解决思路就是使用版本号。在变量前面追加上版本�
 <p>当对一个共享变量执行操作时，我们可以使用循环 CAS 的方式来保证原子操 作，但是对多个共享变量操作时，循环 CAS 就无法保证操作的原子性，这个时候 就可以用锁。<br/>
 还有一个取巧的办法，就是把多个共享变量合并成一个共享变量来操作。比 如，有两个共享变量 i=2，j=a，合并一下 ij=2a，然后用 CAS 来操作 ij。从 Java 1.5 开始，JDK 提供了 AtomicReference 类来保证引用对象之间的原子性，就可以把 多个变量放在一个对象里来进行 CAS 操作。</p>
 
-<h2 id="toc_2">JDK中 java.util.concurrent.atomic 报下包装有原子操作类。</h2>
+<h2 id="toc_3">JDK中 java.util.concurrent.atomic 报下包装有原子操作类。</h2>
 
 <ul>
 <li><p>AtomicInteger</p>
@@ -180,6 +184,280 @@ ABA 问题的解决思路就是使用版本号。在变量前面追加上版本�
 AtomicMarkableReference 跟 AtomicStampedReference 差不多， AtomicMarkableReference 的 pair 使用的是 boolean mark。</li>
 </ul></li>
 </ul>
+
+<h2 id="toc_4">JAVA 原子类</h2>
+
+<p>JDK中提供了13个原子操作类。</p>
+
+<h3 id="toc_5">原子更新基本类型</h3>
+
+<p>使用原子的方式更新基本类型，Atomic包提供了以下3个类：</p>
+
+<ul>
+<li>AtomicBoolean: 原子更新布尔类型。 </li>
+<li>AtomicInteger: 原子更新整型。 </li>
+<li>AtomicLong: 原子更新长整型。 </li>
+</ul>
+
+<p>以上3个类提供的方法几乎一模一样，可以参考上面AtomicInteger中的相关方法。</p>
+
+<pre><code class="language-java">public class TestCAS {
+    private AtomicInteger count = new AtomicInteger(0);
+    public int add() {
+        return i.addAndGet(1);
+    }
+}
+</code></pre>
+
+<h3 id="toc_6">原子更新数组</h3>
+
+<p>通过原子的方式更新数组里的某个元素，Atomic包提供了以下的4个类： </p>
+
+<ul>
+<li>AtomicIntegerArray: 原子更新整型数组里的元素。 </li>
+<li>AtomicLongArray: 原子更新长整型数组里的元素。 </li>
+<li>AtomicReferenceArray: 原子更新引用类型数组里的元素。<br/>
+　<br/>
+这三个类的最常用的方法是如下两个方法： </li>
+<li>get(int index)：获取索引为index的元素值。 </li>
+<li>compareAndSet(int i,E expect,E update): 如果当前值等于预期值，则以原子方式将数组位置i的元素设置为update值。 </li>
+</ul>
+
+<pre><code class="language-java">import java.util.concurrent.atomic.AtomicIntegerArray;
+
+public class Demo5 {
+    public static void main(String[] args) throws InterruptedException {
+        AtomicIntegerArray array = new AtomicIntegerArray(new int[] { 0, 0 });
+        System.out.println(array);
+        System.out.println(array.getAndAdd(1, 2));
+        System.out.println(array);
+    }
+}
+
+</code></pre>
+
+<h3 id="toc_7">原子更新引用类型</h3>
+
+<p>Atomic包提供了以下三个类： </p>
+
+<ul>
+<li>AtomicReference: 原子更新引用类型。 </li>
+<li>AtomicStampedReference: 原子更新引用类型, 内部使用Pair来存储元素值及其版本号。 </li>
+<li>AtomicMarkableReferce: 原子更新带有标记位的引用类型。</li>
+</ul>
+
+<p>这三个类提供的方法都差不多，首先构造一个引用对象，然后把引用对象set进Atomic类，然后调用compareAndSet等一些方法去进行原子操作，原理都是基于Unsafe实现，但AtomicReferenceFieldUpdater略有不同，更新的字段必须用volatile修饰。</p>
+
+<pre><code class="language-java">import java.util.concurrent.atomic.AtomicReference;
+
+public class AtomicReferenceTest {
+    
+    public static void main(String[] args){
+
+        // 创建两个Person对象，它们的id分别是101和102。
+        Person p1 = new Person(101);
+        Person p2 = new Person(102);
+        // 新建AtomicReference对象，初始化它的值为p1对象
+        AtomicReference ar = new AtomicReference(p1);
+        // 通过CAS设置ar。如果ar的值为p1的话，则将其设置为p2。
+        ar.compareAndSet(p1, p2);
+
+        Person p3 = (Person)ar.get();
+        System.out.println(&quot;p3 is &quot;+p3);
+        System.out.println(&quot;p3.equals(p1)=&quot;+p3.equals(p1));
+    }
+}
+
+class Person {
+    volatile long id;
+    public Person(long id) {
+        this.id = id;
+    }
+    public String toString() {
+        return &quot;id:&quot;+id;
+    }
+}
+</code></pre>
+
+<p>结果如下：</p>
+
+<pre><code class="language-text">p3 is id:102
+p3.equals(p1)=false
+</code></pre>
+
+<ul>
+<li>新建AtomicReference对象ar时，将它初始化为p1。 </li>
+<li>紧接着，通过CAS函数对它进行设置。如果ar的值为p1的话，则将其设置为p2。 </li>
+<li>最后，获取ar对应的对象，并打印结果。p3.equals(p1)的结果为false，这是因为Person并没有覆盖 equals() 方法，而是采用继承自  Object.java 的  equals()方法；而Object.java中的equals()实际上是调用&quot;==&quot;去比较两个对象，即比较两个对象的地址是否相等。</li>
+</ul>
+
+<h3 id="toc_8">原子更新字段类</h3>
+
+<p>Atomic包提供了四个类进行原子字段更新： </p>
+
+<ul>
+<li>AtomicIntegerFieldUpdater: 原子更新整型的字段的更新器。 </li>
+<li>AtomicLongFieldUpdater: 原子更新长整型字段的更新器。 </li>
+<li>AtomicStampedFieldUpdater: 原子更新带有版本号的引用类型。 </li>
+<li>AtomicReferenceFieldUpdater: 更新的字段必须用volatile修饰。</li>
+</ul>
+
+<p>这四个类的使用方式都差不多，是基于反射的原子更新字段的值。要想原子地更新字段类需要两步: 第一步，因为原子更新字段类都是抽象类，每次使用的时候必须使用静态方法newUpdater()创建一个更新器，并且需要设置想要更新的类和属性。 第二步，更新类的字段必须使用public volatile修饰。</p>
+
+<pre><code class="language-java">import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
+public class TestAtomicIntegerFieldUpdater {
+
+    public static void main(String[] args) {
+        TestAtomicIntegerFieldUpdater tIA = new TestAtomicIntegerFieldUpdater();
+        tIA.doIt();
+    }
+
+    public AtomicIntegerFieldUpdater&lt;DataDemo&gt; updater(String name) {
+        return AtomicIntegerFieldUpdater.newUpdater(DataDemo.class, name);
+
+    }
+
+    public void doIt() {
+        DataDemo data = new DataDemo();
+        System.out.println(&quot;publicVar = &quot; + updater(&quot;publicVar&quot;).getAndAdd(data, 2));
+        /*
+         * 由于在DataDemo类中属性value2/value3,在TestAtomicIntegerFieldUpdater中不能访问
+         */
+        System.out.println(&quot;protectedVar = &quot;+updater(&quot;protectedVar&quot;).getAndAdd(data,2));
+        System.out.println(&quot;privateVar = &quot;+updater(&quot;privateVar&quot;).getAndAdd(data,2));
+
+        System.out.println(&quot;staticVar = &quot;+updater(&quot;staticVar&quot;).getAndIncrement(data));//报java.lang.IllegalArgumentException
+        /*
+         * 下面报异常：must be integer
+         */
+        System.out.println(&quot;integerVar = &quot;+updater(&quot;integerVar&quot;).getAndIncrement(data));
+        System.out.println(&quot;longVar = &quot;+updater(&quot;longVar&quot;).getAndIncrement(data));
+    }
+
+}
+
+class DataDemo {
+    public volatile int publicVar = 3;
+    protected volatile int protectedVar = 4;
+    private volatile int privateVar = 5;
+
+    public volatile static int staticVar = 10;
+    //public  final int finalVar = 11;
+
+    public volatile Integer integerVar = 19;
+    public volatile Long longVar = 18L;
+
+}
+
+</code></pre>
+
+<p>再说下对于AtomicIntegerFieldUpdater 的使用稍微有一些限制和约束，约束如下： </p>
+
+<ul>
+<li><p>字段必须是volatile类型的，在线程之间共享变量时保证立即可见.eg:volatile int value = 3 </p></li>
+<li><p>字段的描述类型(修饰符public/protected/default/private)是与调用者与操作对象字段的关系一致。也就是说调用者能够直接操作对象字段，那么就可以反射进行原子操作。但是对于父类的字段，子类是不能直接操作的，尽管子类可以访问父类的字段。 </p></li>
+<li><p>只能是实例变量，不能是类变量，也就是说不能加static关键字。 只能是可修改变量，不能使final变量，因为final的语义就是不可修改。实际上final的语义和volatile是有冲突的，这两个关键字不能同时存在。 </p></li>
+<li><p>对于AtomicIntegerFieldUpdater和AtomicLongFieldUpdater只能修改int/long类型的字段，不能修改其包装类型(Integer/Long)。如果要修改包装类型就需要使用AtomicReferenceFieldUpdater。</p></li>
+</ul>
+
+<h2 id="toc_9">AtomicStampedReference 如何解决 CAS 的 ABA 问题</h2>
+
+<p>AtomicStampedReference 主要维护包含一个对象引用以及一个可以自动更新的整数&quot;stamp&quot;的pair对象来解决ABA问题。</p>
+
+<pre><code class="language-java">public class AtomicStampedReference&lt;V&gt; {
+    private static class Pair&lt;T&gt; {
+        final T reference;  //维护对象引用
+        final int stamp;  //用于标志版本
+        private Pair(T reference, int stamp) {
+            this.reference = reference;
+            this.stamp = stamp;
+        }
+        static &lt;T&gt; Pair&lt;T&gt; of(T reference, int stamp) {
+            return new Pair&lt;T&gt;(reference, stamp);
+        }
+    }
+    private volatile Pair&lt;V&gt; pair;
+    ....
+    
+    /**
+      * expectedReference ：更新之前的原始值
+      * newReference : 将要更新的新值
+      * expectedStamp : 期待更新的标志版本
+      * newStamp : 将要更新的标志版本
+      */
+    public boolean compareAndSet(V   expectedReference,
+                             V   newReference,
+                             int expectedStamp,
+                             int newStamp) {
+        // 获取当前的(元素值，版本号)对
+        Pair&lt;V&gt; current = pair;
+        return
+            // 引用没变
+            expectedReference == current.reference &amp;&amp;
+            // 版本号没变
+            expectedStamp == current.stamp &amp;&amp;
+            // 新引用等于旧引用
+            ((newReference == current.reference &amp;&amp;
+            // 新版本号等于旧版本号
+            newStamp == current.stamp) ||
+            // 构造新的Pair对象并CAS更新
+            casPair(current, Pair.of(newReference, newStamp)));
+    }
+
+    private boolean casPair(Pair&lt;V&gt; cmp, Pair&lt;V&gt; val) {
+        // 调用Unsafe的compareAndSwapObject()方法CAS更新pair的引用为新引用
+        return UNSAFE.compareAndSwapObject(this, pairOffset, cmp, val);
+    }
+
+}
+</code></pre>
+
+<ul>
+<li>如果元素值和版本号都没有变化，并且和新的也相同，返回true； </li>
+<li>如果元素值和版本号都没有变化，并且和新的不完全相同，就构造一个新的Pair对象并执行CAS更新pair。 </li>
+</ul>
+
+<p>可以看到，java中的实现跟我们上面讲的ABA的解决方法是一致的。 </p>
+
+<ul>
+<li>首先，使用版本号控制； </li>
+<li>其次，不重复使用节点(Pair)的引用，每次都新建一个新的Pair来作为CAS比较的对象，而不是复用旧的； </li>
+<li>最后，外部传入元素值及版本号，而不是节点(Pair)的引用</li>
+</ul>
+
+<pre><code class="language-java">public class AtomicStampedReferenceTest {
+    private static final AtomicStampedReference&lt;Integer&gt; atomicStampedRef = new AtomicStampedReference&lt;&gt;(1, 0);
+
+    public static void main(String[] args) {
+        Thread main = new Thread(() -&gt; {
+            System.out.println(&quot;操作线程&quot; + Thread.currentThread() + &quot;,初始值 a = &quot; + atomicStampedRef.getReference());
+            int stamp = atomicStampedRef.getStamp(); //获取当前标识别
+            try {
+                Thread.sleep(1000); //等待1秒 ，以便让干扰线程执行
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            boolean isCASSuccess = atomicStampedRef.compareAndSet(1, 2, stamp, stamp + 1);  //此时expectedReference未发生改变，但是stamp已经被修改了,所以CAS失败
+            System.out.println(&quot;操作线程&quot; + Thread.currentThread() + &quot;,CAS操作结果: &quot; + isCASSuccess);
+        }, &quot;主操作线程&quot;);
+
+        Thread other = new Thread(() -&gt; {
+            Thread.yield(); // 确保thread-main 优先执行
+            atomicStampedRef.compareAndSet(1, 2, atomicStampedRef.getStamp(), atomicStampedRef.getStamp() + 1);
+            System.out.println(&quot;操作线程&quot; + Thread.currentThread() + &quot;,【increment】 ,值 = &quot; + atomicStampedRef.getReference());
+            atomicStampedRef.compareAndSet(2, 1, atomicStampedRef.getStamp(), atomicStampedRef.getStamp() + 1);
+            System.out.println(&quot;操作线程&quot; + Thread.currentThread() + &quot;,【decrement】 ,值 = &quot; + atomicStampedRef.getReference());
+        }, &quot;干扰线程&quot;);
+
+        main.start();
+        other.start();
+    }
+
+}
+</code></pre>
+
+<p>此外还有 AtomicMarkableReference 这个类也可以解决 CAS 的 ABA 问题，它不是维护一个版本号，而是维护一个boolean类型的标记，标记值有修改，了解一下。</p>
 
                   </article>
                   <div class="comments-wrap">
@@ -223,6 +501,8 @@ AtomicMarkableReference 跟 AtomicStampedReference 差不多， AtomicMarkableRe
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

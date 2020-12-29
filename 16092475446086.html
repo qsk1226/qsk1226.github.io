@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    写时复制容器 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            写时复制容器   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/29</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.html'>数据结构与算法</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li>请先说说非并发集合中Fail-fast机制? </li>
+<li>再为什么说ArrayList查询快而增删慢? 对比ArrayList说说</li>
+<li>CopyOnWriteArrayList的增删改查实现原理? COW基于拷贝 </li>
+<li>再说下弱一致性的迭代器原理是怎么样的? COWIterator<E> </li>
+<li>CopyOnWriteArrayList为什么并发安全且性能比Vector好? </li>
+<li>CopyOnWriteArrayList有何缺陷，说说其应用场景<br/>
+## 写时复制容器 CopyOnWriteArrayList 分析</li>
+</ul>
+
+<h3 id="toc_0">内部类 COWIterator</h3>
+
+<p>COWIterator表示迭代器，其也有一个Object类型的数组作为CopyOnWriteArrayList数组的快照，这种快照风格的迭代器方法在创建迭代器时使用了对当时数组状态的引用。此数组在迭代器的生存期内不会更改，因此不可能发生冲突，并且迭代器保证不会抛出 ConcurrentModificationException。创建迭代器以后，迭代器就不会反映列表的添加、移除或者更改。在迭代器上进行的元素更改操作(remove、set 和 add)不受支持。这些方法将抛出 UnsupportedOperationException。</p>
+
+<pre><code class="language-java">static final class COWIterator&lt;E&gt; implements ListIterator&lt;E&gt; {
+    /** Snapshot of the array */
+    // 快照
+    private final Object[] snapshot;
+    /** Index of element to be returned by subsequent call to next.  */
+    // 游标
+    private int cursor;
+    // 构造函数
+    private COWIterator(Object[] elements, int initialCursor) {
+        cursor = initialCursor;
+        snapshot = elements;
+    }
+    // 是否还有下一项
+    public boolean hasNext() {
+        return cursor &lt; snapshot.length;
+    }
+    // 是否有上一项
+    public boolean hasPrevious() {
+        return cursor &gt; 0;
+    }
+    // next项
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public E next() {
+        if (! hasNext()) // 不存在下一项，抛出异常
+            throw new NoSuchElementException();
+        // 返回下一项
+        return (E) snapshot[cursor++];
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public E previous() {
+        if (! hasPrevious())
+            throw new NoSuchElementException();
+        return (E) snapshot[--cursor];
+    }
+    
+    // 下一项索引
+    public int nextIndex() {
+        return cursor;
+    }
+    
+    // 上一项索引
+    public int previousIndex() {
+        return cursor-1;
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code remove}
+        *         is not supported by this iterator.
+        */
+    // 不支持remove操作
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code set}
+        *         is not supported by this iterator.
+        */
+    // 不支持set操作
+    public void set(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code add}
+        *         is not supported by this iterator.
+        */
+    // 不支持add操作
+    public void add(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer&lt;? super E&gt; action) {
+        Objects.requireNonNull(action);
+        Object[] elements = snapshot;
+        final int size = elements.length;
+        for (int i = cursor; i &lt; size; i++) {
+            @SuppressWarnings(&quot;unchecked&quot;) E e = (E) elements[i];
+            action.accept(e);
+        }
+        cursor = size;
+    }
+}
+
+</code></pre>
+
+<h3 id="toc_1">类的属性</h3>
+
+<pre><code class="language-java">public class CopyOnWriteArrayList&lt;E&gt;
+    implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable {
+    // 版本序列号
+    private static final long serialVersionUID = 8673264195747942595L;
+    // 可重入锁
+    final transient ReentrantLock lock = new ReentrantLock();
+    // 对象数组，用于存放元素
+    private transient volatile Object[] array;
+    // 反射机制
+    private static final sun.misc.Unsafe UNSAFE;
+    // lock域的内存偏移量
+    private static final long lockOffset;
+    static {
+        try {
+            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            Class&lt;?&gt; k = CopyOnWriteArrayList.class;
+            lockOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;lock&quot;));
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+}
+
+</code></pre>
+
+<p>属性中有一个可重入锁，用来保证线程安全访问，还有一个Object类型的数组，用来存放具体的元素。当然，也使用到了反射机制和CAS来保证原子性的修改lock域。</p>
+
+<h3 id="toc_2">构造器</h3>
+
+<pre><code class="language-java">public CopyOnWriteArrayList(Collection&lt;? extends E&gt; c) {
+    Object[] elements;
+    if (c.getClass() == CopyOnWriteArrayList.class) // 类型相同
+        // 获取c集合的数组
+        elements = ((CopyOnWriteArrayList&lt;?&gt;)c).getArray();
+    else { // 类型不相同
+        // 将c集合转化为数组并赋值给elements
+        elements = c.toArray();
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)
+        if (elements.getClass() != Object[].class) // elements类型不为Object[]类型
+            // 将elements数组转化为Object[]类型的数组
+            elements = Arrays.copyOf(elements, elements.length, Object[].class);
+    }
+    // 设置数组
+    setArray(elements);
+}
+
+</code></pre>
+
+<p>该构造函数的处理流程如下 </p>
+
+<ul>
+<li>判断传入的集合c的类型是否为CopyOnWriteArrayList类型，若是，则获取该集合类型的底层数组(Object[])，并且设置当前CopyOnWriteArrayList的数组(Object[]数组)，进入步骤③；否则，进入步骤② </li>
+<li>将传入的集合转化为数组elements，判断elements的类型是否为Object[]类型(toArray方法可能不会返回Object类型的数组)，若不是，则将elements转化为Object类型的数组。进入步骤③ </li>
+<li>设置当前CopyOnWriteArrayList的Object[]为elements。 </li>
+</ul>
+
+<h3 id="toc_3">核心方法分析</h3>
+
+<h4 id="toc_4">copyOf 方法</h4>
+
+<pre><code class="language-java">public static &lt;T,U&gt; T[] copyOf(U[] original, int newLength, Class&lt;? extends T[]&gt; newType) {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    // 确定copy的类型(将newType转化为Object类型，将Object[].class转化为Object类型，判断两者是否相等，若相等，则生成指定长度的Object数组
+    // 否则,生成指定长度的新类型的数组)
+    T[] copy = ((Object)newType == (Object)Object[].class)
+        ? (T[]) new Object[newLength]
+        : (T[]) Array.newInstance(newType.getComponentType(), newLength);
+    // 将original数组从下标0开始，复制长度为(original.length和newLength的较小者),复制到copy数组中(也从下标0开始)
+    System.arraycopy(original, 0, copy, 0,
+                        Math.min(original.length, newLength));
+    return copy;
+}
+
+</code></pre>
+
+<h4 id="toc_5">add 方法</h4>
+
+<pre><code class="language-java">public boolean add(E e) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 元素数组
+        Object[] elements = getArray();
+        // 数组长度
+        int len = elements.length;
+        // 复制数组
+        Object[] newElements = Arrays.copyOf(elements, len + 1);
+        // 存放元素e
+        newElements[len] = e;
+        // 设置数组
+        setArray(newElements);
+        return true;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>此函数用于将指定元素添加到此列表的尾部，处理流程如下 </p>
+
+<ul>
+<li>获取锁(保证多线程的安全访问)，获取当前的Object数组，获取Object数组的长度为length，进入步骤②。 </li>
+<li>根据Object数组复制一个长度为length+1的Object数组为newElements(此时，newElements[length]为null)，进入下一步骤。 </li>
+<li>将下标为length的数组元素newElements[length]设置为元素e，再设置当前Object[]为newElements，释放锁，返回。这样就完成了元素的添加。</li>
+</ul>
+
+<h4 id="toc_6">addIfAbstract 方法</h4>
+
+<pre><code class="language-java">private boolean addIfAbsent(E e, Object[] snapshot) {
+    // 重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] current = getArray();
+        // 数组长度
+        int len = current.length;
+        if (snapshot != current) { // 快照不等于当前数组，对数组进行了修改
+            // Optimize for lost race to another addXXX operation
+            // 取较小者
+            int common = Math.min(snapshot.length, len);
+            for (int i = 0; i &lt; common; i++) // 遍历
+                if (current[i] != snapshot[i] &amp;&amp; eq(e, current[i])) // 当前数组的元素与快照的元素不相等并且e与当前元素相等
+                    // 表示在snapshot与current之间修改了数组，并且设置了数组某一元素为e，已经存在
+                    // 返回
+                    return false;
+            if (indexOf(e, current, common, len) &gt;= 0) // 在当前数组中找到e元素
+                    // 返回
+                    return false;
+        }
+        // 复制数组
+        Object[] newElements = Arrays.copyOf(current, len + 1);
+        // 对数组len索引的元素赋值为e
+        newElements[len] = e;
+        // 设置数组
+        setArray(newElements);
+        return true;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>该函数的流程如下:</p>
+
+<ul>
+<li>① 获取锁，获取当前数组为current，current长度为len，判断数组之前的快照snapshot是否等于当前数组current，若不相等，则进入步骤②；否则，进入步骤④ </li>
+<li>② 不相等，表示在snapshot与current之间，对数组进行了修改(如进行了add、set、remove等操作)，获取长度(snapshot与current之间的较小者)，对current进行遍历操作，若遍历过程发现snapshot与current的元素不相等并且current的元素与指定元素相等(可能进行了set操作)，进入步骤⑤，否则，进入步骤③ </li>
+<li>③ 在当前数组中索引指定元素，若能够找到，进入步骤⑤，否则，进入步骤④ </li>
+<li>④ 复制当前数组current为newElements，长度为len+1，此时newElements[len]为null。再设置newElements[len]为指定元素e，再设置数组，进入步骤⑤ ⑤ 释放锁，返回。</li>
+</ul>
+
+<h4 id="toc_7">set 方法</h4>
+
+<p>此方法是用指定的元素替代此列表指定位置的元素，也是基于数组的复制来实现的。</p>
+
+<pre><code class="language-java">public E set(int index, E element) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] elements = getArray();
+        // 获取index索引的元素
+        E oldValue = get(elements, index);
+
+        if (oldValue != element) { // 旧值等于element
+            // 数组长度
+            int len = elements.length;
+            // 复制数组
+            Object[] newElements = Arrays.copyOf(elements, len);
+            // 重新赋值index索引的值
+            newElements[index] = element;
+            // 设置数组
+            setArray(newElements);
+        } else {
+            // Not quite a no-op; ensures volatile write semantics
+            // 设置数组
+            setArray(elements);
+        }
+        // 返回旧值
+        return oldValue;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<h4 id="toc_8">remove 方法</h4>
+
+<p>用于移除此列表上指定位置上的元素</p>
+
+<pre><code class="language-java">public E remove(int index) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] elements = getArray();
+        // 数组长度
+        int len = elements.length;
+        // 获取旧值
+        E oldValue = get(elements, index);
+        // 需要移动的元素个数
+        int numMoved = len - index - 1;
+        if (numMoved == 0) // 移动个数为0
+            // 复制后设置数组
+            setArray(Arrays.copyOf(elements, len - 1));
+        else { // 移动个数不为0
+            // 新生数组
+            Object[] newElements = new Object[len - 1];
+            // 复制index索引之前的元素
+            System.arraycopy(elements, 0, newElements, 0, index);
+            // 复制index索引之后的元素
+            System.arraycopy(elements, index + 1, newElements, index,
+                                numMoved);
+            // 设置索引
+            setArray(newElements);
+        }
+        // 返回旧值
+        return oldValue;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>处理流程如下</p>
+
+<ul>
+<li>1、获取锁，获取数组 elements，数组长度为 length，获取索引的值 elements[index] ,计算需要移动的元素个数(length - index - 1) ,若个数为 0， 则表示移除的是数组的最后一个元素，复制 elements 数组， 复制长度为 length - 1，然后设置数组，进入步骤 3，否则进入步骤 2</li>
+<li>2、先复制 index 索引前的元素，再复制 index 索引后的元素，然后设置数组</li>
+<li>3、释放锁，返回旧值 </li>
+</ul>
+
+<h3 id="toc_9">示例</h3>
+
+<pre><code class="language-java">import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+class PutThread extends Thread {
+    private CopyOnWriteArrayList&lt;Integer&gt; cowal;
+
+    public PutThread(CopyOnWriteArrayList&lt;Integer&gt; cowal) {
+        this.cowal = cowal;
+    }
+
+    public void run() {
+        try {
+            for (int i = 100; i &lt; 110; i++) {
+                cowal.add(i);
+                Thread.sleep(50);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+public class CopyOnWriteArrayListDemo {
+    public static void main(String[] args) {
+        CopyOnWriteArrayList&lt;Integer&gt; cowal = new CopyOnWriteArrayList&lt;Integer&gt;();
+        for (int i = 0; i &lt; 10; i++) {
+            cowal.add(i);
+        }
+        PutThread p1 = new PutThread(cowal);
+        p1.start();
+        Iterator&lt;Integer&gt; iterator = cowal.iterator();
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + &quot; &quot;);
+        }
+        System.out.println();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        iterator = cowal.iterator();
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + &quot; &quot;);
+        }
+    }
+}
+
+</code></pre>
+
+<h3 id="toc_10">CopyOnWriteArrayList 总结</h3>
+
+<p>CopyOnWrite 容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行 Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。</p>
+
+<p>这样做的好处是我们可以对 CopyOnWrite 容器进行并发的读，而不需要加锁， 因为当前容器不会添加任何元素。所以 CopyOnWrite 容器也是一种读写分离的思 想，读和写不同的容器。如果读的时候有多个线程正在向 CopyOnWriteArrayList 添加数据，读还是会读到旧的数据，因为写的时候不会锁住旧的CopyOnWriteArrayList。</p>
+
+<p>使用 CopyOnWriteMap 需要注意两件事情:</p>
+
+<ul>
+<li>减少扩容开销。根据实际需要，初始化 CopyOnWriteMap 的大小，<br/>
+避免写时 CopyOnWriteMap 扩容的开销。</li>
+<li>使用批量添加。因为每次添加，容器每次都会进行复制，所以减少添加<br/>
+次数，可以减少容器的复制次数。</li>
+</ul>
+
+<h3 id="toc_11">写时复制容器的问题</h3>
+
+<ul>
+<li><p>性能问题<br/>
+每次修改都创建一个新数组，然后复制所有内容，如果数组比较大，修改操作又比较频繁，可以想象，性能是很低的，而且内存开销会很大,可能导致 GC 。</p></li>
+<li><p>数据一致性问题。<br/>
+CopyOnWrite 容器只能保证数据的最终一致性，不能保证数据的实时一致性。 所以如果你希望写入的的数据，马上能读到，不要使用 CopyOnWrite 容器</p></li>
+</ul>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

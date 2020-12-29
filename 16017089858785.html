@@ -134,7 +134,7 @@
 
 <p>CLH 是 Craig、Landin 和 Hagersten 三位作者的缩写，我们 JDK 中 java.util.concurrent.locks.AbstractQueuedSynchronizer 就是根据 CLH 锁的变种实现的；</p>
 
-<pre><code class="language-text">public class CLH implements Lock {
+<pre><code class="language-java">public class CLH implements Lock {
   private final ThreadLocal&lt;Node&gt; preNode = ThreadLocal.withInitial(() -&gt; null);
   
   private final ThreadLocal&lt;Node&gt; node = ThreadLocal.withInitial(Node::new);
@@ -169,7 +169,7 @@
 
 <p>同样 MCS 是 John M. Mellor-Crummey 和 Michael L. Scott 名字的缩写，</p>
 
-<pre><code class="language-text">public class MCS implements Lock {
+<pre><code class="language-java">public class MCS implements Lock {
   private final ThreadLocal&lt;Node&gt; node = ThreadLocal.withInitial(Node::new);
   
   private final AtomicReference&lt;Node&gt; tail = new AtomicReference&lt;&gt;();

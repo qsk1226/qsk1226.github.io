@@ -114,13 +114,23 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/15867933931035/15960168863131.jpg" alt="" style="width:645px;"/></figure></p>
+                    <ul>
+<li>什么是可重入，什么是可重入锁? 它用来解决什么问题? </li>
+<li>ReentrantLock的核心是AQS，那么它怎么来实现的，继承吗? 说说其类内部结构关系。 </li>
+<li>ReentrantLock是如何实现公平锁的? </li>
+<li>ReentrantLock是如何实现非公平锁的? </li>
+<li>ReentrantLock默认实现的是公平还是非公平锁? </li>
+<li>使用ReentrantLock实现公平和非公平锁的示例? </li>
+<li>ReentrantLock和Synchronized的对比?</li>
+</ul>
 
-<p>ReentrantLock内部存在3个实现类，分别是Sync、NonfairSync、FairSync，其中Sync继承自AQS实现了解锁tryRelease()方法，而NonfairSync(非公平锁)、 FairSync(公平锁)则继承自Sync，实现了获取锁的tryAcquire()方法，ReentrantLock的所有方法调用都通过间接调用AQS和Sync类及其子类来完成的。</p>
+<p><figure><img src="media/15867933931035/15960168863131.jpg" alt="ReentrantLock 类结构"/><figcaption>ReentrantLock 类结构</figcaption></figure></p>
 
-<h2 id="toc_0">可重入</h2>
+<p>ReentrantLock内部存在3个实现类，分别是Sync、NonfairSync、FairSync，其中 Sync 继承自 AQS 实现了解锁 tryRelease() 方法，而 NonfairSync(非公平锁)、 FairSync(公平锁)则继承自 Sync，实现了获取锁的 tryAcquire() 方法，ReentrantLock的所有方法调用都通过间接调用AQS和Sync类及其子类来完成的。</p>
 
-<p>简单的说的话就是同一个线程对于已经获得到的锁，可以多次继续申请到该 锁的使用权”。<br/>
+<h2 id="toc_0">什么是可重入</h2>
+
+<p>简单的说的话就是同一个线程对于已经获得到的锁，可以多次继续申请到该锁的使用权。<br/>
 重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被锁所阻塞， 该特性的实现需要解决以下两个问题：</p>
 
 <ul>
@@ -128,16 +138,17 @@
 <li>锁的最终释放。线程重复 n 次获取了锁，随后在第 n 次释放该锁后，其 他线程能够获取到该锁。锁的最终释放要求锁对于获取进行计数自增，计数表示 当前锁被重复获取的次数，而锁被释放时，计数自减，当计数等于 0 时表示锁已 经成功释放。</li>
 </ul>
 
-<p>nonfairTryAcquire 方法增加了再次获取同步状态的处理逻辑: 通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。</p>
+<p>nonfairTryAcquire(int acquire) 方法增加了再次获取同步状态的处理逻辑: 通过判断当前 线程是否为获取锁的线程来决定获取操作是否成功，如果是获取锁的线程再次请求，则将同步状态值进行增加并返回 true，表示获取同步状态成功。同步状态表 示锁被一个线程重复获取的次数。</p>
 
 <p>如果该锁被获取了 n 次，那么前(n-1)次 tryRelease(int releases)方法必须返回 false，而只有同步状态完全释放了，才能返回 true。可以看到，该方法将同步状 态是否为 0 作为最终释放的条件，当同步状态为 0 时，将占有线程设置为 null， 并返回 true，表示释放成功。</p>
 
-<h2 id="toc_1">公平和非公平锁</h2>
+<h2 id="toc_1">公平锁和非公平锁</h2>
 
 <p>公平锁是指所有试图获得锁的线程按照获取锁的顺序依次获得锁，而非公平锁则是当前的锁状态没有被占用时, 当前线程可以直接占用,而不需要等待。在实现上，非公平锁逻辑基本跟公平锁一致，唯一的区别是，当前线程不需要判断同步队列中是否有等待线程。</p>
 
-<p>非公平锁性能高于公平锁性能。首先，在恢复一个被挂起的线程与该线程真 正运行之间存在着严重的延迟。而且，非公平锁能更充分的利用 cpu 的时间片， 尽量的减少 cpu 空闲的状态时间。<br/>
-使用场景的话呢，其实还是和他们的属性一一相关，比如:如果业务中线程 占用(处理)时间要远长于线程等待，那用非公平锁其实效率并不明显，但是用公 平锁可以保证不会有线程被饿死。</p>
+<p>非公平锁性能高于公平锁性能。首先，在恢复一个被挂起的线程与该线程真 正运行之间存在着严重的延迟。而且，非公平锁能更充分的利用 cpu 的时间片， 尽量的减少 cpu 空闲的状态时间。</p>
+
+<p>使用场景的话呢，其实还是和他们的属性一一相关，比如:如果业务中线程占用(处理)时间要远长于线程等待，那用非公平锁其实效率并不明显，但是用公平锁可以保证不会有线程被饿死。</p>
 
 <pre><code class="language-java">public ReentrantLock(boolean fair) {
     sync = fair ? new FairSync() : new NonfairSync();
@@ -148,7 +159,7 @@
 
 <p>而另一个构造函数 ReentrantLock(boolean fair)传入参数为 true 时将会把 Sync 对象创建为“公平锁” FairSync。</p>
 
-<p>nonfairTryAcquire(int acquires)方法，对于非公平锁，只要 CAS 设置同步状态 成功，则表示当前线程获取了锁，而公平锁则不同。</p>
+<p>nonfairTryAcquire(int acquires)方法，对于非公平锁，只要 CAS 设置同步状态成功，则表示当前线程获取了锁，而公平锁则不同。</p>
 
 <p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
 
@@ -181,20 +192,29 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
         }
         return false;
     }
-
+    
+    /**
+     * 试图在共享模式下获取对象状态，此方法应该查询是否允许它在共享模式下获取对象状态，如果允许，则获取它
+     */
     protected final boolean tryRelease(int releases) {
         int c = getState() - releases;
+        // 当前线程不是 独占线程
         if (Thread.currentThread() != getExclusiveOwnerThread())
             throw new IllegalMonitorStateException();
         boolean free = false;
+        // 如果释放了所有的锁，要清空独占线程
         if (c == 0) {
             free = true;
             setExclusiveOwnerThread(null);
         }
+        // 设置 state 状态
         setState(c);
         return free;
     }
-
+    
+    /**
+     * 判断资源是否被当前线程持有
+     */
     protected final boolean isHeldExclusively() {
         return getExclusiveOwnerThread() == Thread.currentThread();
     }
@@ -203,6 +223,9 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
         return new ConditionObject();
     }
     
+    /**
+     * 返回独占资源的线程
+     */
     final Thread getOwner() {
         return getState() == 0 ? null : getExclusiveOwnerThread();
     }
@@ -210,7 +233,10 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
     final int getHoldCount() {
         return isHeldExclusively() ? getState() : 0;
     }
-
+    
+    /**
+     * 资源是否被占用
+     */
     final boolean isLocked() {
         return getState() != 0;
     }
@@ -233,7 +259,7 @@ static final class FairSync extends Sync {
         final Thread current = Thread.currentThread();
         int c = getState();
         if (c == 0) {
-            //注意！！这里先判断同步队列是否存在结点
+            //注意！！！这里先判断同步队列是否存在结点
             if (!hasQueuedPredecessors() &amp;&amp;
                 compareAndSetState(0, acquires)) {
                 setExclusiveOwnerThread(current);

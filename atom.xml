@@ -4,13 +4,1103 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-12-18T00:53:12+08:00</updated>
+  <updated>2020-12-29T22:25:07+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
     
   </author>
   <generator uri="http://www.mweb.im/">MWeb</generator>
+  
+  <entry>
+    <title type="html"><![CDATA[写时复制容器]]></title>
+    <link href="http://www.throne4j.com/16092475446086.html"/>
+    <updated>2020-12-29T21:12:24+08:00</updated>
+    <id>http://www.throne4j.com/16092475446086.html</id>
+    <content type="html"><![CDATA[
+<ul>
+<li>请先说说非并发集合中Fail-fast机制? </li>
+<li>再为什么说ArrayList查询快而增删慢? 对比ArrayList说说</li>
+<li>CopyOnWriteArrayList的增删改查实现原理? COW基于拷贝 </li>
+<li>再说下弱一致性的迭代器原理是怎么样的? COWIterator<E> </li>
+<li>CopyOnWriteArrayList为什么并发安全且性能比Vector好? </li>
+<li>CopyOnWriteArrayList有何缺陷，说说其应用场景<br/>
+## 写时复制容器 CopyOnWriteArrayList 分析</li>
+</ul>
+
+<h3 id="toc_0">内部类 COWIterator</h3>
+
+<p>COWIterator表示迭代器，其也有一个Object类型的数组作为CopyOnWriteArrayList数组的快照，这种快照风格的迭代器方法在创建迭代器时使用了对当时数组状态的引用。此数组在迭代器的生存期内不会更改，因此不可能发生冲突，并且迭代器保证不会抛出 ConcurrentModificationException。创建迭代器以后，迭代器就不会反映列表的添加、移除或者更改。在迭代器上进行的元素更改操作(remove、set 和 add)不受支持。这些方法将抛出 UnsupportedOperationException。</p>
+
+<pre><code class="language-java">static final class COWIterator&lt;E&gt; implements ListIterator&lt;E&gt; {
+    /** Snapshot of the array */
+    // 快照
+    private final Object[] snapshot;
+    /** Index of element to be returned by subsequent call to next.  */
+    // 游标
+    private int cursor;
+    // 构造函数
+    private COWIterator(Object[] elements, int initialCursor) {
+        cursor = initialCursor;
+        snapshot = elements;
+    }
+    // 是否还有下一项
+    public boolean hasNext() {
+        return cursor &lt; snapshot.length;
+    }
+    // 是否有上一项
+    public boolean hasPrevious() {
+        return cursor &gt; 0;
+    }
+    // next项
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public E next() {
+        if (! hasNext()) // 不存在下一项，抛出异常
+            throw new NoSuchElementException();
+        // 返回下一项
+        return (E) snapshot[cursor++];
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public E previous() {
+        if (! hasPrevious())
+            throw new NoSuchElementException();
+        return (E) snapshot[--cursor];
+    }
+    
+    // 下一项索引
+    public int nextIndex() {
+        return cursor;
+    }
+    
+    // 上一项索引
+    public int previousIndex() {
+        return cursor-1;
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code remove}
+        *         is not supported by this iterator.
+        */
+    // 不支持remove操作
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code set}
+        *         is not supported by this iterator.
+        */
+    // 不支持set操作
+    public void set(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+        * Not supported. Always throws UnsupportedOperationException.
+        * @throws UnsupportedOperationException always; {@code add}
+        *         is not supported by this iterator.
+        */
+    // 不支持add操作
+    public void add(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer&lt;? super E&gt; action) {
+        Objects.requireNonNull(action);
+        Object[] elements = snapshot;
+        final int size = elements.length;
+        for (int i = cursor; i &lt; size; i++) {
+            @SuppressWarnings(&quot;unchecked&quot;) E e = (E) elements[i];
+            action.accept(e);
+        }
+        cursor = size;
+    }
+}
+
+</code></pre>
+
+<h3 id="toc_1">类的属性</h3>
+
+<pre><code class="language-java">public class CopyOnWriteArrayList&lt;E&gt;
+    implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable {
+    // 版本序列号
+    private static final long serialVersionUID = 8673264195747942595L;
+    // 可重入锁
+    final transient ReentrantLock lock = new ReentrantLock();
+    // 对象数组，用于存放元素
+    private transient volatile Object[] array;
+    // 反射机制
+    private static final sun.misc.Unsafe UNSAFE;
+    // lock域的内存偏移量
+    private static final long lockOffset;
+    static {
+        try {
+            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            Class&lt;?&gt; k = CopyOnWriteArrayList.class;
+            lockOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;lock&quot;));
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+}
+
+</code></pre>
+
+<p>属性中有一个可重入锁，用来保证线程安全访问，还有一个Object类型的数组，用来存放具体的元素。当然，也使用到了反射机制和CAS来保证原子性的修改lock域。</p>
+
+<h3 id="toc_2">构造器</h3>
+
+<pre><code class="language-java">public CopyOnWriteArrayList(Collection&lt;? extends E&gt; c) {
+    Object[] elements;
+    if (c.getClass() == CopyOnWriteArrayList.class) // 类型相同
+        // 获取c集合的数组
+        elements = ((CopyOnWriteArrayList&lt;?&gt;)c).getArray();
+    else { // 类型不相同
+        // 将c集合转化为数组并赋值给elements
+        elements = c.toArray();
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)
+        if (elements.getClass() != Object[].class) // elements类型不为Object[]类型
+            // 将elements数组转化为Object[]类型的数组
+            elements = Arrays.copyOf(elements, elements.length, Object[].class);
+    }
+    // 设置数组
+    setArray(elements);
+}
+
+</code></pre>
+
+<p>该构造函数的处理流程如下 </p>
+
+<ul>
+<li>判断传入的集合c的类型是否为CopyOnWriteArrayList类型，若是，则获取该集合类型的底层数组(Object[])，并且设置当前CopyOnWriteArrayList的数组(Object[]数组)，进入步骤③；否则，进入步骤② </li>
+<li>将传入的集合转化为数组elements，判断elements的类型是否为Object[]类型(toArray方法可能不会返回Object类型的数组)，若不是，则将elements转化为Object类型的数组。进入步骤③ </li>
+<li>设置当前CopyOnWriteArrayList的Object[]为elements。 </li>
+</ul>
+
+<h3 id="toc_3">核心方法分析</h3>
+
+<h4 id="toc_4">copyOf 方法</h4>
+
+<pre><code class="language-java">public static &lt;T,U&gt; T[] copyOf(U[] original, int newLength, Class&lt;? extends T[]&gt; newType) {
+    @SuppressWarnings(&quot;unchecked&quot;)
+    // 确定copy的类型(将newType转化为Object类型，将Object[].class转化为Object类型，判断两者是否相等，若相等，则生成指定长度的Object数组
+    // 否则,生成指定长度的新类型的数组)
+    T[] copy = ((Object)newType == (Object)Object[].class)
+        ? (T[]) new Object[newLength]
+        : (T[]) Array.newInstance(newType.getComponentType(), newLength);
+    // 将original数组从下标0开始，复制长度为(original.length和newLength的较小者),复制到copy数组中(也从下标0开始)
+    System.arraycopy(original, 0, copy, 0,
+                        Math.min(original.length, newLength));
+    return copy;
+}
+
+</code></pre>
+
+<h4 id="toc_5">add 方法</h4>
+
+<pre><code class="language-java">public boolean add(E e) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 元素数组
+        Object[] elements = getArray();
+        // 数组长度
+        int len = elements.length;
+        // 复制数组
+        Object[] newElements = Arrays.copyOf(elements, len + 1);
+        // 存放元素e
+        newElements[len] = e;
+        // 设置数组
+        setArray(newElements);
+        return true;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>此函数用于将指定元素添加到此列表的尾部，处理流程如下 </p>
+
+<ul>
+<li>获取锁(保证多线程的安全访问)，获取当前的Object数组，获取Object数组的长度为length，进入步骤②。 </li>
+<li>根据Object数组复制一个长度为length+1的Object数组为newElements(此时，newElements[length]为null)，进入下一步骤。 </li>
+<li>将下标为length的数组元素newElements[length]设置为元素e，再设置当前Object[]为newElements，释放锁，返回。这样就完成了元素的添加。</li>
+</ul>
+
+<h4 id="toc_6">addIfAbstract 方法</h4>
+
+<pre><code class="language-java">private boolean addIfAbsent(E e, Object[] snapshot) {
+    // 重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] current = getArray();
+        // 数组长度
+        int len = current.length;
+        if (snapshot != current) { // 快照不等于当前数组，对数组进行了修改
+            // Optimize for lost race to another addXXX operation
+            // 取较小者
+            int common = Math.min(snapshot.length, len);
+            for (int i = 0; i &lt; common; i++) // 遍历
+                if (current[i] != snapshot[i] &amp;&amp; eq(e, current[i])) // 当前数组的元素与快照的元素不相等并且e与当前元素相等
+                    // 表示在snapshot与current之间修改了数组，并且设置了数组某一元素为e，已经存在
+                    // 返回
+                    return false;
+            if (indexOf(e, current, common, len) &gt;= 0) // 在当前数组中找到e元素
+                    // 返回
+                    return false;
+        }
+        // 复制数组
+        Object[] newElements = Arrays.copyOf(current, len + 1);
+        // 对数组len索引的元素赋值为e
+        newElements[len] = e;
+        // 设置数组
+        setArray(newElements);
+        return true;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>该函数的流程如下:</p>
+
+<ul>
+<li>① 获取锁，获取当前数组为current，current长度为len，判断数组之前的快照snapshot是否等于当前数组current，若不相等，则进入步骤②；否则，进入步骤④ </li>
+<li>② 不相等，表示在snapshot与current之间，对数组进行了修改(如进行了add、set、remove等操作)，获取长度(snapshot与current之间的较小者)，对current进行遍历操作，若遍历过程发现snapshot与current的元素不相等并且current的元素与指定元素相等(可能进行了set操作)，进入步骤⑤，否则，进入步骤③ </li>
+<li>③ 在当前数组中索引指定元素，若能够找到，进入步骤⑤，否则，进入步骤④ </li>
+<li>④ 复制当前数组current为newElements，长度为len+1，此时newElements[len]为null。再设置newElements[len]为指定元素e，再设置数组，进入步骤⑤ ⑤ 释放锁，返回。</li>
+</ul>
+
+<h4 id="toc_7">set 方法</h4>
+
+<p>此方法是用指定的元素替代此列表指定位置的元素，也是基于数组的复制来实现的。</p>
+
+<pre><code class="language-java">public E set(int index, E element) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] elements = getArray();
+        // 获取index索引的元素
+        E oldValue = get(elements, index);
+
+        if (oldValue != element) { // 旧值等于element
+            // 数组长度
+            int len = elements.length;
+            // 复制数组
+            Object[] newElements = Arrays.copyOf(elements, len);
+            // 重新赋值index索引的值
+            newElements[index] = element;
+            // 设置数组
+            setArray(newElements);
+        } else {
+            // Not quite a no-op; ensures volatile write semantics
+            // 设置数组
+            setArray(elements);
+        }
+        // 返回旧值
+        return oldValue;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<h4 id="toc_8">remove 方法</h4>
+
+<p>用于移除此列表上指定位置上的元素</p>
+
+<pre><code class="language-java">public E remove(int index) {
+    // 可重入锁
+    final ReentrantLock lock = this.lock;
+    // 获取锁
+    lock.lock();
+    try {
+        // 获取数组
+        Object[] elements = getArray();
+        // 数组长度
+        int len = elements.length;
+        // 获取旧值
+        E oldValue = get(elements, index);
+        // 需要移动的元素个数
+        int numMoved = len - index - 1;
+        if (numMoved == 0) // 移动个数为0
+            // 复制后设置数组
+            setArray(Arrays.copyOf(elements, len - 1));
+        else { // 移动个数不为0
+            // 新生数组
+            Object[] newElements = new Object[len - 1];
+            // 复制index索引之前的元素
+            System.arraycopy(elements, 0, newElements, 0, index);
+            // 复制index索引之后的元素
+            System.arraycopy(elements, index + 1, newElements, index,
+                                numMoved);
+            // 设置索引
+            setArray(newElements);
+        }
+        // 返回旧值
+        return oldValue;
+    } finally {
+        // 释放锁
+        lock.unlock();
+    }
+}
+
+</code></pre>
+
+<p>处理流程如下</p>
+
+<ul>
+<li>1、获取锁，获取数组 elements，数组长度为 length，获取索引的值 elements[index] ,计算需要移动的元素个数(length - index - 1) ,若个数为 0， 则表示移除的是数组的最后一个元素，复制 elements 数组， 复制长度为 length - 1，然后设置数组，进入步骤 3，否则进入步骤 2</li>
+<li>2、先复制 index 索引前的元素，再复制 index 索引后的元素，然后设置数组</li>
+<li>3、释放锁，返回旧值 </li>
+</ul>
+
+<h3 id="toc_9">示例</h3>
+
+<pre><code class="language-java">import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+class PutThread extends Thread {
+    private CopyOnWriteArrayList&lt;Integer&gt; cowal;
+
+    public PutThread(CopyOnWriteArrayList&lt;Integer&gt; cowal) {
+        this.cowal = cowal;
+    }
+
+    public void run() {
+        try {
+            for (int i = 100; i &lt; 110; i++) {
+                cowal.add(i);
+                Thread.sleep(50);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+public class CopyOnWriteArrayListDemo {
+    public static void main(String[] args) {
+        CopyOnWriteArrayList&lt;Integer&gt; cowal = new CopyOnWriteArrayList&lt;Integer&gt;();
+        for (int i = 0; i &lt; 10; i++) {
+            cowal.add(i);
+        }
+        PutThread p1 = new PutThread(cowal);
+        p1.start();
+        Iterator&lt;Integer&gt; iterator = cowal.iterator();
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + &quot; &quot;);
+        }
+        System.out.println();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        iterator = cowal.iterator();
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + &quot; &quot;);
+        }
+    }
+}
+
+</code></pre>
+
+<h3 id="toc_10">CopyOnWriteArrayList 总结</h3>
+
+<p>CopyOnWrite 容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行 Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。</p>
+
+<p>这样做的好处是我们可以对 CopyOnWrite 容器进行并发的读，而不需要加锁， 因为当前容器不会添加任何元素。所以 CopyOnWrite 容器也是一种读写分离的思 想，读和写不同的容器。如果读的时候有多个线程正在向 CopyOnWriteArrayList 添加数据，读还是会读到旧的数据，因为写的时候不会锁住旧的CopyOnWriteArrayList。</p>
+
+<p>使用 CopyOnWriteMap 需要注意两件事情:</p>
+
+<ul>
+<li>减少扩容开销。根据实际需要，初始化 CopyOnWriteMap 的大小，<br/>
+避免写时 CopyOnWriteMap 扩容的开销。</li>
+<li>使用批量添加。因为每次添加，容器每次都会进行复制，所以减少添加<br/>
+次数，可以减少容器的复制次数。</li>
+</ul>
+
+<h3 id="toc_11">写时复制容器的问题</h3>
+
+<ul>
+<li><p>性能问题<br/>
+每次修改都创建一个新数组，然后复制所有内容，如果数组比较大，修改操作又比较频繁，可以想象，性能是很低的，而且内存开销会很大,可能导致 GC 。</p></li>
+<li><p>数据一致性问题。<br/>
+CopyOnWrite 容器只能保证数据的最终一致性，不能保证数据的实时一致性。 所以如果你希望写入的的数据，马上能读到，不要使用 CopyOnWrite 容器</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[epoll 高效的原理和底层机制]]></title>
+    <link href="http://www.throne4j.com/16087370410844.html"/>
+    <updated>2020-12-23T23:24:01+08:00</updated>
+    <id>http://www.throne4j.com/16087370410844.html</id>
+    <content type="html"><![CDATA[
+<ul>
+<li>问题1：CPU 操作系统如何知道接收了数据？</li>
+<li>问题2：进程阻塞为什么不占用 cpu 资源？</li>
+<li>问题3：阻塞的原理是什么?</li>
+<li>问题4：操作系统如何知道网络数据对应于哪个 socket？</li>
+<li>问题5：操作系统是如何同时监视多个 socket 的数据的？</li>
+</ul>
+
+<p>从事服务端开发，少不了要接触网络编程。epoll 作为 Linux 下高性能网络服务器的必备技术至关重要，nginx、Redis、Skynet 和大部分游戏服务器都使用到这一多路复用技术。</p>
+
+<p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步步分析阻塞接收数据、select 到 epoll 的进化过程；最后探究 epoll 的实现细节。</p>
+
+<h2 id="toc_0">网卡接收数据</h2>
+
+<p><a href="16073516476681.html">Linux 网络包接收过程</a></p>
+
+<h3 id="toc_1">进程阻塞原理</h3>
+
+<p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
+
+<p>我们看下如下伪代码</p>
+
+<pre><code class="language-java">//创建 socket
+int s = socket(AF_INET, SOCK_STREAM, 0);
+//绑定
+bind(s, ...)
+//监听
+listen(s, ...) 
+//接受客户端连接 
+int c = accept(s, ...) 
+//接收客户端数据 
+recv(c, ...); 
+//将数据打印出来 
+printf(...)
+</code></pre>
+
+<p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
+
+<h4 id="toc_2">工作队列</h4>
+
+<p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
+
+<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br/>
+<figure><img src="media/16087370410844/16087422186392.jpg" alt="操作系统工作队列"/><figcaption>操作系统工作队列</figcaption></figure></p>
+
+<h4 id="toc_3">等待队列</h4>
+
+<p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。</p>
+
+<p>等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
+
+<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
+
+<p><figure><img src="media/16087370410844/16087424294808.jpg" alt="等待队列"/><figcaption>等待队列</figcaption></figure></p>
+
+<p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
+
+<h4 id="toc_4">唤醒进程</h4>
+
+<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
+
+<h3 id="toc_5">内核接收网络数据全过程</h3>
+
+<ul>
+<li>1、进程在 recv 阻塞期间，计算机收到了对端传送的数据。</li>
+<li>2、网卡将数据帧DMA到内存的RingBuffer中</li>
+<li>3、网卡执行硬中断信号通知 cpu 有数据到达，然后cpu 执行中断程序，调用网卡启动时注册的中断处理函数，发起软中断请求，</li>
+<li>4、内核线程ksoftirqd线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
+<li>5、唤醒进程 A，重新将进程 A 放入工作队列中</li>
+</ul>
+
+<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
+
+<h4 id="toc_6">操作系统是怎么直到网络数据对应于哪个 socket 的呢？</h4>
+
+<p>一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
+
+<h4 id="toc_7">操作系统是如何同时监视多个 socket 的数据的呢？</h4>
+
+<p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此码操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始了解</p>
+
+<p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
+
+<p>为方便理解，我们先复习 select 的用法。</p>
+
+<pre><code class="language-java">int s = socket(AF_INET, SOCK_STREAM, 0);  
+bind(s, ...);
+listen(s, ...);
+int fds[] = 存放需要监听的 socket 
+while(1){
+    int n = select(..., fds, ...) 
+    for(int i=0; i &lt; fds.count; i++) {
+        if(FD_ISSET(fds[i], ...)) { 
+            //fds[i]的数据处理
+    
+        }
+    }
+}
+</code></pre>
+
+<p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
+
+<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
+<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
+
+<p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
+
+<p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
+
+<p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
+
+<p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
+
+<ul>
+<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
+<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
+</ul>
+
+<p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
+
+<h2 id="toc_8">epoll 的设计思路</h2>
+
+<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。 epoll 通过以下一些措施来改进效率。</p>
+
+<h3 id="toc_9">措施一：功能分离</h3>
+
+<p>select 低效的原因之一是将维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
+
+<p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
+
+<pre><code class="language-c">int epfd = epoll_create(...);
+//将所有需要监听的 socket 添加到 epfd 中 
+epoll_ctl(epfd, ...); 
+while(1){
+    int n = epoll_wait(...) 
+    for(接收到数据的 socket) {
+        //处理 
+    }
+}
+</code></pre>
+
+<p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
+
+<h3 id="toc_10">就绪列表</h3>
+
+<p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
+
+<h2 id="toc_11">epoll 的原理和流程</h2>
+
+<p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体(也就是程序中 epfd 所代表的对象)，eventpoll 对象也是文件系统中的一员</p>
+
+<p>在内核 cache 里会建一个红黑树结构，用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
+
+<p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback，它会把这样的事件放到上面的 rdllist 双向链表中。</p>
+
+<p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
+
+<p>创建 epoll 对象后，用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
+
+<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
+
+<p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
+
+<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
+
+<p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
+
+<p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
+
+<p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
+
+<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
+
+<p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
+
+<h2 id="toc_12">epoll 实现细节</h2>
+
+<p>epoll 函数</p>
+
+<pre><code class="language-c">int epoll_create(int size)；
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
+int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
+
+struct epoll_event {
+    __uint32_t events;
+    epoll_data_t data;
+};
+</code></pre>
+
+<h3 id="toc_13">eventpoll</h3>
+
+<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
+首先思考两个问题</p>
+
+<ul>
+<li>就绪队列应该应使用什么数据结构?</li>
+<li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
+</ul>
+
+<p>下面我们来看下 eventpoll 的数据结构</p>
+
+<pre><code class="language-c">struct eventpoll {
+    // 用于锁定这个eventpoll数据结构，
+    // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
+    // 内核用这个mutex帮你搞定
+    struct mutex mtx;
+
+    // 等待队列，epoll_wait时如果当前没有拿到有效的事件，将当前task加入这个等待队列后作进程切换，等待被唤醒
+    wait_queue_head_t wq;
+
+    /* Wait queue used by file-&gt;poll() */
+    // eventpoll对象在使用时都会对应一个struct file对象，赋值到其private_data，
+    // 其本身也可以被 poll， 那也就需要一个wait queue
+    wait_queue_head_t poll_wait;
+
+    // 所有有事件触发的被监控的fd都会加入到这个列表
+    struct list_head rdllist;
+
+    /* Lock which protects rdllist and ovflist */
+    rwlock_t lock;
+
+    // 所有被监控的 fd 使用红黑树来存储
+    struct rb_root_cached rbr;
+
+    //  当将ready的fd复制到用户进程中，会使用上面的 lock锁锁定rdllist,
+    //  此时如果有新的ready状态fd, 则临时加入到 ovflist表示的单链表中
+    struct epitem *ovflist;
+
+    // 会autosleep准备的唤醒源
+    struct wakeup_source *ws;
+
+    /* The user that created the eventpoll descriptor */
+    struct user_struct *user;
+
+    // linux下一切皆文件，epoll实例被创建时，同时会创建一个file, file的private_data
+    // 指向当前这个eventpoll结构
+    struct file *file;
+
+    /* used to optimize loop detection check */
+    int visited;
+    struct list_head visited_list_link;
+
+#ifdef CONFIG_NET_RX_BUSY_POLL
+    /* used to track busy poll napi_id */
+    unsigned int napi_id;
+#endif
+};
+</code></pre>
+
+<p>rdllist就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
+
+<p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
+
+<p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
+
+<p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
+
+<p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
+
+<h3 id="toc_14">epitem 结构</h3>
+
+<p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
+
+<pre><code class="language-c">struct epitem {
+    // 用于构建红黑树
+    union {
+        //RB树节点将此结构链接到eventpoll RB树
+        struct rb_node rbn;
+        //用于释放结构体epitem
+        struct rcu_head rcu;
+    };
+
+    // 用于将当前 epitem 链接到 eventpoll-&gt;rdllist中
+    struct list_head rdllink;
+
+    //用于将当前 epitem 链接到&quot;struct eventpoll&quot;-&gt;ovflist这个单链表中
+    struct epitem *next;
+
+    //此条目引用的文件描述符信息
+    struct epoll_filefd ffd;
+
+    //附加到poll轮询中的活跃等待队列数
+    int nwait;
+
+    /* List containing poll wait queues */
+    struct list_head pwqlist;
+
+    // 对应的eventpoll对象
+    struct eventpoll *ep;
+
+    /* List header used to link this item to the &quot;struct file&quot; items list */
+    struct list_head fllink;
+
+    /* wakeup_source used when EPOLLWAKEUP is set */
+    struct wakeup_source __rcu *ws;
+
+    // 需要关注的读，写事件等
+    struct epoll_event event;
+};
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux 常用命令]]></title>
+    <link href="http://www.throne4j.com/16087365812100.html"/>
+    <updated>2020-12-23T23:16:21+08:00</updated>
+    <id>http://www.throne4j.com/16087365812100.html</id>
+    <content type="html"><![CDATA[
+<h1 id="toc_0">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h1>
+
+<h1 id="toc_1">yum list  列出来所有可以安装的包</h1>
+
+<h1 id="toc_2">yum search</h1>
+
+<h1 id="toc_3">yum -y install     -y:yes</h1>
+
+<h1 id="toc_4">yum -y install gcc</h1>
+
+<h1 id="toc_5">rpm -p gcc</h1>
+
+<h1 id="toc_6">yum -y update （包名）  远程千万不要要加包名</h1>
+
+<h1 id="toc_7">yum -y remove （包名）卸载要添加包名</h1>
+
+<h1 id="toc_8">yum grouplist</h1>
+
+<h1 id="toc_9">uname -a # 查看内核/操作系统/CPU信息</h1>
+
+<h1 id="toc_10">head -n 1 /etc/issue # 查看操作系统版本</h1>
+
+<h1 id="toc_11">cat /proc/cpuinfo # 查看CPU信息</h1>
+
+<h1 id="toc_12">hostname # 查看计算机名</h1>
+
+<h1 id="toc_13">lspci -tv # 列出所有PCI设备</h1>
+
+<h1 id="toc_14">lsusb -tv # 列出所有USB设备</h1>
+
+<h1 id="toc_15">lsmod # 列出加载的内核模块</h1>
+
+<h1 id="toc_16">env # 查看环境变量资源</h1>
+
+<h1 id="toc_17">free -m # 查看内存使用量和交换区使用量</h1>
+
+<h1 id="toc_18">df -h # 查看各分区使用情况</h1>
+
+<h1 id="toc_19">du -sh &lt;目录名&gt; # 查看指定目录的大小</h1>
+
+<h1 id="toc_20">grep MemTotal /proc/meminfo # 查看内存总量</h1>
+
+<h1 id="toc_21">grep MemFree /proc/meminfo # 查看空闲内存量</h1>
+
+<h1 id="toc_22">uptime # 查看系统运行时间、用户数、负载</h1>
+
+<h1 id="toc_23">cat /proc/loadavg # 查看系统负载磁盘和分区</h1>
+
+<h1 id="toc_24">mount | column -t # 查看挂接的分区状态</h1>
+
+<h1 id="toc_25">fdisk -l # 查看所有分区</h1>
+
+<h1 id="toc_26">swapon -s # 查看所有交换分区</h1>
+
+<h1 id="toc_27">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h1>
+
+<h1 id="toc_28">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h1>
+
+<h1 id="toc_29">ifconfig # 查看所有网络接口的属性</h1>
+
+<h1 id="toc_30">iptables -L # 查看防火墙设置</h1>
+
+<h1 id="toc_31">route -n # 查看路由表</h1>
+
+<h1 id="toc_32">netstat -lntp # 查看所有监听端口</h1>
+
+<h1 id="toc_33">netstat -antp # 查看所有已经建立的连接</h1>
+
+<h1 id="toc_34">netstat -s # 查看网络统计信息进程</h1>
+
+<h1 id="toc_35">ps -ef # 查看所有进程</h1>
+
+<h1 id="toc_36">top # 实时显示进程状态用户</h1>
+
+<h1 id="toc_37">w # 查看活动用户</h1>
+
+<h1 id="toc_38">id &lt;用户名&gt; # 查看指定用户信息</h1>
+
+<h1 id="toc_39">last # 查看用户登录日志</h1>
+
+<h1 id="toc_40">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
+
+<h1 id="toc_41">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+
+<h1 id="toc_42">crontab -l # 查看当前用户的计划任务服务</h1>
+
+<h1 id="toc_43">chkconfig –list # 列出所有系统服务</h1>
+
+<h1 id="toc_44">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
+
+<h1 id="toc_45">rpm -qa # 查看所有安装的软件包</h1>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[spring 框架去除 web.xml 实现 servlet 容器的初始化]]></title>
+    <link href="http://www.throne4j.com/16082729328747.html"/>
+    <updated>2020-12-18T14:28:52+08:00</updated>
+    <id>http://www.throne4j.com/16082729328747.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">SpringServletContainerInitializer</h2>
+
+<p>SpringServletContainerInitializer 继承自 Servlet3.0 包中的 ServletContainerInitializer 类，它借助 JAVA 中 SPI 思想进行调用，已达到去 web.xml 配置文件的容器初始化。</p>
+
+<pre><code class="language-java">@HandlesTypes(WebApplicationInitializer.class)
+public class SpringServletContainerInitializer implements ServletContainerInitializer {
+
+    public void onStartup(@Nullable Set&lt;Class&lt;?&gt;&gt; webAppInitializerClasses, ServletContext servletContext){
+        
+        // 将webAppInitializerClasses 存入 initializer 容器中
+        
+        ....
+        
+        for (WebApplicationInitializer initializer : initializers) {
+            initializer.onStartup(servletContext);
+        }
+        
+    }
+}
+</code></pre>
+
+<h2 id="toc_1">HandlesTypes 注解</h2>
+
+<p>通过上面的代码 SpringServletContainerInitializer 被 @HandlesTypes 标注，这行的作用是将 WebApplicationInitializer 的实现类作为参数传递给 ServletContainerInitializer 的 onStartup 方法。</p>
+
+<h2 id="toc_2">WebApplicationInitializer 接口</h2>
+
+<p>WebApplicationInitializer 接口方便了以编程的方式配置 ServletContext</p>
+
+<p>例如下面的这段配置</p>
+
+<pre><code class="language-markup">&lt;servlet&gt;
+ &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+ &lt;servlet-class&gt;
+   org.springframework.web.servlet.DispatcherServlet
+ &lt;/servlet-class&gt;
+ &lt;init-param&gt;
+   &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+   &lt;param-value&gt;/WEB-INF/spring/dispatcher-config.xml&lt;/param-value&gt;
+ &lt;/init-param&gt;
+ &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+  
+&lt;servlet-mapping&gt;
+ &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+ &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre>
+
+<p>将其通过代码实现的话如下所示：</p>
+
+<pre><code class="language-java">public class MyWebAppInitializer implements WebApplicationInitializer {
+  
+  @Override
+  public void onStartup(ServletContext container) {
+    XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+    appContext.setConfigLocation(&quot;/WEB-INF/spring/dispatcher-config.xml&quot;);
+  
+    ServletRegistration.Dynamic dispatcher =
+      container.addServlet(&quot;dispatcher&quot;, new DispatcherServlet(appContext));
+    dispatcher.setLoadOnStartup(1);
+    dispatcher.addMapping(&quot;/&quot;);
+  }
+  
+}
+</code></pre>
+
+<p>更进一步看怎么省去 dispatcher-config.xml 文件，将配置移交到 DispatherConfig 配置类中</p>
+
+<pre><code class="language-java">public class MyWebAppInitializer implements WebApplicationInitializer {
+  
+  @Override
+  public void onStartup(ServletContext container) {
+    // Create the &#39;root&#39; Spring application context
+    AnnotationConfigWebApplicationContext rootContext =
+      new AnnotationConfigWebApplicationContext();
+    rootContext.register(AppConfig.class);
+  
+    // Manage the lifecycle of the root application context
+    container.addListener(new ContextLoaderListener(rootContext));
+  
+    // Create the dispatcher servlet&#39;s Spring application context
+    AnnotationConfigWebApplicationContext dispatcherContext =
+      new AnnotationConfigWebApplicationContext();
+    dispatcherContext.register(DispatcherConfig.class);
+  
+    // Register and map the dispatcher servlet
+    ServletRegistration.Dynamic dispatcher =
+      container.addServlet(&quot;dispatcher&quot;, new DispatcherServlet(dispatcherContext));
+    dispatcher.setLoadOnStartup(1);
+    dispatcher.addMapping(&quot;/&quot;);
+  }
+  
+}
+
+</code></pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ServletRequest、ServletResponse]]></title>
+    <link href="http://www.throne4j.com/16082722990451.html"/>
+    <updated>2020-12-18T14:18:19+08:00</updated>
+    <id>http://www.throne4j.com/16082722990451.html</id>
+    <content type="html"><![CDATA[
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[操作系统常用的调度算法总结]]></title>
+    <link href="http://www.throne4j.com/16080888993841.html"/>
+    <updated>2020-12-16T11:21:39+08:00</updated>
+    <id>http://www.throne4j.com/16080888993841.html</id>
+    <content type="html"><![CDATA[
+<h2 id="toc_0">1 常见的批处理作业调度算法</h2>
+
+<h3 id="toc_1">1.1 先来先服务调度算法（FCFS）:</h3>
+
+<p>先来先服务(FCFS)调度算法是一种最简单的调度算法，该算法既可用于作业调度，也用于进程调度</p>
+
+<p>当在作业调度中采用该算法时，每次调度都是<strong>从后备作业队列中选择一个或多个最先进入该队列的作业，将它们调入内存</strong>，为它们分配资源、创建进程，然后放入就绪队列。</p>
+
+<p>在进程调度中采用 FCFS 算法时，则每次调度是从就绪队列中选择一个最先进入该队列的进程，为之分配处理机，使之投入运行。该进程一直运行到完成或发生某事件而阻塞后才放弃处理机</p>
+
+<p>这种调度算法的优点是实现简单，公平。其缺点是没有考虑到系统中各种资源的综合使用情况，往往使短作业的用户不满意，因为短作业等待处理的时间可能比实际运行时间长得多。</p>
+
+<h3 id="toc_2">1.2 短作业优先调度算法(SPF)</h3>
+
+<p>短作业优先调度算法，是指对短作业或短进程优先调度的算法。它们可以分别用于作业调度和进程调度。所谓短是指作业或进程的运行时间短。而在作业或进程未投入运行时，并不能知道它实际的运行时间的长短，因此需要用户在提交作业时同时提交作业运行时间的估计值</p>
+
+<p>短作业优先(SJF)的调度算法是从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。</p>
+
+<h3 id="toc_3">1.3 最高响应比优先算法(HRN)</h3>
+
+<p>FCFS可能造成短作业用户不满，SPF可能使得长作业用户不满，于是提出HRN，选择响应比最高的作业运行。响应比=1+作业等待时间/作业处理时间。</p>
+
+<h3 id="toc_4">1.4 基于优先数调度算法(HPF)</h3>
+
+<p>每一个作业规定一个表示该作业优先级别的整数，当需要将新的作业由输入井调入内存处理时，优先选择优先数最高的作业。<br/>
+　　</p>
+
+<h3 id="toc_5">1.5 均衡调度算法</h3>
+
+<p>　　多级队列调度算法，基本概念：<br/>
+　　作业周转时间（Ti）＝完成时间(Tei)－提交时间(Tsi)；<br/>
+　　作业平均周转时间(T)＝周转时间/作业个数；<br/>
+　　作业带权周转时间（Wi）＝周转时间/运行时间；<br/>
+　　响应比＝（等待时间＋运行时间）/运行时间。</p>
+
+<h2 id="toc_6">2 进程调度算法</h2>
+
+<h3 id="toc_7">2.1 先进先出算法(FIFO):</h3>
+
+<p>按照进程进入就绪队列的先后次序来选择。即每当进入进程调度，总是把就绪队列的队首进程投入运行。<br/>
+　　<br/>
+<strong>每次调度是从就绪队列中选择一个最先进入该队列的进程，为之分配处理机，使之投入运行</strong>。该进程一直运行到完成或发生某事件而阻塞后才放弃处理机。<br/>
+　　</p>
+
+<h3 id="toc_8">2.2 时间片轮转算法(RR):</h3>
+
+<p>在早期的时间片轮转法中，系统将所有的就绪进程按先来先服务的原则排成一个队列，每次调度时，把CPU分配给队首进程，并令其执行一个时间片。时间片的大小从几ms到几百ms。当执行的时间片用完时，由一个计时器发出时钟中断请求，调度程序便据此信号来停止该进程的执行，并将它送往就绪队列的末尾；然后，再把处理机分配给就绪队列中新的队首进程，同时也让它执行一个时间片。这样就可以保证就绪队列中的所有进程在一给定的时间内均能获得一时间片的处理机执行时间。换言之，系统能在给定的时间内响应所有用户的请求。<br/>
+　　</p>
+
+<h3 id="toc_9">2.3 最高优先级算法(HPF):</h3>
+
+<p>进程调度每次将处理机分配给具有最高优先级的就绪进程。最高优先级算法可与不同的CPU方式结合形成可抢占式最高优先级算法和不可抢占式最高优先级算法。</p>
+
+<h3 id="toc_10">2.4 多级反馈队列调度算法</h3>
+
+<p>前面介绍的各种用作进程调度的算法都有一定的局限性。如短进程优先的调度算法，仅照顾了短进程而忽略了长进程，而且如果并未指明进程的长度，则短进程优先和基于进程长度的抢占式调度算法都将无法使用。而多级反馈队列调度算法则不必事先知道各种进程所需的执行时间，而且还可以满足各种类型进程的需要，因而它是目前被公认的一种较好的进程调度算法。在采用多级反馈队列调度算法的系统中，调度算法的实施过程如下所述：</p>
+
+<ul>
+<li><p>应设置多个就绪队列，并为各个队列赋予不同的优先级。第一个队列的优先级最高，第二个队列次之，其余各队列的优先权逐个降低。该算法赋予各个队列中进程执行时间片的大小也各不相同，在优先权愈高的队列中，为每个进程所规定的执行时间片就愈小。例如，第二个队列的时间片要比第一个队列的时间片长一倍，第i+1个队列的时间片要比第i个队列的时间片长一倍。</p></li>
+<li><p>当一个新进程进入内存后，首先将它放入第一队列的末尾，按FCFS原则排队等待调度。当轮到该进程执行时，如它能在该时间片内完成，便可准备撤离系统；如果它在一个时间片结束时尚未完成，调度程序便将该进程转入第二队列的末尾，再同样地按FCFS原则等待调度执行；如果它在第二队列中运行一个时间片后仍未完成，再依次将它放入第三队列，……，如此下去，当一个长作业(进程)从第一队列依次降到第n队列后，在第n队列便采取按时间片轮转的方式运行。</p></li>
+<li><p>仅当第一队列空闲时，调度程序才调度第二队列中的进程运行；仅当第1～(i-1)队列均空时，才会调度第i队列中的进程运行。如果处理机正在第i队列中为某进程服务时，又有新进程进入优先权较高的队列(第1～(i-1)中的任何一个队列)，则此时新进程将抢占正在运行进程的处理机，即第i队列中某个正在运行的进程的时间片用完后，由调度程序选择优先权较高的队列中的那一个进程，把处理机分配给它。</p></li>
+</ul>
+
+<h2 id="toc_11">3 空闲分区分配算法</h2>
+
+<h3 id="toc_12">3.1 首先适应算法:</h3>
+
+<p>当接到内存申请时，查找分区说明表，找到第一个满足申请长度的空闲区，将其分割并分配。此算法简单，可以快速做出分配决定。</p>
+
+<h3 id="toc_13">3.2 最佳适应算法:</h3>
+
+<p>当接到内存申请时，查找分区说明表，找到第一个能满足申请长度的最小空闲区，将其进行分割并分配。此算法最节约空间，因为它尽量不分割到大的空闲区，其缺点是可能会形成很多很小的空闲分区，称为“碎片”。</p>
+
+<h3 id="toc_14">3.3 最坏适应算法:</h3>
+
+<p>当接到内存申请时，查找分区说明表，找到能满足申请要求的最大的空闲区。该算法的优点是避免形成碎片，而缺点是分割了大的空闲区后，在遇到较大的程序申请内存时，无法满足的可能性较大。</p>
+
+<h2 id="toc_15">4 虚拟页式存储管理中的页面置换算法</h2>
+
+<h3 id="toc_16">4.1 理想页面置换算法(OPT):</h3>
+
+<p>这是一种理想的算法，在实际中不可能实现。该算法的思想是：发生缺页时，选择以后永不使用或在最长时间内不再被访问的内存页面予以淘汰。</p>
+
+<h3 id="toc_17">4.2 先进先出页面置换算法(FIFO)：</h3>
+
+<p>选择最先进入内存的页面予以淘汰。</p>
+
+<h3 id="toc_18">4.3 最近最久未使用算法（LRU）：</h3>
+
+<p>选择在最近一段时间内最久没有使用过的页，把它淘汰。</p>
+
+<h3 id="toc_19">4.4 少使用算法（LFU）：</h3>
+
+<p>选择到当前时间为止被访问次数最少的页转换。</p>
+
+<h2 id="toc_20">5 磁盘调度</h2>
+
+<h3 id="toc_21">5.1 先来先服务（FCFS）：</h3>
+
+<p>是按请求访问者的先后次序启动磁盘驱动器，而不考虑它们要访问的物理位置。</p>
+
+<h3 id="toc_22">5.2 最短寻道时间优先（SSTF）：</h3>
+
+<p>让离当前磁道最近的请求访问者启动磁盘驱动器，即是让查找时间最短的那个作业先执行，而不考虑请求访问者到来的先后次序，这样就克服了先来先服务调度算法中磁臂移动过大的问题。</p>
+
+<h3 id="toc_23">5.3 扫描算法（SCAN）或电梯调度算法：</h3>
+
+<p>　　总是从磁臂当前位置开始，沿磁臂的移动方向去选择离当前磁臂最近的那个柱面的访问者。如果沿磁臂的方向无请求访问时，就改变磁臂的移动方向。在这种调度方法下磁臂的移动类似于电梯的调度，所以它也称为电梯调度算法。</p>
+
+<h3 id="toc_24">5.4 循环扫描算法（CSCAN）：</h3>
+
+<p>　　循环扫描调度算法是在扫描算法的基础上改进的。磁臂改为单项移动，由外向里。当前位置开始沿磁臂的移动方向去选择离当前磁臂最近的哪个柱面的访问者。如果沿磁臂的方向无请求访问时，再回到最外，访问柱面号最小的作业请求。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ResponseBodyAdvice]]></title>
@@ -151,7 +1241,7 @@
 <a href="#toc_16">什么是java内存模型？</a>
 </li>
 <li>
-<a href="#toc_17">volatile关键字的作用？</a>
+<a href="#toc_17">volatile 关键字的作用？</a>
 </li>
 <li>
 <a href="#toc_18">什么是 CAS</a>
@@ -201,7 +1291,7 @@
 <a href="#toc_32">单例模式的线程安全性？</a>
 </li>
 <li>
-<a href="#toc_33">Hashtable的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</a>
+<a href="#toc_33">HashTable 的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</a>
 </li>
 <li>
 <a href="#toc_34">介绍一下Executor 框架</a>
@@ -455,7 +1545,7 @@
 <a href="16082130374121.html">java内存模型之 final 同步原语详解</a><br/>
 <a href="16005248987908.html">java内存模型之 Synchronized 同步原语详解</a></p>
 
-<h2 id="toc_17">volatile关键字的作用？</h2>
+<h2 id="toc_17">volatile 关键字的作用？</h2>
 
 <p>理解volatile关键字的作用的前提是要理解Java内存模型，这里就不讲Java内存模型了，可以参见<a href="16019058386155.html">java 内存模型</a><br/><br/>
 这里简要说明一下 volatile关键字的作用，主要有两个：</p>
@@ -496,8 +1586,8 @@
 <h2 id="toc_24">乐观锁和悲观锁的理解及如何实现，有哪些实现方式?</h2>
 
 <ul>
-<li>悲观锁:总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所 以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。 Java 里面的同步原语 synchronized 关键字的实现是悲观锁。</li>
-<li>乐观锁:顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改， 所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数 据，可以使用版本号等机制。在 Java 中 j 原子变量类就是使用了乐观锁的一种实现方式 CAS 实现的。 乐观锁的实现方式:
+<li><p>悲观锁:总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所 以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。 Java 里面的同步原语 synchronized 关键字的实现是悲观锁。</p></li>
+<li><p>乐观锁:顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改， 所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数 据，可以使用版本号等机制。在 Java 中 j 原子变量类就是使用了乐观锁的一种实现方式 CAS 实现的。 乐观锁的实现方式:</p>
 <ul>
 <li>使用版本标识来确定读到的数据与提交时的数据是否一致。提交 后修改版本标识，不一致时可以采取丢弃和再次尝试的策略。</li>
 <li>java 中的 Compare and Swap 即 CAS ，当多个线程尝试使用 CAS 同时更新同一个变量时，只有其中一个线程能更新变量的值，而其它线程 都失败，失败的线程并不会被挂起，而是被告知这次竞争中失败，并可以 再次尝试。</li>
@@ -555,7 +1645,7 @@
 
 <p><a href="15896032913368.html">单例模式</a></p>
 
-<h2 id="toc_33">Hashtable的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</h2>
+<h2 id="toc_33">HashTable 的size()方法中明明只有一条语句&quot;return count&quot;，为什么还要做同步？</h2>
 
 <p>同一时间只能有一条线程执行固定类的同步方法，但是对于类的非同步方法，可以多条线程同时访问。所以，这样就有问题了，可能线程A在执行Hashtable的put方法添加数据，线程B则可以正常调用size()方法读取Hashtable中当前元素的个数，那读取到的值可能不是最新的，可能线程A添加了完了数据，但是没有对size++，线程B就已经读取size了，那么对于线程B来说读取到的size一定是不准确的。而给size()方法加了同步之后，意味着线程B调用size()方法只有在线程A调用put方法完毕之后才可以调用，这样就保证了线程安全性</p>
 
@@ -754,11 +1844,16 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[]]></title>
+    <title type="html"><![CDATA[什么是脏读、幻读、不可重复度]]></title>
     <link href="http://www.throne4j.com/16077870652991.html"/>
     <updated>2020-12-12T23:31:05+08:00</updated>
     <id>http://www.throne4j.com/16077870652991.html</id>
     <content type="html"><![CDATA[
+<h1 id="toc_0">隔离级别详解</h1>
+
+<h1 id="toc_1">Mysql 存储引擎、行锁、表锁、隔离性关联</h1>
+
+<h1 id="toc_2">Mysql LBCC （lock Model) 底层实现</h1>
 
 ]]></content>
   </entry>
@@ -829,806 +1924,6 @@ protected MultithreadEventLoopGroup(int nThreads, Executor executor, Object... a
 <li>后来的 .. 表示当前包以及子包</li>
 <li>第二个 * 表示类名</li>
 <li>*.(..) 表示任何方法名，括号表示参数，两个点表示任何参数类型</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[redis 常见问题与解决方案]]></title>
-    <link href="http://www.throne4j.com/16073594276390.html"/>
-    <updated>2020-12-08T00:43:47+08:00</updated>
-    <id>http://www.throne4j.com/16073594276390.html</id>
-    <content type="html"><![CDATA[
-<p>考虑到绝大部分写业务的程序员，在实际开发中使用 Redis 的时候，只会 Set Value 和 Get Value 两个操作，对 Redis 整体缺乏一个认知。</p>
-
-<p>本文围绕以下几点进行阐述：</p>
-
-<ul>
-<li><p>为什么使用 Redis</p></li>
-<li><p>使用 Redis 有什么缺点</p></li>
-<li><p>单线程的 Redis 为什么这么快</p></li>
-<li><p>Redis 的数据类型，以及每种数据类型的使用场景</p></li>
-<li><p>Redis 的过期策略以及内存淘汰机制</p></li>
-<li><p>Redis 和数据库双写一致性问题</p></li>
-<li><p>如何应对缓存穿透和缓存雪崩问题</p></li>
-<li><p>如何解决 Redis 的并发竞争 Key 问题</p></li>
-</ul>
-
-<h2 id="toc_0">为什么使用 Redis？</h2>
-
-<p>我觉得在项目中使用 Redis，主要是从两个角度去考虑：性能和并发。</p>
-
-<p>当然，Redis 还具备可以做分布式锁等其他功能，但是如果只是为了分布式锁这些其他功能，完全还有其他中间件，如 ZooKpeer 等代替，并不是非要使用 Redis。因此，这个问题主要从性能和并发两个角度去答。</p>
-
-<ul>
-<li>性能：</li>
-</ul>
-
-<p>如下图所示，我们在碰到需要执行耗时特别久，且结果不频繁变动的 SQL，就特别适合将运行结果放入缓存。这样，后面的请求就去缓存中读取，使得请求能够迅速响应。</p>
-
-<p><figure><img src="media/16073594276390/16073594942888.jpg" alt=""/></figure></p>
-
-<ul>
-<li>并发：<br/>
-如下图所示，在大并发的情况下，所有的请求直接访问数据库，数据库会出现连接异常。</li>
-</ul>
-
-<p><figure><img src="media/16073594276390/16073595299526.jpg" alt=""/></figure></p>
-
-<p>这个时候，就需要使用 Redis 做一个缓冲操作，让请求先访问到 Redis，而不是直接访问数据库。</p>
-
-<h2 id="toc_1">使用 Redis 有什么缺点？</h2>
-
-<p>大家用 Redis 这么久，这个问题是必须要了解的，基本上使用 Redis 都会碰到一些问题，常见的也就几个。</p>
-
-<p>回答主要是四个问题：</p>
-
-<ul>
-<li>缓存和数据库双写一致性问题</li>
-<li>缓存雪崩问题</li>
-<li>缓存击穿问题</li>
-<li>缓存的并发竞争问题</li>
-</ul>
-
-<p>这四个问题，我个人觉得在项目中是常遇见的，具体解决方案，后文给出。</p>
-
-<h2 id="toc_2">单线程的 Redis 为什么这么快？</h2>
-
-<p>这个问题是对 Redis 内部机制的一个考察。根据我的面试经验，很多人都不知道 Redis 是单线程工作模型。所以，这个问题还是应该要复习一下的。</p>
-
-<p>回答主要是以下三点：</p>
-
-<ul>
-<li>纯内存操作</li>
-<li>单线程操作，避免了频繁的上下文切换</li>
-<li>采用了非阻塞 I/O 多路复用机制</li>
-</ul>
-
-<p>多路复用在 Redis 中的应用，如图所示：</p>
-
-<p><figure><img src="media/16073594276390/16073599141241.jpg" alt=""/></figure></p>
-
-<p>简单来说，就是我们的 redis-client 在操作的时候，会产生具有不同事件类型的 Socket。</p>
-
-<p>在服务端，有一段 I/O 多路复用程序，将其置入队列之中。然后，文件事件分派器，依次去队列中取，转发到不同的事件处理器中。</p>
-
-<p>需要说明的是，这个 I/O 多路复用机制，Redis 还提供了 select、epoll、evport、kqueue 等多路复用函数库，大家可以自行去了解。</p>
-
-<h2 id="toc_3">Redis 的数据类型以及每种数据类型的使用场景</h2>
-
-<p>是不是觉得这个问题很基础？我也这么觉得。然而根据面试经验发现，至少百分之八十的人答不上这个问题。</p>
-
-<p>建议，在项目中用到后，再类比记忆，体会更深，不要硬记。基本上，一个合格的程序员，五种类型都会用到。</p>
-
-<ul>
-<li>String</li>
-</ul>
-
-<p>这个没啥好说的，最常规的 set/get 操作，Value 可以是 String 也可以是数字。一般做一些复杂的计数功能的缓存。</p>
-
-<ul>
-<li>Hash</li>
-</ul>
-
-<p>这里 Value 存放的是结构化的对象，比较方便的就是操作其中的某个字段。</p>
-
-<p>我在做单点登录的时候，就是用这种数据结构存储用户信息，以 CookieId 作为 Key，设置 30 分钟为缓存过期时间，能很好的模拟出类似 Session 的效果。</p>
-
-<ul>
-<li>List</li>
-</ul>
-
-<p>使用 List 的数据结构，可以做简单的消息队列的功能。另外还有一个就是，可以利用 lrange 命令，做基于 Redis 的分页功能，性能极佳，用户体验好。</p>
-
-<ul>
-<li>Set</li>
-</ul>
-
-<p>因为 Set 堆放的是一堆不重复值的集合。所以可以做全局去重的功能。为什么不用 JVM 自带的 Set 进行去重？<br/>
-因为我们的系统一般都是集群部署，使用 JVM 自带的 Set，比较麻烦，难道为了一个做一个全局去重，再起一个公共服务，太麻烦了。</p>
-
-<p>另外，就是利用交集、并集、差集等操作，可以计算共同喜好，全部的喜好，自己独有的喜好等功能。</p>
-
-<ul>
-<li>Sorted Set</li>
-</ul>
-
-<p>Sorted Set多了一个权重参数 Score，集合中的元素能够按 Score 进行排列。</p>
-
-<p>可以做排行榜应用，取 TOP N 操作。Sorted Set 可以用来做延时任务。最后一个应用就是可以做范围查找。</p>
-
-<h2 id="toc_4">Redis 的过期策略以及内存淘汰机制</h2>
-
-<p>这个问题相当重要，到底 Redis 有没用到家，这个问题就可以看出来。</p>
-
-<p>比如你 Redis 只能存 5G 数据，可是你写了10G，那会删 5G 的数据。怎么删的，这个问题思考过么？</p>
-
-<p>还有，你的数据已经设置了过期时间，但是时间到了，内存占用率还是比较高，有思考过原因么?</p>
-
-<h3 id="toc_5">Redis 采用的是定期删除+惰性删除策略。</h3>
-
-<p>为什么不用定时删除策略</p>
-
-<p>定时删除，用一个定时器来负责监视 Key，过期则自动删除。虽然内存及时释放，但是十分消耗 CPU 资源。</p>
-
-<p>在大并发请求下，CPU 要将时间应用在处理请求，而不是删除 Key，因此没有采用这一策略。</p>
-
-<p>定期删除 + 惰性删除是如何工作</p>
-
-<p>定期删除，Redis 默认每个 100ms 检查，是否有过期的 Key，有过期 Key 则删除。<br/>
-需要说明的是，Redis 不是每个 100ms 将所有的 Key 检查一次，而是随机抽取进行检查(如果每隔 100ms，全部 Key 进行检查，Redis 岂不是卡死)。</p>
-
-<p>因此，如果只采用定期删除策略，会导致很多 Key 到时间没有删除。于是，惰性删除派上用场。<br/>
-也就是说在你获取某个 Key 的时候，Redis 会检查一下，这个 Key 如果设置了过期时间，那么是否过期了？如果过期了此时就会删除。</p>
-
-<p>采用定期删除+惰性删除就没其他问题了么?</p>
-
-<p>不是的，如果定期删除没删除 Key。然后你也没即时去请求 Key，也就是说惰性删除也没生效。这样，Redis的内存会越来越高。那么就应该采用内存淘汰机制。</p>
-
-<p>在 redis.conf 中有一行配置：</p>
-
-<pre><code class="language-text"># maxmemory-policy volatile-lru
-</code></pre>
-
-<p>该配置就是配内存淘汰策略的(什么，你没配过？好好反省一下自己)：</p>
-
-<ul>
-<li><p>noeviction：当内存不足以容纳新写入数据时，新写入操作会报错。应该没人用吧。</p></li>
-<li><p>allkeys-lru：当内存不足以容纳新写入数据时，在键空间中，移除最近最少使用的 Key。推荐使用，目前项目在用这种。</p></li>
-<li><p>allkeys-random：当内存不足以容纳新写入数据时，在键空间中，随机移除某个 Key。应该也没人用吧，你不删最少使用 Key，去随机删。</p></li>
-<li><p>volatile-lru：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，移除最近最少使用的 Key。这种情况一般是把 Redis 既当缓存，又做持久化存储的时候才用。不推荐。</p></li>
-<li><p>volatile-random：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，随机移除某个 Key。依然不推荐。</p></li>
-<li><p>volatile-ttl：当内存不足以容纳新写入数据时，在设置了过期时间的键空间中，有更早过期时间的 Key 优先移除。不推荐。</p></li>
-</ul>
-
-<p>PS：如果没有设置 expire 的 Key，不满足先决条件(prerequisites)；那么 volatile-lru，volatile-random 和 volatile-ttl 策略的行为，和 noeviction(不删除) 基本上一致。</p>
-
-<h2 id="toc_6">Redis 和数据库双写一致性问题</h2>
-
-<p>一致性问题是分布式常见问题，还可以再分为最终一致性和强一致性。数据库和缓存双写，就必然会存在不一致的问题。</p>
-
-<p>答这个问题，先明白一个前提。就是如果对数据有强一致性要求，不能放缓存。我们所做的一切，只能保证最终一致性。</p>
-
-<p>另外，我们所做的方案从根本上来说，只能说降低不一致发生的概率，无法完全避免。因此，有强一致性要求的数据，不能放缓存。</p>
-
-<p>回答：首先，采取正确更新策略，先更新数据库，再删缓存。其次，因为可能存在删除缓存失败的问题，提供一个补偿措施即可，例如利用消息队列。</p>
-
-<h2 id="toc_7">如何应对缓存穿透和缓存雪崩问题</h2>
-
-<p>这两个问题，说句实在话，一般中小型传统软件企业，很难碰到这个问题。如果有大并发的项目，流量有几百万左右。这两个问题一定要深刻考虑。</p>
-
-<p>缓存穿透，即黑客故意去请求缓存中不存在的数据，导致所有的请求都怼到数据库上，从而数据库连接异常。</p>
-
-<h3 id="toc_8">缓存穿透解决方案：</h3>
-
-<ul>
-<li><p>利用互斥锁，缓存失效的时候，先去获得锁，得到锁了，再去请求数据库。没得到锁，则休眠一段时间重试。</p></li>
-<li><p>采用异步更新策略，无论 Key 是否取到值，都直接返回。Value 值中维护一个缓存失效时间，缓存如果过期，异步起一个线程去读数据库，更新缓存。需要做缓存预热(项目启动前，先加载缓存)操作。</p></li>
-<li><p>提供一个能迅速判断请求是否有效的拦截机制，比如，利用布隆过滤器，内部维护一系列合法有效的 Key。迅速判断出，请求所携带的 Key 是否合法有效。如果不合法，则直接返回。</p></li>
-</ul>
-
-<p>缓存雪崩，即缓存同一时间大面积的失效，这个时候又来了一波请求，结果请求都怼到数据库上，从而导致数据库连接异常。</p>
-
-<h3 id="toc_9">缓存雪崩解决方案：</h3>
-
-<ul>
-<li><p>给缓存的失效时间，加上一个随机值，避免集体失效。</p></li>
-<li><p>使用互斥锁，但是该方案吞吐量明显下降了。</p></li>
-<li><p>双缓存。我们有两个缓存，缓存 A 和缓存 B。缓存 A 的失效时间为 20 分钟，缓存 B 不设失效时间。自己做缓存预热操作。</p></li>
-</ul>
-
-<p>然后细分以下几个小点：从缓存 A 读数据库，有则直接返回；A 没有数据，直接从 B 读数据，直接返回，并且异步启动一个更新线程，更新线程同时更新缓存 A 和缓存 B。</p>
-
-<h2 id="toc_10">如何解决 Redis 的并发竞争 Key 问题</h2>
-
-<p>这个问题大致就是，同时有多个子系统去 Set 一个 Key。这个时候大家思考过要注意什么呢？</p>
-
-<p>需要说明一下，我提前百度了一下，发现答案基本都是推荐用 Redis 事务机制。</p>
-
-<p>我并不推荐使用 Redis 的事务机制。因为我们的生产环境，基本都是 Redis 集群环境，做了数据分片操作。</p>
-
-<p>你一个事务中有涉及到多个 Key 操作的时候，这多个 Key 不一定都存储在同一个 redis-server 上。因此，Redis 的事务机制，十分鸡肋。</p>
-
-<p>如果对这个 Key 操作，不要求顺序</p>
-
-<p>这种情况下，准备一个分布式锁，大家去抢锁，抢到锁就做 set 操作即可，比较简单。</p>
-
-<p>如果对这个 Key 操作，要求顺序</p>
-
-<p>假设有一个 key1，系统 A 需要将 key1 设置为 valueA，系统 B 需要将 key1 设置为 valueB，系统 C 需要将 key1 设置为 valueC。</p>
-
-<p>期望按照 key1 的 value 值按照 valueA &gt; valueB &gt; valueC 的顺序变化。这种时候我们在数据写入数据库的时候，需要保存一个时间戳。</p>
-
-<p>假设时间戳如下：</p>
-
-<p>系统A key1 {valueA 3:00}<br/>
-系统B key1 {valueB 3:05}<br/>
-系统C key1 {valueC 3:10}</p>
-
-<p>那么，假设这会系统 B 先抢到锁，将 key1 设置为{valueB 3:05}。接下来系统 A 抢到锁，发现自己的 valueA 的时间戳早于缓存中的时间戳，那就不做 set 操作了，以此类推。</p>
-
-<p>其他方法，比如利用队列，将 set 方法变成串行访问也可以。总之，灵活变通。</p>
-
-<h2 id="toc_11">总结</h2>
-
-<p>本文对 Redis 的常见问题做了一个总结。大部分是自己在工作中遇到，以及之前面试别人的时候，爱问的一些问题。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[epoll 高效的原理和底层机制]]></title>
-    <link href="http://www.throne4j.com/16073533164404.html"/>
-    <updated>2020-12-07T23:01:56+08:00</updated>
-    <id>http://www.throne4j.com/16073533164404.html</id>
-    <content type="html"><![CDATA[
-<p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体，在内核 cache 里建了个红黑树用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
-
-<p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是 说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback， 它会把这样的事件放到上面的 rdllist 双向链表中。</p>
-
-<p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内 存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
-
-<h2 id="toc_0">从网卡接收数据开始</h2>
-
-<p>一个典型的计算机结构图，计算机有 CPU、存储器、网络接口等部件组成，了解 epoll 本质的第一步，要从硬件的角度看计算机怎样接收网络数据。<br/>
-<a href="16073516476681.html">Linux 网络包接收过程</a></p>
-
-<p>了解一下计算机的结构：</p>
-
-<p><figure><img src="media/16073533164404/16073539371404.jpg" alt="计算机结构"/><figcaption>计算机结构</figcaption></figure></p>
-
-<p>网卡接收数据的过程：网卡收到网线传来的数据;经过硬件电路的传输;最终将数据写入到内存中的某个地址上。这个过程涉及到 DMA 传输、IO 通路选择等硬件有关的知识， 但我们只需知道，网卡会把接收到的数据写入内存，操作系统就可以去读取它们。</p>
-
-<h3 id="toc_1">如何知道接收了数据</h3>
-
-<p>CPU 的如何知道网络上有数据要接收? 可以详细了解一下 中断机制</p>
-
-<h3 id="toc_2">进程阻塞</h3>
-
-<p>问题1：进程阻塞为什么不占用 cpu 资源？<br/>
-问题2：那么阻塞的原理是什么?</p>
-
-<p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
-
-<p>我们看下如下伪代码</p>
-
-<pre><code class="language-text">//创建 socket
-int s = socket(AF_INET, SOCK_STREAM, 0);
-//绑定
-bind(s, ...)
-//监听
-listen(s, ...) 
-//接受客户端连接 
-int c = accept(s, ...) 
-//接收客户端数据 
-recv(c, ...); 
-//将数据打印出来 
-printf(...)
-</code></pre>
-
-<p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
-
-<p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
-
-<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，会分时执行。</p>
-
-<p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
-
-<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
-
-<p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
-
-<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
-
-<h3 id="toc_3">内核接收网络数据全过程</h3>
-
-<p>进程在 recv 阻塞期间，计算机收到了对端传送的数据(步骤1)。数据经由网卡传送 到内存(步骤2)，然后网卡通过中断信号通知 cpu 有数据到达，cpu 执行中断程序(步骤3)。此处的中断程序主要有两项功能，先将网络数据写入到对应 socket 的接收缓冲区里 面(步骤4)，再唤醒进程 A(步骤5)，重新将进程 A 放入工作队列中</p>
-
-<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
-
-<p>通过上面的步骤可能有小伙伴会想，操作系统是怎么直到网络数据对应于哪个 socket的呢？</p>
-
-<p>因为一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
-
-<p>那么操作系统是如何同时监视多个 socket 的数据的呢？</p>
-
-<p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此编写操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始吧</p>
-
-<p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
-
-<p>为方便理解，我们先复习 select 的用法。</p>
-
-<pre><code class="language-text">int fds[] = 存放需要监听的 socket 
-while(1){
-    int n = select(..., fds, ...) 
-    for(int i=0; i &lt; fds.count; i++) {
-        if(FD_ISSET(fds[i], ...)) { 
-            //fds[i]的数据处理
-    
- 
-        }
-    }
-}
-</code></pre>
-
-<p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
-
-<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
-<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
-
-<p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
-
-<p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
-
-<p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
-
-<p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
-
-<ul>
-<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
-<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
-</ul>
-
-<p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
-
-<h2 id="toc_4">epoll 的设计思路</h2>
-
-<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。epoll 通过以下一些措施来改进效率。</p>
-
-<h3 id="toc_5">措施一：功能分离</h3>
-
-<p>select 低效的原因之一是将 维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护 等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
-
-<p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
-
-<pre><code class="language-text">int epfd = epoll_create(...);
-//将所有需要监听的 socket 添加到 epfd 中 
-epoll_ctl(epfd, ...); 
-while(1){
-    int n = epoll_wait(...) 
-    for(接收到数据的 socket) {
-        //处理 
-    }
-}
-</code></pre>
-
-<p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
-
-<h3 id="toc_6">就绪列表</h3>
-
-<p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
-
-<h2 id="toc_7">epoll 的原理和流程</h2>
-
-<p>当某个进程 调用 epoll_create 方法时，内核会创建一个 eventpoll 对象(也就是程序中 epfd 所代表的对象)。eventpoll 对象也是文件系统中的一员，和 socket 一样，它也会有 等待队列。</p>
-
-<p>创建 epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
-
-<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
-
-<p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程 序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
-
-<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
-
-<p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
-
-<p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
-
-<p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
-
-<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
-
-<p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中 的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
-
-<h2 id="toc_8">epoll 实现细节</h2>
-
-<h3 id="toc_9">eventpoll</h3>
-
-<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
-首先思考两个问题</p>
-
-<ul>
-<li>就绪队列应该应使用什么数据结构?</li>
-<li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
-</ul>
-
-<p>下面我们来看下 eventpoll 的数据结构</p>
-
-<pre><code class="language-c">struct eventpoll {
-    // 用于锁定这个eventpoll数据结构，
-    // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
-    // 内核用这个mutex帮你搞定
-    struct mutex mtx;
-
-    // 等待队列，epoll_wait时如果当前没有拿到有效的事件，将当前task加入这个等待队列后作进程切换，等待被唤醒
-    wait_queue_head_t wq;
-
-    /* Wait queue used by file-&gt;poll() */
-    // eventpoll对象在使用时都会对应一个struct file对象，赋值到其private_data，
-    // 其本身也可以被 poll， 那也就需要一个wait queue
-    wait_queue_head_t poll_wait;
-
-    // 所有有事件触发的被监控的fd都会加入到这个列表
-    struct list_head rdllist;
-
-    /* Lock which protects rdllist and ovflist */
-    rwlock_t lock;
-
-    // 所有被监控的 fd 使用红黑树来存储
-    struct rb_root_cached rbr;
-
-    //  当将ready的fd复制到用户进程中，会使用上面的 lock锁锁定rdllist,
-    //  此时如果有新的ready状态fd, 则临时加入到 ovflist表示的单链表中
-    struct epitem *ovflist;
-
-    // 会autosleep准备的唤醒源
-    struct wakeup_source *ws;
-
-    /* The user that created the eventpoll descriptor */
-    struct user_struct *user;
-
-    // linux下一切皆文件，epoll实例被创建时，同时会创建一个file, file的private_data
-    // 指向当前这个eventpoll结构
-    struct file *file;
-
-    /* used to optimize loop detection check */
-    int visited;
-    struct list_head visited_list_link;
-
-#ifdef CONFIG_NET_RX_BUSY_POLL
-    /* used to track busy poll napi_id */
-    unsigned int napi_id;
-#endif
-};
-</code></pre>
-
-<p>就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
-
-<p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
-
-<p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
-
-<p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
-
-<p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
-
-<h3 id="toc_10">epitem 结构</h3>
-
-<p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
-
-<pre><code class="language-c">struct epitem {
-    // 用于构建红黑树
-    union {
-        /* RB tree node links this structure to the eventpoll RB tree */
-        struct rb_node rbn;
-        /* Used to free the struct epitem */
-        struct rcu_head rcu;
-    };
-
-    // 用于将当前epitem链接到eventpoll-&gt;rdllist中
-    struct list_head rdllink;
-
-    //用于将当前epitem链接到&quot;struct eventpoll&quot;-&gt;ovflist这个单链表中
-    struct epitem *next;
-
-    /* The file descriptor information this item refers to */
-    struct epoll_filefd ffd;
-
-    /* Number of active wait queue attached to poll operations */
-    int nwait;
-
-    /* List containing poll wait queues */
-    struct list_head pwqlist;
-
-    // 对应的eventpoll对象
-    struct eventpoll *ep;
-
-    /* List header used to link this item to the &quot;struct file&quot; items list */
-    struct list_head fllink;
-
-    /* wakeup_source used when EPOLLWAKEUP is set */
-    struct wakeup_source __rcu *ws;
-
-    // 需要关注的读，写事件等
-    struct epoll_event event;
-};
-</code></pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux 网络包接收过程]]></title>
-    <link href="http://www.throne4j.com/16073516476681.html"/>
-    <updated>2020-12-07T22:34:07+08:00</updated>
-    <id>http://www.throne4j.com/16073516476681.html</id>
-    <content type="html"><![CDATA[
-<p>首先看下网络包接收大概流程图</p>
-
-<p><figure><img src="media/16073516476681/Linux%20%E7%BD%91%E7%BB%9C%E5%8C%85%E6%8E%A5%E6%94%B6%E8%BF%87%E7%A8%8B.jpg" alt="Linux 网络包接收过程"/><figcaption>Linux 网络包接收过程</figcaption></figure></p>
-
-<ul>
-<li>SKB：struct sk_buffer 的简写<br/>
-Struct sk_buffer 是 linux TCP/IP stack 中，用于管理Data Buffer的结构。Sk_buffer 在数据包的发送和接收中起着重要的作用。为了提高网络处理的性能，应尽量避免数据包的拷贝。Linux 内核开发者们在设计 sk_buffer 结构的时候，充分考虑到这一点。目前 Linux 协议栈在接收数据的时候，需要拷贝两次：数据包进入网卡驱动后拷贝一次，从内核空间递交给用户空间的应用时再拷贝一次。</li>
-</ul>
-
-<p>当网卡上收到数据以后，Linux 中第一个工作的模块是网络驱动。 网络驱动会以 DMA 的 方式把网卡上收到的帧写到内存里。再向 CPU 发起一个中断，以通知 CPU 有数据到达。第 二，当 CPU 收到中断请求后，会去调用网络驱动注册的中断处理函数。 网卡的中断处理函 数并不做过多工作，发出软中断请求，然后尽快释放 CPU。ksoftirqd 检测到有软中断请求到 达，调用 poll 开始轮询收包，收到后交由各级协议栈处理。最后会被放到用户 socket 的接 收队列中。</p>
-
-<h2 id="toc_0">准备工作</h2>
-
-<p>1、创建 ksoftirqd 内核线程<br/>
-Linux 的软中断都是在专门的内核线程(ksoftirqd)中进行的，因此我们非常有必要看一 下这些进程是怎么初始化的，这样我们才能在后面更准确地了解收包过程。该进程数量不是 1 个，而是 N 个，其中 N 等于你的机器的核数。</p>
-
-<p>系统初始化的时候会创建出 softirqd 进程。</p>
-
-<p>当 ksoftirqd 被创建出来以后，它就会进入自己的线程循环函数不停地判断有没有软中断需要被处理。这里需要注意的一点是，软中断不仅仅只有网络软中断，还有其它类型。</p>
-
-<p>2、网络子系统初始化</p>
-
-<p>linux 内核通过 net/core/dev.c 中 net_dev_init 函数进行网络子系统的初始化，在这个函数里，会为每个 CPU 都申请一个 softnet_data 数据结构。</p>
-
-<p>同时会给每一种软中断都注册一个处理函数。比如网络处理中 NET_TX_SOFTIRQ 中断的处 理函数为 net_tx_action，NET_RX_SOFTIRQ 中断的为 net_rx_action。</p>
-
-<p>3、协议栈注册<br/>
-内核实现了网络层的 ip 协议，也实现了传输层的 tcp 协议和 udp 协议。 </p>
-
-<p>这些协议对应的实现函数分别是 ip_rcv()，tcp_v4_rcv()和 udp_rcv()。和我们平时写代码的方式不一样的是， 内核是通过注册的方式来实现的。 在 net/ipv4/af_inet.c 中的 inet_init(void)负责网络协议栈 注册。 通过 inet_init，将这些函数注册到了 inet_protos 和 ptype_base 两个数据结构中</p>
-
-<p>inet_protos记录着udp，tcp的处理函数地址，ptype_base存储着ip_rcv()函数的处理地址。 软中断中会通过 ptype_base 找到 ip_rcv 函数地址，进而将 ip 包正确地送到 ip_rcv()中执行。 在 ip_rcv 中将会通过 inet_protos 找到 tcp 或者 udp 的处理函数，再而把包转发给 udp_rcv() 或 tcp_v4_rcv()函数。</p>
-
-<p>4、网卡驱动初始化和启动网卡，中间的工作包括分配内存、注册中断处理函数，注册供 内核使用的函数、开启硬中断等等工作。</p>
-
-<h2 id="toc_1">Socket 的创建</h2>
-
-<p>调用链：<br/>
-net/Socket.c:sys_socket()-&gt;sock_create()-&gt;__sock_create()-&gt;sock_alloc();</p>
-
-<p>主要的工作则是:<br/>
-1、和 Linux 文件系统挂钩;<br/>
-2、使用协议族来初始化 socket，在前面的初始化过程中，我们知道有个协议栈注册过程， 找到内核初始化时注册的协议域，然后调用其 create 方法进行 socket 实例的创建;<br/>
-3、初始化和 socket 通信有关的缓冲区、队列等等;</p>
-
-<h2 id="toc_2">接受数据的到来</h2>
-
-<p>1、首先当数据帧从网线到达网卡上的时候，第一站是网卡的接收队列。网卡在分配给自己的RingBuffer中寻找可用的内存位置，找到后 DMA 引擎会把数据 DMA 到网卡之前关联的内存里，这个时候 CPU 都是无感的。</p>
-
-<p>当 DMA 操作完成以后，网卡会向 CPU 发起一个硬中断，通知 CPU 有数据到达。CPU 调用网卡注册的硬中断处理函数，这个处理过程非常短。只是记录了一个寄存器，修改了一下 CPU 的 softnet_data 中的列表，告诉 CPU 当前有设备有数据需要处理，然后发出个软中断， 硬中断工作就算是完成了。</p>
-
-<p>2、在网络子系统初始化小节，我们看到为 NET_RX_SOFTIRQ 注册了处理函数 net_rx_action， 这个函数中的核心逻辑执行就是执行网卡驱动注册到 softnet_data 中的函数，把数据帧从 RingBuffer 上取下来，被送到协议栈中，从数据包中取出协议信息，然后遍历注册在这个协议上的回调函数列表，调用到了协议层注册的处理函数了。</p>
-
-<p>对于 ip 包来讲，就会进入到 ip_rcv，IP 层处理完成后如协议注册小节看到 inet_protos 中 保存着 tcp_rcv()和 udp_rcv()的函数地址。</p>
-
-<p>这里将会根据包中的协议类型选择进行分发，在这里 skb 包将会进一步被派送到更上层的协议中，udp 和 tcp。</p>
-
-<p>udp 和 tcp 层根据 skb 来寻找对应的 socket，当找到以后将数据包放到 socket 的接收队列中。<br/>
-而我们一般网络编程里的读取数据方法，就是访问这个接收队列</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java 生态圈中的零拷贝]]></title>
-    <link href="http://www.throne4j.com/16072730714201.html"/>
-    <updated>2020-12-07T00:44:31+08:00</updated>
-    <id>http://www.throne4j.com/16072730714201.html</id>
-    <content type="html"><![CDATA[
-<p>Linux 提供的零拷贝技术 Java 并不是全支持，支持 2种(内存映射 mmap、sendfile);</p>
-
-<h2 id="toc_0">NIO 提供的内存映射 MappedByteBuffer</h2>
-
-<p>NIO 中的 FileChannel.map()方法其实就是采用了操作系统中的内存映射方式，底层就是 调用 Linux mmap()实现的。</p>
-
-<p>将内核缓冲区的内存和用户缓冲区的内存做了一个地址映射。这种方式适合读取大文件， 同时也能对文件内容进行更改，但是如果其后要通过 SocketChannel 发送，还是需要 CPU 进 行数据的拷贝。</p>
-
-<h2 id="toc_1">NIO 提供的 sendfile</h2>
-
-<p>Java NIO 中提供的 FileChannel 拥有 transferTo 和 transferFrom 两个方法，可直接把 FileChannel 中的数据拷贝到另外一个 Channel，或者直接把另外一个 Channel 中的数据拷 贝到 FileChannel。</p>
-
-<p>该接口常被用于高效的 网络/文件 的数据传输和大文件拷贝。在操作系统支持的情况下，通过该方法传输数据并不需要将源数据从内核态拷贝到用户态，再从用户态拷贝到目标通道的内核态，同时也避免了两次用户态和内核态间的上下文切换，也即使用了“零拷贝”，所以其性能一般高于 Java IO 中提供的方法。</p>
-
-<h2 id="toc_2">Kafka 中的零拷贝</h2>
-
-<p>Kafka 两个重要过程都使用了零拷贝技术，且都是操作系统层面的狭义零拷贝，</p>
-
-<ul>
-<li>Producer 生产的数据存到 broker<br/>
-Producer 生产的数据持久化到 broker，采用 mmap 文件映射，实现顺序的快速写入</li>
-<li>Consumer 从 broker 读取数据。<br/>
-Customer 从 broker 读取数据，采用 sendfile，将磁盘文件读到 OS 内核缓冲区后，直接转到 socket buffer 进行网络发送</li>
-</ul>
-
-<h2 id="toc_3">Netty 的零拷贝实现</h2>
-
-<p>Netty 的零拷贝主要包含几个方面:</p>
-
-<p>在网络通信上，Netty 的接收和发送 ByteBuffer 采用 DIRECT BUFFERS，使用堆外直接 内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝。如果使用传统的堆内存(HEAP BUFFERS)进行 Socket 读写，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写 入 Socket 中。相比于堆外直接内存，消息在发送过程中多了一次缓冲区的内存拷贝。</p>
-
-<p>在缓存操作上，Netty 提供了 CompositeByteBuf 类，它可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf，避免了各个 ByteBuf 之间的拷贝。</p>
-
-<p>通过 wrap 操作，我们可以将 byte[]数组、ByteBuf、 ByteBuffer 等包装成一个 Netty ByteBuf 对象，进而避免了拷贝操作。</p>
-
-<p>ByteBuf支持slice 操作，因此可以将ByteBuf分解为多个共享同一个存储区域的ByteBuf， 避免了内存的拷贝。</p>
-
-<p>在文件传输上，Netty 的通过 FileRegion 包装的 FileChannel.tranferTo 实现文件传输，它可以直接将文件缓冲区的数据发送到目标 Channel，避免了传统通过循环 write 方式导致的内存拷贝问题。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux 零拷贝技术]]></title>
-    <link href="http://www.throne4j.com/16072680119143.html"/>
-    <updated>2020-12-06T23:20:11+08:00</updated>
-    <id>http://www.throne4j.com/16072680119143.html</id>
-    <content type="html"><![CDATA[
-<h2 id="toc_0">第一个问题：什么是零拷贝？</h2>
-
-<p>零拷贝技术是指计算机执行操作时， CPU 不需要先将数据从某处内存复制到另一个特定区域。这种技术通常用于通过网络传输文件时节省 CPU 周期和内存带宽。</p>
-
-<ul>
-<li>零拷贝技术可以减少数据拷贝和共享总线操作次数，消除传输数据在存储器之间不必要的中间拷贝次数，从而有效的提高数据传输效率</li>
-<li>零拷贝技术减少了用户进程地址空间和内核地址空间之间因为上下文切换而带来的开销</li>
-</ul>
-
-<p>广泛的说就是减少不必要的拷贝即被称为零拷贝</p>
-
-<h2 id="toc_1">Linux 的 IO 机制与 DMA</h2>
-
-<p>在早期的计算机中，用户进程需要读取磁盘数据，需要 CPU 中断和 CPU 参与，因此效率比较低，发起 IO 请求，每次的 IO 中断，都带来了 CPU 的上下文切换，因此出现了 DMA 技术</p>
-
-<p>DMA(Direct Memory Access，直接内存存取)是所有现代电脑的重要特色，它允许不同速度的硬件装置来沟通，而不需要依赖于 CPU 的大量中断负载。</p>
-
-<p>DMA 控制器接管了数据读写请求，减少了 CPU 的负担，这样一来 CPU 可以高效工作了。现代硬盘基本都支持 DMA</p>
-
-<p>实际 IO 读取涉及两个过程：</p>
-
-<ul>
-<li>DMA 等待数据准备好，把磁盘数据读取到操作系统内核缓冲区</li>
-<li>用户进程将内核缓冲区的数据 拷贝到用户空间</li>
-</ul>
-
-<p>这两个过程都是阻塞的。</p>
-
-<h2 id="toc_2">传统数据传送机制</h2>
-
-<p>比如：读取文件，再用 socket 发送出去，实际经过四次 copy。</p>
-
-<p>伪代码如下：</p>
-
-<pre><code class="language-text">buffer = File.read()
-Socket.send(buffer)
-</code></pre>
-
-<ul>
-<li>第一次：将磁盘文件读取到操作系统内核缓冲区</li>
-<li>第二次：将内核缓冲区的数据拷贝到应用程序的 buffer</li>
-<li>第三次：将应用程序 buffer 中的数据拷贝到 socket 网络发送缓冲区(属于操作系统内核的缓冲区)</li>
-<li>第四次：将 socket buffer 的数据拷贝到网卡，由网卡进行网络传输</li>
-</ul>
-
-<p>图示如下：<br/>
-<figure><img src="media/16072680119143/16072705633200.jpg" alt="传统数据传送机制"/><figcaption>传统数据传送机制</figcaption></figure></p>
-
-<p>分析上述的过程，虽然引入 DMA 来接管 CPU 的中断请求，但四次 copy 是存在“不必 要的拷贝”的。实际上并不需要第二个和第三个数据副本。应用程序除了缓存数据并将其传输回套接字缓冲区之外什么都不做。相反，数据可以直接从读缓冲区传输到套接字缓冲区</p>
-
-<p>显然，第二次和第三次数据 copy 其实在这种场景下没有什么帮助反而带来开销，这也 正是零拷贝出现的背景和意义。</p>
-
-<p>传统的数据传送所消耗的成本: 4 次拷贝，4 次上下文切换。</p>
-
-<h2 id="toc_3">Linux 支持的零拷贝</h2>
-
-<p>零拷贝的目的：减少 IO 流程中不必要的拷贝，当然零拷贝需要操作系统的支持。</p>
-
-<h3 id="toc_4">mmap内存映射</h3>
-
-<p>首先了解一下 <a href="15972869856630.html">mmap 是什么，能做什么 </a></p>
-
-<p>硬盘上文件的位置和应用程序缓冲区(application buffers)进行映射(建立一种一一对应 关系)，由于 mmap()将文件直接映射到用户空间，所以实际文件读取时根据这个映射关系， 直接将文件从硬盘拷贝到用户空间，只进行了一次数据拷贝，不再有文件内容从硬盘拷贝到 内核空间的一个缓冲区。</p>
-
-<p><figure><img src="media/16072680119143/16072711819766.jpg" alt="mmap零拷贝"/><figcaption>mmap零拷贝</figcaption></figure></p>
-
-<p>再次看下mmap的数据传输所消耗的成本：3次拷贝(1次 CPU 拷贝，2次 DMA 拷贝)和 4 次上下文切换</p>
-
-<h3 id="toc_5">sendfile</h3>
-
-<p>linux 2.1 支持的 sendfile，当调用 sendfile()时，DMA 将磁盘数据复制到 kernel buffer，然后将内核中的 kernel buffer 直接拷贝到 socket buffer; </p>
-
-<p>但是数据并未被真正复制到 socket 关联的缓冲区内。取而代之的是，只有记录数据位置和长度的描述符被加入到 socket 缓冲区中。DMA 模块将数据直接从内核缓冲区传递给协议引擎，从而消除了遗留的最后一次复制。</p>
-
-<p>一旦数据全都拷贝到 socket buffer，sendfile()系统调用将会 return、代表数据转化的完成。socket buffer 里的数据就能在网络传输了。</p>
-
-<p><figure><img src="media/16072680119143/16072720825690.jpg" alt="sendfile"/><figcaption>sendfile</figcaption></figure></p>
-
-<p>sendfile 会经历:3 次拷贝(1 次 CPU 拷贝,2 次 DMA 拷贝)和2次上下文切换</p>
-
-<h3 id="toc_6">splice</h3>
-
-<p>Linux 从 2.6.17 支持 splice<br/>
-数据从磁盘读取到 OS 内核缓冲区后，在内核缓冲区直接可将其转成内核空间其他数据 buffer，而不需要拷贝到用户空间。</p>
-
-<p>如下图所示，从磁盘读取到内核 buffer 后，在内核空间直接与 socket buffer 建立 pipe 管道。</p>
-
-<p>和 sendfile()不同的是，splice()不需要硬件支持。</p>
-
-<p>注意 splice 和 sendfile 的不同，sendfile 是将磁盘数据加载到 kernel buffer 后，需要一次 CPU 拷贝，拷贝到 socket buffer。而 splice 是更进一步，连这个 CPU 拷贝 也不需要了，直接将两个内核空间的 buffer 进行 pipe。</p>
-
-<p><figure><img src="media/16072680119143/16072728727089.jpg" alt="splice"/><figcaption>splice</figcaption></figure></p>
-
-<p>splice 会经历 2 次拷贝: 0 次 cpu 拷贝 2 次 DMA 拷贝;</p>
-
-<h2 id="toc_7">总结 Linux 中零拷贝</h2>
-
-<p>最早的零拷贝定义来源于 Linux 2.4 内核新增 sendfile 系统调用，提供了零拷贝。</p>
-
-<p>磁盘数据通过 DMA 拷贝到内核 态 Buffer 后，直接通过 DMA 拷贝到 NIO Buffer(socket buffer)，无需 CPU 拷贝。这也是零拷贝这一说法的来源。这是真正操作系统意义上的零拷贝(也就是狭义零拷贝)。</p>
-
-<p>但是我们知道，由 OS 内核提供的 操作系统意义上的零拷贝，发展到目前也并没有很 多种，也就是这样的零拷贝并不是很多;</p>
-
-<p>随着发展，零拷贝的概念得到了延伸，就是目前的减少不必要的数据拷贝都算作零拷贝 的范畴。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[直接内存]]></title>
-    <link href="http://www.throne4j.com/16072655636252.html"/>
-    <updated>2020-12-06T22:39:23+08:00</updated>
-    <id>http://www.throne4j.com/16072655636252.html</id>
-    <content type="html"><![CDATA[
-<p>在所有的网络通信和应用程序中，每个 TCP 的 Socket 的内核中都有一个发送缓冲区 (SO_SNDBUF)和一个接收缓冲区(SO_RECVBUF)，可以使用相关套接字选项来更改该缓冲区大 小。</p>
-
-<p><figure><img src="media/16072655636252/16072674138718.jpg" alt=""/></figure></p>
-
-<p>当某个应用进程调用 write 时，内核从该应用进程的缓冲区中复制所有数据到所写套接 字的发送缓冲区。如果该套接字的发送缓冲区容不下该应用进程的所有数据(或是应用进程 的缓冲区大于套接字的发送缓冲区，或是套接字的发送缓冲区中已有其他数据)，假设该套 接字是阻塞的，则该应用进程将被投入睡眠。</p>
-
-<p>内核将不从 write 系统调用返回，直到应用进程缓冲区中的所有数据都复制到套接字发送缓冲区。因此，从写一个 TCP 套接字的 write 调用成功返回仅仅表示我们可以重新使用原来的应用进程缓冲区，并不表明对端的 TCP 或应用进程已接收到数据。</p>
-
-<p><figure><img src="media/16072655636252/16072675181930.jpg" alt=""/></figure></p>
-
-<p>Java 程序自然也要遵守上述的规则。</p>
-
-<p>但在 Java 中存在着堆、垃圾回收等特性，所以在实际的 IO 中，在 JVM 内部的存在着这样一种机制: 在 IO 读写上，如果是使用堆内存，JDK 会先创建一个 DirectBuffer，再去执行真正的写操作。</p>
-
-<p>这是因为，当我们把一个地址通过 JNI 传递给底层的 C 库的时候，有一个基本的要求， 就是这个地址上的内容不能失效。然而，在 GC 管理下的对象是会在 Java 堆中移动的。也就是说，有可能我把一个地址传给底层的 write，但是这段内存却因为 GC 整理内存而失效了。 所以必须要把待发送的数据放到一个 GC 管不着的地方。这就是调用 native 方法之前，数据—定要在堆外内存的原因。</p>
-
-<p>可见，DirectBuffer 并没有节省什么内存拷贝，只是因为 HeapBuffer 必须多做一次拷贝， 使用 DirectBuffer 就会少一次内存拷贝。相比没有使用堆内存的 Java 程序，使用直接内存的 Java 程序当然更快一点。</p>
-
-<p>从垃圾回收的角度而言，直接内存不受 GC(新生代的 Minor GC) 影响，只有当执行老 年代的 Full GC 时候才会顺便回收直接内存，整理内存的压力也比数据放到 HeapBuffer 要小。</p>
-
-<h2 id="toc_0">堆外内存的优点和缺点</h2>
-
-<p>堆外内存相比于堆内内存有几个优势:</p>
-
-<ul>
-<li>减少了垃圾回收的工作，因为垃圾回收会暂停其他的工作线程</li>
-<li>加快了复制的速度。因为堆内在 flush 到远程时，会先复制到直接内存(非堆内存)，然后再发送，而堆外内存相当于省略了这个操作。</li>
-</ul>
-
-<p>相对来说堆外内存的劣势如下：</p>
-
-<ul>
-<li>堆外内存难以控制，如果内存泄漏，很难排查</li>
-<li>堆外内存相对来说，不适合存储很复杂的对象。一般简单的对象或者扁平化的对象比较合适</li>
 </ul>
 
 ]]></content>

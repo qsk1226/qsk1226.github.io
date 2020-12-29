@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Linux 常用命令 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Linux 常用命令   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/23</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%9C%8D%E5%8A%A1%E5%99%A8.html'>服务器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h1 id="toc_0">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h1>
+
+<h1 id="toc_1">yum list  列出来所有可以安装的包</h1>
+
+<h1 id="toc_2">yum search</h1>
+
+<h1 id="toc_3">yum -y install     -y:yes</h1>
+
+<h1 id="toc_4">yum -y install gcc</h1>
+
+<h1 id="toc_5">rpm -p gcc</h1>
+
+<h1 id="toc_6">yum -y update （包名）  远程千万不要要加包名</h1>
+
+<h1 id="toc_7">yum -y remove （包名）卸载要添加包名</h1>
+
+<h1 id="toc_8">yum grouplist</h1>
+
+<h1 id="toc_9">uname -a # 查看内核/操作系统/CPU信息</h1>
+
+<h1 id="toc_10">head -n 1 /etc/issue # 查看操作系统版本</h1>
+
+<h1 id="toc_11">cat /proc/cpuinfo # 查看CPU信息</h1>
+
+<h1 id="toc_12">hostname # 查看计算机名</h1>
+
+<h1 id="toc_13">lspci -tv # 列出所有PCI设备</h1>
+
+<h1 id="toc_14">lsusb -tv # 列出所有USB设备</h1>
+
+<h1 id="toc_15">lsmod # 列出加载的内核模块</h1>
+
+<h1 id="toc_16">env # 查看环境变量资源</h1>
+
+<h1 id="toc_17">free -m # 查看内存使用量和交换区使用量</h1>
+
+<h1 id="toc_18">df -h # 查看各分区使用情况</h1>
+
+<h1 id="toc_19">du -sh &lt;目录名&gt; # 查看指定目录的大小</h1>
+
+<h1 id="toc_20">grep MemTotal /proc/meminfo # 查看内存总量</h1>
+
+<h1 id="toc_21">grep MemFree /proc/meminfo # 查看空闲内存量</h1>
+
+<h1 id="toc_22">uptime # 查看系统运行时间、用户数、负载</h1>
+
+<h1 id="toc_23">cat /proc/loadavg # 查看系统负载磁盘和分区</h1>
+
+<h1 id="toc_24">mount | column -t # 查看挂接的分区状态</h1>
+
+<h1 id="toc_25">fdisk -l # 查看所有分区</h1>
+
+<h1 id="toc_26">swapon -s # 查看所有交换分区</h1>
+
+<h1 id="toc_27">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h1>
+
+<h1 id="toc_28">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h1>
+
+<h1 id="toc_29">ifconfig # 查看所有网络接口的属性</h1>
+
+<h1 id="toc_30">iptables -L # 查看防火墙设置</h1>
+
+<h1 id="toc_31">route -n # 查看路由表</h1>
+
+<h1 id="toc_32">netstat -lntp # 查看所有监听端口</h1>
+
+<h1 id="toc_33">netstat -antp # 查看所有已经建立的连接</h1>
+
+<h1 id="toc_34">netstat -s # 查看网络统计信息进程</h1>
+
+<h1 id="toc_35">ps -ef # 查看所有进程</h1>
+
+<h1 id="toc_36">top # 实时显示进程状态用户</h1>
+
+<h1 id="toc_37">w # 查看活动用户</h1>
+
+<h1 id="toc_38">id &lt;用户名&gt; # 查看指定用户信息</h1>
+
+<h1 id="toc_39">last # 查看用户登录日志</h1>
+
+<h1 id="toc_40">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
+
+<h1 id="toc_41">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+
+<h1 id="toc_42">crontab -l # 查看当前用户的计划任务服务</h1>
+
+<h1 id="toc_43">chkconfig –list # 列出所有系统服务</h1>
+
+<h1 id="toc_44">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
+
+<h1 id="toc_45">rpm -qa # 查看所有安装的软件包</h1>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

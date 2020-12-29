@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    epoll 高效的原理和底层机制 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            epoll 高效的原理和底层机制   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/23</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%9C%8D%E5%8A%A1%E5%99%A8.html'>服务器</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li>问题1：CPU 操作系统如何知道接收了数据？</li>
+<li>问题2：进程阻塞为什么不占用 cpu 资源？</li>
+<li>问题3：阻塞的原理是什么?</li>
+<li>问题4：操作系统如何知道网络数据对应于哪个 socket？</li>
+<li>问题5：操作系统是如何同时监视多个 socket 的数据的？</li>
+</ul>
+
+<p>从事服务端开发，少不了要接触网络编程。epoll 作为 Linux 下高性能网络服务器的必备技术至关重要，nginx、Redis、Skynet 和大部分游戏服务器都使用到这一多路复用技术。</p>
+
+<p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步步分析阻塞接收数据、select 到 epoll 的进化过程；最后探究 epoll 的实现细节。</p>
+
+<h2 id="toc_0">网卡接收数据</h2>
+
+<p><a href="16073516476681.html">Linux 网络包接收过程</a></p>
+
+<h3 id="toc_1">进程阻塞原理</h3>
+
+<p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
+
+<p>我们看下如下伪代码</p>
+
+<pre><code class="language-java">//创建 socket
+int s = socket(AF_INET, SOCK_STREAM, 0);
+//绑定
+bind(s, ...)
+//监听
+listen(s, ...) 
+//接受客户端连接 
+int c = accept(s, ...) 
+//接收客户端数据 
+recv(c, ...); 
+//将数据打印出来 
+printf(...)
+</code></pre>
+
+<p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
+
+<h4 id="toc_2">工作队列</h4>
+
+<p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
+
+<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br/>
+<figure><img src="media/16087370410844/16087422186392.jpg" alt="操作系统工作队列"/><figcaption>操作系统工作队列</figcaption></figure></p>
+
+<h4 id="toc_3">等待队列</h4>
+
+<p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。</p>
+
+<p>等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
+
+<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
+
+<p><figure><img src="media/16087370410844/16087424294808.jpg" alt="等待队列"/><figcaption>等待队列</figcaption></figure></p>
+
+<p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
+
+<h4 id="toc_4">唤醒进程</h4>
+
+<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
+
+<h3 id="toc_5">内核接收网络数据全过程</h3>
+
+<ul>
+<li>1、进程在 recv 阻塞期间，计算机收到了对端传送的数据。</li>
+<li>2、网卡将数据帧DMA到内存的RingBuffer中</li>
+<li>3、网卡执行硬中断信号通知 cpu 有数据到达，然后cpu 执行中断程序，调用网卡启动时注册的中断处理函数，发起软中断请求，</li>
+<li>4、内核线程ksoftirqd线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
+<li>5、唤醒进程 A，重新将进程 A 放入工作队列中</li>
+</ul>
+
+<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
+
+<h4 id="toc_6">操作系统是怎么直到网络数据对应于哪个 socket 的呢？</h4>
+
+<p>一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
+
+<h4 id="toc_7">操作系统是如何同时监视多个 socket 的数据的呢？</h4>
+
+<p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此码操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始了解</p>
+
+<p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
+
+<p>为方便理解，我们先复习 select 的用法。</p>
+
+<pre><code class="language-java">int s = socket(AF_INET, SOCK_STREAM, 0);  
+bind(s, ...);
+listen(s, ...);
+int fds[] = 存放需要监听的 socket 
+while(1){
+    int n = select(..., fds, ...) 
+    for(int i=0; i &lt; fds.count; i++) {
+        if(FD_ISSET(fds[i], ...)) { 
+            //fds[i]的数据处理
+    
+        }
+    }
+}
+</code></pre>
+
+<p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
+
+<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
+<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
+
+<p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
+
+<p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
+
+<p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
+
+<p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
+
+<ul>
+<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
+<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
+</ul>
+
+<p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
+
+<h2 id="toc_8">epoll 的设计思路</h2>
+
+<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。 epoll 通过以下一些措施来改进效率。</p>
+
+<h3 id="toc_9">措施一：功能分离</h3>
+
+<p>select 低效的原因之一是将维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
+
+<p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
+
+<pre><code class="language-c">int epfd = epoll_create(...);
+//将所有需要监听的 socket 添加到 epfd 中 
+epoll_ctl(epfd, ...); 
+while(1){
+    int n = epoll_wait(...) 
+    for(接收到数据的 socket) {
+        //处理 
+    }
+}
+</code></pre>
+
+<p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
+
+<h3 id="toc_10">就绪列表</h3>
+
+<p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
+
+<h2 id="toc_11">epoll 的原理和流程</h2>
+
+<p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体(也就是程序中 epfd 所代表的对象)，eventpoll 对象也是文件系统中的一员</p>
+
+<p>在内核 cache 里会建一个红黑树结构，用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
+
+<p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback，它会把这样的事件放到上面的 rdllist 双向链表中。</p>
+
+<p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
+
+<p>创建 epoll 对象后，用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
+
+<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
+
+<p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
+
+<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
+
+<p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
+
+<p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
+
+<p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
+
+<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
+
+<p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
+
+<h2 id="toc_12">epoll 实现细节</h2>
+
+<p>epoll 函数</p>
+
+<pre><code class="language-c">int epoll_create(int size)；
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
+int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
+
+struct epoll_event {
+    __uint32_t events;
+    epoll_data_t data;
+};
+</code></pre>
+
+<h3 id="toc_13">eventpoll</h3>
+
+<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
+首先思考两个问题</p>
+
+<ul>
+<li>就绪队列应该应使用什么数据结构?</li>
+<li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
+</ul>
+
+<p>下面我们来看下 eventpoll 的数据结构</p>
+
+<pre><code class="language-c">struct eventpoll {
+    // 用于锁定这个eventpoll数据结构，
+    // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
+    // 内核用这个mutex帮你搞定
+    struct mutex mtx;
+
+    // 等待队列，epoll_wait时如果当前没有拿到有效的事件，将当前task加入这个等待队列后作进程切换，等待被唤醒
+    wait_queue_head_t wq;
+
+    /* Wait queue used by file-&gt;poll() */
+    // eventpoll对象在使用时都会对应一个struct file对象，赋值到其private_data，
+    // 其本身也可以被 poll， 那也就需要一个wait queue
+    wait_queue_head_t poll_wait;
+
+    // 所有有事件触发的被监控的fd都会加入到这个列表
+    struct list_head rdllist;
+
+    /* Lock which protects rdllist and ovflist */
+    rwlock_t lock;
+
+    // 所有被监控的 fd 使用红黑树来存储
+    struct rb_root_cached rbr;
+
+    //  当将ready的fd复制到用户进程中，会使用上面的 lock锁锁定rdllist,
+    //  此时如果有新的ready状态fd, 则临时加入到 ovflist表示的单链表中
+    struct epitem *ovflist;
+
+    // 会autosleep准备的唤醒源
+    struct wakeup_source *ws;
+
+    /* The user that created the eventpoll descriptor */
+    struct user_struct *user;
+
+    // linux下一切皆文件，epoll实例被创建时，同时会创建一个file, file的private_data
+    // 指向当前这个eventpoll结构
+    struct file *file;
+
+    /* used to optimize loop detection check */
+    int visited;
+    struct list_head visited_list_link;
+
+#ifdef CONFIG_NET_RX_BUSY_POLL
+    /* used to track busy poll napi_id */
+    unsigned int napi_id;
+#endif
+};
+</code></pre>
+
+<p>rdllist就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
+
+<p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
+
+<p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
+
+<p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
+
+<p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
+
+<h3 id="toc_14">epitem 结构</h3>
+
+<p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
+
+<pre><code class="language-c">struct epitem {
+    // 用于构建红黑树
+    union {
+        //RB树节点将此结构链接到eventpoll RB树
+        struct rb_node rbn;
+        //用于释放结构体epitem
+        struct rcu_head rcu;
+    };
+
+    // 用于将当前 epitem 链接到 eventpoll-&gt;rdllist中
+    struct list_head rdllink;
+
+    //用于将当前 epitem 链接到&quot;struct eventpoll&quot;-&gt;ovflist这个单链表中
+    struct epitem *next;
+
+    //此条目引用的文件描述符信息
+    struct epoll_filefd ffd;
+
+    //附加到poll轮询中的活跃等待队列数
+    int nwait;
+
+    /* List containing poll wait queues */
+    struct list_head pwqlist;
+
+    // 对应的eventpoll对象
+    struct eventpoll *ep;
+
+    /* List header used to link this item to the &quot;struct file&quot; items list */
+    struct list_head fllink;
+
+    /* wakeup_source used when EPOLLWAKEUP is set */
+    struct wakeup_source __rcu *ws;
+
+    // 需要关注的读，写事件等
+    struct epoll_event event;
+};
+</code></pre>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

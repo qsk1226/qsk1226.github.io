@@ -114,8 +114,7 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>首先我们先看一下 Lock 框架 和 工具类的关系图<br/>
-<figure><img src="media/16014331445574/16082238778057.jpg" alt="Lock 与 AQS 工具类关系"/><figcaption>Lock 与 AQS 工具类关系</figcaption></figure></p>
+                    <p><figure><img src="media/16014331445574/16082238778057.jpg" alt="Lock 与 AQS 工具类关系"/><figcaption>Lock 与 AQS 工具类关系</figcaption></figure></p>
 
 <p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
 
@@ -138,7 +137,7 @@ try{
 
 <p>Lock 接口理解：</p>
 
-<pre><code class="language-text">public interface Lock {
+<pre><code class="language-java">public interface Lock {
     // 枷锁获得锁资源
     void lock();
     // 尝试获得锁，如果当前线程被调用了interrupted则中断，并抛出异常，否则就获得锁
