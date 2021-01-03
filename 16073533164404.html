@@ -157,7 +157,7 @@ printf(...)
 <p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
 
 <p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br/>
-<figure><img src="media/16087370410844/16087422186392.jpg" alt="操作系统工作队列"/><figcaption>操作系统工作队列</figcaption></figure></p>
+<figure><img src="media/16073533164404/16096513399575.jpg" alt="" style="width:770px;"/></figure></p>
 
 <h4 id="toc_3">等待队列</h4>
 
@@ -165,23 +165,23 @@ printf(...)
 
 <p>等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
 
-<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
+<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中。 由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
 
-<p><figure><img src="media/16087370410844/16087424294808.jpg" alt="等待队列"/><figcaption>等待队列</figcaption></figure></p>
+<p><figure><img src="media/16073533164404/16096513608533.jpg" alt="" style="width:780px;"/></figure></p>
 
 <p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
 
 <h4 id="toc_4">唤醒进程</h4>
 
-<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
+<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列，该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
 
 <h3 id="toc_5">内核接收网络数据全过程</h3>
 
 <ul>
 <li>1、进程在 recv 阻塞期间，计算机收到了对端传送的数据。</li>
-<li>2、网卡将数据帧DMA到内存的RingBuffer中</li>
+<li>2、网卡将数据帧 DMA 到内存的 RingBuffer 中</li>
 <li>3、网卡执行硬中断信号通知 cpu 有数据到达，然后cpu 执行中断程序，调用网卡启动时注册的中断处理函数，发起软中断请求，</li>
-<li>4、内核线程ksoftirqd线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
+<li>4、内核线程 ksoftirqd 线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
 <li>5、唤醒进程 A，重新将进程 A 放入工作队列中</li>
 </ul>
 
@@ -228,7 +228,7 @@ while(1){
 <p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
 
 <ul>
-<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
+<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。每次都要将整个 fds 列表传递给内核，开销比较大。正是因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
 <li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
 </ul>
 
@@ -289,21 +289,168 @@ while(1){
 
 <p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
 
-<h2 id="toc_12">epoll 实现细节</h2>
+<h2 id="toc_12">epoll 服务端代码示例</h2>
+
+<pre><code class="language-c">#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/epoll.h&gt;
+
+#define MAX_FD_NUM 1024  
+#define MAXLEN 1024  
+
+int buf_len = 0;
+
+int main(int argc, char* argv[])
+{
+    int i = 0;
+    printf(&quot;server start up\n&quot;);
+
+    if(argc &lt;= 2)
+    {
+        printf(&quot;usage:%s ip port\n&quot;,basename(argv[0]));
+        return 1;
+    }
+
+    const char* ip = argv[1];
+    int port = atoi(argv[2]);
+
+    int server_sockfd = socket(PF_INET,SOCK_STREAM,0);
+
+    struct sockaddr_in server_addr;
+    bzero(&amp;server_addr, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    inet_pton(AF_INET, ip, &amp;server_addr.sin_addr);
+    server_addr.sin_port = htons(port);
+
+    int ret = bind(server_sockfd, (struct sockaddr*)&amp;server_addr, sizeof(server_addr));
+    assert(ret != -1);
+
+    ret = listen(server_sockfd, MAX_FD_NUM - 1);
+    assert(ret != -1);
+
+    struct sockaddr_in client_addr;
+    socklen_t client_addr_len = sizeof(struct sockaddr_in);
+
+    // 创建一个 epfd，并且把 server_sockfd 注册到这个 epfd上。
+    int epfd = epoll_create(1024);
+    struct epoll_event ev,events[20];
+    ev.data.fd = server_sockfd;
+    ev.events = EPOLLIN;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, server_sockfd, &amp;ev);
+
+    int cur_fd_num = 1;
+    char buf[MAXLEN]={0};
+
+    while (1) {
+        // nReady 就是 events 数组的长度。
+        int nready = epoll_wait(epfd, events, 20, 50);
+
+        int i = 0;
+        for (; i &lt; nready; i++) {
+            if (events[i].data.fd == server_sockfd) {
+                int client_sockfd = accept(server_sockfd,(struct sockaddr*)&amp;client_addr,&amp;client_addr_len);
+
+                if(client_sockfd &lt; 0) {
+                    perror(&quot;accept&quot;);
+                }
+                else {
+                    printf(&quot;accept client_addr %s\n&quot;,inet_ntoa(client_addr.sin_addr));
+                    ev.data.fd = client_sockfd;
+                    ev.events=EPOLLIN;
+                    epoll_ctl(epfd, EPOLL_CTL_ADD, client_sockfd, &amp;ev);
+                }
+            }
+            else if (events[i].events &amp; EPOLLIN) {
+                int connfd = events[i].data.fd;
+                int n = recv(connfd, buf, MAXLEN, 0);
+                if(n &lt; 0) {
+                    if(ECONNRESET == errno) {
+                        close(connfd);
+                        epoll_ctl(epfd, EPOLL_CTL_DEL, connfd, 0);
+                    }
+                    else {
+                        perror(&quot;recv&quot;);
+                    }
+                }
+
+                printf(&quot;receive %s&quot;, buf);
+                buf_len = n;
+
+                ev.data.fd = connfd;
+                ev.events = EPOLLOUT;
+                epoll_ctl(epfd, EPOLL_CTL_MOD, connfd, &amp;ev);
+            }
+            else if (events[i].events &amp; EPOLLOUT) {
+                int connfd = events[i].data.fd;
+                write(connfd, buf, buf_len);
+
+                ev.data.fd = connfd;
+                ev.events = EPOLLIN;
+                epoll_ctl(epfd, EPOLL_CTL_MOD, connfd, &amp;ev);
+            }
+        }
+    }
+
+    return 0;
+}
+</code></pre>
+
+<h2 id="toc_13">epoll 实现细节</h2>
 
 <p>epoll 函数</p>
 
 <pre><code class="language-c">int epoll_create(int size)；
+
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
 int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
 
+</code></pre>
+
+<pre><code class="language-c">typedef union epoll_data {
+    void *ptr;
+    int fd;
+    __uint32_t u32;
+    __uint64_t u64;
+} epoll_data_t;
+
 struct epoll_event {
-    __uint32_t events;
-    epoll_data_t data;
+    __uint32_t events; /* Epoll events */
+    epoll_data_t data; /* User data variable */
 };
 </code></pre>
 
-<h3 id="toc_13">eventpoll</h3>
+<p>epoll_create : 创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。需要注意的是，当创建好epoll句柄后，它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</p>
+
+<p>epoll_ctl:</p>
+
+<ul>
+<li>第一个参数是epoll_create()的返回值，</li>
+<li>第二个参数表示动作，用三个宏来表示：
+<ul>
+<li>EPOLL_CTL_ADD：注册新的fd到epfd中；</li>
+<li>EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</li>
+<li>EPOLL_CTL_DEL：从epfd中删除一个fd；</li>
+</ul></li>
+<li>第三个参数是需要监听的fd，就是我们的socket</li>
+<li>第四个参数是告诉内核需要监听什么事,见 epoll_event 结构，events可以是以下几个宏的集合：(最常见的三种)
+<ul>
+<li>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；</li>
+<li>EPOLLOUT：表示对应的文件描述符可以写；</li>
+<li>EPOLLERR：表示对应的文件描述符发生错误；</li>
+</ul></li>
+</ul>
+
+<p>epoll_wait：<br/>
+等待事件的产生。参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。</p>
+
+<h3 id="toc_14">eventpoll</h3>
 
 <p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
 首先思考两个问题</p>
@@ -373,7 +520,7 @@ struct epoll_event {
 
 <p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
 
-<h3 id="toc_14">epitem 结构</h3>
+<h3 id="toc_15">epitem 结构</h3>
 
 <p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
 

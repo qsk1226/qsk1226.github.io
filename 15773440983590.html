@@ -171,23 +171,31 @@
 </tr>
 <tr>
 <td>-Xmx</td>
-<td>最大堆空间</td>
+<td>最大堆空间k、m为单位</td>
 </tr>
 <tr>
 <td>-Xmn</td>
 <td>设置新生代大小</td>
 </tr>
 <tr>
+<td>-XX:NewRatio</td>
+<td>设置老年代与新生代的比例，比如值为 4，表示新生代与老年代所占比例为1:4,新生代占整个堆大小的五分之一，如果设置了-Xmn参数，此参数不需要再设置</td>
+</tr>
+<tr>
 <td>-XX:SurvivorRatio</td>
-<td>设置新生代eden空间和from/to空间的比例关系</td>
+<td>设置新生代eden空间和from/to空间的比例关系，例如8，新生代:from:to = 8:1:1</td>
 </tr>
 <tr>
 <td>-XX:PermSize</td>
-<td>方法区初始大小</td>
+<td>方法区初始大小，默认是物理内存的六十四分之一</td>
 </tr>
 <tr>
 <td>-XX:MaxPermSize</td>
-<td>方法区最大大小</td>
+<td>方法区最大空间值，默认是物理内存的四分之一</td>
+</tr>
+<tr>
+<td>-XX:MaxTenuringThreshold</td>
+<td>新生代中对象存活次数，默认15</td>
 </tr>
 <tr>
 <td>-XX:MetaspaceSize</td>
@@ -199,7 +207,7 @@
 </tr>
 <tr>
 <td>-Xss</td>
-<td>栈大小</td>
+<td>栈大小，在jdk5之后的版本每个线程栈大小为 1m，之前的版本每个线程栈大小为 256k</td>
 </tr>
 <tr>
 <td>-XX:MaxDirectMemorySize</td>
@@ -207,6 +215,13 @@
 </tr>
 </tbody>
 </table>
+
+<p>说明: <br/>
+整个堆大小的计算公式: JVM 堆大小 ＝ 年轻代大小＋年老代大小＋持久代大小。</p>
+
+<p>增大新生代大小就会减少对应的年老代大小，设置-Xmn值对系统性能影响较大，所以如果设置新生代大小的调整，则需要严格的测试调整。而新生代是用来存放新创建的对象，大小是随着堆大小增大和减少而有相应的变化，默认值是保持堆大小的十五分之一，-Xmn参数就是设置新生代的大小，也可以通过-XX:NewRatio来设置新生代与年老代的比例，java 官方推荐配置为3:8。</p>
+
+<p>新生代的特点就是内存中的对象更新速度快，在短时间内容易产生大量的无用对象，如果在这个参数时就需要考虑垃圾回收器设置参数也需要调整。推荐使用: 复制清除算法和并行收集器进行垃圾回收，而新生代的垃圾回收叫做初级回收。</p>
 
 <h3 id="toc_3">jvm 追踪类信息</h3>
 
@@ -238,7 +253,61 @@
 </tbody>
 </table>
 
-<h3 id="toc_4">jvm gc日志配置参数</h3>
+<h3 id="toc_4">jvm 垃圾回收器参数</h3>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>-XX:+UseSerialGC</td>
+<td>串行垃圾回收，已很少使用</td>
+</tr>
+<tr>
+<td>-XX:+UseParNewGC</td>
+<td>新生代使用并行，老年代使用串行</td>
+</tr>
+<tr>
+<td>-XX:+UseConcMarkSweepGC</td>
+<td>新生代使用并行，老年代使用 CMS</td>
+</tr>
+<tr>
+<td>-XX:ParallelGCThreads</td>
+<td>指定并行的垃圾手机线程的数量，最好等于CPU数量</td>
+</tr>
+<tr>
+<td>-XX:+DisableExplicitGC</td>
+<td>禁用System.gc(),因为它会触发 Full GC</td>
+</tr>
+<tr>
+<td>-XX:CMSFullGCsBeforeCompaction</td>
+<td>在多次 GC 后进行内存压缩，这个是因为并行收集器不对内存空间进行压缩，所以运行一段时间之后，会产生很多内存碎片，是的运行效率降低</td>
+</tr>
+<tr>
+<td>-XX:+CMSParallelRemarkEnabled</td>
+<td>降低标记停顿</td>
+</tr>
+<tr>
+<td>-XX:+UseCMSCompactAtFullCollection</td>
+<td>在每次Full GC时，对老年代区域进行碎片整理</td>
+</tr>
+<tr>
+<td>-XX:CMSInitiatingOccupancyFraction</td>
+<td>使用CMS作为垃圾回收，使用70%后开始CMS收集</td>
+</tr>
+<tr>
+<td>-XX:+CMSIncrementalMode</td>
+<td>设置增量模式</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_5">jvm gc日志配置参数</h3>
 
 <table>
 <thead>
@@ -288,7 +357,7 @@
 </tbody>
 </table>
 
-<h2 id="toc_5">jps （虚拟机进程状况工具）</h2>
+<h2 id="toc_6">jps （虚拟机进程状况工具）</h2>
 
 <p>列出当前机器上正在运行的虚拟机进程，并显示虚拟机执行主类名称与虚拟机的唯一进程ID，jps 从操作系统的临时目录上去找(所以有一些信息可能显示不全)。</p>
 
@@ -297,14 +366,14 @@
 -m:输出主函数传入的参数. 下的 hello 就是在执行程序时从命令行输入的参数 -l: 输出应用程序主类完整 package 名称或 jar 完整名称.<br/>
 -v: 列出 jvm 参数, -Xms20m -Xmx50m 是启动程序指定的 jvm 参数</p>
 
-<pre><code class="language-text">➜  ~ jps
+<pre><code class="language-text">➜ jps
 1249 org.jetbrains.idea.maven.server.RemoteMavenServer36
 4468 org.jetbrains.jps.cmdline.Launcher
 1208
 4490 sun.tools.jps.Jps
 </code></pre>
 
-<h2 id="toc_6">jstat（虚拟机统计信息监视工具）</h2>
+<h2 id="toc_7">jstat（虚拟机统计信息监视工具）</h2>
 
 <p>jstat（JVM Statistics Monitoring Tool）是用于监视虚拟机各种运行状态信息的命令行工具。它可以显示本地或者远程虚拟机进程中的类加载、内存、垃圾收集、即时编译等运行时数据。</p>
 
@@ -358,7 +427,7 @@ YGC YGCT FGC FGCT GCT
 2 0.037 102 4.110 4.147
 </code></pre>
 
-<h2 id="toc_7">jinfo：Java配置信息工具</h2>
+<h2 id="toc_8">jinfo：Java配置信息工具</h2>
 
 <p>jinfo（Configuration Info for Java）的作用是实时查看和调整虚拟机各项参数。jinfo还可以使用-sysprops选项把虚拟机进程的System.getProperties()的内容打印出来</p>
 
@@ -370,13 +439,13 @@ java -XX:+PrintFlagsFinal -version  查看所有高级参数的当前情况</p>
 <p>jinfo -flags PrintGC 7825 查看PrintGC 是否开启<br/>
 jinfo -flags +PrintGC 7825 开启PrintGC</p>
 
-<h3 id="toc_8">VM 参数分类</h3>
+<h3 id="toc_9">VM 参数分类</h3>
 
 <p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">JVM 的命令行参数参考</a></p>
 
 <p><a href="https://www.oracle.com/java/technologies/javase/vmoptions-jsp.html">HotSpot VM Options参数选项</a></p>
 
-<h4 id="toc_9">堆配置</h4>
+<h4 id="toc_10">堆配置</h4>
 
 <p>我们使用 -Xms 设置堆的初始空间大小，使用 -Xmx 设置堆的最大空间大小</p>
 
@@ -392,7 +461,7 @@ jinfo -flags +PrintGC 7825 开启PrintGC</p>
 &gt; java -Xms20m -Xmn10M Demo
 </code></pre>
 
-<h5 id="toc_10">Eden区</h5>
+<h5 id="toc_11">Eden区</h5>
 
 <p>在年轻代中，分为三个区域，分别是：eden 空间、from 空间、to 空间。如果要设置这部分的大小，那么就使用 -XX:SurvivorRatio 这个参数，该参数设置 eden / from 空间的比例关系，该参数的公式如下：</p>
 
@@ -403,7 +472,7 @@ jinfo -flags +PrintGC 7825 开启PrintGC</p>
 
 <p>这里教一个快速计算的方法，我们假设 eden = 2，那么 from = 1，to = 1，那么 eden + from + to = 10M。这样就可以算出每一份大小是 10/4 = 2.5M。所以 Eden 区 = 2.5 * 2 = 5M，from 区是 2.5M，to 区是 2.5M。</p>
 
-<h5 id="toc_11">永久代/元空间</h5>
+<h5 id="toc_12">永久代/元空间</h5>
 
 <p>在 JDK 1.8 之前，所加载的类信息都放在永久代中。我们用 -XX:PermSize 设置永久代初始大小，用 -XX:MaxPermSize 设置永久代最大大小。</p>
 
@@ -415,7 +484,7 @@ jinfo -flags +PrintGC 7825 开启PrintGC</p>
 <pre><code class="language-shell">&gt; java -XX:MetaspaceSize=10m -XX:MaxMetaspaceSize=50m -XX:+PrintGCDetails Demo
 </code></pre>
 
-<h5 id="toc_12">栈空间</h5>
+<h5 id="toc_13">栈空间</h5>
 
 <p>栈空间是每个线程各自有的一块区域，如果栈空间太小，也会导致 StackOverFlow 异常。而要设置栈空间大小，只需要使用 -Xss 参数就可以。</p>
 
@@ -423,14 +492,14 @@ jinfo -flags +PrintGC 7825 开启PrintGC</p>
 &gt; java -Xss2m Demo
 </code></pre>
 
-<h5 id="toc_13">直接内存</h5>
+<h5 id="toc_14">直接内存</h5>
 
 <p>在 JVM 中还有一块内存，它独立于 JVM 的堆内存，它就是：直接内存。我们可以使用 -XX:MaxDirectMemorySize 设置最大直接内存。如果不设置，默认为最大堆空间，即 -Xmx。</p>
 
 <pre><code class="language-shell">&gt; java -XX:MaxDirectMemorySize=50m Demo
 </code></pre>
 
-<h2 id="toc_14">jmap：Java内存映像工具</h2>
+<h2 id="toc_15">jmap：Java内存映像工具</h2>
 
 <p><figure><img src="media/15773440983590/15976757860737.jpg" alt=""/></figure></p>
 
@@ -537,11 +606,11 @@ jmap -histo:live  20488 | head -10 前十行</p>
   20:           258           4128  java.lang.Integer
 </code></pre>
 
-<h2 id="toc_15">jhat: 虚拟机对转储快照分析工具</h2>
+<h2 id="toc_16">jhat: 虚拟机对转储快照分析工具</h2>
 
 <p>JDK提供jhat（JVM Heap Analysis Tool）命令与jmap搭配使用，来分析jmap生成的堆转储快照。jhat内置了一个微型的HTTP/Web服务器，生成堆转储快照的分析结果后，可以在浏览器中查看。但是尽量不要在实际工作中使用这个命令工具，因为这个命令比较简陋，也因为分析工作一般都不会再服务器上进行，把jmap dump下来的文件转储到其它机器上可以使用更加友好的工具进行分析。</p>
 
-<h2 id="toc_16">jstack：Java堆栈跟踪工具</h2>
+<h2 id="toc_17">jstack：Java堆栈跟踪工具</h2>
 
 <p>jstack（Stack Trace for Java）命令用于生成虚拟机当前时刻的线程快照（一般称为threaddump或者javacore文件）。</p>
 
@@ -765,7 +834,7 @@ Java stack information for the threads listed above:
 Found 1 deadlock.
 </code></pre>
 
-<h3 id="toc_17">jhsdb 基于服务性代理的调试工具</h3>
+<h3 id="toc_18">jhsdb 基于服务性代理的调试工具</h3>
 
 <p>JDK9及以上版本中提供了JCMD和JHSDB两个集成式的多功能工具箱，它们不仅整合了上一节介绍到的所有基础工具所能提供的专项功能，而且由于有着“后发优势”，能够做得往往比之前的老工具们更好、更强大</p>
 
@@ -774,9 +843,9 @@ Found 1 deadlock.
 <p>使用以下命令进入JHSDB的图形化模式:<br/>
 jhsdb hsdb --pid 29087</p>
 
-<h2 id="toc_18">可视化工具</h2>
+<h2 id="toc_19">可视化工具</h2>
 
-<h3 id="toc_19">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
+<h3 id="toc_20">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
 
 <p>JMX 是一个为应用程序、设备、系统等植入管理功能的框架。</p>
 
@@ -787,7 +856,7 @@ jhsdb hsdb --pid 29087</p>
 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
 </code></pre>
 
-<h3 id="toc_20">Jconsole</h3>
+<h3 id="toc_21">Jconsole</h3>
 
 <p><figure><img src="media/15773440983590/15976826355683.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976826842222.jpg" alt=""/></figure><br/>
@@ -795,7 +864,7 @@ jhsdb hsdb --pid 29087</p>
 <figure><img src="media/15773440983590/15976827131457.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976827354222.jpg" alt=""/></figure></p>
 
-<h3 id="toc_21">visualvm</h3>
+<h3 id="toc_22">visualvm</h3>
 
 <p><figure><img src="media/15773440983590/15976829051342.jpg" alt=""/></figure></p>
 

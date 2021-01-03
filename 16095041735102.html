@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    FutureTask 详解 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            FutureTask 详解   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/01/01</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B.html'>java并发编程</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li>
+<a href="#toc_0">FutureTask 简介</a>
+</li>
+<li>
+<a href="#toc_1">FutureTask类关系</a>
+</li>
+<li>
+<a href="#toc_2">FutureTask源码解析</a>
+<ul>
+<li>
+<a href="#toc_3">Callable 接口</a>
+</li>
+<li>
+<a href="#toc_4">Future 接口</a>
+</li>
+<li>
+<a href="#toc_5">核心属性</a>
+</li>
+<li>
+<a href="#toc_6">构造函数</a>
+</li>
+<li>
+<a href="#toc_7">核心方法 -- run()</a>
+</li>
+<li>
+<a href="#toc_8">核心方法--get()</a>
+</li>
+<li>
+<a href="#toc_9">核心方法 - awaitDone(boolean timed, long nanos)</a>
+</li>
+<li>
+<a href="#toc_10">核心方法 - cancel(boolean mayInterruptIfRunning)</a>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<ul>
+<li>FutureTask用来解决什么问题的? 为什么会出现? </li>
+<li>FutureTask类结构关系怎么样的? </li>
+<li>FutureTask的线程安全是由什么保证的? </li>
+<li>FutureTask结果返回机制? </li>
+<li>FutureTask内部运行状态的转变? </li>
+<li>FutureTask通常会怎么用? 举例说明</li>
+</ul>
+
+<h2 id="toc_0">FutureTask 简介</h2>
+
+<p>FutureTask 为 Future 提供了基础实现，如获取任务执行结果(get)和取消任务(cancel)等。如果任务尚未完成，获取任务执行结果时将会阻塞。一旦执行结束，任务就不能被重启或取消(除非使用runAndReset执行计算)。</p>
+
+<p>FutureTask 常用来封装 Callable 和 Runnable，也可以作为一个任务提交到线程池中执行。除了作为一个独立的类之外，此类也提供了一些功能性函数供我们创建自定义 task 类使用。FutureTask 的线程安全由CAS来保证。</p>
+
+<h2 id="toc_1">FutureTask类关系</h2>
+
+<p><figure><img src="media/16095041735102/16095086870393.jpg" alt=""/></figure></p>
+
+<p>FutureTask实现了 RunnableFuture 接口，则 RunnableFuture 接口继承了Runnable接口和Future接口，所以FutureTask既能当做一个Runnable直接被Thread执行，也能作为Future用来得到Callable的计算结果。</p>
+
+<h2 id="toc_2">FutureTask源码解析</h2>
+
+<h3 id="toc_3">Callable 接口</h3>
+
+<p>Callable是个泛型接口，泛型V就是要call()方法返回的类型。对比Runnable接口，Runnable不会返回数据也不能抛出异常。</p>
+
+<pre><code class="language-java">public interface Callable&lt;V&gt; {
+    V call() throws Exception;
+}
+</code></pre>
+
+<h3 id="toc_4">Future 接口</h3>
+
+<p>Future接口代表异步计算的结果，通过Future接口提供的方法可以查看异步计算是否执行完成，或者等待执行结果并获取执行结果，同时还可以取消执行。</p>
+
+<pre><code class="language-java">public interface Future&lt;V&gt; {
+    boolean cancel(boolean mayInterruptIfRunning);
+    boolean isCancelled();
+    boolean isDone();
+    V get() throws InterruptedException, ExecutionException;
+    V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException;
+}
+</code></pre>
+
+<ul>
+<li>cancel():cancel()方法用来取消异步任务的执行。如果异步任务已经完成或者已经被取消，或者由于某些原因不能取消，则会返回false。如果任务还没有被执行，则会返回true并且异步任务不会被执行。如果任务已经开始执行了但是还没有执行完成，若mayInterruptIfRunning为true，则会立即中断执行任务的线程并返回true，若mayInterruptIfRunning为false，则会返回true且不会中断任务执行线程。 </li>
+<li>isCanceled():判断任务是否被取消，如果任务在结束(正常执行结束或者执行异常结束)前被取消则返回true，否则返回false。 </li>
+<li>isDone():判断任务是否已经完成，如果完成则返回true，否则返回false。需要注意的是：任务执行过程中发生异常、任务被取消也属于任务已完成，也会返回true。 </li>
+<li>get():获取任务执行结果，如果任务还没完成则会阻塞等待直到任务执行完成。如果任务被取消则会抛出CancellationException异常，如果任务执行过程发生异常则会抛出ExecutionException异常，如果阻塞等待过程中被中断则会抛出InterruptedException异常。 </li>
+<li>get(long timeout,Timeunit unit):带超时时间的get()版本，如果阻塞等待过程中超时则会抛出TimeoutException异常。</li>
+</ul>
+
+<h3 id="toc_5">核心属性</h3>
+
+<pre><code class="language-java">
+//内部持有的callable任务，运行完毕后置空
+private Callable&lt;V&gt; callable;
+
+//从get()中返回的结果或抛出的异常
+private Object outcome; // non-volatile, protected by state reads/writes
+
+//运行callable的线程
+private volatile Thread runner;
+
+//使用 Treiber 栈保存等待线程
+private volatile WaitNode waiters;
+
+//任务状态
+private volatile int state;
+private static final int NEW          = 0;
+private static final int COMPLETING   = 1;
+private static final int NORMAL       = 2;
+private static final int EXCEPTIONAL  = 3;
+private static final int CANCELLED    = 4;
+private static final int INTERRUPTING = 5;
+private static final int INTERRUPTED  = 6;
+
+</code></pre>
+
+<p>其中需要注意的是 state 是 volatile 类型的，也就是说只要有任何一个线程修改了这个变量，那么其他所有的线程都会知道最新的值。7种状态具体表示：</p>
+
+<ul>
+<li><p>NEW: 表示是个新的任务或者还没被执行完的任务。这是初始状态。</p></li>
+<li><p>COMPLETING: 任务已经执行完成或者执行任务的时候发生异常，但是任务执行结果或者异常原因还没有保存到outcome字段(outcome字段用来保存任务执行结果，如果发生异常，则用来保存异常原因)的时候，状态会从NEW变更到COMPLETING。但是这个状态时间会比较短，属于中间状态。</p></li>
+<li><p>NORMAL: 任务已经执行完成并且任务执行结果已经保存到outcome字段，状态会从COMPLETING转换到NORMAL。这是一个最终态。</p></li>
+<li><p>EXCEPTIONAL: 任务执行发生异常并且异常原因已经保存到outcome字段中后，状态会从COMPLETING转换到EXCEPTIONAL。这是一个最终态。</p></li>
+<li><p>CANCELLED: 任务还没开始执行或者已经开始执行但是还没有执行完成的时候，用户调用了cancel(false)方法取消任务且不中断任务执行线程，这个时候状态会从NEW转化为CANCELLED状态。这是一个最终态。</p></li>
+<li><p>INTERRUPTING: 任务还没开始执行或者已经执行但是还没有执行完成的时候，用户调用了cancel(true)方法取消任务并且要中断任务执行线程但是还没有中断任务执行线程之前，状态会从NEW转化为INTERRUPTING。这是一个中间状态</p></li>
+<li><p>INTERRUPTED: 调用interrupt()中断任务执行线程之后状态会从INTERRUPTING转换到INTERRUPTED。这是一个最终态。有一点需要注意的是，所有值大于COMPLETING的状态都表示任务已经执行完成(任务正常执行完成，任务执行异常或者任务被取消)</p></li>
+</ul>
+
+<p><figure><img src="media/16095041735102/16095105865871.jpg" alt="各个状态之间的可能转换关系"/><figcaption>各个状态之间的可能转换关系</figcaption></figure></p>
+
+<h3 id="toc_6">构造函数</h3>
+
+<p>把传入的Callable变量保存在this.callable字段中，该字段定义为private Callable<V> callable;用来保存底层的调用，在被执行完成以后会指向null,接着会初始化state字段为NEW</p>
+
+<pre><code class="language-java">public FutureTask(Callable&lt;V&gt; callable) {
+    if (callable == null)
+        throw new NullPointerException();
+    this.callable = callable;
+    this.state = NEW;       // ensure visibility of callable
+}
+
+</code></pre>
+
+<hr/>
+
+<p>把传入的Runnable封装成一个Callable对象保存在callable字段中，同时如果任务执行成功的话就会返回传入的result。这种情况下如果不需要返回值的话可以传入一个null。</p>
+
+<pre><code class="language-java">public FutureTask(Runnable runnable, V result) {
+    this.callable = Executors.callable(runnable, result);
+    this.state = NEW;       // ensure visibility of callable
+}
+
+</code></pre>
+
+<p>看下Executors.callable()这个方法，这个方法的功能是把Runnable转换成Callable</p>
+
+<pre><code class="language-java">public static &lt;T&gt; Callable&lt;T&gt; callable(Runnable task, T result) {
+    if (task == null)
+       throw new NullPointerException();
+    return new RunnableAdapter&lt;T&gt;(task, result);
+}
+</code></pre>
+
+<p>可以看到这里采用的是适配器模式，调用RunnableAdapter<T>(task, result)方法来适配</p>
+
+<pre><code class="language-text">static final class RunnableAdapter&lt;T&gt; implements Callable&lt;T&gt; {
+    final Runnable task;
+    final T result;
+    RunnableAdapter(Runnable task, T result) {
+        this.task = task;
+        this.result = result;
+    }
+    public T call() {
+        task.run();
+        return result;
+    }
+}
+
+</code></pre>
+
+<p>这个适配器很简单，就是简单的实现了Callable接口，在call()实现中调用Runnable.run()方法，然后把传入的result作为任务的结果返回。 在new了一个FutureTask对象之后，接下来就是在另一个线程中执行这个Task,无论是通过直接new一个Thread还是通过线程池，执行的都是run()方法，接下来就看看run()方法的实现</p>
+
+<h3 id="toc_7">核心方法 -- run()</h3>
+
+<pre><code class="language-java">public void run() {
+    //新建任务，CAS替换runner为当前线程
+    if (state != NEW ||
+        !UNSAFE.compareAndSwapObject(this, runnerOffset,
+                                     null, Thread.currentThread()))
+        return;
+    try {
+        Callable&lt;V&gt; c = callable;
+        if (c != null &amp;&amp; state == NEW) {
+            V result;
+            boolean ran;
+            try {
+                result = c.call();
+                ran = true;
+            } catch (Throwable ex) {
+                result = null;
+                ran = false;
+                setException(ex);
+            }
+            if (ran)
+                set(result);//设置执行结果
+        }
+    } finally {
+        // runner must be non-null until state is settled to
+        // prevent concurrent calls to run()
+        runner = null;
+        // state must be re-read after nulling runner to prevent
+        // leaked interrupts
+        int s = state;
+        if (s &gt;= INTERRUPTING)
+            handlePossibleCancellationInterrupt(s);//处理中断逻辑
+    }
+}
+
+</code></pre>
+
+<p>运行任务，如果任务状态为NEW状态，则利用CAS修改为当前线程。执行完毕调用set(result)方法设置执行结果。set(result)源码如下：</p>
+
+<pre><code class="language-java">protected void set(V v) {
+    if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) {
+        outcome = v;
+        UNSAFE.putOrderedInt(this, stateOffset, NORMAL); // final state
+        finishCompletion();//执行完毕，唤醒等待线程
+    }
+}
+
+</code></pre>
+
+<p>首先利用 cas 修改 state 状态为 COMPLETING，设置返回结果，然后使用 lazySet(UNSAFE.putOrderedInt) 的方式设置state状态为NORMAL。结果设置完毕后，调用finishCompletion()方法唤醒等待线程，源码如下:</p>
+
+<pre><code class="language-java">private void finishCompletion() {
+    // assert state &gt; COMPLETING;
+    for (WaitNode q; (q = waiters) != null;) {
+        if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {//移除等待线程
+            for (;;) {//自旋遍历等待线程
+                Thread t = q.thread;
+                if (t != null) {
+                    q.thread = null;
+                    LockSupport.unpark(t);//唤醒等待线程
+                }
+                WaitNode next = q.next;
+                if (next == null)
+                    break;
+                q.next = null; // unlink to help gc
+                q = next;
+            }
+            break;
+        }
+    }
+    //任务完成后调用函数，自定义扩展
+    done();
+
+    callable = null;        // to reduce footprint
+}
+
+</code></pre>
+
+<p>回到run方法，如果在 run 期间被中断，此时需要调用handlePossibleCancellationInterrupt方法来处理中断逻辑，确保任何中断(例如cancel(true))只停留在当前run或runAndReset的任务中，源码如下：</p>
+
+<pre><code class="language-java">private void handlePossibleCancellationInterrupt(int s) {
+    //在中断者中断线程之前可能会延迟，所以我们只需要让出CPU时间片自旋等待
+    if (s == INTERRUPTING)
+        while (state == INTERRUPTING)
+            Thread.yield(); // wait out pending interrupt
+}
+
+</code></pre>
+
+<h3 id="toc_8">核心方法--get()</h3>
+
+<pre><code class="language-java">//获取执行结果
+public V get() throws InterruptedException, ExecutionException {
+    int s = state;
+    if (s &lt;= COMPLETING)
+        s = awaitDone(false, 0L);
+    return report(s);
+}
+</code></pre>
+
+<p>FutureTask 通过get()方法获取任务执行结果。如果任务处于未完成的状态(state &lt;= COMPLETING)，就调用awaitDone方法(后面单独讲解)等待任务完成。任务完成后，通过report方法获取执行结果或抛出执行期间的异常。</p>
+
+<pre><code class="language-java">//返回执行结果或抛出异常
+private V report(int s) throws ExecutionException {
+    Object x = outcome;
+    if (s == NORMAL)
+        return (V)x;
+    if (s &gt;= CANCELLED)
+        throw new CancellationException();
+    throw new ExecutionException((Throwable)x);
+}
+
+</code></pre>
+
+<h3 id="toc_9">核心方法 - awaitDone(boolean timed, long nanos)</h3>
+
+<pre><code class="language-java">private int awaitDone(boolean timed, long nanos)
+    throws InterruptedException {
+    final long deadline = timed ? System.nanoTime() + nanos : 0L;
+    WaitNode q = null;
+    boolean queued = false;
+    for (;;) {//自旋
+        if (Thread.interrupted()) {//获取并清除中断状态
+            removeWaiter(q);//移除等待WaitNode
+            throw new InterruptedException();
+        }
+
+        int s = state;
+        if (s &gt; COMPLETING) {
+            if (q != null)
+                q.thread = null;//置空等待节点的线程
+            return s;
+        }
+        else if (s == COMPLETING) // cannot time out yet
+            Thread.yield();
+        else if (q == null)
+            q = new WaitNode();
+        else if (!queued)
+            //CAS修改waiter
+            queued = UNSAFE.compareAndSwapObject(this, waitersOffset,
+                                                 q.next = waiters, q);
+        else if (timed) {
+            nanos = deadline - System.nanoTime();
+            if (nanos &lt;= 0L) {
+                removeWaiter(q);//超时，移除等待节点
+                return state;
+            }
+            LockSupport.parkNanos(this, nanos);//阻塞当前线程
+        }
+        else
+            LockSupport.park(this);//阻塞当前线程
+    }
+}
+
+</code></pre>
+
+<p>awaitDone用于等待任务完成，或任务因为中断或超时而终止。返回任务的完成状态。函数执行逻辑如下,</p>
+
+<p>如果线程被中断，首先清除中断状态，调用removeWaiter移除等待节点，然后抛出InterruptedException。removeWaiter源码如下:</p>
+
+<pre><code class="language-java">private void removeWaiter(WaitNode node) {
+    if (node != null) {
+        node.thread = null;//首先置空线程
+        retry:
+        for (;;) {          // restart on removeWaiter race
+            //依次遍历查找
+            for (WaitNode pred = null, q = waiters, s; q != null; q = s) {
+                s = q.next;
+                if (q.thread != null)
+                    pred = q;
+                else if (pred != null) {
+                    pred.next = s;
+                    if (pred.thread == null) // check for race
+                        continue retry;
+                }
+                else if (!UNSAFE.compareAndSwapObject(this, waitersOffset,q, s)) //cas替换
+                    continue retry;
+            }
+            break;
+        }
+    }
+}
+
+</code></pre>
+
+<ul>
+<li>如果当前状态为结束状态(state&gt;COMPLETING),则根据需要置空等待节点的线程，并返回 Future 状态； </li>
+<li>如果当前状态为正在完成(COMPLETING)，说明此时 Future 还不能做出超时动作，为任务让出CPU执行时间片； </li>
+<li>如果state为NEW，先新建一个WaitNode，然后CAS修改当前waiters； </li>
+<li>如果等待超时，则调用removeWaiter移除等待节点，返回任务状态；如果设置了超时时间但是尚未超时，则park阻塞当前线程； </li>
+<li>其他情况直接阻塞当前线程。</li>
+</ul>
+
+<h3 id="toc_10">核心方法 - cancel(boolean mayInterruptIfRunning)</h3>
+
+<pre><code class="language-java">public boolean cancel(boolean mayInterruptIfRunning) {
+    //如果当前Future状态为NEW，根据参数修改Future状态为INTERRUPTING或CANCELLED
+    if (!(state == NEW &amp;&amp;
+          UNSAFE.compareAndSwapInt(this, stateOffset, NEW,
+              mayInterruptIfRunning ? INTERRUPTING : CANCELLED)))
+        return false;
+    try {    // in case call to interrupt throws exception
+        if (mayInterruptIfRunning) {//可以在运行时中断
+            try {
+                Thread t = runner;
+                if (t != null)
+                    t.interrupt();
+            } finally { // final state
+                UNSAFE.putOrderedInt(this, stateOffset, INTERRUPTED);
+            }
+        }
+    } finally {
+        finishCompletion();//移除并唤醒所有等待线程
+    }
+    return true;
+}
+
+</code></pre>
+
+<p>尝试取消任务。如果任务已经完成或已经被取消，此操作会失败。</p>
+
+<ul>
+<li>如果当前Future状态为NEW，根据参数修改Future状态为INTERRUPTING或CANCELLED。</li>
+<li>如果当前状态不为NEW，则根据参数mayInterruptIfRunning决定是否在任务运行中也可以中断。中断操作完成后，调用finishCompletion移除并唤醒所有等待线程</li>
+</ul>
+
+<pre><code class="language-java">import java.util.concurrent.*;
+ 
+public class CallDemo {
+ 
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+ 
+        /**
+         * 第一种方式:Future + ExecutorService
+         * Task task = new Task();
+         * ExecutorService service = Executors.newCachedThreadPool();
+         * Future&lt;Integer&gt; future = service.submit(task1);
+         * service.shutdown();
+         */
+ 
+ 
+        /**
+         * 第二种方式: FutureTask + ExecutorService
+         * ExecutorService executor = Executors.newCachedThreadPool();
+         * Task task = new Task();
+         * FutureTask&lt;Integer&gt; futureTask = new FutureTask&lt;Integer&gt;(task);
+         * executor.submit(futureTask);
+         * executor.shutdown();
+         */
+ 
+        /**
+         * 第三种方式:FutureTask + Thread
+         */
+ 
+        // 2. 新建FutureTask,需要一个实现了Callable接口的类的实例作为构造函数参数
+        FutureTask&lt;Integer&gt; futureTask = new FutureTask&lt;Integer&gt;(new Task());
+        // 3. 新建Thread对象并启动
+        Thread thread = new Thread(futureTask);
+        thread.setName(&quot;Task thread&quot;);
+        thread.start();
+ 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+ 
+        System.out.println(&quot;Thread [&quot; + Thread.currentThread().getName() + &quot;] is running&quot;);
+ 
+        // 4. 调用isDone()判断任务是否结束
+        if(!futureTask.isDone()) {
+            System.out.println(&quot;Task is not done&quot;);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        int result = 0;
+        try {
+            // 5. 调用get()方法获取任务结果,如果任务没有执行完成则阻塞等待
+            result = futureTask.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+ 
+        System.out.println(&quot;result is &quot; + result);
+ 
+    }
+ 
+    // 1. 继承Callable接口,实现call()方法,泛型参数为要返回的类型
+    static class Task  implements Callable&lt;Integer&gt; {
+ 
+        @Override
+        public Integer call() throws Exception {
+            System.out.println(&quot;Thread [&quot; + Thread.currentThread().getName() + &quot;] is running&quot;);
+            int result = 0;
+            for(int i = 0; i &lt; 100;++i) {
+                result += i;
+            }
+ 
+            Thread.sleep(3000);
+            return result;
+        }
+    }
+}
+
+</code></pre>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

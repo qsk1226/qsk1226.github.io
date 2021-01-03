@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    ConcurrentLinkedQueue 并发队列 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            ConcurrentLinkedQueue 并发队列   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2020/12/30</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.html'>数据结构与算法</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li>要想用线程安全的队列有哪些选择? Vector，Collections.synchronizedList(List<T> list), ConcurrentLinkedQueue 等</li>
+<li>ConcurrentLinkedQueue 实现的数据结构? </li>
+<li>ConcurrentLinkedQueue底层原理?  全程无锁(CAS) </li>
+<li>ConcurrentLinkedQueue的核心方法有哪些? offer()，poll()，peek()，isEmpty()等队列常用方法 </li>
+<li>说说ConcurrentLinkedQueue的HOPS(延迟更新的策略)的设计? </li>
+<li>ConcurrentLinkedQueue适合什么样的使用场景?</li>
+</ul>
+
+<h2 id="toc_0">ConcurrentLinkedQueue 简介</h2>
+
+<p>无界非阻塞队列，它是一个基于链表的无界线程安全队列。该队列的元素遵循先进先出的原则。头是最先加入的，尾是最近加入的。插入元素是追加到尾部。提取一个元素是从头提取。</p>
+
+<p>可以看成是 LinkedList 的并发版本</p>
+
+<h2 id="toc_1">ConcurrentLinkedQueue 数据结构</h2>
+
+<p>ConcurrentLinkedQueue 的数据结构与 LinkedBlockingQueue 的数据结构相同，都是使用的链表结构， 并且包含有一个头结点和一个尾结点。</p>
+
+<p><figure><img src="media/16093020657267/16093027024596.jpg" alt=""/></figure></p>
+
+<h2 id="toc_2">ConcurrentLinkedQueue 源码分析</h2>
+
+<h3 id="toc_3">类的继承关系</h3>
+
+<pre><code class="language-java">public class ConcurrentLinkedQueue&lt;E&gt; extends AbstractQueue&lt;E&gt;
+        implements Queue&lt;E&gt;, java.io.Serializable {}
+</code></pre>
+
+<h3 id="toc_4">内部类 Node 节点</h3>
+
+<p>Node类表示链表结点，用于存放元素，包含item域和next域，item域表示元素，next域表示下一个结点，其利用反射机制和CAS机制来更新item域和next域，保证原子性。</p>
+
+<pre><code class="language-java">private static class Node&lt;E&gt; {
+    // 元素
+    volatile E item;
+    // next域
+    volatile Node&lt;E&gt; next;
+
+    // 构造函数
+    Node(E item) {
+        // 设置item的值
+        UNSAFE.putObject(this, itemOffset, item);
+    }
+    // 比较并替换item值
+    boolean casItem(E cmp, E val) {
+        return UNSAFE.compareAndSwapObject(this, itemOffset, cmp, val);
+    }
+    
+    void lazySetNext(Node&lt;E&gt; val) {
+        // 设置next域的值，并不会保证修改对其他线程立即可见
+        UNSAFE.putOrderedObject(this, nextOffset, val);
+    }
+    // 比较并替换next域的值
+    boolean casNext(Node&lt;E&gt; cmp, Node&lt;E&gt; val) {
+        return UNSAFE.compareAndSwapObject(this, nextOffset, cmp, val);
+    }
+
+    // Unsafe mechanics
+    // 反射机制
+    private static final sun.misc.Unsafe UNSAFE;
+    // item域的偏移量
+    private static final long itemOffset;
+    // next域的偏移量
+    private static final long nextOffset;
+
+    static {
+        try {
+            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            Class&lt;?&gt; k = Node.class;
+            itemOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;item&quot;));
+            nextOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;next&quot;));
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+}
+</code></pre>
+
+<h3 id="toc_5">类的属性</h3>
+
+<p>属性中包含了head域和tail域，表示链表的头结点和尾结点，同时，ConcurrentLinkedQueue也使用了反射机制和CAS机制来更新头结点和尾结点，保证原子性。</p>
+
+<pre><code class="language-java">public class ConcurrentLinkedQueue&lt;E&gt; extends AbstractQueue&lt;E&gt;
+        implements Queue&lt;E&gt;, java.io.Serializable {
+    // 版本序列号        
+    private static final long serialVersionUID = 196745693267521676L;
+    // 反射机制
+    private static final sun.misc.Unsafe UNSAFE;
+    // head域的偏移量
+    private static final long headOffset;
+    // tail域的偏移量
+    private static final long tailOffset;
+    static {
+        try {
+            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            Class&lt;?&gt; k = ConcurrentLinkedQueue.class;
+            headOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;head&quot;));
+            tailOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField(&quot;tail&quot;));
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+    
+    // 头结点
+    private transient volatile Node&lt;E&gt; head;
+    // 尾结点
+    private transient volatile Node&lt;E&gt; tail;
+}
+
+</code></pre>
+
+<h3 id="toc_6">构造方法</h3>
+
+<p>该构造函数用于创建一个最初包含给定 collection 元素的 ConcurrentLinkedQueue，按照此 collection 迭代器的遍历顺序来添加元素。</p>
+
+<pre><code class="language-java">public ConcurrentLinkedQueue(Collection&lt;? extends E&gt; c) {
+    Node&lt;E&gt; h = null, t = null;
+    for (E e : c) { // 遍历c集合
+        // 保证元素不为空
+        checkNotNull(e);
+        // 新生一个结点
+        Node&lt;E&gt; newNode = new Node&lt;E&gt;(e);
+        if (h == null) // 头结点为null
+            // 赋值头结点与尾结点
+            h = t = newNode;
+        else {
+            // 直接头结点的next域
+            t.lazySetNext(newNode);
+            // 重新赋值头结点
+            t = newNode;
+        }
+    }
+    if (h == null) // 头结点为null
+        // 新生头结点与尾结点
+        h = t = new Node&lt;E&gt;(null);
+    // 赋值头结点
+    head = h;
+    // 赋值尾结点
+    tail = t;
+}
+
+</code></pre>
+
+<h3 id="toc_7">核心函数</h3>
+
+<h3 id="toc_8">offer函数， 用于将指定元素插入此队列的尾部。</h3>
+
+<pre><code class="language-java">public boolean offer(E e) {
+    // 元素不为null
+    checkNotNull(e);
+    // 新生一个结点
+    final Node&lt;E&gt; newNode = new Node&lt;E&gt;(e);
+
+    for (Node&lt;E&gt; t = tail, p = t;;) { // 无限循环
+        // q为p结点的下一个结点
+        Node&lt;E&gt; q = p.next;
+        if (q == null) { // q结点为null
+            // p is last node
+            if (p.casNext(null, newNode)) { // 比较并进行替换p结点的next域
+                if (p != t) // p不等于t结点，不一致
+                    // 比较并替换尾结点
+                    casTail(t, newNode);  // Failure is OK.
+                // 返回
+                return true;
+            }
+            // Lost CAS race to another thread; re-read next
+        }
+        else if (p == q) // p结点等于q结点
+            
+            // 原来的尾结点与现在的尾结点是否相等，若相等，则p赋值为head，否则，赋值为现在的尾结点
+            p = (t != (t = tail)) ? t : head;
+        else
+            // Check for tail updates after two hops.
+            // 重新赋值p结点
+            p = (p != t &amp;&amp; t != (t = tail)) ? t : q;
+    }
+}
+
+</code></pre>
+
+<h4 id="toc_9">poll 函数, 此函数用于获取并移除此队列的头，如果此队列为空，则返回null。</h4>
+
+<pre><code class="language-java">public E poll() {
+    restartFromHead:
+    for (;;) { // 无限循环
+        for (Node&lt;E&gt; h = head, p = h, q;;) { // 保存头结点
+            // item项
+            E item = p.item;
+
+            if (item != null &amp;&amp; p.casItem(item, null)) { // item不为null并且比较并替换item成功
+                // Successful CAS is the linearization point
+                // for item to be removed from this queue.
+                if (p != h) // p不等于h    // hop two nodes at a time
+                    // 更新头结点
+                    updateHead(h, ((q = p.next) != null) ? q : p); 
+                // 返回item
+                return item;
+            }
+            else if ((q = p.next) == null) { // q结点为null
+                // 更新头结点
+                updateHead(h, p);
+                return null;
+            }
+            else if (p == q) // p等于q
+                // 继续循环
+                continue restartFromHead;
+            else
+                // p赋值为q
+                p = q;
+        }
+    }
+}
+
+</code></pre>
+
+<h4 id="toc_10">remove 函数</h4>
+
+<pre><code class="language-java">public boolean remove(Object o) {
+    // 元素为null，返回
+    if (o == null) return false;
+    Node&lt;E&gt; pred = null;
+    for (Node&lt;E&gt; p = first(); p != null; p = succ(p)) { // 获取第一个存活的结点
+        // 第一个存活结点的item值
+        E item = p.item;
+        if (item != null &amp;&amp;
+            o.equals(item) &amp;&amp;
+            p.casItem(item, null)) { // 找到item相等的结点，并且将该结点的item设置为null
+            // p的后继结点
+            Node&lt;E&gt; next = succ(p);
+            if (pred != null &amp;&amp; next != null) // pred不为null并且next不为null
+                // 比较并替换next域
+                pred.casNext(p, next);
+            return true;
+        }
+        // pred赋值为p
+        pred = p;
+    }
+    return false;
+}
+
+</code></pre>
+
+<p>此函数用于从队列中移除指定元素的单个实例(如果存在)。其中，会调用到first 函数和succ函数</p>
+
+<pre><code class="language-java">/**
+ * 用于找到列表中第一个存活的节点
+ */
+Node&lt;E&gt; first() {
+    restartFromHead:
+    for (;;) { // 无限循环，确保成功
+        for (Node&lt;E&gt; h = head, p = h, q;;) {
+            // p结点的item域是否为null
+            boolean hasItem = (p.item != null);
+            if (hasItem || (q = p.next) == null) { // item不为null或者next域为null
+                // 更新头结点
+                updateHead(h, p);
+                // 返回结点
+                return hasItem ? p : null;
+            }
+            else if (p == q) // p等于q
+                // 继续从头结点开始
+                continue restartFromHead;
+            else
+                // p赋值为q
+                p = q;
+        }
+    }
+}
+
+</code></pre>
+
+<pre><code class="language-java">/**
+ *succ用于获取结点的下一个结点。如果结点的next域指向自身，则返回head头结点，否则，返回next结点。
+ */
+final Node&lt;E&gt; succ(Node&lt;E&gt; p) {
+    // p结点的next域
+    Node&lt;E&gt; next = p.next;
+    // 如果next域为自身，则返回头结点，否则，返回next
+    return (p == next) ? head : next;
+}
+
+</code></pre>
+
+<h2 id="toc_11">ConcurrentLinkedQueue 示例</h2>
+
+<pre><code class="language-java">import java.util.concurrent.ConcurrentLinkedQueue;
+
+class PutThread extends Thread {
+    private ConcurrentLinkedQueue&lt;Integer&gt; clq;
+    public PutThread(ConcurrentLinkedQueue&lt;Integer&gt; clq) {
+        this.clq = clq;
+    }
+    
+    public void run() {
+        for (int i = 0; i &lt; 10; i++) {
+            try {
+                System.out.println(&quot;add &quot; + i);
+                clq.add(i);
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+class GetThread extends Thread {
+    private ConcurrentLinkedQueue&lt;Integer&gt; clq;
+    public GetThread(ConcurrentLinkedQueue&lt;Integer&gt; clq) {
+        this.clq = clq;
+    }
+    
+    public void run() {
+        for (int i = 0; i &lt; 10; i++) {
+            try {
+                System.out.println(&quot;poll &quot; + clq.poll());
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+public class ConcurrentLinkedQueueDemo {
+    public static void main(String[] args) {
+        ConcurrentLinkedQueue&lt;Integer&gt; clq = new ConcurrentLinkedQueue&lt;Integer&gt;();
+        PutThread p1 = new PutThread(clq);
+        GetThread g1 = new GetThread(clq);
+        p1.start();
+        g1.start();
+        
+    }
+}
+
+</code></pre>
+
+<h2 id="toc_12">HOPS(延迟更新的策略)的设计</h2>
+
+<p>通过上面对offer和poll方法的分析，我们发现tail和head是延迟更新的，两者更新触发时机为： </p>
+
+<ul>
+<li>tail更新触发时机：当tail指向的节点的下一个节点不为null的时候，会执行定位队列真正的队尾节点的操作，找到队尾节点后完成插入之后才会通过casTail进行tail更新；当tail指向的节点的下一个节点为null的时候，只插入节点不更新tail。 </li>
+<li>head更新触发时机：当head指向的节点的item域为null的时候，会执行定位队列真正的队头节点的操作，找到队头节点后完成删除之后才会通过updateHead进行head更新；当head指向的节点的item域不为null的时候，只删除节点不更新head。 </li>
+</ul>
+
+<p>所以这种延迟更新的策略就被叫做HOPS的大概原因是这个, head和tail的更新是“跳着的”即中间总是间隔了一个。那么这样设计的意图是什么呢? 如果让tail永远作为队列的队尾节点，实现的代码量会更少，而且逻辑更易懂。但是，这样做有一个缺点，如果大量的入队操作，每次都要执行CAS进行tail的更新，汇总起来对性能也会是大大的损耗。如果能减少CAS更新的操作，无疑可以大大提升入队的操作效率，所以doug lea大师每间隔1次(tail和队尾节点的距离为1)进行才利用CAS更新tail。对head的更新也是同样的道理，虽然，这样设计会多出在循环中定位队尾节点，但总体来说读的操作效率要远远高于写的性能，因此，多出来的在循环中定位尾节点的操作的性能损耗相对而言是很小的。 ¶</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

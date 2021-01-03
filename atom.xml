@@ -4,7 +4,7 @@
   <title><![CDATA[大爷来玩儿啊~]]></title>
   <link href="http://www.throne4j.com/atom.xml" rel="self"/>
   <link href="http://www.throne4j.com/"/>
-  <updated>2020-12-29T22:25:07+08:00</updated>
+  <updated>2021-01-03T22:47:45+08:00</updated>
   <id>http://www.throne4j.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -13,752 +13,350 @@
   <generator uri="http://www.mweb.im/">MWeb</generator>
   
   <entry>
-    <title type="html"><![CDATA[写时复制容器]]></title>
-    <link href="http://www.throne4j.com/16092475446086.html"/>
-    <updated>2020-12-29T21:12:24+08:00</updated>
-    <id>http://www.throne4j.com/16092475446086.html</id>
+    <title type="html"><![CDATA[]]></title>
+    <link href="http://www.throne4j.com/16096493263582.html"/>
+    <updated>2021-01-03T12:48:46+08:00</updated>
+    <id>http://www.throne4j.com/16096493263582.html</id>
     <content type="html"><![CDATA[
-<ul>
-<li>请先说说非并发集合中Fail-fast机制? </li>
-<li>再为什么说ArrayList查询快而增删慢? 对比ArrayList说说</li>
-<li>CopyOnWriteArrayList的增删改查实现原理? COW基于拷贝 </li>
-<li>再说下弱一致性的迭代器原理是怎么样的? COWIterator<E> </li>
-<li>CopyOnWriteArrayList为什么并发安全且性能比Vector好? </li>
-<li>CopyOnWriteArrayList有何缺陷，说说其应用场景<br/>
-## 写时复制容器 CopyOnWriteArrayList 分析</li>
-</ul>
-
-<h3 id="toc_0">内部类 COWIterator</h3>
-
-<p>COWIterator表示迭代器，其也有一个Object类型的数组作为CopyOnWriteArrayList数组的快照，这种快照风格的迭代器方法在创建迭代器时使用了对当时数组状态的引用。此数组在迭代器的生存期内不会更改，因此不可能发生冲突，并且迭代器保证不会抛出 ConcurrentModificationException。创建迭代器以后，迭代器就不会反映列表的添加、移除或者更改。在迭代器上进行的元素更改操作(remove、set 和 add)不受支持。这些方法将抛出 UnsupportedOperationException。</p>
-
-<pre><code class="language-java">static final class COWIterator&lt;E&gt; implements ListIterator&lt;E&gt; {
-    /** Snapshot of the array */
-    // 快照
-    private final Object[] snapshot;
-    /** Index of element to be returned by subsequent call to next.  */
-    // 游标
-    private int cursor;
-    // 构造函数
-    private COWIterator(Object[] elements, int initialCursor) {
-        cursor = initialCursor;
-        snapshot = elements;
-    }
-    // 是否还有下一项
-    public boolean hasNext() {
-        return cursor &lt; snapshot.length;
-    }
-    // 是否有上一项
-    public boolean hasPrevious() {
-        return cursor &gt; 0;
-    }
-    // next项
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public E next() {
-        if (! hasNext()) // 不存在下一项，抛出异常
-            throw new NoSuchElementException();
-        // 返回下一项
-        return (E) snapshot[cursor++];
-    }
-
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public E previous() {
-        if (! hasPrevious())
-            throw new NoSuchElementException();
-        return (E) snapshot[--cursor];
-    }
-    
-    // 下一项索引
-    public int nextIndex() {
-        return cursor;
-    }
-    
-    // 上一项索引
-    public int previousIndex() {
-        return cursor-1;
-    }
-
-    /**
-        * Not supported. Always throws UnsupportedOperationException.
-        * @throws UnsupportedOperationException always; {@code remove}
-        *         is not supported by this iterator.
-        */
-    // 不支持remove操作
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-        * Not supported. Always throws UnsupportedOperationException.
-        * @throws UnsupportedOperationException always; {@code set}
-        *         is not supported by this iterator.
-        */
-    // 不支持set操作
-    public void set(E e) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-        * Not supported. Always throws UnsupportedOperationException.
-        * @throws UnsupportedOperationException always; {@code add}
-        *         is not supported by this iterator.
-        */
-    // 不支持add操作
-    public void add(E e) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void forEachRemaining(Consumer&lt;? super E&gt; action) {
-        Objects.requireNonNull(action);
-        Object[] elements = snapshot;
-        final int size = elements.length;
-        for (int i = cursor; i &lt; size; i++) {
-            @SuppressWarnings(&quot;unchecked&quot;) E e = (E) elements[i];
-            action.accept(e);
-        }
-        cursor = size;
-    }
-}
-
-</code></pre>
-
-<h3 id="toc_1">类的属性</h3>
-
-<pre><code class="language-java">public class CopyOnWriteArrayList&lt;E&gt;
-    implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable {
-    // 版本序列号
-    private static final long serialVersionUID = 8673264195747942595L;
-    // 可重入锁
-    final transient ReentrantLock lock = new ReentrantLock();
-    // 对象数组，用于存放元素
-    private transient volatile Object[] array;
-    // 反射机制
-    private static final sun.misc.Unsafe UNSAFE;
-    // lock域的内存偏移量
-    private static final long lockOffset;
-    static {
-        try {
-            UNSAFE = sun.misc.Unsafe.getUnsafe();
-            Class&lt;?&gt; k = CopyOnWriteArrayList.class;
-            lockOffset = UNSAFE.objectFieldOffset
-                (k.getDeclaredField(&quot;lock&quot;));
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
-}
-
-</code></pre>
-
-<p>属性中有一个可重入锁，用来保证线程安全访问，还有一个Object类型的数组，用来存放具体的元素。当然，也使用到了反射机制和CAS来保证原子性的修改lock域。</p>
-
-<h3 id="toc_2">构造器</h3>
-
-<pre><code class="language-java">public CopyOnWriteArrayList(Collection&lt;? extends E&gt; c) {
-    Object[] elements;
-    if (c.getClass() == CopyOnWriteArrayList.class) // 类型相同
-        // 获取c集合的数组
-        elements = ((CopyOnWriteArrayList&lt;?&gt;)c).getArray();
-    else { // 类型不相同
-        // 将c集合转化为数组并赋值给elements
-        elements = c.toArray();
-        // c.toArray might (incorrectly) not return Object[] (see 6260652)
-        if (elements.getClass() != Object[].class) // elements类型不为Object[]类型
-            // 将elements数组转化为Object[]类型的数组
-            elements = Arrays.copyOf(elements, elements.length, Object[].class);
-    }
-    // 设置数组
-    setArray(elements);
-}
-
-</code></pre>
-
-<p>该构造函数的处理流程如下 </p>
-
-<ul>
-<li>判断传入的集合c的类型是否为CopyOnWriteArrayList类型，若是，则获取该集合类型的底层数组(Object[])，并且设置当前CopyOnWriteArrayList的数组(Object[]数组)，进入步骤③；否则，进入步骤② </li>
-<li>将传入的集合转化为数组elements，判断elements的类型是否为Object[]类型(toArray方法可能不会返回Object类型的数组)，若不是，则将elements转化为Object类型的数组。进入步骤③ </li>
-<li>设置当前CopyOnWriteArrayList的Object[]为elements。 </li>
-</ul>
-
-<h3 id="toc_3">核心方法分析</h3>
-
-<h4 id="toc_4">copyOf 方法</h4>
-
-<pre><code class="language-java">public static &lt;T,U&gt; T[] copyOf(U[] original, int newLength, Class&lt;? extends T[]&gt; newType) {
-    @SuppressWarnings(&quot;unchecked&quot;)
-    // 确定copy的类型(将newType转化为Object类型，将Object[].class转化为Object类型，判断两者是否相等，若相等，则生成指定长度的Object数组
-    // 否则,生成指定长度的新类型的数组)
-    T[] copy = ((Object)newType == (Object)Object[].class)
-        ? (T[]) new Object[newLength]
-        : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-    // 将original数组从下标0开始，复制长度为(original.length和newLength的较小者),复制到copy数组中(也从下标0开始)
-    System.arraycopy(original, 0, copy, 0,
-                        Math.min(original.length, newLength));
-    return copy;
-}
-
-</code></pre>
-
-<h4 id="toc_5">add 方法</h4>
-
-<pre><code class="language-java">public boolean add(E e) {
-    // 可重入锁
-    final ReentrantLock lock = this.lock;
-    // 获取锁
-    lock.lock();
-    try {
-        // 元素数组
-        Object[] elements = getArray();
-        // 数组长度
-        int len = elements.length;
-        // 复制数组
-        Object[] newElements = Arrays.copyOf(elements, len + 1);
-        // 存放元素e
-        newElements[len] = e;
-        // 设置数组
-        setArray(newElements);
-        return true;
-    } finally {
-        // 释放锁
-        lock.unlock();
-    }
-}
-
-</code></pre>
-
-<p>此函数用于将指定元素添加到此列表的尾部，处理流程如下 </p>
-
-<ul>
-<li>获取锁(保证多线程的安全访问)，获取当前的Object数组，获取Object数组的长度为length，进入步骤②。 </li>
-<li>根据Object数组复制一个长度为length+1的Object数组为newElements(此时，newElements[length]为null)，进入下一步骤。 </li>
-<li>将下标为length的数组元素newElements[length]设置为元素e，再设置当前Object[]为newElements，释放锁，返回。这样就完成了元素的添加。</li>
-</ul>
-
-<h4 id="toc_6">addIfAbstract 方法</h4>
-
-<pre><code class="language-java">private boolean addIfAbsent(E e, Object[] snapshot) {
-    // 重入锁
-    final ReentrantLock lock = this.lock;
-    // 获取锁
-    lock.lock();
-    try {
-        // 获取数组
-        Object[] current = getArray();
-        // 数组长度
-        int len = current.length;
-        if (snapshot != current) { // 快照不等于当前数组，对数组进行了修改
-            // Optimize for lost race to another addXXX operation
-            // 取较小者
-            int common = Math.min(snapshot.length, len);
-            for (int i = 0; i &lt; common; i++) // 遍历
-                if (current[i] != snapshot[i] &amp;&amp; eq(e, current[i])) // 当前数组的元素与快照的元素不相等并且e与当前元素相等
-                    // 表示在snapshot与current之间修改了数组，并且设置了数组某一元素为e，已经存在
-                    // 返回
-                    return false;
-            if (indexOf(e, current, common, len) &gt;= 0) // 在当前数组中找到e元素
-                    // 返回
-                    return false;
-        }
-        // 复制数组
-        Object[] newElements = Arrays.copyOf(current, len + 1);
-        // 对数组len索引的元素赋值为e
-        newElements[len] = e;
-        // 设置数组
-        setArray(newElements);
-        return true;
-    } finally {
-        // 释放锁
-        lock.unlock();
-    }
-}
-
-</code></pre>
-
-<p>该函数的流程如下:</p>
-
-<ul>
-<li>① 获取锁，获取当前数组为current，current长度为len，判断数组之前的快照snapshot是否等于当前数组current，若不相等，则进入步骤②；否则，进入步骤④ </li>
-<li>② 不相等，表示在snapshot与current之间，对数组进行了修改(如进行了add、set、remove等操作)，获取长度(snapshot与current之间的较小者)，对current进行遍历操作，若遍历过程发现snapshot与current的元素不相等并且current的元素与指定元素相等(可能进行了set操作)，进入步骤⑤，否则，进入步骤③ </li>
-<li>③ 在当前数组中索引指定元素，若能够找到，进入步骤⑤，否则，进入步骤④ </li>
-<li>④ 复制当前数组current为newElements，长度为len+1，此时newElements[len]为null。再设置newElements[len]为指定元素e，再设置数组，进入步骤⑤ ⑤ 释放锁，返回。</li>
-</ul>
-
-<h4 id="toc_7">set 方法</h4>
-
-<p>此方法是用指定的元素替代此列表指定位置的元素，也是基于数组的复制来实现的。</p>
-
-<pre><code class="language-java">public E set(int index, E element) {
-    // 可重入锁
-    final ReentrantLock lock = this.lock;
-    // 获取锁
-    lock.lock();
-    try {
-        // 获取数组
-        Object[] elements = getArray();
-        // 获取index索引的元素
-        E oldValue = get(elements, index);
-
-        if (oldValue != element) { // 旧值等于element
-            // 数组长度
-            int len = elements.length;
-            // 复制数组
-            Object[] newElements = Arrays.copyOf(elements, len);
-            // 重新赋值index索引的值
-            newElements[index] = element;
-            // 设置数组
-            setArray(newElements);
-        } else {
-            // Not quite a no-op; ensures volatile write semantics
-            // 设置数组
-            setArray(elements);
-        }
-        // 返回旧值
-        return oldValue;
-    } finally {
-        // 释放锁
-        lock.unlock();
-    }
-}
-
-</code></pre>
-
-<h4 id="toc_8">remove 方法</h4>
-
-<p>用于移除此列表上指定位置上的元素</p>
-
-<pre><code class="language-java">public E remove(int index) {
-    // 可重入锁
-    final ReentrantLock lock = this.lock;
-    // 获取锁
-    lock.lock();
-    try {
-        // 获取数组
-        Object[] elements = getArray();
-        // 数组长度
-        int len = elements.length;
-        // 获取旧值
-        E oldValue = get(elements, index);
-        // 需要移动的元素个数
-        int numMoved = len - index - 1;
-        if (numMoved == 0) // 移动个数为0
-            // 复制后设置数组
-            setArray(Arrays.copyOf(elements, len - 1));
-        else { // 移动个数不为0
-            // 新生数组
-            Object[] newElements = new Object[len - 1];
-            // 复制index索引之前的元素
-            System.arraycopy(elements, 0, newElements, 0, index);
-            // 复制index索引之后的元素
-            System.arraycopy(elements, index + 1, newElements, index,
-                                numMoved);
-            // 设置索引
-            setArray(newElements);
-        }
-        // 返回旧值
-        return oldValue;
-    } finally {
-        // 释放锁
-        lock.unlock();
-    }
-}
-
-</code></pre>
-
-<p>处理流程如下</p>
-
-<ul>
-<li>1、获取锁，获取数组 elements，数组长度为 length，获取索引的值 elements[index] ,计算需要移动的元素个数(length - index - 1) ,若个数为 0， 则表示移除的是数组的最后一个元素，复制 elements 数组， 复制长度为 length - 1，然后设置数组，进入步骤 3，否则进入步骤 2</li>
-<li>2、先复制 index 索引前的元素，再复制 index 索引后的元素，然后设置数组</li>
-<li>3、释放锁，返回旧值 </li>
-</ul>
-
-<h3 id="toc_9">示例</h3>
-
-<pre><code class="language-java">import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-class PutThread extends Thread {
-    private CopyOnWriteArrayList&lt;Integer&gt; cowal;
-
-    public PutThread(CopyOnWriteArrayList&lt;Integer&gt; cowal) {
-        this.cowal = cowal;
-    }
-
-    public void run() {
-        try {
-            for (int i = 100; i &lt; 110; i++) {
-                cowal.add(i);
-                Thread.sleep(50);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-public class CopyOnWriteArrayListDemo {
-    public static void main(String[] args) {
-        CopyOnWriteArrayList&lt;Integer&gt; cowal = new CopyOnWriteArrayList&lt;Integer&gt;();
-        for (int i = 0; i &lt; 10; i++) {
-            cowal.add(i);
-        }
-        PutThread p1 = new PutThread(cowal);
-        p1.start();
-        Iterator&lt;Integer&gt; iterator = cowal.iterator();
-        while (iterator.hasNext()) {
-            System.out.print(iterator.next() + &quot; &quot;);
-        }
-        System.out.println();
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        iterator = cowal.iterator();
-        while (iterator.hasNext()) {
-            System.out.print(iterator.next() + &quot; &quot;);
-        }
-    }
-}
-
-</code></pre>
-
-<h3 id="toc_10">CopyOnWriteArrayList 总结</h3>
-
-<p>CopyOnWrite 容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行 Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。</p>
-
-<p>这样做的好处是我们可以对 CopyOnWrite 容器进行并发的读，而不需要加锁， 因为当前容器不会添加任何元素。所以 CopyOnWrite 容器也是一种读写分离的思 想，读和写不同的容器。如果读的时候有多个线程正在向 CopyOnWriteArrayList 添加数据，读还是会读到旧的数据，因为写的时候不会锁住旧的CopyOnWriteArrayList。</p>
-
-<p>使用 CopyOnWriteMap 需要注意两件事情:</p>
-
-<ul>
-<li>减少扩容开销。根据实际需要，初始化 CopyOnWriteMap 的大小，<br/>
-避免写时 CopyOnWriteMap 扩容的开销。</li>
-<li>使用批量添加。因为每次添加，容器每次都会进行复制，所以减少添加<br/>
-次数，可以减少容器的复制次数。</li>
-</ul>
-
-<h3 id="toc_11">写时复制容器的问题</h3>
-
-<ul>
-<li><p>性能问题<br/>
-每次修改都创建一个新数组，然后复制所有内容，如果数组比较大，修改操作又比较频繁，可以想象，性能是很低的，而且内存开销会很大,可能导致 GC 。</p></li>
-<li><p>数据一致性问题。<br/>
-CopyOnWrite 容器只能保证数据的最终一致性，不能保证数据的实时一致性。 所以如果你希望写入的的数据，马上能读到，不要使用 CopyOnWrite 容器</p></li>
-</ul>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[epoll 高效的原理和底层机制]]></title>
-    <link href="http://www.throne4j.com/16087370410844.html"/>
-    <updated>2020-12-23T23:24:01+08:00</updated>
-    <id>http://www.throne4j.com/16087370410844.html</id>
+    <title type="html"><![CDATA[ScheduledThreadPoolExecutor]]></title>
+    <link href="http://www.throne4j.com/16095830618165.html"/>
+    <updated>2021-01-02T18:24:21+08:00</updated>
+    <id>http://www.throne4j.com/16095830618165.html</id>
     <content type="html"><![CDATA[
 <ul>
-<li>问题1：CPU 操作系统如何知道接收了数据？</li>
-<li>问题2：进程阻塞为什么不占用 cpu 资源？</li>
-<li>问题3：阻塞的原理是什么?</li>
-<li>问题4：操作系统如何知道网络数据对应于哪个 socket？</li>
-<li>问题5：操作系统是如何同时监视多个 socket 的数据的？</li>
+<li>ScheduledThreadPoolExecutor要解决什么样的问题? </li>
+<li>ScheduledThreadPoolExecutor相比ThreadPoolExecutor有哪些特性? </li>
+<li>ScheduledThreadPoolExecutor有什么样的数据结构，核心内部类和抽象类? </li>
+<li>ScheduledThreadPoolExecutor有哪两个关闭策略? 区别是什么? </li>
+<li>ScheduledThreadPoolExecutor中scheduleAtFixedRate 和 scheduleWithFixedDelay区别是什么? </li>
+<li>为什么ThreadPoolExecutor 的调整策略却不适用于 ScheduledThreadPoolExecutor? </li>
+<li>Executors 提供了几种方法来构造 ScheduledThreadPoolExecutor?</li>
 </ul>
 
-<p>从事服务端开发，少不了要接触网络编程。epoll 作为 Linux 下高性能网络服务器的必备技术至关重要，nginx、Redis、Skynet 和大部分游戏服务器都使用到这一多路复用技术。</p>
+<h2 id="toc_0">ScheduledThreadPoolExecutor 简介</h2>
 
-<p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步步分析阻塞接收数据、select 到 epoll 的进化过程；最后探究 epoll 的实现细节。</p>
-
-<h2 id="toc_0">网卡接收数据</h2>
-
-<p><a href="16073516476681.html">Linux 网络包接收过程</a></p>
-
-<h3 id="toc_1">进程阻塞原理</h3>
-
-<p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
-
-<p>我们看下如下伪代码</p>
-
-<pre><code class="language-java">//创建 socket
-int s = socket(AF_INET, SOCK_STREAM, 0);
-//绑定
-bind(s, ...)
-//监听
-listen(s, ...) 
-//接受客户端连接 
-int c = accept(s, ...) 
-//接收客户端数据 
-recv(c, ...); 
-//将数据打印出来 
-printf(...)
-</code></pre>
-
-<p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
-
-<h4 id="toc_2">工作队列</h4>
-
-<p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
-
-<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br/>
-<figure><img src="media/16087370410844/16087422186392.jpg" alt="操作系统工作队列"/><figcaption>操作系统工作队列</figcaption></figure></p>
-
-<h4 id="toc_3">等待队列</h4>
-
-<p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。</p>
-
-<p>等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
-
-<p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中 。由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进 程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
-
-<p><figure><img src="media/16087370410844/16087424294808.jpg" alt="等待队列"/><figcaption>等待队列</figcaption></figure></p>
-
-<p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
-
-<h4 id="toc_4">唤醒进程</h4>
-
-<p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列， 该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
-
-<h3 id="toc_5">内核接收网络数据全过程</h3>
+<p>ScheduledThreadPoolExecutor继承自 ThreadPoolExecutor，为任务提供延迟或周期执行，属于线程池的一种。和 ThreadPoolExecutor 相比，它还具有以下几种特性: </p>
 
 <ul>
-<li>1、进程在 recv 阻塞期间，计算机收到了对端传送的数据。</li>
-<li>2、网卡将数据帧DMA到内存的RingBuffer中</li>
-<li>3、网卡执行硬中断信号通知 cpu 有数据到达，然后cpu 执行中断程序，调用网卡启动时注册的中断处理函数，发起软中断请求，</li>
-<li>4、内核线程ksoftirqd线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
-<li>5、唤醒进程 A，重新将进程 A 放入工作队列中</li>
+<li>使用专门的任务类型—ScheduledFutureTask 来执行周期任务，也可以接收不需要时间调度的任务(这些任务通过 ExecutorService 来执行)。 </li>
+<li>使用专门的存储队列—DelayedWorkQueue 来存储任务，DelayedWorkQueue 是无界延迟队列DelayQueue 的一种。相比ThreadPoolExecutor也简化了执行机制(delayedExecute方法，后面单独分析)。 </li>
+<li>支持可选的run-after-shutdown参数，在池被关闭(shutdown)之后支持可选的逻辑来决定是否继续运行周期或延迟任务。并且当任务(重新)提交操作与 shutdown 操作重叠时，复查逻辑也不相同。 </li>
 </ul>
 
-<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
+<h2 id="toc_1">ScheduledThreadPoolExecutor 数据结构</h2>
 
-<h4 id="toc_6">操作系统是怎么直到网络数据对应于哪个 socket 的呢？</h4>
+<p><figure><img src="media/16095830618165/16095838360233.jpg" alt=""/></figure></p>
 
-<p>一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
+<p>ScheduledThreadPoolExecutor继承自 ThreadPoolExecutor<a href="15878284668401.html">线程池</a></p>
 
-<h4 id="toc_7">操作系统是如何同时监视多个 socket 的数据的呢？</h4>
+<p>ScheduledThreadPoolExecutor 内部构造了两个内部类 ScheduledFutureTask 和 DelayedWorkQueue</p>
 
-<p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此码操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始了解</p>
+<ul>
+<li><p>ScheduledFutureTask: 继承了FutureTask，说明是一个异步运算任务；最上层分别实现了Runnable、Future、Delayed接口，说明它是一个可以延迟执行的异步运算任务。</p></li>
+<li><p>DelayedWorkQueue: 这是 ScheduledThreadPoolExecutor 为存储周期或延迟任务专门定义的一个延迟队列，继承了 AbstractQueue，为了契合 ThreadPoolExecutor 也实现了 BlockingQueue 接口。它内部只允许存储 RunnableScheduledFuture 类型的任务。与 DelayQueue 的不同之处就是它只允许存放 RunnableScheduledFuture 对象，并且自己实现了二叉堆(DelayQueue 是利用了 PriorityQueue 的二叉堆结构)</p></li>
+</ul>
 
-<p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
+<h2 id="toc_2">ScheduledThreadPoolExecutor源码解析</h2>
 
-<p>为方便理解，我们先复习 select 的用法。</p>
+<h3 id="toc_3">内部类ScheduledFutureTask</h3>
 
-<pre><code class="language-java">int s = socket(AF_INET, SOCK_STREAM, 0);  
-bind(s, ...);
-listen(s, ...);
-int fds[] = 存放需要监听的 socket 
-while(1){
-    int n = select(..., fds, ...) 
-    for(int i=0; i &lt; fds.count; i++) {
-        if(FD_ISSET(fds[i], ...)) { 
-            //fds[i]的数据处理
-    
+<pre><code class="language-java">//为相同延时任务提供的顺序编号
+private final long sequenceNumber;
+
+//任务可以执行的时间，纳秒级
+private long time;
+
+//重复任务的执行周期时间，纳秒级。
+private final long period;
+
+//重新入队的任务
+RunnableScheduledFuture&lt;V&gt; outerTask = this;
+
+//延迟队列的索引，以支持更快的取消操作
+int heapIndex;
+
+</code></pre>
+
+<ul>
+<li>sequenceNumber: 当两个任务有相同的延迟时间时，按照 FIFO 的顺序入队。sequenceNumber 就是为相同延时任务提供的顺序编号。 </li>
+<li>time: 任务可以执行时的时间，纳秒级，通过triggerTime方法计算得出。 </li>
+<li>period: 任务的执行周期时间，纳秒级。正数表示固定速率执行(为scheduleAtFixedRate提供服务)，负数表示固定延迟执行(为scheduleWithFixedDelay提供服务)，0表示不重复任务。 </li>
+<li>outerTask: 重新入队的任务，通过reExecutePeriodic方法入队重新排序。</li>
+</ul>
+
+<h4 id="toc_4">核心方法run()</h4>
+
+<pre><code class="language-java">public void run() {
+    boolean periodic = isPeriodic();//是否为周期任务
+    if (!canRunInCurrentRunState(periodic))//当前状态是否可以执行
+        cancel(false);
+    else if (!periodic)
+        //不是周期任务，直接执行
+        ScheduledFutureTask.super.run();
+    else if (ScheduledFutureTask.super.runAndReset()) {
+        setNextRunTime();//设置下一次运行时间
+        reExecutePeriodic(outerTask);//重排序一个周期任务
+    }
+}
+
+</code></pre>
+
+<p>ScheduledFutureTask 的run方法重写了 FutureTask 的版本，以便执行周期任务时重置/重排序任务。任务的执行通过父类 FutureTask 的run实现。内部有两个针对周期任务的方法:</p>
+
+<h5 id="toc_5">setNextRunTime(): 用来设置下一次运行的时间</h5>
+
+<pre><code class="language-java">//设置下一次执行任务的时间
+private void setNextRunTime() {
+    long p = period;
+    if (p &gt; 0)  //固定速率执行，scheduleAtFixedRate
+        time += p;
+    else
+        time = triggerTime(-p);  //固定延迟执行，scheduleWithFixedDelay
+}
+//计算固定延迟任务的执行时间
+long triggerTime(long delay) {
+    return now() +
+        ((delay &lt; (Long.MAX_VALUE &gt;&gt; 1)) ? delay : overflowFree(delay));
+}
+
+</code></pre>
+
+<h5 id="toc_6">reExecutePeriodic(): 周期任务重新入队等待下一次执行</h5>
+
+<pre><code class="language-java">//重排序一个周期任务
+void reExecutePeriodic(RunnableScheduledFuture&lt;?&gt; task) {
+    if (canRunInCurrentRunState(true)) {//池关闭后可继续执行
+        super.getQueue().add(task);//任务入列
+        //重新检查run-after-shutdown参数，如果不能继续运行就移除队列任务，并取消任务的执行
+        if (!canRunInCurrentRunState(true) &amp;&amp; remove(task))
+            task.cancel(false);
+        else
+            ensurePrestart();//启动一个新的线程等待任务
+    }
+}
+</code></pre>
+
+<p>reExecutePeriodic与delayedExecute的执行策略一致，只不过reExecutePeriodic不会执行拒绝策略而是直接丢掉任务</p>
+
+<h4 id="toc_7">cancel 方法</h4>
+
+<pre><code class="language-java">public boolean cancel(boolean mayInterruptIfRunning) {
+    boolean cancelled = super.cancel(mayInterruptIfRunning);
+    if (cancelled &amp;&amp; removeOnCancel &amp;&amp; heapIndex &gt;= 0)
+        remove(this);
+    return cancelled;
+}
+</code></pre>
+
+<p>ScheduledFutureTask.cancel本质上由其父类 FutureTask.cancel 实现。取消任务成功后会根据removeOnCancel参数决定是否从队列中移除此任务</p>
+
+<h3 id="toc_8">核心属性</h3>
+
+<pre><code class="language-java">//关闭后继续执行已经存在的周期任务 
+private volatile boolean continueExistingPeriodicTasksAfterShutdown;
+
+//关闭后继续执行已经存在的延时任务 
+private volatile boolean executeExistingDelayedTasksAfterShutdown = true;
+
+//取消任务后移除 
+private volatile boolean removeOnCancel = false;
+
+//为相同延时的任务提供的顺序编号，保证任务之间的FIFO顺序
+private static final AtomicLong sequencer = new AtomicLong();
+
+</code></pre>
+
+<ul>
+<li>continueExistingPeriodicTasksAfterShutdown和executeExistingDelayedTasksAfterShutdown是 ScheduledThreadPoolExecutor 定义的 run-after-shutdown 参数，用来控制池关闭之后的任务执行逻辑。 </li>
+<li>removeOnCancel用来控制任务取消后是否从队列中移除。当一个已经提交的周期或延迟任务在运行之前被取消，那么它之后将不会运行。默认配置下，这种已经取消的任务在届期之前不会被移除。 通过这种机制，可以方便检查和监控线程池状态，但也可能导致已经取消的任务无限滞留。为了避免这种情况的发生，我们可以通过setRemoveOnCancelPolicy方法设置移除策略，把参数removeOnCancel设为true可以在任务取消后立即从队列中移除。 </li>
+<li>sequencer是为相同延时的任务提供的顺序编号，保证任务之间的 FIFO 顺序。与 ScheduledFutureTask 内部的sequenceNumber参数作用一致。</li>
+</ul>
+
+<h3 id="toc_9">构造函数</h3>
+
+<p>ScheduledThreadPoolExecutor 内部有四个构造函数，这里我们只看这个最大构造灵活度的, 通过super调用了ThreadPoolExecutor的构造，并且使用特定等待队列DelayedWorkQueue:</p>
+
+<pre><code class="language-java">public ScheduledThreadPoolExecutor(int corePoolSize,
+                                   ThreadFactory threadFactory,
+                                   RejectedExecutionHandler handler) {
+    super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS,
+          new DelayedWorkQueue(), threadFactory, handler);
+}
+</code></pre>
+
+<h3 id="toc_10">核心方法:Schedule</h3>
+
+<pre><code class="language-java">public &lt;V&gt; ScheduledFuture&lt;V&gt; schedule(Callable&lt;V&gt; callable,
+                                       long delay,
+                                       TimeUnit unit) {
+    if (callable == null || unit == null)
+        throw new NullPointerException();
+    RunnableScheduledFuture&lt;V&gt; t = decorateTask(callable,
+        new ScheduledFutureTask&lt;V&gt;(callable, triggerTime(delay, unit)));//构造ScheduledFutureTask任务
+    delayedExecute(t);//任务执行主方法
+    return t;
+}
+</code></pre>
+
+<p>schedule主要用于执行一次性(延迟)任务。</p>
+
+<h4 id="toc_11">封装 Callable/Runnable</h4>
+
+<p>首先通过triggerTime计算任务的延迟执行时间，然后通过 ScheduledFutureTask 的构造函数把 Runnable/Callable 任务构造为ScheduledThreadPoolExecutor可以执行的任务类型，最后调用decorateTask方法执行用户自定义的逻辑；decorateTask是一个用户可自定义扩展的方法，默认实现下直接返回封装的RunnableScheduledFuture任务</p>
+
+<pre><code class="language-java">protected &lt;V&gt; RunnableScheduledFuture&lt;V&gt; decorateTask(
+    Runnable runnable, RunnableScheduledFuture&lt;V&gt; task) {
+    return task;
+}
+</code></pre>
+
+<h4 id="toc_12">执行任务: 通过delayedExecute实现</h4>
+
+<pre><code class="language-java">private void delayedExecute(RunnableScheduledFuture&lt;?&gt; task) {
+    if (isShutdown())
+        reject(task);//池已关闭，执行拒绝策略
+    else {
+        super.getQueue().add(task);//任务入队
+        if (isShutdown() &amp;&amp;
+            !canRunInCurrentRunState(task.isPeriodic()) &amp;&amp;//判断run-after-shutdown参数
+            remove(task))//移除任务
+            task.cancel(false);
+        else
+            ensurePrestart();//启动一个新的线程等待任务
+    }
+}
+</code></pre>
+
+<p>delayedExecute是执行任务的主方法，方法执行逻辑如下: </p>
+
+<ul>
+<li>如果池已关闭(ctl &gt;= SHUTDOWN)，执行任务拒绝策略； </li>
+<li><p>池正在运行，首先把任务入队排序；然后重新检查池的关闭状态</p>
+<ul>
+<li>如果池正在运行，或者 run-after-shutdown 参数值为true，则调用父类 ThreadPoolExecutor 的方法 ensurePrestart 启动一个新的线程等待执行任务，即使corePoolSize为0也会安排一个新线程。</li>
+</ul>
+<pre><code class="language-java">void ensurePrestart() {
+    int wc = workerCountOf(ctl.get());<br/>
+    if (wc &lt; corePoolSize)<br/>
+        addWorker(null, true);<br/>
+    else if (wc == 0)<br/>
+        addWorker(null, false);<br/>
+}
+</code></pre>
+<ul>
+<li>如果池已经关闭，并且 run-after-shutdown 参数值为false，则执行父类(ThreadPoolExecutor)方法remove移除队列中的指定任务，成功移除后调用ScheduledFutureTask.cancel取消任务。</li>
+</ul></li>
+</ul>
+
+<h3 id="toc_13">核心方法:scheduleAtFixedRate 和 scheduleWithFixedDelay</h3>
+
+<pre><code class="language-java">/**
+ * 创建一个周期执行的任务，第一次执行延期时间为initialDelay，
+ * 之后每隔period执行一次，不等待第一次执行完成就开始计时
+ */
+public ScheduledFuture&lt;?&gt; scheduleAtFixedRate(Runnable command,
+                                              long initialDelay,
+                                              long period,
+                                              TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (period &lt;= 0)
+        throw new IllegalArgumentException();
+    //构建RunnableScheduledFuture任务类型
+    ScheduledFutureTask&lt;Void&gt; sft =
+        new ScheduledFutureTask&lt;Void&gt;(command,
+                                      null,
+                                      triggerTime(initialDelay, unit),//计算任务的延迟时间
+                                      unit.toNanos(period));//计算任务的执行周期
+    RunnableScheduledFuture&lt;Void&gt; t = decorateTask(command, sft);//执行用户自定义逻辑
+    sft.outerTask = t;//赋值给outerTask，准备重新入队等待下一次执行
+    delayedExecute(t);//执行任务
+    return t;
+}
+
+/**
+ * 创建一个周期执行的任务，第一次执行延期时间为initialDelay，
+ * 在第一次执行完之后延迟delay后开始下一次执行
+ */
+public ScheduledFuture&lt;?&gt; scheduleWithFixedDelay(Runnable command,
+                                                 long initialDelay,
+                                                 long delay,
+                                                 TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (delay &lt;= 0)
+        throw new IllegalArgumentException();
+    //构建RunnableScheduledFuture任务类型
+    ScheduledFutureTask&lt;Void&gt; sft =
+        new ScheduledFutureTask&lt;Void&gt;(command,
+                                      null,
+                                      triggerTime(initialDelay, unit),//计算任务的延迟时间
+                                      unit.toNanos(-delay));//计算任务的执行周期
+    RunnableScheduledFuture&lt;Void&gt; t = decorateTask(command, sft);//执行用户自定义逻辑
+    sft.outerTask = t;//赋值给outerTask，准备重新入队等待下一次执行
+    delayedExecute(t);//执行任务
+    return t;
+}
+
+</code></pre>
+
+<p>scheduleAtFixedRate和scheduleWithFixedDelay方法的逻辑与schedule类似。 </p>
+
+<p>注意scheduleAtFixedRate和scheduleWithFixedDelay的区别: <br/>
+乍一看两个方法一模一样，其实，在unit.toNanos这一行代码中还是有区别的。没错，scheduleAtFixedRate传的是正值，而scheduleWithFixedDelay传的则是负值，这个值就是 ScheduledFutureTask 的period属性。</p>
+
+<h3 id="toc_14">核心方法:shutdown()</h3>
+
+<p>池关闭方法调用了父类 ThreadPoolExecutor 的 shutdown,</p>
+
+<p>这里主要介绍以下在 shutdown 方法中调用的关闭钩子 onShutdown 方法，它的主要作用是在关闭线程池后取消并清除由于关闭策略不应该运行的所有任务，这里主要是根据 run-after-shutdown 参数(continueExistingPeriodicTasksAfterShutdown和executeExistingDelayedTasksAfterShutdown)来决定线程池关闭后是否关闭已经存在的任务。</p>
+
+<pre><code class="language-java">public void shutdown() {
+    super.shutdown();
+}
+//取消并清除由于关闭策略不应该运行的所有任务
+@Override void onShutdown() {
+    BlockingQueue&lt;Runnable&gt; q = super.getQueue();
+    //获取run-after-shutdown参数
+    boolean keepDelayed =
+        getExecuteExistingDelayedTasksAfterShutdownPolicy();
+    boolean keepPeriodic =
+        getContinueExistingPeriodicTasksAfterShutdownPolicy();
+    if (!keepDelayed &amp;&amp; !keepPeriodic) {//池关闭后不保留任务
+        //依次取消任务
+        for (Object e : q.toArray())
+            if (e instanceof RunnableScheduledFuture&lt;?&gt;)
+                ((RunnableScheduledFuture&lt;?&gt;) e).cancel(false);
+        q.clear();//清除等待队列
+    }
+    else {//池关闭后保留任务
+        // Traverse snapshot to avoid iterator exceptions
+        //遍历快照以避免迭代器异常
+        for (Object e : q.toArray()) {
+            if (e instanceof RunnableScheduledFuture) {
+                RunnableScheduledFuture&lt;?&gt; t =
+                    (RunnableScheduledFuture&lt;?&gt;)e;
+                if ((t.isPeriodic() ? !keepPeriodic : !keepDelayed) ||
+                    t.isCancelled()) { // also remove if already cancelled
+                    //如果任务已经取消，移除队列中的任务
+                    if (q.remove(t))
+                        t.cancel(false);
+                }
+            }
         }
     }
+    tryTerminate(); //终止线程池
 }
 </code></pre>
 
-<p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
+<h3 id="toc_15">为什么ThreadPoolExecutor 的调整策略却不适用于 ScheduledThreadPoolExecutor？</h3>
 
-<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
-<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
-
-<p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
-
-<p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
-
-<p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
-
-<p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
-
-<ul>
-<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。而且每次都要将整个 fds 列表传递给内核，开销比较大。正式因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
-<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
-</ul>
-
-<p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
-
-<h2 id="toc_8">epoll 的设计思路</h2>
-
-<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。 epoll 通过以下一些措施来改进效率。</p>
-
-<h3 id="toc_9">措施一：功能分离</h3>
-
-<p>select 低效的原因之一是将维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
-
-<p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
-
-<pre><code class="language-c">int epfd = epoll_create(...);
-//将所有需要监听的 socket 添加到 epfd 中 
-epoll_ctl(epfd, ...); 
-while(1){
-    int n = epoll_wait(...) 
-    for(接收到数据的 socket) {
-        //处理 
-    }
-}
-</code></pre>
-
-<p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
-
-<h3 id="toc_10">就绪列表</h3>
-
-<p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
-
-<h2 id="toc_11">epoll 的原理和流程</h2>
-
-<p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体(也就是程序中 epfd 所代表的对象)，eventpoll 对象也是文件系统中的一员</p>
-
-<p>在内核 cache 里会建一个红黑树结构，用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
-
-<p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback，它会把这样的事件放到上面的 rdllist 双向链表中。</p>
-
-<p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
-
-<p>创建 epoll 对象后，用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
-
-<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
-
-<p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
-
-<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
-
-<p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
-
-<p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
-
-<p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
-
-<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
-
-<p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
-
-<h2 id="toc_12">epoll 实现细节</h2>
-
-<p>epoll 函数</p>
-
-<pre><code class="language-c">int epoll_create(int size)；
-int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
-int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
-
-struct epoll_event {
-    __uint32_t events;
-    epoll_data_t data;
-};
-</code></pre>
-
-<h3 id="toc_13">eventpoll</h3>
-
-<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
-首先思考两个问题</p>
-
-<ul>
-<li>就绪队列应该应使用什么数据结构?</li>
-<li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
-</ul>
-
-<p>下面我们来看下 eventpoll 的数据结构</p>
-
-<pre><code class="language-c">struct eventpoll {
-    // 用于锁定这个eventpoll数据结构，
-    // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
-    // 内核用这个mutex帮你搞定
-    struct mutex mtx;
-
-    // 等待队列，epoll_wait时如果当前没有拿到有效的事件，将当前task加入这个等待队列后作进程切换，等待被唤醒
-    wait_queue_head_t wq;
-
-    /* Wait queue used by file-&gt;poll() */
-    // eventpoll对象在使用时都会对应一个struct file对象，赋值到其private_data，
-    // 其本身也可以被 poll， 那也就需要一个wait queue
-    wait_queue_head_t poll_wait;
-
-    // 所有有事件触发的被监控的fd都会加入到这个列表
-    struct list_head rdllist;
-
-    /* Lock which protects rdllist and ovflist */
-    rwlock_t lock;
-
-    // 所有被监控的 fd 使用红黑树来存储
-    struct rb_root_cached rbr;
-
-    //  当将ready的fd复制到用户进程中，会使用上面的 lock锁锁定rdllist,
-    //  此时如果有新的ready状态fd, 则临时加入到 ovflist表示的单链表中
-    struct epitem *ovflist;
-
-    // 会autosleep准备的唤醒源
-    struct wakeup_source *ws;
-
-    /* The user that created the eventpoll descriptor */
-    struct user_struct *user;
-
-    // linux下一切皆文件，epoll实例被创建时，同时会创建一个file, file的private_data
-    // 指向当前这个eventpoll结构
-    struct file *file;
-
-    /* used to optimize loop detection check */
-    int visited;
-    struct list_head visited_list_link;
-
-#ifdef CONFIG_NET_RX_BUSY_POLL
-    /* used to track busy poll napi_id */
-    unsigned int napi_id;
-#endif
-};
-</code></pre>
-
-<p>rdllist就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
-
-<p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
-
-<p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
-
-<p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
-
-<p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
-
-<h3 id="toc_14">epitem 结构</h3>
-
-<p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
-
-<pre><code class="language-c">struct epitem {
-    // 用于构建红黑树
-    union {
-        //RB树节点将此结构链接到eventpoll RB树
-        struct rb_node rbn;
-        //用于释放结构体epitem
-        struct rcu_head rcu;
-    };
-
-    // 用于将当前 epitem 链接到 eventpoll-&gt;rdllist中
-    struct list_head rdllink;
-
-    //用于将当前 epitem 链接到&quot;struct eventpoll&quot;-&gt;ovflist这个单链表中
-    struct epitem *next;
-
-    //此条目引用的文件描述符信息
-    struct epoll_filefd ffd;
-
-    //附加到poll轮询中的活跃等待队列数
-    int nwait;
-
-    /* List containing poll wait queues */
-    struct list_head pwqlist;
-
-    // 对应的eventpoll对象
-    struct eventpoll *ep;
-
-    /* List header used to link this item to the &quot;struct file&quot; items list */
-    struct list_head fllink;
-
-    /* wakeup_source used when EPOLLWAKEUP is set */
-    struct wakeup_source __rcu *ws;
-
-    // 需要关注的读，写事件等
-    struct epoll_event event;
-};
-</code></pre>
+<p>例如: 由于 ScheduledThreadPoolExecutor 是一个固定核心线程数大小的线程池，并且使用了一个无界队列，所以调整 maximumPoolSize 对其没有任何影响(所以 ScheduledThreadPoolExecutor 没有提供可以调整最大线程数的构造函数，默认最大线程数固定为Integer.MAX_VALUE)。此外，设置corePoolSize为0或者设置核心线程空闲后清除(allowCoreThreadTimeOut)同样也不是一个好的策略，因为一旦周期任务到达某一次运行周期时，可能导致线程池内没有线程去处理这些任务。</p>
 
 ]]></content>
   </entry>
@@ -769,97 +367,103 @@ struct epoll_event {
     <updated>2020-12-23T23:16:21+08:00</updated>
     <id>http://www.throne4j.com/16087365812100.html</id>
     <content type="html"><![CDATA[
-<h1 id="toc_0">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h1>
+<h2 id="toc_0">软件包管理</h2>
 
-<h1 id="toc_1">yum list  列出来所有可以安装的包</h1>
+<h3 id="toc_1">rpm -qa # 查看所有安装的软件包</h3>
 
-<h1 id="toc_2">yum search</h1>
+<h3 id="toc_2">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h3>
 
-<h1 id="toc_3">yum -y install     -y:yes</h1>
+<h3 id="toc_3">yum list  列出来所有可以安装的包</h3>
 
-<h1 id="toc_4">yum -y install gcc</h1>
+<h3 id="toc_4">yum search</h3>
 
-<h1 id="toc_5">rpm -p gcc</h1>
+<h3 id="toc_5">yum -y install     -y:yes</h3>
 
-<h1 id="toc_6">yum -y update （包名）  远程千万不要要加包名</h1>
+<h3 id="toc_6">yum -y install gcc</h3>
 
-<h1 id="toc_7">yum -y remove （包名）卸载要添加包名</h1>
+<h3 id="toc_7">rpm -p gcc</h3>
 
-<h1 id="toc_8">yum grouplist</h1>
+<h3 id="toc_8">yum -y update （包名）  远程千万不要要加包名</h3>
 
-<h1 id="toc_9">uname -a # 查看内核/操作系统/CPU信息</h1>
+<h3 id="toc_9">yum -y remove （包名）卸载要添加包名</h3>
 
-<h1 id="toc_10">head -n 1 /etc/issue # 查看操作系统版本</h1>
+<h3 id="toc_10">yum grouplist</h3>
 
-<h1 id="toc_11">cat /proc/cpuinfo # 查看CPU信息</h1>
+<h2 id="toc_11">操作系统</h2>
 
-<h1 id="toc_12">hostname # 查看计算机名</h1>
+<h3 id="toc_12">uname -a # 查看内核/操作系统/CPU信息</h3>
 
-<h1 id="toc_13">lspci -tv # 列出所有PCI设备</h1>
+<h3 id="toc_13">head -n 1 /etc/issue # 查看操作系统版本</h3>
 
-<h1 id="toc_14">lsusb -tv # 列出所有USB设备</h1>
+<h3 id="toc_14">cat /proc/cpuinfo # 查看CPU信息</h3>
 
-<h1 id="toc_15">lsmod # 列出加载的内核模块</h1>
+<h3 id="toc_15">hostname # 查看计算机名</h3>
 
-<h1 id="toc_16">env # 查看环境变量资源</h1>
+<h3 id="toc_16">lspci -tv # 列出所有PCI设备</h3>
 
-<h1 id="toc_17">free -m # 查看内存使用量和交换区使用量</h1>
+<h3 id="toc_17">lsusb -tv # 列出所有USB设备</h3>
 
-<h1 id="toc_18">df -h # 查看各分区使用情况</h1>
+<h3 id="toc_18">lsmod # 列出加载的内核模块</h3>
 
-<h1 id="toc_19">du -sh &lt;目录名&gt; # 查看指定目录的大小</h1>
+<h3 id="toc_19">env # 查看环境变量资源</h3>
 
-<h1 id="toc_20">grep MemTotal /proc/meminfo # 查看内存总量</h1>
+<h3 id="toc_20">free -m # 查看内存使用量和交换区使用量</h3>
 
-<h1 id="toc_21">grep MemFree /proc/meminfo # 查看空闲内存量</h1>
+<h3 id="toc_21">df -h # 查看各分区使用情况</h3>
 
-<h1 id="toc_22">uptime # 查看系统运行时间、用户数、负载</h1>
+<h3 id="toc_22">du -sh &lt;目录名&gt; # 查看指定目录的大小</h3>
 
-<h1 id="toc_23">cat /proc/loadavg # 查看系统负载磁盘和分区</h1>
+<h3 id="toc_23">grep MemTotal /proc/meminfo # 查看内存总量</h3>
 
-<h1 id="toc_24">mount | column -t # 查看挂接的分区状态</h1>
+<h3 id="toc_24">grep MemFree /proc/meminfo # 查看空闲内存量</h3>
 
-<h1 id="toc_25">fdisk -l # 查看所有分区</h1>
+<h3 id="toc_25">uptime # 查看系统运行时间、用户数、负载</h3>
 
-<h1 id="toc_26">swapon -s # 查看所有交换分区</h1>
+<h3 id="toc_26">cat /proc/loadavg # 查看系统负载磁盘和分区</h3>
 
-<h1 id="toc_27">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h1>
+<h3 id="toc_27">mount | column -t # 查看挂接的分区状态</h3>
 
-<h1 id="toc_28">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h1>
+<h3 id="toc_28">fdisk -l # 查看所有分区</h3>
 
-<h1 id="toc_29">ifconfig # 查看所有网络接口的属性</h1>
+<h3 id="toc_29">swapon -s # 查看所有交换分区</h3>
 
-<h1 id="toc_30">iptables -L # 查看防火墙设置</h1>
+<h3 id="toc_30">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h3>
 
-<h1 id="toc_31">route -n # 查看路由表</h1>
+<h2 id="toc_31">网络</h2>
 
-<h1 id="toc_32">netstat -lntp # 查看所有监听端口</h1>
+<h3 id="toc_32">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h3>
 
-<h1 id="toc_33">netstat -antp # 查看所有已经建立的连接</h1>
+<h3 id="toc_33">ifconfig # 查看所有网络接口的属性</h3>
 
-<h1 id="toc_34">netstat -s # 查看网络统计信息进程</h1>
+<h3 id="toc_34">iptables -L # 查看防火墙设置</h3>
 
-<h1 id="toc_35">ps -ef # 查看所有进程</h1>
+<h3 id="toc_35">route -n # 查看路由表</h3>
 
-<h1 id="toc_36">top # 实时显示进程状态用户</h1>
+<h3 id="toc_36">netstat -lntp # 查看所有监听端口</h3>
 
-<h1 id="toc_37">w # 查看活动用户</h1>
+<h3 id="toc_37">netstat -antp # 查看所有已经建立的连接</h3>
 
-<h1 id="toc_38">id &lt;用户名&gt; # 查看指定用户信息</h1>
+<h3 id="toc_38">netstat -s # 查看网络统计信息进程</h3>
 
-<h1 id="toc_39">last # 查看用户登录日志</h1>
+<h1 id="toc_39">ps -ef # 查看所有进程</h1>
 
-<h1 id="toc_40">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
+<h1 id="toc_40">top # 实时显示进程状态用户</h1>
 
-<h1 id="toc_41">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+<h1 id="toc_41">w # 查看活动用户</h1>
 
-<h1 id="toc_42">crontab -l # 查看当前用户的计划任务服务</h1>
+<h1 id="toc_42">id &lt;用户名&gt; # 查看指定用户信息</h1>
 
-<h1 id="toc_43">chkconfig –list # 列出所有系统服务</h1>
+<h1 id="toc_43">last # 查看用户登录日志</h1>
 
-<h1 id="toc_44">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
+<h1 id="toc_44">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
 
-<h1 id="toc_45">rpm -qa # 查看所有安装的软件包</h1>
+<h1 id="toc_45">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+
+<h1 id="toc_46">crontab -l # 查看当前用户的计划任务服务</h1>
+
+<h1 id="toc_47">chkconfig –list # 列出所有系统服务</h1>
+
+<h1 id="toc_48">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
 
 ]]></content>
   </entry>

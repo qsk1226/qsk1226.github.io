@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    并发容器 - 大爷来玩儿啊~
+    跳跃表 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            并发容器   
+                            跳跃表   
                       </h1>
                      
                     
@@ -114,36 +114,13 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">跳跃表</h2>
-
-<p>传统意义的单链表是一个线性结构，向有序的链表中插入一个节点需要 O(n) 的时间，查找操作需要 O(n)的时间。</p>
+                    <p>传统意义的单链表是一个线性结构，向有序的链表中插入一个节点需要 O(n) 的时间，查找操作需要 O(n)的时间。</p>
 
 <p>跳跃表其实也是一种通过“空间来换取时间”的一个算法，令链表的每个结 点不仅记录 next 结点位置，还可以按照 level 层级分别记录后继第 level 个结点。 此法使用的就是“先大步查找确定范围，再逐渐缩小迫近”的思想进行的查找。跳 跃表在算法效率上很接近红黑树。</p>
 
 <p>跳跃表又被称为概率，或者说是随机化的数据结构，目前开源软件 Redis 和 lucence 都有用到它。</p>
 
 <p>都是线程安全的 Map 实现，ConcurrentHashMap 的性能和存储空间要优于 ConcurrentSkipListMap，但是 ConcurrentSkipListMap 有一个功能: 它会按照键的 顺序进行排序。</p>
-
-<h2 id="toc_1">ConcurrentLinkedQueue</h2>
-
-<ul>
-<li>要想用线程安全的队列有哪些选择? Vector，Collections.synchronizedList(List<T> list), ConcurrentLinkedQueue等 </li>
-<li>ConcurrentLinkedQueue实现的数据结构? </li>
-<li>ConcurrentLinkedQueue底层原理?  全程无锁(CAS) </li>
-<li>ConcurrentLinkedQueue的核心方法有哪些? offer()，poll()，peek()，isEmpty()等队列常用方法 </li>
-<li>说说ConcurrentLinkedQueue的HOPS(延迟更新的策略)的设计? </li>
-<li>ConcurrentLinkedQueue适合什么样的使用场景?</li>
-</ul>
-
-<p>界非阻塞队列，它是一个基于链表的无界线程安全队列。该队列的元素 遵循先进先出的原则。头是最先加入的，尾是最近加入的。插入元素是追加到 尾上。提取一个元素是从头提取。</p>
-
-<p>大家可以看成是 LinkedList 的并发版本，常用方法: </p>
-
-<pre><code class="language-text">concurrentLinkedQueue.add(&quot;c&quot;);
-concurrentLinkedQueue.offer(&quot;d&quot;); // 将指定元素插入到此队列的尾部。 concurrentLinkedQueue.peek(); // 检索并不移除此队列的头，如果此队列为
-空，则返回 null。
-concurrentLinkedQueue.poll(); // 检索并移除此队列的头，如果此队列为空， 则返回 null。
-</code></pre>
 
                   </article>
                   <div class="comments-wrap">
@@ -187,8 +164,6 @@ concurrentLinkedQueue.poll(); // 检索并移除此队列的头，如果此队�
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 

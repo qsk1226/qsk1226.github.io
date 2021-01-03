@@ -114,97 +114,103 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h1 id="toc_0">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h1>
+                    <h2 id="toc_0">软件包管理</h2>
 
-<h1 id="toc_1">yum list  列出来所有可以安装的包</h1>
+<h3 id="toc_1">rpm -qa # 查看所有安装的软件包</h3>
 
-<h1 id="toc_2">yum search</h1>
+<h3 id="toc_2">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h3>
 
-<h1 id="toc_3">yum -y install     -y:yes</h1>
+<h3 id="toc_3">yum list  列出来所有可以安装的包</h3>
 
-<h1 id="toc_4">yum -y install gcc</h1>
+<h3 id="toc_4">yum search</h3>
 
-<h1 id="toc_5">rpm -p gcc</h1>
+<h3 id="toc_5">yum -y install     -y:yes</h3>
 
-<h1 id="toc_6">yum -y update （包名）  远程千万不要要加包名</h1>
+<h3 id="toc_6">yum -y install gcc</h3>
 
-<h1 id="toc_7">yum -y remove （包名）卸载要添加包名</h1>
+<h3 id="toc_7">rpm -p gcc</h3>
 
-<h1 id="toc_8">yum grouplist</h1>
+<h3 id="toc_8">yum -y update （包名）  远程千万不要要加包名</h3>
 
-<h1 id="toc_9">uname -a # 查看内核/操作系统/CPU信息</h1>
+<h3 id="toc_9">yum -y remove （包名）卸载要添加包名</h3>
 
-<h1 id="toc_10">head -n 1 /etc/issue # 查看操作系统版本</h1>
+<h3 id="toc_10">yum grouplist</h3>
 
-<h1 id="toc_11">cat /proc/cpuinfo # 查看CPU信息</h1>
+<h2 id="toc_11">操作系统</h2>
 
-<h1 id="toc_12">hostname # 查看计算机名</h1>
+<h3 id="toc_12">uname -a # 查看内核/操作系统/CPU信息</h3>
 
-<h1 id="toc_13">lspci -tv # 列出所有PCI设备</h1>
+<h3 id="toc_13">head -n 1 /etc/issue # 查看操作系统版本</h3>
 
-<h1 id="toc_14">lsusb -tv # 列出所有USB设备</h1>
+<h3 id="toc_14">cat /proc/cpuinfo # 查看CPU信息</h3>
 
-<h1 id="toc_15">lsmod # 列出加载的内核模块</h1>
+<h3 id="toc_15">hostname # 查看计算机名</h3>
 
-<h1 id="toc_16">env # 查看环境变量资源</h1>
+<h3 id="toc_16">lspci -tv # 列出所有PCI设备</h3>
 
-<h1 id="toc_17">free -m # 查看内存使用量和交换区使用量</h1>
+<h3 id="toc_17">lsusb -tv # 列出所有USB设备</h3>
 
-<h1 id="toc_18">df -h # 查看各分区使用情况</h1>
+<h3 id="toc_18">lsmod # 列出加载的内核模块</h3>
 
-<h1 id="toc_19">du -sh &lt;目录名&gt; # 查看指定目录的大小</h1>
+<h3 id="toc_19">env # 查看环境变量资源</h3>
 
-<h1 id="toc_20">grep MemTotal /proc/meminfo # 查看内存总量</h1>
+<h3 id="toc_20">free -m # 查看内存使用量和交换区使用量</h3>
 
-<h1 id="toc_21">grep MemFree /proc/meminfo # 查看空闲内存量</h1>
+<h3 id="toc_21">df -h # 查看各分区使用情况</h3>
 
-<h1 id="toc_22">uptime # 查看系统运行时间、用户数、负载</h1>
+<h3 id="toc_22">du -sh &lt;目录名&gt; # 查看指定目录的大小</h3>
 
-<h1 id="toc_23">cat /proc/loadavg # 查看系统负载磁盘和分区</h1>
+<h3 id="toc_23">grep MemTotal /proc/meminfo # 查看内存总量</h3>
 
-<h1 id="toc_24">mount | column -t # 查看挂接的分区状态</h1>
+<h3 id="toc_24">grep MemFree /proc/meminfo # 查看空闲内存量</h3>
 
-<h1 id="toc_25">fdisk -l # 查看所有分区</h1>
+<h3 id="toc_25">uptime # 查看系统运行时间、用户数、负载</h3>
 
-<h1 id="toc_26">swapon -s # 查看所有交换分区</h1>
+<h3 id="toc_26">cat /proc/loadavg # 查看系统负载磁盘和分区</h3>
 
-<h1 id="toc_27">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h1>
+<h3 id="toc_27">mount | column -t # 查看挂接的分区状态</h3>
 
-<h1 id="toc_28">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h1>
+<h3 id="toc_28">fdisk -l # 查看所有分区</h3>
 
-<h1 id="toc_29">ifconfig # 查看所有网络接口的属性</h1>
+<h3 id="toc_29">swapon -s # 查看所有交换分区</h3>
 
-<h1 id="toc_30">iptables -L # 查看防火墙设置</h1>
+<h3 id="toc_30">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h3>
 
-<h1 id="toc_31">route -n # 查看路由表</h1>
+<h2 id="toc_31">网络</h2>
 
-<h1 id="toc_32">netstat -lntp # 查看所有监听端口</h1>
+<h3 id="toc_32">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h3>
 
-<h1 id="toc_33">netstat -antp # 查看所有已经建立的连接</h1>
+<h3 id="toc_33">ifconfig # 查看所有网络接口的属性</h3>
 
-<h1 id="toc_34">netstat -s # 查看网络统计信息进程</h1>
+<h3 id="toc_34">iptables -L # 查看防火墙设置</h3>
 
-<h1 id="toc_35">ps -ef # 查看所有进程</h1>
+<h3 id="toc_35">route -n # 查看路由表</h3>
 
-<h1 id="toc_36">top # 实时显示进程状态用户</h1>
+<h3 id="toc_36">netstat -lntp # 查看所有监听端口</h3>
 
-<h1 id="toc_37">w # 查看活动用户</h1>
+<h3 id="toc_37">netstat -antp # 查看所有已经建立的连接</h3>
 
-<h1 id="toc_38">id &lt;用户名&gt; # 查看指定用户信息</h1>
+<h3 id="toc_38">netstat -s # 查看网络统计信息进程</h3>
 
-<h1 id="toc_39">last # 查看用户登录日志</h1>
+<h1 id="toc_39">ps -ef # 查看所有进程</h1>
 
-<h1 id="toc_40">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
+<h1 id="toc_40">top # 实时显示进程状态用户</h1>
 
-<h1 id="toc_41">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+<h1 id="toc_41">w # 查看活动用户</h1>
 
-<h1 id="toc_42">crontab -l # 查看当前用户的计划任务服务</h1>
+<h1 id="toc_42">id &lt;用户名&gt; # 查看指定用户信息</h1>
 
-<h1 id="toc_43">chkconfig –list # 列出所有系统服务</h1>
+<h1 id="toc_43">last # 查看用户登录日志</h1>
 
-<h1 id="toc_44">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
+<h1 id="toc_44">cut -d: -f1 /etc/passwd # 查看系统所有用户</h1>
 
-<h1 id="toc_45">rpm -qa # 查看所有安装的软件包</h1>
+<h1 id="toc_45">cut -d: -f1 /etc/group # 查看系统所有组</h1>
+
+<h1 id="toc_46">crontab -l # 查看当前用户的计划任务服务</h1>
+
+<h1 id="toc_47">chkconfig –list # 列出所有系统服务</h1>
+
+<h1 id="toc_48">chkconfig –list | grep on # 列出所有启动的系统服务程序</h1>
 
                   </article>
                   <div class="comments-wrap">
