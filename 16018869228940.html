@@ -306,12 +306,12 @@ public class DelayedItem&lt;T&gt; implements Delayed {
 
 <p>本身不存储任何元素，每一个put操作必须等待一个take操作，将消息从生产者直接传递到消费者。</p>
 
-<h3 id="toc_7">阻塞队列实例</h3>
+<h3 id="toc_7">阻塞队列与生产消费者实现</h3>
 
 <pre><code class="language-java">class Producer implements Runnable {
-    private final BlockingQueue queue;
+    private final CustomBlockingQueue queue;
 
-    Producer(BlockingQueue q) {
+    Producer(CustomBlockingQueue q) {
         queue = q;
     }
 
@@ -331,9 +331,9 @@ public class DelayedItem&lt;T&gt; implements Delayed {
 }
 
 class Consumer implements Runnable {
-    private final BlockingQueue queue;
+    private final CustomBlockingQueue queue;
 
-    Consumer(BlockingQueue q) {
+    Consumer(CustomBlockingQueue q) {
         queue = q;
     }
 

@@ -133,16 +133,16 @@
 <p>通过 LongBinaryOperator，可以自定义对入参的任意操作，并返回结果 (LongBinaryOperator 接收 2 个 long 作为参数，并返回 1 个 long)。<br/>
 LongAccumulator 内部原理和 LongAdder 几乎完全一样。 DoubleAdder 和 DoubleAccumulator 用于操作 double 原始类型。</p>
 
-<h2 id="toc_1">StampLock</h2>
+<h2 id="toc_1">StampedLock</h2>
 
-<p>StampedLock 是 Java8 引入的一种新的锁机制,简单的理解,可以认为它是读写 锁的一个改进版本。</p>
+<p>StampedLock 是 Java8 引入的一种新的锁机制,简单的理解,可以认为它是读写锁的一个改进版本。</p>
 
 <p>读写锁虽然分离了读和写的功能,使得读与读之间可以完全并发,但是读和写之间依然是冲突的,读锁会完全阻塞写锁,它使用的依然是悲观的锁策略.如果有大量的读线程,他也有可能引起写线程的饥饿。</p>
 
 <p>而 StampedLock 则提供了一种乐观的读策略,这种乐观策略的锁非常类似于 无锁的操作,使得乐观锁完全不会阻塞写线程。它的思想是读写锁中读不仅不阻塞读，同时也不应该阻塞写。</p>
 
 <p>读不阻塞写的实现思路:<br/>
-在读的时候如果发生了写，则应当重读而不是在读的时候直接阻塞写!即读 写之间不会阻塞对方，但是写和写之间还是阻塞的! StampedLock 的内部实现是基于 CLH 的。</p>
+在读的时候如果发生了写，则应当重读而不是在读的时候直接阻塞写!即读写之间不会阻塞对方，但是写和写之间还是阻塞的! StampedLock 的内部实现是基于 CLH 的。</p>
 
 <h2 id="toc_2">CompleteableFuture</h2>
 
@@ -328,11 +328,11 @@ public class Base64s {
 
 <pre><code class="language-java">import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
- 
+
 public class ParallelArrays {
     public static void main( String[] args ) {
         long[] arrayOfLong = new long [ 20000 ];        
-         
+        
         Arrays.parallelSetAll( arrayOfLong, 
             index -&gt; ThreadLocalRandom.current().nextInt( 1000000 ) );
         Arrays.stream( arrayOfLong ).limit( 10 ).forEach( 

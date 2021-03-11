@@ -123,10 +123,19 @@
 <p>存储结构：<br/>
 <figure><img src="media/16017181746146/16017399715275.jpg" alt="" style="width:1013px;"/></figure></p>
 
-<p>在Java中，HashMap的实现采用了（数组 + 链表 + 红黑树）的复杂结构，数组的一个元素又称作桶。<br/>
-在添加元素时，会根据hash值算出元素在数组中的位置，如果该位置没有元素，则直接把元素放置在此处，如果该位置有元素了，则把元素以链表的形式放置在链表的尾部。<br/>
-当一个链表的元素个数达到一定的数量（且数组的长度达到一定的长度）后，则把链表转化为红黑树，从而提高效率。<br/>
+<p>在Java中，HashMap的实现采用了（数组 + 链表 + 红黑树）的复杂结构，数组的一个元素又称作桶。</p>
+
+<p>在添加元素时，会根据hash值算出元素在数组中的位置，如果该位置没有元素，则直接把元素放置在此处，如果该位置有元素了，则把元素以链表的形式放置在链表的尾部。</p>
+
+<p>当一个链表的元素个数达到一定的数量（且数组的长度达到一定的长度）后，则把链表转化为红黑树，从而提高效率。<br/>
 数组的查询效率为O(1)，链表的查询效率是O(k)，红黑树的查询效率是O(log k)，k为桶中的元素个数，所以当元素数量非常多的时候，转化为红黑树能极大地提高效率。</p>
+
+<p>问题： 那为什么不将链表全部换成二叉树呢？这里主要有两个方面。</p>
+
+<ul>
+<li>第一个是链表的结构比红黑树简单，构造红黑树要比构造链表复杂，所以在链表的节点不多的情况下，从整体的性能看来，数组+链表+红黑树的结构不一定比数组+链表的结构性能高。</li>
+<li>第二个是HashMap频繁的resize（扩容），扩容的时候需要重新计算节点的索引位置，也就是会将红黑树进行拆分和重组，此波操作很复杂，这里涉及到红黑树的着色和旋转，有兴趣的可以看看红黑树</li>
+</ul>
 
 <p>为了更清晰的查看HashMap的内部结构，执行下例：</p>
 
@@ -150,15 +159,25 @@ map.put(&quot;死亡骑士&quot;, 9);
 
 <p>基于Map接口实现、允许null键/值、非同步、不保证有序(比如插入的顺序)、也不保证序不随时间变化。</p>
 
-<h2 id="toc_2">HashMap 工作原理</h2>
+<h3 id="toc_2">HashMap</h3>
+
+<ul>
+<li><p>允许NULL值，NULL键</p></li>
+<li><p>不要轻易改变负载因子，负载因子过高会导致链表过长，查找键值对时间复杂度就会增高，负载因子过低会导致hash桶的 数量过多，空间复杂度会增高</p></li>
+<li><p>Hash表每次会扩容长度为以前的2倍</p></li>
+<li><p>HashMap是多线程不安全的，在JDK1.7进行多线程put操作，之后遍历，直接死循环，CPU飙到100%，在JDK 1.8中进行多线程操作会出现节点和value值丢失</p></li>
+<li><p>尽量设置HashMap的初始容量，尤其在数据量大的时候，防止多次resize</p></li>
+</ul>
+
+<h2 id="toc_3">HashMap 工作原理</h2>
 
 <p>HashMap 底层是 Node（Entry的实现）数组 和 单向链表实现，数组中的每个元素都是链表，有Node内部类实现，HashMap通过 put 和 get 方法进行存取</p>
 
-<h2 id="toc_3">源码解析</h2>
+<h2 id="toc_4">源码解析</h2>
 
 <p>源码中采用了延迟初始化操作，也就是table只有在用到的时候才初始化，如果你不对他进行put等操作的话，table的长度永远为&quot;零&quot;。</p>
 
-<h3 id="toc_4">HashMap 属性分析</h3>
+<h3 id="toc_5">HashMap 属性分析</h3>
 
 <pre><code class="language-java">/**
  * 默认的初始容量为16
@@ -176,7 +195,7 @@ static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;
 static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
 /**
- * 当一个桶中的元素个数大于等于8时进行树化
+ * 当一个桶中的元素个数大于等于7时进行树化
  */
 static final int TREEIFY_THRESHOLD = 8;
 
@@ -228,7 +247,7 @@ final float loadFactor;
 因此,必须在 &quot;冲突的机会&quot;与&quot;空间利用率&quot;之间寻找一种平衡与折衷。这里的加载因子取0.75 是提高空间利用率和 减少查询成本的折中，理论依据主要是泊松分布。</li>
 </ul>
 
-<h3 id="toc_5">Node内部类</h3>
+<h3 id="toc_6">Node内部类</h3>
 
 <pre><code class="language-java">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {
     final int hash;
@@ -238,7 +257,7 @@ final float loadFactor;
 }
 </code></pre>
 
-<h3 id="toc_6">TreeNode 内部类</h3>
+<h3 id="toc_7">TreeNode 内部类</h3>
 
 <p>TreeNode是一个典型的树型节点，继承自LinkedHashMap.Entry，其中，prev是链表中的节点，用于在删除元素的时候可以快速找到它的前置节点。</p>
 
@@ -260,7 +279,7 @@ static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
 }
 </code></pre>
 
-<h3 id="toc_7">HashMap 构造函数</h3>
+<h3 id="toc_8">HashMap 构造函数</h3>
 
 <pre><code class="language-java">public HashMap(int initialCapacity, float loadFactor) {
     // 检查传入的初始容量是否合法
@@ -289,7 +308,7 @@ static final int tableSizeFor(int cap) {
 
 </code></pre>
 
-<h3 id="toc_8">put(K key, V value)方法</h3>
+<h3 id="toc_9">put(K key, V value)方法</h3>
 
 <p>添加元素</p>
 
@@ -336,7 +355,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                 // 如果链表遍历完了都没有找到相同key的元素，说明该key对应的元素不存在，则在链表最后插入一个新节点
                 if ((e = p.next) == null) {
                     p.next = newNode(hash, key, value, null);
-                    // 如果插入新节点后链表长度大于8，则判断是否需要树化，因为第一个元素没有加到binCount中，所以这里-1
+                    // 如果插入新节点后链表长度大于等于7，则判断是否需要树化，因为第一个元素没有加到binCount中，所以这里-1
                     if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
                         treeifyBin(tab, hash);
                     break;
@@ -390,7 +409,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 <li>如果插入了元素，则数量加1并判断是否需要扩容；</li>
 </ul>
 
-<h3 id="toc_9">resize()</h3>
+<h3 id="toc_10">resize()</h3>
 
 <pre><code class="language-java">final Node&lt;K, V&gt;[] resize() {
     // 旧数组
@@ -505,7 +524,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 <li>搬移元素，原链表分化成两个链表，低位链表存储在原来桶的位置，高位链表搬移到原来桶的位置加旧容量的位置；</li>
 </ul>
 
-<h3 id="toc_10">TreeNode.putTreeVal(...)</h3>
+<h3 id="toc_11">TreeNode.putTreeVal(...)</h3>
 
 <pre><code class="language-java">final TreeNode&lt;K, V&gt; putTreeVal(HashMap&lt;K, V&gt; map, Node&lt;K, V&gt;[] tab,
                                 int h, K k, V v) {
@@ -586,7 +605,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 <li>如果最后没有找到则在树的相应位置插入元素，并做平衡；</li>
 </ul>
 
-<h3 id="toc_11">treeifyBin()</h3>
+<h3 id="toc_12">treeifyBin()</h3>
 
 <p>如果插入元素后 链表的长度大于等于 8 ，则判断是否要树化</p>
 
@@ -619,7 +638,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 }
 </code></pre>
 
-<h3 id="toc_12">TreeNode.treeify()</h3>
+<h3 id="toc_13">TreeNode.treeify()</h3>
 
 <p>真正树化的方法</p>
 
@@ -678,7 +697,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 <li>将根节点移到链表第一元素的位置（因为平衡的时候根节点会改变）；</li>
 </ul>
 
-<h3 id="toc_13">get(Object key)</h3>
+<h3 id="toc_14">get(Object key)</h3>
 
 <pre><code class="language-java">public V get(Object key) {
     Node&lt;K, V&gt; e;
@@ -722,7 +741,7 @@ final Node&lt;K, V&gt; getNode(int hash, Object key) {
 <li>如果第一个元素是树节点就按树的方式来查找，否则按链表方式查找；</li>
 </ul>
 
-<h3 id="toc_14">TreeNode.getTreeNode(int h, Object k) 方法</h3>
+<h3 id="toc_15">TreeNode.getTreeNode(int h, Object k) 方法</h3>
 
 <pre><code class="language-java">final TreeNode&lt;K, V&gt; getTreeNode(int h, Object k) {
     // 从树的根节点开始查找
@@ -769,7 +788,7 @@ final TreeNode&lt;K, V&gt; find(int h, Object k, Class&lt;?&gt; kc) {
 
 <p>经典二叉查找树的查找过程，先根据hash值比较，再根据key值比较决定是查左子树还是右子树。</p>
 
-<h3 id="toc_15">remove(Object key)</h3>
+<h3 id="toc_16">remove(Object key)</h3>
 
 <pre><code class="language-java">public V remove(Object key) {
     Node&lt;K, V&gt; e;
@@ -841,7 +860,7 @@ final Node&lt;K, V&gt; removeNode(int hash, Object key, Object value,
 <li>修改size，调用移除节点后置处理等；</li>
 </ul>
 
-<h3 id="toc_16">TreeNode.removeTreeNode(...)方法</h3>
+<h3 id="toc_17">TreeNode.removeTreeNode(...)方法</h3>
 
 <pre><code class="language-java">final void removeTreeNode(HashMap&lt;K, V&gt; map, Node&lt;K, V&gt;[] tab,
                           boolean movable) {
@@ -969,7 +988,7 @@ final Node&lt;K, V&gt; removeNode(int hash, Object key, Object value,
 <li>再删除红黑树节点并做平衡</li>
 </ul>
 
-<h3 id="toc_17">源码部分总结</h3>
+<h3 id="toc_18">源码部分总结</h3>
 
 <p>（1）HashMap是一种散列表，采用（数组 + 链表 + 红黑树）的存储结构；<br/>
 （2）HashMap的默认初始容量为16（1&lt;&lt;4），默认装载因子为0.75f，容量总是2的n次方；<br/>
@@ -980,13 +999,15 @@ final Node&lt;K, V&gt; removeNode(int hash, Object key, Object value,
 （7）HashMap是非线程安全的容器；<br/>
 （8）HashMap查找添加元素的时间复杂度都为O(1)；</p>
 
-<h2 id="toc_18">jdk8 与 jdk7 中的HashMap有什么区别</h2>
+<h2 id="toc_19">jdk8 与 jdk7 中的HashMap有什么区别</h2>
 
 <p>jdk8 中 HashMap 加入了 红黑树结构，当链表长度超过 8 的时候，会判断时候要将链表转化为红黑树（同的数量必须大于 64，否则只会进行扩容操作）</p>
 
 <p>发生hash冲突的时候 jdk7 HashMap 采用头插法插入链表，jdk8 采用尾插法插入链表</p>
 
 <p>jdk8 中 table[]数组由 jdk7中的 Entry 替换为了 Node结构，不过功能上都是一样的，换了一个马甲</p>
+
+<p><figure><img src="media/16017181746146/16151269071462.jpg" alt="" style="width:750px;"/></figure></p>
 
                   </article>
                   <div class="comments-wrap">

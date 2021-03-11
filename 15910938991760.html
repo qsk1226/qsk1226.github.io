@@ -119,8 +119,7 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <h2 id="toc_0">Hibernate Validator的使用</h2>
 
-<p>依赖<br/>
-如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
+<p>如果是Spring Boot项目，那么spring-boot-starter-web中就已经依赖hibernate-validator了</p>
 
 <pre><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -130,13 +129,14 @@ Bean Validation 2.0（JSR 380）定义了用于实体和方法验证的元数据
 
 <p>如果是Spring Mvc，那可以直接添加hibernate-validator依赖</p>
 
-<pre><code class="language-xml&lt;dependency&gt;">    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
+<pre><code class="language-markup">&lt;dependency&gt;
+    &lt;groupId&gt;org.hibernate.validator&lt;/groupId&gt;
     &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
     &lt;version&gt;6.0.17.Final&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
-<h2 id="toc_1">bean 约束声明和验证，Validator</h2>
+<h2 id="toc_1">bean 约束声明和验证 --- Validator</h2>
 
 <p>先给我们的Java对象添加约束注解</p>
 
@@ -172,9 +172,9 @@ validator = factory.getValidator();
 <p>Validator接口有三个方法，可用于验证整个实体或仅验证实体的单个属性</p>
 
 <ul>
-<li>Validator#validate()                   验证所有bean的所有约束</li>
-<li>Validator#validateProperty()   验证单个属性</li>
-<li>Validator#validateValue()         检查给定类的单个属性是否可以成功验证</li>
+<li>Validator#validate()  验证所有bean的所有约束</li>
+<li>Validator#validateProperty()  验证单个属性</li>
+<li>Validator#validateValue() 检查给定类的单个属性是否可以成功验证</li>
 </ul>
 
 <pre><code class="language-java">public class UserTest {
@@ -213,7 +213,7 @@ validator = factory.getValidator();
 需要匹配正则表达式&quot;[A-Z][a-z][0-9]&quot;
 </code></pre>
 
-<h2 id="toc_2">方法约束声明和验证，ExecutableValidator</h2>
+<h2 id="toc_2">方法约束声明和验证 --- ExecutableValidator</h2>
 
 <p>从Bean Validation 1.1开始，约束不仅可以应用于JavaBean及其属性，而且可以应用于任何Java类型的方法和构造函数的参数和返回值，这里简单看一个例子</p>
 
@@ -242,7 +242,7 @@ validator = factory.getValidator();
 executableValidator = factory.getValidator().forExecutables();
 </code></pre>
 
-<p>该ExecutableValidator界面共有四种方法：</p>
+<p>该 ExecutableValidator 共有四种方法：</p>
 
 <ul>
 <li>validateParameters()和validateReturnValue()用于方法验证</li>
@@ -279,10 +279,11 @@ executableValidator = factory.getValidator().forExecutables();
 最小不能小于1
 </code></pre>
 
-<p>约束注解<br/>
-validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
+<h2 id="toc_3">约束注解</h2>
 
-<p><strong>空与非空检查</strong></p>
+<p>validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
+
+<h3 id="toc_4"><strong>空与非空检查</strong></h3>
 
 <table>
 <thead>
@@ -317,7 +318,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>Boolean值检查</p>
+<h3 id="toc_5">Boolean值检查</h3>
 
 <table>
 <thead>
@@ -345,7 +346,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>日期检查</p>
+<h3 id="toc_6">日期检查</h3>
 
 <table>
 <thead>
@@ -385,7 +386,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>数值检查</p>
+<h3 id="toc_7">数值检查</h3>
 
 <table>
 <thead>
@@ -455,7 +456,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>其他</p>
+<h3 id="toc_8">其他</h3>
 
 <table>
 <thead>
@@ -489,7 +490,7 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>hibernate-validator扩展约束（部分）</p>
+<h3 id="toc_9">hibernate-validator扩展约束（部分）</h3>
 
 <table>
 <thead>
@@ -519,16 +520,19 @@ validator-api-2.0的约束注解有22个，具体我们看下面表格</p>
 </tbody>
 </table>
 
-<p>自定义约束注解<br/>
-除了以上提供的约束注解（大部分情况都是能够满足的），我们还可以根据自己的需求自定义自己的约束注解<br/>
-定义自定义约束，有三个步骤</p>
+<h2 id="toc_10">自定义约束注解</h2>
+
+<p>除了以上提供的约束注解（大部分情况都是能够满足的），我们还可以根据自己的需求自定义自己的约束注解</p>
+
+<p>定义自定义约束，有三个步骤</p>
 
 <ul>
 <li>创建约束注解</li>
 <li>实现一个验证器</li>
-<li>定义默认的错误信息<br/>
-那么下面就直接来定义一个简单的验证手机号码的注解</li>
+<li>定义默认的错误信息</li>
 </ul>
+
+<p>那么下面就直接来定义一个简单的验证手机号码的注解</p>
 
 <pre><code class="language-java">@Documented
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
@@ -562,10 +566,12 @@ public @interface Mobile {
 <ul>
 <li>message 错误提示信息，可以写死,也可以填写国际化的key</li>
 <li>groups 分组信息，允许指定此约束所属的验证组（下面会说到分组约束）</li>
-<li>payload 有效负载，可以通过payload来标记一些需要特殊处理的操作<br/>
-@Repeatable注解和List定义可以让该注解在同一个位置重复多次，通常是不同的配置（比如不同的分组和消息）<br/>
-@Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</li>
+<li>payload 有效负载，可以通过payload来标记一些需要特殊处理的操作</li>
 </ul>
+
+<p>@Repeatable注解和List定义可以让该注解在同一个位置重复多次，通常是不同的配置（比如不同的分组和消息）</p>
+
+<p>@Constraint(validatedBy = {MobileValidator.class})该注解是指明我们的自定义约束的验证器，那下面就看一下验证器的写法，需要实现javax.validation.ConstraintValidator接口</p>
 
 <pre><code class="language-java">public class MobileValidator implements ConstraintValidator&lt;Mobile, String&gt; {
 
@@ -590,9 +596,18 @@ public @interface Mobile {
 }
 </code></pre>
 
-<p>ConstraintValidator接口定义了在实现中设置的两个类型参数。第一个指定要验证的注解类（如Mobile），第二个指定验证器可以处理的元素类型（如String）；initialize()方法可以访问约束注解的属性值；isValid()方法用于验证，返回true表示验证通过<br/>
-Bean验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释<br/>
-到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
+<p>ConstraintValidator接口定义了在实现中设置的两个类型参数。</p>
+
+<ul>
+<li>第一个指定要验证的注解类（如Mobile）</li>
+<li>第二个指定验证器可以处理的元素类型（如String）；</li>
+</ul>
+
+<p>initialize()方法可以访问约束注解的属性值；isValid()方法用于验证，返回true表示验证通过</p>
+
+<p>Bean 验证规范建议将空值视为有效。如果null不是元素的有效值，则应使用@NotNull 显式注释</p>
+
+<p>到这里我们自定义的约束就写好了，可以用个例子来测试一下</p>
 
 <pre><code class="language-java">public class MobileTest {
 
@@ -622,16 +637,19 @@ Bean验证规范建议将空值视为有效。如果null不是元素的有效值
 }
 </code></pre>
 
-<p>分组约束<br/>
-在上面的自定义约束中，有个groups属性是用来指定验证约束的分组，我们在为属性加上注解的时候，如果没有配置分组信息，那么默认会采用默认分组 javax.validation.groups.Default<br/>
-分组是用接口定义的，用做标识，这里创建两个标识AddGroup和UpdateGroup，分别标识新增和修改<br/>
-public interface AddGroup {<br/>
-}</p>
+<h2 id="toc_11">分组约束</h2>
 
-<p>public interface UpdateGroup {<br/>
-}<br/>
-复制代码<br/>
-然后对我们的User对象的id属性做分组标识</p>
+<p>在上面的自定义约束中，有个groups属性是用来指定验证约束的分组，我们在为属性加上注解的时候，如果没有配置分组信息，那么默认会采用默认分组 javax.validation.groups.Default<br/>
+分组是用接口定义的，用做标识，这里创建两个标识AddGroup和UpdateGroup，分别标识新增和修改</p>
+
+<pre><code class="language-java">public interface AddGroup {
+}
+
+public interface UpdateGroup {
+}
+</code></pre>
+
+<p>然后对我们的User对象的id属性做分组标识</p>
 
 <pre><code class="language-java">@Data
 @NoArgsConstructor
@@ -643,10 +661,12 @@ public class User {
     private String id;
     
     // ... 省略了其他属性
-}    
+} 
+</code></pre>
 
-我们看下如何使用
-@Test
+<p>我们看下如何使用</p>
+
+<pre><code class="language-java">@Test
 public void validatorGroupTest() {
     User user = new User();
 
@@ -661,16 +681,19 @@ public void validatorGroupTest() {
 }
 </code></pre>
 
-<p>上面的测试只有加了UpdateGroug分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
+<p>上面的测试只有加了 UpdateGroug 分组才会验证，返回错误信息，而下面的constraintViolations2并不会去验证，因为默认会采用Default分组。如果想要不标记分组的时候，也会去验证Default分组，可以去继承默认分组</p>
 
 <pre><code class="language-java">public interface AddGroup extends Default {
 }
 </code></pre>
 
-<p>在Spring中使用Hibernate Validator<br/>
-上面介绍了Validator的一些使用，还有注解的介绍，那么在Spring中我们怎么去使用Hibernate Validator做验证呢？或者说再Web项目中怎么使用Hibernate Validator？<br/>
-spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的<br/>
-配置Validator</p>
+<h2 id="toc_12">在 Spring 中使用 Hibernate Validator</h2>
+
+<p>上面介绍了Validator的一些使用，还有注解的介绍，那么在Spring中我们怎么去使用Hibernate Validator做验证呢？或者说再Web项目中怎么使用Hibernate Validator？</p>
+
+<p>spring-boot-starter-web中是添加了hibernate-validator依赖的，说明Spring Boot本身也是使用到了Hibernate Validator验证框架的</p>
+
+<h3 id="toc_13">配置Validator</h3>
 
 <pre><code class="language-java">@Configuration
 public class ValidatorConfig {
@@ -693,8 +716,9 @@ public class ValidatorConfig {
 }
 </code></pre>
 
-<p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息<br/>
-如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
+<p>可以通过方法 failFast(true)或 addProperty(&quot;hibernate.validator.fail_fast&quot;, &quot;true&quot;)设置为快速失败模式，快速失败模式在校验过程中，当遇到第一个不满足条件的参数时就立即返回，不再继续后面参数的校验。否则会一次性校验所有参数，并返回所有不符合要求的错误信息</p>
+
+<p>如果是Spring MVC的话，需要xml配置可参考下面的配置</p>
 
 <pre><code class="language-markup">&lt;mvc:annotation-driven validator=&quot;validator&quot;/&gt;
 
@@ -718,8 +742,9 @@ public class ValidatorConfig {
 &lt;/bean&gt;
 </code></pre>
 
-<p>请求参数bean验证<br/>
-接口上的Bean验证，需要在参数前加上@Valid或Spring的 @Validated注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出BindException异常，并变成400（BAD_REQUEST）响应；或者可以通过Errors或BindingResult参数在控制器内本地处理验证错误。另外，如果参数前有@RequestBody注解，验证错误会抛出MethodArgumentNotValidException异常。</p>
+<h3 id="toc_14">请求参数bean验证</h3>
+
+<p>接口上的Bean验证，需要在参数前加上 @Valid 或 Spring 的 @Validated 注解，这两种注释都会导致应用标准Bean验证。如果验证不通过会抛出 BindException 异常，并变成 400（BAD_REQUEST）响应；或者可以通过 Errors或 BindingResult 参数在控制器内本地处理验证错误。另外，如果参数前有 @RequestBody 注解，验证错误会抛出 MethodArgumentNotValidException异常。</p>
 
 <pre><code class="language-java">
 @RestController
@@ -767,7 +792,7 @@ public class UserController {
 }
 </code></pre>
 
-<p>配合Spring的BindingResult参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
+<p>配合Spring的 BindingResult 参数，我们是可以在控制器中去处理验证错误，不过通常也是把验证错误的消息转成我们自己的返回格式，那么在每个方法中都去做这样的验证错误处理，显然是没有必要的。我们可以利用验证不通过的异常来做统一的错误处理</p>
 
 <pre><code class="language-java">@Slf4j
 @RestControllerAdvice
@@ -800,11 +825,41 @@ public class GlobalExceptionHandler {
         log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
         return R.fail(error.getDefaultMessage());
     }
+    
+    /**
+     * {@link UnexpectedTypeException } 异常处理
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ApiResult&lt;?&gt; unexpectedType(UnexpectedTypeException exception, HandlerMethod handlerMethod) {
+
+        log.error(&quot;校验方法太多，不确定合适的校验方法。&quot;, exception);
+        return getFailureResult(handlerMethod)
+                .code(ErrorCodeEnum.ERROR_SYSTEM.getCode())
+                .message(&quot;校验方法太多，不确定合适的校验方法。&quot; + exception.getMessage());
+
+    }
+    /**
+     * 空指针异常
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(NullPointerException.class)
+    public ApiResult&lt;?&gt; nullPointerException(NullPointerException exception, HandlerMethod handlerMethod) {
+        if (log.isDebugEnabled()) {
+            log.debug(exception.getMessage(), exception);
+        } else {
+            outPutExceptionLog(exception, handlerMethod);
+        }
+        return getFailureResult(handlerMethod)
+                .code(ErrorCodeEnum.ERROR_SYSTEM.getCode())
+                .message(exception.getMessage());
+    }
 }    
 </code></pre>
 
-<p>方法参数验证<br/>
-配置</p>
+<h3 id="toc_15">方法参数验证</h3>
+
+<p>配置</p>
 
 <p>Hibernate Validator是可以在方法级验证参数的，Spring中当然也是有实现的。<br/>
 我们在Validator的配置中，添加MethodValidationPostProcessorBean，在上面的ValidatorConfig.java中添加一下配置</p>
@@ -821,7 +876,7 @@ public MethodValidationPostProcessor methodValidationPostProcessor() {
 }
 </code></pre>
 
-<p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller里面是无效的</p>
+<p>如果是Spring Mvc，那么要在spring-mvc.xml中声明bean信息，不然在Controller 里面是无效的</p>
 
 <pre><code class="language-markup">&lt;!-- 设置方法参数验证器 --&gt;
 &lt;bean id=&quot;methodValidationPostProcessor&quot; class=&quot;org.springframework.validation.beanvalidation.MethodValidationPostProcessor&quot;&gt;
@@ -873,6 +928,83 @@ Spring的@Validate注解是可以支持分组验证的</p>
 public R handle(@Validated(AddGroup.class) @RequestBody User user) {
     // ...
     return R.success();
+}
+</code></pre>
+
+<h2 id="toc_16">条件校验</h2>
+
+<p>我们在平常的开发过程中，一定会碰到这样一个场景：待校验类中有属性A、B和C，此时属性B和C的校验依托于属性A的校验结果，如果A成立，则继续校验B和C，否则不会校验 B 和 C。</p>
+
+<p>为了解决上面这种场景 Hibernate Validator 提供了 @GroupSequenceProvider 注解，根据实例动态的决定哪些校验规则需要加入到默认校验组。同时为了实现上面的功能，需要继续实现 DefaultGroupSequenceProvider 接口来处理我们具体的验证逻辑。</p>
+
+<pre><code class="language-java">// 该接口定义了：动态Group序列的协定
+// 要想它生效，需要在T上标注@GroupSequenceProvider注解并且指定此类为处理类
+// 如果`Default`组对T进行验证，则实际验证的实例将传递给此类以确定默认组序列（这句话特别重要下面用例子解释）
+public interface DefaultGroupSequenceProvider&lt;T&gt; {
+    // 合格方法是给T返回默认的组（多个）。因为默认的组是Default嘛~~~通过它可以自定指定
+    // 入参T object允许在验证值状态的函数中动态组合默认组序列。（非常强大）
+    // object是待校验的Bean。它可以为null哦~（Validator#validateValue的时候可以为null）
+
+    // 返回值表示默认组序列的List。它的效果同@GroupSequence定义组序列，尤其是列表List必须包含类型T
+    List&lt;Class&lt;?&gt;&gt; getValidationGroups(T object);
+}
+</code></pre>
+
+<h3 id="toc_17">示例说明</h3>
+
+<p>下面通过示例来说明具体用法</p>
+
+<pre><code class="language-java">@Getter
+@Setter
+@ToString
+@GroupSequenceProvider(PersonGroupSequenceProvider.class)
+public class Person {
+
+    @NotNull
+    private String name;
+    @NotNull
+    @Range(min = 10, max = 40)
+    private Integer age;
+
+    @NotNull(groups = {WhenAge20And30Group.class, WhenAge30And40Group.class})
+    @Size(min = 1, max = 2, groups = WhenAge20And30Group.class)
+    @Size(min = 3, max = 5, groups = WhenAge30And40Group.class)
+    private List&lt;String&gt; hobbies;
+
+    /**
+     * 定义专属的业务逻辑分组
+     */
+    public interface WhenAge20And30Group {
+    }
+    public interface WhenAge30And40Group {
+    }
+}
+</code></pre>
+
+<p>若20 &lt;= age &lt; 30，那么hobbies的 size 需介于 1和2 之间<br/>
+若30 &lt;= age &lt; 40，那么hobbies的 size 需介于 3和5 之间<br/>
+age其余值，hobbies无校验逻辑</p>
+
+<p>实现 DefaultGroupSequenceProvider 接口</p>
+
+<pre><code class="language-java">public class PersonGroupSequenceProvider implements DefaultGroupSequenceProvider&lt;Person&gt; {
+
+    @Override
+    public List&lt;Class&lt;?&gt;&gt; getValidationGroups(Person bean) {
+        List&lt;Class&lt;?&gt;&gt; defaultGroupSequence = new ArrayList&lt;&gt;();
+        defaultGroupSequence.add(Person.class); // 这一步不能省,否则Default分组都不会执行了，会抛错的
+
+        if (bean != null) { // 这块判空请务必要做
+            Integer age = bean.getAge();
+            System.err.println(&quot;年龄为：&quot; + age + &quot;，执行对应校验逻辑&quot;);
+            if (age &gt;= 20 &amp;&amp; age &lt; 30) {
+                defaultGroupSequence.add(Person.WhenAge20And30Group.class);
+            } else if (age &gt;= 30 &amp;&amp; age &lt; 40) {
+                defaultGroupSequence.add(Person.WhenAge30And40Group.class);
+            }
+        }
+        return defaultGroupSequence;
+    }
 }
 </code></pre>
 

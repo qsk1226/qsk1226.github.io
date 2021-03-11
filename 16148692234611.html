@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    问题排查 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            问题排查   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/03/04</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='JVM%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3.html'>JVM深入理解</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">CPU占用过高排查</h2>
+
+<h3 id="toc_1">TOP 工具</h3>
+
+<p>使用top命令查看进程各种运行状况，请参考<a href="15983681960215.html">linux和macOS下top命令区别</a></p>
+
+<p>1、先通过 top 命令找到消耗 cpu 很高的进程 PID<br/>
+<figure><img src="media/15962980278783/15983692600595.jpg" alt="" style="width:1008px;"/></figure></p>
+
+<p>2、执行 top -p PID 单独监控该进程<br/>
+3、在第 2 步的监控界面输入 H，获取当前进程下的所有线程信息<br/>
+4、找到消耗 cpu 特别高的线程编号，假设是 2734(要等待一阵)<br/>
+5、执行 jstack PID 对当前的进程做 dump，输出所有的线程信息<br/>
+6、将第 4 步得到的线程编号 PID 转成 16 进制是 0x???<br/>
+7、根据第 6 步得到的 0x??? 在第 5 步的线程信息里面去找对应线程内容<br/>
+8、解读线程信息，定位具体代码位置，此处可能并不是代码问题引起的cpu占用过高，可能由于 GC 引起频繁的垃圾回收，可使用jstat -gc 250 10查看gc统计情况<a href="%5B%E5%9B%9B%E3%80%81JVM%E8%87%AA%E5%8A%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%EF%BC%8C%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7%5D(15773440983590.html)"></a></p>
+
+<h3 id="toc_2">pidstat 工具</h3>
+
+<p>pidstat 的强大之处在于，它不仅可以监控进程的性能情况，也可以监控线程的性能情况</p>
+
+<p>通过 jps 获取到 java 程序的 PID,然后使用 pidstat 命令输出程序的 CPU 使用情况</p>
+
+<p><figure><img src="media/16149089246443/16149102989293.jpg" alt="" style="width:1245px;"/></figure><br/>
+<figure><img src="media/16149089246443/16149108660024.jpg" alt="" style="width:1352px;"/></figure></p>
+
+<p>pidstat 的参数 -p 用于指定进程ID，-u表示对cpu使用率监控，1 3 表示每秒采样一次，总计3次<br/>
+从图中可以看出 cpu使用率几乎100%</p>
+
+<p>然后更进一步监控线程信息</p>
+
+<p>使用命令</p>
+
+<pre><code class="language-text">pidstat -p 1187 1 3 -u -t
+</code></pre>
+
+<p><figure><img src="media/16149089246443/16149110180994.jpg" alt="" style="width:1352px;"/></figure></p>
+
+<p>参数 -t 将系统性能的监控细化到线程级别。从输出中可以知道，该java应用程序值所以占用如此高的 cpu，是因为 1204 线程的缘故</p>
+
+<p>知道是java程序的哪个线程引起的 cpu 100% 之后，使用 jstack -l 1187 查看线程信息，需要注意的一点是 jstack 的线程ID使用的是 16进制，pidstat 显示的是10进制，需要做一下进制转换</p>
+
+<pre><code class="language-text"># 查看 java 进程的线程信息
+jstack -l 1187 
+</code></pre>
+
+<p><figure><img src="media/16149089246443/16149113584147.jpg" alt="" style="width:1349px;"/></figure></p>
+
+<p>从结果图中看到 0x4b4 正是引起 cpu 100%的元凶，如此 造成 cpu 100%的问题就定位到了</p>
+
+<h2 id="toc_3">内存占用过高</h2>
+
+<p>可以使用jmap命令来查看堆空间信息<br/>
+打印出排名前20的对象<br/>
+jmap –histo JVM_ID | head -20</p>
+
+<p><figure><img src="media/15962980278783/15983702156050.jpg" alt=""/></figure></p>
+
+<p>从此命令的返回结果中可以看出排名前几的可能就是引发内存占用过高的对象，进而找出那部分代码出了问题</p>
+
+<h2 id="toc_4">总结</h2>
+
+<p>在 JVM 出现性能问题的时候。(表现上是 CPU100%，内存一直占用)<br/>
+1、 如果 CPU 的 100%，要从两个角度出发，一个有可能是业务线程疯狂运行，比如说想很多死循环。还有一种可能性，就是 GC 线程在疯狂的回收，因<br/>
+为 JVM 中垃圾回收器主流也是多线程的，所以很容易导致 CPU 的 100%<br/>
+2、 在遇到内存溢出的问题的时候，一般情况下我们要查看系统中哪些对象占用得比较多，我的是一个很简单的代码，在实际的业务代码中，找到对应的<br/>
+对象，分析对应的类，找到为什么这些对象不能回收的原因，就是我们前面讲过的可达性分析算法，JVM 的内存区域，还有垃圾回收器的基础，当然， 如果遇到更加复杂的情况，你要掌握的理论基础远远不止这些(JVM 很多理论都是排查问题的关键)</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

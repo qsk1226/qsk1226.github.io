@@ -115,7 +115,7 @@
                 </div>
                   <article class="markdown-body single-content">
                     <ul>
-<li>问题1：CPU 操作系统如何知道接收了数据？</li>
+<li>问题1：操作系统中 CPU 如何知道接收了数据？</li>
 <li>问题2：进程阻塞为什么不占用 cpu 资源？</li>
 <li>问题3：阻塞的原理是什么?</li>
 <li>问题4：操作系统如何知道网络数据对应于哪个 socket？</li>
@@ -124,7 +124,7 @@
 
 <p>从事服务端开发，少不了要接触网络编程。epoll 作为 Linux 下高性能网络服务器的必备技术至关重要，nginx、Redis、Skynet 和大部分游戏服务器都使用到这一多路复用技术。</p>
 
-<p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步步分析阻塞接收数据、select 到 epoll 的进化过程；最后探究 epoll 的实现细节。</p>
+<p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步分析阻塞接收数据、select 到 epoll 的进化过程，最后探究 epoll 的实现细节。</p>
 
 <h2 id="toc_0">网卡接收数据</h2>
 
@@ -234,11 +234,30 @@ while(1){
 
 <p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
 
-<h2 id="toc_8">epoll 的设计思路</h2>
+<h2 id="toc_8">epoll 简介</h2>
 
-<p>epoll 是在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。 epoll 通过以下一些措施来改进效率。</p>
+<p>epoll 是实现I/O多路复用的一种方法，在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。</p>
 
-<h3 id="toc_9">措施一：功能分离</h3>
+<p>epoll分为水平触发（level trigger，LT，LT为epoll的默认工作模式）与边缘触发（edge trigger，ET）两种工作模式。</p>
+
+<ul>
+<li>LT 当被监控的文件描述符上有可读写事件发生时，epoll_wait() 会通知处理程序去读写。如果这次没有把数据一次性全部读写完(如读写缓冲区太小)，那么 下次调用 epoll_wait()时，它还会通知你在上没读写完的文件描述符上继续读写，当然如果 你一直不去读写，它会一直通知你!!!如果系统中有大量你不需要读写的就绪文件描述符， 而它们每次都会返回，这样会大大降低处理程序检索自己关心的就绪文件描述符的效率!!!</li>
+<li>ET 当被监控的文件描述符上有可读写事件发生时，epoll_wait() 会通知处理程序去读写。如果这次没有把数据全部读写完(如读写缓冲区太小)，那么下次调用 epoll_wait()时，它不会通知你，也就是它只会通知你一次，直到该文件描述符上出现第二次可读写事件才会通知你!!!这种模式比水平触发效率高，系统不会充斥大量你不关心的就绪文件描述符!!</li>
+</ul>
+
+<p>ET是高速模式只能以非阻塞方式进行，LT相当于快速的select，可以才有阻塞和非阻塞两种方式。 </p>
+
+<p>边缘触发比水平触发更高效的原因：不会让同一个文件描述符多次被处理,比如有些文件描述符已经不需要再读写了,但是在水平触发下每次都会返回,而边缘触发只会返回一次。</p>
+
+<p>如果将epoll 文件描述符设置边缘触发,则必须将对应的文件描述符设置为非阻塞模式并且循环读取数据。否则会导致程序的效率大大下降。</p>
+
+<p>poll 和 epoll 默认采用的都是水平触发,只是epoll可以修改成边缘触发</p>
+
+<p>这两种工作模式的差异留待之后再分析。</p>
+
+<h2 id="toc_9">epoll 的设计思路</h2>
+
+<h3 id="toc_10">措施一：功能分离</h3>
 
 <p>select 低效的原因之一是将维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
 
@@ -257,11 +276,11 @@ while(1){
 
 <p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
 
-<h3 id="toc_10">就绪列表</h3>
+<h3 id="toc_11">就绪列表</h3>
 
 <p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
 
-<h2 id="toc_11">epoll 的原理和流程</h2>
+<h2 id="toc_12">epoll 的原理和流程</h2>
 
 <p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体(也就是程序中 epfd 所代表的对象)，eventpoll 对象也是文件系统中的一员</p>
 
@@ -289,7 +308,7 @@ while(1){
 
 <p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
 
-<h2 id="toc_12">epoll 服务端代码示例</h2>
+<h2 id="toc_13">epoll 服务端代码示例</h2>
 
 <pre><code class="language-c">#include &lt;sys/socket.h&gt;
 #include &lt;netinet/in.h&gt;
@@ -402,7 +421,7 @@ int main(int argc, char* argv[])
 }
 </code></pre>
 
-<h2 id="toc_13">epoll 实现细节</h2>
+<h2 id="toc_14">epoll 实现细节</h2>
 
 <p>epoll 函数</p>
 
@@ -413,20 +432,20 @@ int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout
 
 </code></pre>
 
-<pre><code class="language-c">typedef union epoll_data {
+<pre><code class="language-c">struct epoll_event {
+    __uint32_t events; /* Epoll events */
+    epoll_data_t data; /* User data variable */
+};
+
+typedef union epoll_data {
     void *ptr;
     int fd;
     __uint32_t u32;
     __uint64_t u64;
 } epoll_data_t;
-
-struct epoll_event {
-    __uint32_t events; /* Epoll events */
-    epoll_data_t data; /* User data variable */
-};
 </code></pre>
 
-<p>epoll_create : 创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。需要注意的是，当创建好epoll句柄后，它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</p>
+<p>epoll_create : 创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。需要注意的是，当创建好epoll句柄后，它就是会占用一个fd值(在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的)，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</p>
 
 <p>epoll_ctl:</p>
 
@@ -450,7 +469,7 @@ struct epoll_event {
 <p>epoll_wait：<br/>
 等待事件的产生。参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。</p>
 
-<h3 id="toc_14">eventpoll</h3>
+<h3 id="toc_15">eventpoll</h3>
 
 <p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
 首先思考两个问题</p>
@@ -520,7 +539,7 @@ struct epoll_event {
 
 <p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
 
-<h3 id="toc_15">epitem 结构</h3>
+<h3 id="toc_16">epitem 结构</h3>
 
 <p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
 

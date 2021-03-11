@@ -269,8 +269,19 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
 
 <ul>
 <li>Enhancer: 来指定要代理的目标对象、实际处理代理逻辑的对象，最终通过调用create()方法得到代理对象，对这个对象所有非final方法的调用都会转发给MethodInterceptor;</li>
-<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。</li>
+<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。<br/>
+MethodInterceptor实现了Callback接口，在 CGLIB 框架中 Callback 接口的实现可以理解为字节码的实现手段，共定义了 6 种实现方式，以适应不同场景的代理需求
+<ul>
+<li>MethodInterceptor</li>
+<li>NoOp</li>
+<li>LazyLoader</li>
+<li>Dispatcher</li>
+<li>InvocationHandler</li>
+<li>FixedValue</li>
+</ul></li>
 </ul>
+
+<h3 id="toc_7">CGLIB 代理示例</h3>
 
 <pre><code class="language-java">public class ProxyFactory {
     /**
@@ -367,7 +378,7 @@ public static void main(String[] args) {
 
 </code></pre>
 
-<h2 id="toc_7">使用场景</h2>
+<h2 id="toc_8">使用场景</h2>
 
 <p>根据代理模式的使用目的，常见的代理模式有以下几种类型：</p>
 

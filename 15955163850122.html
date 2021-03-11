@@ -120,8 +120,6 @@
 
 <p>出于安全原因，浏览器限制从脚本内发起的跨源HTTP请求。 例如，XMLHttpRequest和Fetch API遵循同源策略。 这意味着使用这些API的Web应用程序只能从加载应用程序的同一个域请求HTTP资源，除非响应报文包含了正确CORS响应头。</p>
 
-<p><figure><img src="media/15955111272689/15955114749443.jpg" alt=""/></figure></p>
-
 <p>跨域资源共享（ CORS ）机制允许 Web 应用服务器进行跨域访问控制，从而使跨域数据传输得以安全进行。现代浏览器支持在 API 容器中（例如 XMLHttpRequest 或 Fetch ）使用 CORS，以降低跨域 HTTP 请求所带来的风险。</p>
 
 <hr/>
@@ -149,18 +147,28 @@
 <p>使用 Origin 和 Access-Control-Allow-Origin 就能完成最简单的访问控制。</p>
 
 <ul>
-<li><p>Access-Control-Allow-Origin: <origin> | *<br/>
+<li>Access-Control-Allow-Origin: <origin> | *<br/>
 服务端设置 Access-Control-Allow-Origin 就是告诉浏览器允许向服务端请求资源的域名，浏览器通过 Response 中的 Access-Control-Allow-Origin 就可以知道能不能把数据吐出来。<br/>
-例如：</p>
+例如：</li>
+</ul>
+
 <pre><code class="language-text">Access-Control-Allow-Origin: http://mozilla.com
 </code></pre>
-<p>如果服务端指定了具体的域名而非“*”，那么响应首部中的 Vary 字段的值必须包含 Origin。这将告诉客户端：服务器对不同的源站返回不同的内容</p></li>
-<li><p>Access-Control-Expose-Headers : 让服务器把允许浏览器访问的头放入白名单<br/>
+
+<p>如果服务端指定了具体的域名而非“*”，那么响应首部中的 Vary 字段的值必须包含 Origin。这将告诉客户端：服务器对不同的源站返回不同的内容</p>
+
+<ul>
+<li>Access-Control-Expose-Headers : 让服务器把允许浏览器访问的头放入白名单<br/>
 在跨域访问时，XMLHttpRequest对象的getResponseHeader()方法只能拿到一些最基本的响应头，Cache-Control、Content-Language、Content-Type、Expires、Last-Modified、Pragma，如果要访问其他头，则需要服务器设置本响应头。<br/>
-例如：</p>
+例如：</li>
+</ul>
+
 <pre><code class="language-text">Access-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
 </code></pre>
-<p>这样浏览器就能够通过getResponseHeader访问X-My-Custom-Header和 X-Another-Custom-Header 响应头了。</p></li>
+
+<p>这样浏览器就能够通过getResponseHeader访问X-My-Custom-Header和 X-Another-Custom-Header 响应头了。</p>
+
+<ul>
 <li><p>Access-Control-Max-Age: <delta-seconds> <br/>
 指定了preflight请求的结果能够被缓存多久，delta-seconds 参数表示preflight请求的结果在多少秒内有效。</p></li>
 <li><p>Access-Control-Allow-Credentials: true|false <br/>

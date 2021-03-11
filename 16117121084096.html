@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    海量数据与高并发解决方案 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            海量数据与高并发解决方案   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/01/27</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html'>解决方案</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2 id="toc_0">海量数据方案</h2>
+
+<h3 id="toc_1">缓存和页面静态化</h3>
+
+<h4 id="toc_2">缓存问题</h4>
+
+<p>适用于变动并不频繁的数据</p>
+
+<h5 id="toc_3">缓存失效机制</h5>
+
+<h5 id="toc_4">一致性问题</h5>
+
+<h5 id="toc_5">缓存雪崩</h5>
+
+<h5 id="toc_6">缓存击穿</h5>
+
+<h3 id="toc_7">数据库优化</h3>
+
+<h4 id="toc_8">表优化</h4>
+
+<h4 id="toc_9">sql语句优化</h4>
+
+<h4 id="toc_10">索引优化</h4>
+
+<h4 id="toc_11">分库分表</h4>
+
+<h4 id="toc_12">热点数据分离</h4>
+
+<p>有这样一种情况，表中的数据量非常大，但是出于活跃状态的数据很少，此时将活跃的数据单独分离出来将会是一种行之有效的方案。</p>
+
+<h4 id="toc_13">批量读取或者延迟修改</h4>
+
+<p>批量读取和延迟修改都是通过降低操作的次数来提高效率的手段</p>
+
+<h5 id="toc_14">批量读取</h5>
+
+<p>比如数据库的 batch insert 操作，现在有 1W 条数据要插入数据库，数据在插入之前查询数据库中是否已经存在，如果这 1W 条数据都在插入之前查询数据库，将会产生 1W 此获取连接的操作，这样很明显是糟糕的。</p>
+
+<p>如果首先一次查询完这 1W 的存在情况，然后再依据查询结果进行插入操作将节省大量的数据库连接资源，进而达到提高效率的目的。</p>
+
+<h5 id="toc_15">延迟修改</h5>
+
+<p>延迟修改主要使用与高并发下的频繁修改场景，比如秒杀。<br/>
+这种情况可以首先将需要修改的数据做缓存，接下来的每次修改的结果存入缓存中，程序定时将缓存的数据同步到数据库。</p>
+
+<p>但是这种方案有一个风险：缓存一旦宕机，数据将会丢失，对于重要数据更是灾难一样的风险。</p>
+
+<h4 id="toc_16">读写分离</h4>
+
+<p><figure><img src="media/16117121084096/16117132567561.jpg" alt="读写分离示意图"/><figcaption>读写分离示意图</figcaption></figure></p>
+
+<h2 id="toc_17">高并发方案</h2>
+
+<h3 id="toc_18">集群和分布式</h3>
+
+<p>集群是每个节点都具有相同的功能，处理请求时调用到哪个集群节点结果都是一样的，主要起到分流的作用。<br/>
+分布式是不同业务功能的服务放到不同的服务器中，这时完成一个请求肯能需要调用到多台服务器，每台服务器专门处理某个模块的业务代码（而不是各个模块的代码耦合在一个应用服务器中），提高单模块的处理能力。</p>
+
+<p><figure><img src="media/16117133488224/16117138267304.jpg" alt="集群"/><figcaption>集群</figcaption></figure></p>
+
+<h3 id="toc_19">反向代理</h3>
+
+<p><a href="16117185311755.html">正向代理与反向代理</a></p>
+
+<h3 id="toc_20">CDN</h3>
+
+<p>CDN是一种特殊的页面缓存服务器集群，CDN 服务器是分布在全国各地的，当接受到用户的请求后会将请求分配到最适合的 CDN 服务器节点获取资源。</p>
+
+<p>CDN 的请求方式比较特殊，他并不是使用普通的负载均衡服务器来分配的，而是专门的 CDN 域名解析服务器在解析域名的时候就分配好的，一般的做法是在 ISP(网络服务提供商) 哪里使用 CNAME 将域名解析到一个特定的域名，然后再将解析到的那个域名用专门的 CDN 服务器解析到响应的 CDN 节点。</p>
+
+<p><figure><img src="media/16117133488224/16117191605724.jpg" alt="CDN 结构图"/><figcaption>CDN 结构图</figcaption></figure></p>
+
+<p>访问CDN 的 DNS 服务器是因为 CNAME 记录的目标域名使用 NS 记录指向了 CDN 的 DNS 服务器，CDN 的每个节点可能也是一个集群</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

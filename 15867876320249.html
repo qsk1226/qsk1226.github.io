@@ -839,7 +839,7 @@ private void cancelAcquire(Node node) {
             if (next != null &amp;&amp; next.waitStatus &lt;= 0) // 后继不为空并且后继的状态小于等于0
                 compareAndSetNext(pred, predNext, next); // 比较并设置pred.next = next;
         } else {
-            unparkSuccessor(node); // 释放node的前一个结点
+            unparkSuccessor(node); // 释放node的后续节点
         }
 
         node.next = node; // help GC

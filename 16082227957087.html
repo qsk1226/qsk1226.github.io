@@ -164,7 +164,7 @@
 <p>tryAcquire 方法，该方法与nonfairTryAcquire(int acquires)比较，唯一不同的位置为判断条件多了 <strong>hasQueuedPredecessors()</strong>方法，即加入了同步队列中当前节点是否有前驱节点的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此 需要等待前驱线程获取并释放锁之后才能继续获取锁。</p>
 
 <p>非公平锁的实现流程：<br/>
-<figure><img src="media/15867933931035/16017114037904.jpg" alt=""/></figure></p>
+<figure><img src="media/16082227957087/16145171576268.jpg" alt="" style="width:831px;"/></figure></p>
 
 <pre><code class="language-java">/** ReentrantLock 锁的基础同步器，实现有公平和非公平两种同步器 */
 abstract static class Sync extends AbstractQueuedSynchronizer {

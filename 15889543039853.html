@@ -381,7 +381,7 @@ private void configurationElement(XNode context) {
 
 <pre><code class="language-java">/**
  * 封装mapper.xml文件信息的select 、insert 、update 、delete 节点的信息
- * id、sqlSource、parameterMap、ResultMaps、keyGenerator 
+ * id、SqlSource、parameterMap、ResultMaps、keyGenerator 
  **/
 public final class MappedStatement {
 
@@ -408,6 +408,41 @@ public final class MappedStatement {
     private Log statementLog;
     private LanguageDriver lang;
     private String[] resultSets;//多结果集使用
+}
+</code></pre>
+
+<pre><code class="language-java">public class DynamicSqlSource implements SqlSource {
+
+    private final Configuration configuration;
+    private final SqlNode rootSqlNode;
+
+    public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
+        this.configuration = configuration;
+        this.rootSqlNode = rootSqlNode;
+    }
+
+    @Override
+    public BoundSql getBoundSql(Object parameterObject) {
+        DynamicContext context = new DynamicContext(configuration, parameterObject);
+        rootSqlNode.apply(context);
+        SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
+        Class&lt;?&gt; parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+        SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
+        BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+        context.getBindings().forEach(boundSql::setAdditionalParameter);
+        return boundSql;
+    }
+
+}
+</code></pre>
+
+<pre><code class="language-java">public class BoundSql {
+
+    private final String sql;
+    private final List&lt;ParameterMapping&gt; parameterMappings;
+    private final Object parameterObject;
+    private final Map&lt;String, Object&gt; additionalParameters;
+    private final MetaObject metaParameters;
 }
 </code></pre>
 

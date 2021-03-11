@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Tomcat 类加载与类加载器 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Tomcat 类加载与类加载器   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/01/24</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='tomcat.html'>tomcat</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>我们知道 Tomcat 上可以部署多个项目，那么这是会遇到什么样的问题呢？</p>
+
+<ul>
+<li>Tomcat 运行时需要加载哪些类</li>
+<li>Tomcat中的多个项目可能存在相同的类</li>
+<li>Tomcat中类加载的顺序</li>
+</ul>
+
+<p>这里关于 JVM 的类加载器以及双亲委派机制可以查看这篇文章<br/>
+<a href="15922073766854.html">五、java虚拟机执行子系统---类加载机制</a></p>
+
+<h2 id="toc_0">Tomcat 类加载解决方案</h2>
+
+<p>在 Tomcat 的类加载过程中需要注意一下几个方面</p>
+
+<ul>
+<li>隔离性<br/>
+Web 应用类库相互隔离，避免依赖库或者应用包相互影响，比如两个web应用，分别使用了同一个jar包的不同版本，如果采用同一个类加载，那么web应用将会由于jar包覆盖为无法启动成功</li>
+<li>灵活性<br/>
+因为隔离性，所以 Web 应用之间的类加载器相互独立，如果一个 Web 应用重新部署时，该应用的类加载器重新加载，同时不会影响其他 web 应用。 比如：不需要重启 Tomcat 的创建 xml 文件的类加载， 还有 context 元素中的 reloadable 字段：如果设置为 true 的话，Tomcat 将检测该项目是否变更，当检测到变更时，自动重新加载 Web 应用。</li>
+<li>性能<br/>
+由于每一个 Web应用都有一个类加载器，所以在Web应用在加载类时，不会搜索其他web应用包含的Jar包，性能自然高于只有一个类加载的情况。</li>
+</ul>
+
+<h3 id="toc_1">Tomcat 中的类加载器</h3>
+
+<p>Tomcat 提供了3个基础类加载器(common、catalina、shared)和web应用类加载器。tomcat 的类加载关系结构图如下图所示：</p>
+
+<p><figure><img src="media/16114202672251/16114770606267.jpg" alt="Tomcat 类加载器"/><figcaption>Tomcat 类加载器</figcaption></figure></p>
+
+<h4 id="toc_2">三种基础的类加载器</h4>
+
+<p>它们的加载路径在 catalina.properties 文件中配置，默认情况下，3 个基础类加载器的实例都是一个。<br/>
+createClassLoader 调用ClassLoaderFactory 属于一种工厂模式，并且都是使用 URLClassLoader。<br/>
+<figure><img src="media/16114202672251/16114811730897.jpg" alt="" style="width:1014px;"/></figure></p>
+
+<p><figure><img src="media/16114202672251/16114781150128.jpg" alt="initClassLoader方法"/><figcaption>initClassLoader方法</figcaption></figure></p>
+
+<p><figure><img src="media/16114202672251/16114802021651.jpg" alt="createClassLoader方法"/><figcaption>createClassLoader方法</figcaption></figure></p>
+
+<p><figure><img src="media/16114202672251/16114802701094.jpg" alt="" style="width:1490px;"/></figure></p>
+
+<p>默认情况三个是一个实例，但是可以通过修改配置创建 3 个不同的类加载机制，使它们各司其职。 </p>
+
+<p>举个例子：如果我们不想实现自己的会话存储方案，并且这个方案依赖了一些第三方包，我们不希望这些包对 Web 应用可见，因此我们可以配置 server.loader,创建独立的 Catalina 类加载器。 </p>
+
+<p>共享性： Tomcat 通过 Common 类加载器实现了 Jar 包在应用服务器与 Web 应用之间的共享， 通过 Shared 类加载器实现了 Jar 包在 Web 应用之间的共享 通过 Catalina 类加载器加载服务器依赖的类。</p>
+
+<p>在 createClasssLoader方法中我们看到 最终使用ClassLoaderFactory工厂创建了类加载器</p>
+
+<p><figure><img src="media/16114202672251/16114808507923.jpg" alt="" style="width:1085px;"/></figure></p>
+
+<p><figure><img src="media/16114202672251/16114809796074.jpg" alt="" style="width:1068px;"/></figure></p>
+
+<p>ClassLoadFactory 有一个内部 Repository， 它就是表示资源的类，资源的类型用一个 RepositoryType 的枚举表示。</p>
+
+<p>同时我们看到，如果在检查 jar 包的时候，如果有检查的 URL 地址的如果检查有异常就忽略掉，可以确保部分类加载正确。</p>
+
+<h4 id="toc_3">WebApp 类加载器</h4>
+
+<p>每个 Web 应用会对应一个 Context 节点，在 JVM中就会对应一个 StandardContext对象，每个StandardContext对象内部都有一个加载器实例 loader（这个 loader实际上就是 WebappLoader 对象）, 每个loader 内部关联一个 classLoader 变量(webappClassLoader类加载器对象)</p>
+
+<p><figure><img src="media/16114202672251/16114846312071.jpg" alt="" style="width:887px;"/></figure></p>
+
+<p><figure><img src="media/16114202672251/16114846755024.jpg" alt="" style="width:701px;"/></figure></p>
+
+<h2 id="toc_4">热加载分析</h2>
+
+<p>当配置信息中有 reloadable 的属性，并且值为 true 时，Tomcat 怎么去完成这个过程呢？</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

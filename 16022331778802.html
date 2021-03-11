@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    RabbitMQ--消息发布时的权衡 - 大爷来玩儿啊~
+    RabbitMQ--消息的生产 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            RabbitMQ--消息发布时的权衡   
+                            RabbitMQ--消息的生产   
                       </h1>
                      
                     
@@ -130,7 +130,7 @@
 
 <p>在发送消息时设置 mandatory = true 标志，告诉 RabbitMQ，如果消息不可路由，应该将消息返回给发送者，并通知失败。可以这样认为，开启 mandatory 是开启故障检测模式。</p>
 
-<p>注意:它只会让 RabbitMQ 向你通知失败，而不会通知成功。如果消息正确路由到队列，则发布者不会受到任何通知。带来的问题是无法确保发布消 息一定是成功的，因为通知失败的消息可能会丢失。</p>
+<p>注意:它只会让 RabbitMQ 向你通知失败，而不会通知成功。如果消息正确路由到队列，则发布者不会受到任何通知。带来的问题是无法确保发布消息一定是成功的，因为通知失败的消息可能会丢失。</p>
 
 <p>channel.addConfirmListener 则用来监听 RabbitMQ 发回的信息。</p>
 
@@ -173,10 +173,69 @@
 <p>Confirm 的三种实现方式:</p>
 
 <ul>
-<li>channel.waitForConfirms() 普通发送方确认模式，消息到达交换机，机会返回 true</li>
-<li>channel.waitForConfirmsOrDie() 批量确认模式，使用同步方式等所有的消息发送之后才会执行后面代码，只要有一个小心未到达交换器就会抛出 IOException 异常</li>
+<li>channel.waitForConfirms() 普通发送方确认模式，消息到达交换机，机器会返回 true</li>
+<li>channel.waitForConfirmsOrDie() 批量确认模式，使用同步方式等所有的消息发送之后才会执行后面代码，只要有一个消息未到达交换器就会抛出 IOException 异常<br/>
+问题：一旦出现confirm返回false或者超时情况时，客户端需要将这一批次的消息全部重发，者会带来重复消息，并且消息经常丢失的时候，批量确认的性能会急剧下降</li>
 <li>channel.addConfirmListener()一步监听发送方确认模式</li>
 </ul>
+
+<pre><code class="language-java">Channel channel = channelManager.getPublisherChannel(namespaceName);
+ProxiedConfirmListener confirmListener = new ProxiedConfirmListener();//监听类
+confirmListener.setChannelManager(channelManager);
+confirmListener.setChannel(channel);
+confirmListener.setNamespace(namespaceName);
+confirmListener.addSuccessCallbacks(successCallbacks);
+channel.addConfirmListener(confirmListener);
+channel.confirmSelect();//开启confirm模式
+AMQP.BasicProperties messageProperties = null;
+if (message.getProperty() instanceof AMQP.BasicProperties) {
+    messageProperties = (AMQP.BasicProperties) message.getProperty();
+}
+confirmListener.toConfirm(channel.getNextPublishSeqNo(), rawMsg);
+for(int i = 0;i&lt;50;i++){
+    channel.basicPublish(
+            exchange, routingKey,
+            mandatory, immediate,
+            messageProperties,
+            message.getContent()
+    );
+}
+
+</code></pre>
+
+<pre><code class="language-java">package com.rabbitmq.client;
+
+import java.io.IOException;
+
+public interface ConfirmListener {
+    /**
+    ** handleAck RabbitMQ消息接收成功的方法，成功后业务可以做的事情
+    ** 发送端投递消息前，需要把消息先存起来，比如用KV存储，接收到ack后删除
+    **/
+    void handleAck(long deliveryTag, boolean multiple)
+        throws IOException;
+
+    //handleNack RabbitMQ消息接收失败的通知方法，用户可以在这里重新投递消息
+    void handleNack(long deliveryTag, boolean multiple)
+        throws IOException;
+}
+
+</code></pre>
+
+<p><figure><img src="media/16022331778802/16100810984455.jpg" alt=""/></figure></p>
+
+<p>channel1 连续发类1，2，3条消息到RabbitMQ-Server，RabbitMQ-Server通知返回一条通知，里面包含回传给生产者的确认消息中的deliveryTag包含了确认消息的序号，此外还有一个参数multiple=true，表示到这个序号之前的所有消息都已经得到了处理。这样客户端和服务端通知的次数就减少类，提升类性能。</p>
+
+<p>channel3 发送的消息失败了，生产端需要对投递消息重新投递，需要额外处理代码。那么生产端需要做什么事情呢？因为是异步的，生产端需要存储消息然后根据server通知的消息，确认如何处理，于是我们面临的问题是：</p>
+
+<ul>
+<li>第一：发送消息之前把消息存起来</li>
+<li>第二：监听ack 和 nack 并做响应处理</li>
+</ul>
+
+<p>那么怎么存储呢？<br/>
+我们分析下，可以使用SortedMap 存储，保证有序，但是有个问题高并发情况下，<br/>
+每秒可能几千甚至上万的消息投递出去，消息的ack要等几百毫秒的话，放内存可能有内存溢出的风险。所以建议采用KV存储，KV存储承载高并发能力高，性能好，但是要保证KV 高可用，单个有个缺点就是又引入了第三方中间件，复杂度升高。</p>
 
                   </article>
                   <div class="comments-wrap">
@@ -220,6 +279,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

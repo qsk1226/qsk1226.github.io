@@ -130,7 +130,7 @@
 
 <h3 id="toc_4">自动确认</h3>
 
-<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=true 时，一旦消费者接收到了消息，就视为自动确认了消息。如果消费者在处理消息的过 程中，出了错，就没有什么办法重新处理这条消息，所以我们很多时候，需要在消息处理成功后，再确认消息，这就需要手动确认。</p>
+<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=true 时，一旦消费者接收到了消息，就视为自动确认了消息。如果消费者在处理消息的过程中，出了错，就没有什么办法重新处理这条消息，所以我们很多时候，需要在消息处理成功后，再确认消息，这就需要手动确认。</p>
 
 <h3 id="toc_5">手动确认</h3>
 
@@ -180,6 +180,38 @@
 <li>Nack 跟 Reject 类似，只是它可以一次性拒绝多个消息。也可以使用 requeue 标识，这是 RabbitMQ 对 AMQP 规范的一个扩展。</li>
 </ul>
 
+<h2 id="toc_10">如何保证消费者消息不丢失</h2>
+
+<p>消费者获取到消息之后，没有来得及处理完毕，自己直接宕机了,因为消息者默认采用自动ack，此时RabbitMQ的自动ack机制会通知MQ Server这条消息已经处理好了，此时消息就丢了，并不是预期的。</p>
+
+<p>那么我们采用手动ack机制来解决这个问题，消费端处理完逻辑之后再通知MQ Server，这样消费者没处理完消息不会发送ack,如果在消费者拿到消息，没来得及处理的情况下自己挂了，此时MQ集群会自动感知到，它就会自觉的重发消息给其他的消费者服务实例。</p>
+
+<p>设置消费者手动确认机制需要</p>
+
+<ul>
+<li>消费者监听调整应答方式为 手动ack</li>
+</ul>
+
+<pre><code class="language-java">this.channel = channelManager.getListenerChannel(namespace);
+this.queue = queue;
+this.channel.basicConsume(queue, false, consumerTag, this);
+this.disconnectedCallback.setChannel(channel);
+</code></pre>
+
+<ul>
+<li>业务代码执行完成之后手动发送 ack 应答</li>
+</ul>
+
+<pre><code class="language-java">public static void ack(MessageContext context) {
+    long deliveryTag = context.getEnvelope().getDeliveryTag();
+    try {
+        context.getChannel().basicAck(deliveryTag, false);
+    } catch (IOException e) {
+        throw new MqAckException(&quot;消息ack出错：连接异常或远端关闭&quot;, context, e);
+    }
+}
+</code></pre>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
@@ -222,6 +254,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

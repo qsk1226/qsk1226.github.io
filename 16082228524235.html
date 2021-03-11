@@ -117,7 +117,7 @@
                     <ul>
 <li>为什么有了ReentrantLock 还需要 ReentrantReadWriteLock? </li>
 <li>ReentrantReadWriteLock底层实现原理? </li>
-<li>ReentrantReadWriteLock底层读写状态如何设计的? 高16位为读锁，低16位为写锁 </li>
+<li>ReentrantReadWriteLock底层读写状态如何设计的? 高16位为读锁，低16位为写锁</li>
 <li>读锁和写锁的最大数量是多少? </li>
 <li>本地线程计数器ThreadLocalHoldCounter是用来做什么的? </li>
 <li>缓存计数器HoldCounter是用来做什么的? </li>
@@ -172,6 +172,8 @@
 <p>sharedCount 方法直接将state右移16位，就可以得到读锁的线程数量(线程每重入一次也算一次读锁)，因为state的高16位表示读锁，对应的低十六位表示写锁数量。</p>
 
 <p>exclusiveCount 方法直接将状态 state 和 (2<sup>16</sup> - 1) 做与运算，其等效于将 state 模上 2<sup>16。写锁数量由state的低十六位表示。</sup></p>
+
+<p><figure><img src="media/16082228524235/16100116671663.jpg" alt=""/></figure></p>
 
 <h3 id="toc_3">写锁的获取与释放</h3>
 

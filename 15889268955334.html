@@ -124,9 +124,9 @@
 
 <h2 id="toc_0">MyBatis整体架构</h2>
 
-<p><figure><img src="media/15889268955334/15948274550412.jpg" alt=""/></figure></p>
+<p><figure><img src="media/15889268955334/16153836450833.jpg" alt="" style="width:745px;"/></figure></p>
 
-<h2 id="toc_1">MyBatis包结构``</h2>
+<h2 id="toc_1">MyBatis包结构</h2>
 
 <ul>
 <li>annotations<br/>
@@ -170,26 +170,42 @@ MyBatis的核心包， ErrorContext 错误上下文对象，跟踪所有执行�
 <li>transaction<br/>
 MyBatis对事物的抽象，包装了数据库连接，处理数据库连接生命周期包括：连接创建，预编译，提交\回滚和关闭，2种实现方式：JdbcTransaction手动管理；ManagedTransaction受容器管理的事务</li>
 <li>type<br/>
-类型处理，包含了类型处理器接口TypeHandler，父类BaseTypeHandler,以及若干个子类，例如所有数据库类型对应Java类型的处理器，如果要实现自己类型处理器就需要实现包下的基础接口<br/>
-## MyBatis核心类或组件</li>
+类型处理，包含了类型处理器接口TypeHandler，父类BaseTypeHandler,以及若干个子类，例如所有数据库类型对应Java类型的处理器，如果要实现自己类型处理器就需要实现包下的基础接口</li>
+</ul>
+
+<h2 id="toc_2">MyBatis核心组件</h2>
+
+<ul>
+<li>Configuration<br/>
+MyBatis所有的配置信息都维持在Configuration对象之中。</li>
 <li>SqlSessionFactoryBuilder ： 读取配置信息创建SqlSessionFactory,使用建造者模式，方法级别的生命周期，构建出SqlSessionFactory之后即消亡。</li>
 <li>SqlSessionFactory ： 创建SqlSession对象的工厂对象，采用工厂模式，存在于程序的整个生命周期。</li>
-<li>SqlSession 代表一次数据库连接，一般通过调用Mapper访问数据库，也可以直接发送sql执行，线程不安全的，需要保证线程独享。</li>
+<li>SqlSession 作为MyBatis工作的主要顶层API，表示和数据库交互的会话，完成必要数据库增删改查功能，它代表一次数据库连接，一般通过调用Mapper访问数据库，也可以直接发送sql执行，线程不安全的，需要保证线程独享。</li>
+<li>Executor<br/>
+MyBatis执行器，是MyBatis 调度的核心，负责SQL语句的生成和查询缓存的维护</li>
 <li>Sql Mapper组件
 <ul>
-<li>MappedStatement</li>
+<li>MappedStatement ： MappedStatement维护了一条<select|update|delete|insert>节点的封装</li>
 <li>MapperProxyFactory</li>
 <li>MapperMethod</li>
 <li>mapperRegistry</li>
-<li>BoundSql</li>
+<li>BoundSql ：表示动态生成的SQL语句以及相应的参数信息</li>
+<li>SqlSource ： 负责根据用户传递的parameterObject，动态地生成SQL语句，将信息封装到BoundSql对象中，并返回</li>
+<li>StatementHandler ： 封装了JDBC Statement操作，负责对JDBC statement 的操作，如设置参数、将Statement结果集转换成List集合。</li>
+<li>ParameterHandler<br/>
+负责对用户传递的参数转换成JDBC Statement 所需要的参数，</li>
+<li>ResultSetHandler<br/>
+负责将JDBC返回的ResultSet结果集对象转换成List类型的集合；</li>
+<li>TypeHandler<br/>
+负责java数据类型和jdbc数据类型之间的映射和转换</li>
 </ul></li>
 </ul>
 
-<h2 id="toc_2">配置文件</h2>
+<h2 id="toc_3">配置文件</h2>
 
 <p><a href="15889256556480.html">Mybatis 全局配置文件样例mybatis-config.xml</a></p>
 
-<h2 id="toc_3">MyBatis流程概述</h2>
+<h2 id="toc_4">MyBatis流程概述</h2>
 
 <p>看下MyBatis的快速使用事例，代码如下：</p>
 

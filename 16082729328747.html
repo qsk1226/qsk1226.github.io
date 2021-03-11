@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    spring 框架去除 web.xml 实现 servlet 容器的初始化 - 大爷来玩儿啊~
+    springMVC 利用 SpringServletContainerInitializer 去除 xml 配置 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            spring 框架去除 web.xml 实现 servlet 容器的初始化   
+                            springMVC 利用 SpringServletContainerInitializer 去除 xml 配置   
                       </h1>
                      
                     
@@ -97,7 +97,7 @@
                                  <span class="date">2020/12/22</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='spring.html'>spring</a></span>
+                                      <span class="posted-in"><a href='springMvc.html'>springMvc</a></span>
                                          
                                   
 
@@ -114,7 +114,9 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">SpringServletContainerInitializer</h2>
+                    <p>使框架去除 web.xml 实现 servlet 容器的初始化 </p>
+
+<h2 id="toc_0">SpringServletContainerInitializer</h2>
 
 <p>SpringServletContainerInitializer 继承自 Servlet3.0 包中的 ServletContainerInitializer 类，它借助 JAVA 中 SPI 思想进行调用，已达到去 web.xml 配置文件的容器初始化。</p>
 

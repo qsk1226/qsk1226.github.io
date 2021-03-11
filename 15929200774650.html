@@ -116,25 +116,53 @@
                   <article class="markdown-body single-content">
                     <p>mysql --help | grep my.cnf 此命令会告诉我们会在哪些位置查找配置文件</p>
 
-<pre><code class="language-text">&gt; show engines 查看当前使用的MySql数据库锁支持的存储引擎。也可以通过查找information_schema架构下的ENGINES表
+<p>mysql的缓存推荐关闭</p>
+
+<pre><code class="language-console"># 设置缓存大小
+&gt; set global query_cache_size=4000;
+
+#查看缓存是否开启，需要配置文件中进行配置
+&gt; show variables like &#39;%query_cache_type%&#39; 
+
+#查看当前使用的MySql数据库锁支持的存储引擎。也可以通过查找information_schema架构下的ENGINES表
+&gt; show engines;
+# 查看当前数据库默认的存储引擎
+&gt;show variables LIKE &#39;%storage_engine%&#39;;
+
+# 查看数据文件存储的位置
+&gt; show variables like &#39;datadir&#39;;
+
 &gt; mysql -h host -u user -p pwd -P port
-&gt; show engine innodb status 观察innodb的过去某个时间范围内的状态
-&gt; show variables like &#39;innodb_buffer_pool_size&#39;  查看缓冲池大小
-&gt; show variables like &#39;innodb_buffer_pool_instances&#39; 查看有几个缓冲池实例
-&gt; set global innodb_old_block_time=1000; 设置多长时间之后热点页被放入LRU列表前端
-&gt; show variables like &#39;innodb_log_buffer_size&#39; 查看重做日志缓冲池大小
-&gt; show status 了解各种sql的执行频率
+
+#观察innodb的过去某个时间范围内的状态
+&gt; show engine innodb status 
+
+#查看缓冲池大小
+&gt; show variables like &#39;innodb_buffer_pool_size&#39;  
+
+# 查看有几个缓冲池实例
+&gt; show variables like &#39;innodb_buffer_pool_instances&#39; 
+
+#设置多长时间之后热点页被放入LRU列表前端
+&gt; set global innodb_old_block_time=1000; 
+
+#查看重做日志缓冲池大小
+&gt; show variables like &#39;innodb_log_buffer_size&#39; 
+# 了解各种sql的执行频率
+&gt; show status 
 &gt; show global status
 &gt; show status like &#39;Com_%&#39;  
 &gt; insert into select * from table2 where column=100;
-&gt; # Com_XXX表示每个XXX语句执行的次数，select、update、insert、delete
-&gt; # 只针对 innoDB引擎的参数：
-&gt; # InnoDB_rows_read 执行 select 操作的次数
-&gt; # InnoDB_rows_updated 执行 update 操作的次数
-&gt; # InnoDB_rows_inserted 执行 insert 操作的次数
-&gt; # InnoDB_rows_deleted 执行 delete 操作的次数
-&gt; 
-&gt; # Slow_queries：慢查询的次数
+
+# Com_XXX表示每个XXX语句执行的次数，select、update、insert、delete
+# 只针对 innoDB 引擎的参数：
+# InnoDB_rows_read 执行 select 操作的次数
+# InnoDB_rows_updated 执行 update 操作的次数
+# InnoDB_rows_inserted 执行 insert 操作的次数
+# InnoDB_rows_deleted 执行 delete 操作的次数
+
+#慢查询的次数
+&gt; Slow_queries：
 </code></pre>
 
                   </article>

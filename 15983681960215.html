@@ -140,9 +140,13 @@ Tasks: 143 total,   1 running, 142 sleeping,   0 stopped,   0 zombie
 
 <h2 id="toc_2">3、 字符含义</h2>
 
-<pre><code class="language-shell">top - 11:25:56 up 25 min,  1 user,  load average: 0.22, 0.36, 0.31
+<pre><code class="language-shell"># 代表人物的队列信息，结果等同于uptime命令
+top - 11:25:56 up 25 min,  1 user,  load average: 0.22, 0.36, 0.31
+# 进程数、睡眠进程数、停止的进程数、僵尸进程数
 Tasks: 144 total,   1 running, 143 sleeping,   0 stopped,   0 zombie
+# us用户空间cpu占用率、sy内核空间cpu占用率、ni用户进程空间改变过优先级的进程cpu的占用率、id空闲 cpu 占用率、wa等待输入输出的 cpu时间百分比、hi硬件中断请求、si软件中断请求。
 %Cpu(s):  2.2 us,  1.7 sy,  0.0 ni, 95.9 id,  0.0 wa,  0.0 hi,  0.2 si,  0.0 st
+# 物理内存总量、已使用物理内存、空闲物理内存、内核缓冲使用量
 KiB Mem :  1863088 total,    97124 free,   934460 used,   831504 buff/cache
 KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 

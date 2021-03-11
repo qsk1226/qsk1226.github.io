@@ -175,49 +175,51 @@
 
 <p>保证只有一个线程到数据库 去查找指定的 key 对应的数据</p>
 
-<p>加锁方式的流程流程：<br/>
-<figure><img src="media/15902913212619/15985435560165.jpg" alt="" style="width:565px;"/></figure></p>
+<p>加锁方式的流程流程：</p>
+
+<p><figure><img src="media/15902913212619/16144033869125.jpg" alt="" style="width:705px;"/></figure></p>
 
 <pre><code class="language-java">public Object get(String key) {
-        // 1.从缓存中取数据
-        Object value = getFromCache(key);
-        if (null != value)
+    // 1.从缓存中取数据
+    Object value = getFromCache(key);
+    if (null != value)
+        return value;
+    //2.加锁排队，阻塞式锁---100个线程走到这里---同一个sql的取同一把锁
+    doLock(key);
+    try {
+        //双重校验，不加也没关系，无非是多刷几次库
+        value = getFromCache(key); //第二个线程，能从缓存里拿到值？
+        if (null != value) {
             return value;
-        //2.加锁排队，阻塞式锁---100个线程走到这里---同一个sql的取同一把锁
-        doLock(key);
-        try {
-            //双重校验，不加也没关系，无非是多刷几次库
-            value = getFromCache(key); //第二个线程，能从缓存里拿到值？
-            if (null != value) {
-                return value;
-            }
-
-            Object dbValue getFromDataBase(key);
-            // 3.从数据库查询的结果不为空，则把数据放入缓存中，方便下次查询
-            if (null != dbValue) {
-                putInCache(key, dbValue);
-            }
-            return dbValue;
-        } catch (Exception e) {
-            return null;
-        } finally {
-            //4.解锁
-            releaseLock(key);
         }
+
+        Object dbValue getFromDataBase(key);
+        // 3.从数据库查询的结果不为空，则把数据放入缓存中，方便下次查询
+        if (null != dbValue) {
+            putInCache(key, dbValue);
+        }
+        return dbValue;
+    } catch (Exception e) {
+        return null;
+    } finally {
+        //4.解锁
+        releaseLock(key);
     }
-    ```
-方案二：缓存预热
+}
+</code></pre>
 
-方案三：将被动失效改为主动失效
+<p>方案二：做二级缓存，一级缓存失效后去二级缓存获取</p>
 
-### 缓存穿透
-缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞
+<p>方案三：不同的 key 设置不同的过期时间，让缓存失效时间点尽量均匀</p>
 
-方案一：布隆过滤器
-布隆过滤器的使用方法，类似java的SET集合，只不过它能以更小的内存，存储更大的数据
+<h3 id="toc_2">缓存穿透</h3>
 
-```java
-public void init() {
+<p>缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞</p>
+
+<p>方案一：布隆过滤器<br/>
+布隆过滤器的使用方法，类似java的SET集合，只不过它能以更小的内存，存储更大的数据</p>
+
+<pre><code class="language-java">public void init() {
     //在bean初始化完成后，实例化bloomFilter,并加载数据
       List&lt;CacheValue&gt; cacheValues =searchAll();
 
@@ -238,6 +240,8 @@ public CacheValue get(String key) {
         return getCachedValue(key);
 }
 </code></pre>
+
+<p>方案二： 对查询结果为空的情况也进行缓存，缓存时间设置短一点，或者该 key 对应的数据 insert 了之后清理 缓存。</p>
 
                   </article>
                   <div class="comments-wrap">

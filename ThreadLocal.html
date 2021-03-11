@@ -326,11 +326,11 @@ private void rehash() {
 
 <p>ThreadLocal的引用关系 如下图所示：</p>
 
-<p><figure><img src="media/15864440934982/15865783936571.jpg" alt="" style="width:708px;"/></figure></p>
+<p><figure><img src="media/15864440934982/16126839170130.jpg" alt="" style="width:1340px;"/></figure></p>
 
 <h4 id="toc_5">内存泄漏问题及解决办法</h4>
 
-<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么下次 gc 的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链： <br/>
+<p>ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个 ThreadLocal 没有外部强引用引用他，那么下次 gc 的时候，这个 ThreadLocal 势必会被回收，这样一来，ThreadLocalMap 中就会出现 key 为 null 的 Entry，就没有办法访问这些 key 为 null的 Entry 的 value，如果当前线程再迟迟不结束的话，这些key 为null 的Entry的 value 就会一直存在一条强引用链： <br/>
 current thread 引用 -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value <br/>
 永远无法回收，造成内存泄露。</p>
 

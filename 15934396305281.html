@@ -507,49 +507,52 @@ typedef struct redisDb {
 
 <p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
 
-<pre><code class="language-text">    int processCommand(client *c) {
-        ...
-            if (c-&gt;flags &amp; CLIENT_MULTI 
-                &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
-                &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
-                &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
-                &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
-                //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
-                queueMultiCommand(c);        //放入队列            
-                addReply(c,shared.queued);         
-            } else {                        
-                //否则调用call命令            
-                call(c,CMD_CALL_FULL);         
-                ...
-            } 
-     ...
-    }
-    ```
-
-### 3.3、返回结果
-Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。
-
-Redis的返回结果可以分为5类：
-- 状态回复，第一个字符是`“+”`；例如，SET命令执行完毕会向客户端返回`“+OK\r\n”`。
-- 错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回`“-ERR unknown command&#39;testcmd&#39;”`。
-- 整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 `“:100\r\n”`。
-- 批量回复，第一个字符是` &quot;$&quot;`。例如，GET命令查找键向客户端返回结果`&quot;$5\r\nhello\r\n&quot;`，其中`$5`表示返回字符串长度
-- 多条批量回复，第一个字符是`“*”`。例如，LRANGE命令可能会返回多个值，格式为`“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”`，与命令请求协议格式相同，`“*3”`表示返回值数目，`“$6”`表示当前返回值字符串长度。
-
-## 总结
-Redis服务器的所有数据库都保存在 redis Server.dib数组中,而数据库的数量则由 redisserver. danum属性保存。
-
-客户端通过修改目标数据库指针,让它指向 redi sserver.db数组中的不同元素来切换不同的数据库。
-
-数据库主要由dict和 expires两个字典构成,其中dict字典负责保存键值对, 而 expires字典则负责保存键的过期时间。
-
-因为数据库由字典构成,所以对数据库的操作都是建立在字典操作之上的。
-
-数据库的健总是一个字符串对象,而值则可以是任意一种 Redis对象类型,包括字符串对象、哈希表对象、集合对象、列表对象和有序集合对象,分别对应字符串键、哈希表键、集合键、列表键和有序集合键。
-
-expires字典的键指向数据库中的某个键,而值则记录了数据库键的过期时间,过期时间是一个以毫秒为单位的UNIX时间戳。
-
+<pre><code class="language-text">int processCommand(client *c) {
+    ...
+        if (c-&gt;flags &amp; CLIENT_MULTI 
+            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
+            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
+            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
+            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
+            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
+            queueMultiCommand(c);        //放入队列            
+            addReply(c,shared.queued);         
+        } else {                        
+            //否则调用call命令            
+            call(c,CMD_CALL_FULL);         
+            ...
+        } 
+ ...
+}
 </code></pre>
+
+<h3 id="toc_14">3.3、返回结果</h3>
+
+<p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
+
+<p>Redis的返回结果可以分为5类：</p>
+
+<ul>
+<li>状态回复，第一个字符是<code>“+”</code>；例如，SET命令执行完毕会向客户端返回<code>“+OK\r\n”</code>。</li>
+<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
+<li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
+<li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
+<li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
+</ul>
+
+<h2 id="toc_15">总结</h2>
+
+<p>Redis服务器的所有数据库都保存在 redis Server.dib数组中,而数据库的数量则由 redisserver. danum属性保存。</p>
+
+<p>客户端通过修改目标数据库指针,让它指向 redi sserver.db数组中的不同元素来切换不同的数据库。</p>
+
+<p>数据库主要由dict和 expires两个字典构成,其中dict字典负责保存键值对, 而 expires字典则负责保存键的过期时间。</p>
+
+<p>因为数据库由字典构成,所以对数据库的操作都是建立在字典操作之上的。</p>
+
+<p>数据库的健总是一个字符串对象,而值则可以是任意一种 Redis对象类型,包括字符串对象、哈希表对象、集合对象、列表对象和有序集合对象,分别对应字符串键、哈希表键、集合键、列表键和有序集合键。</p>
+
+<p>expires字典的键指向数据库中的某个键,而值则记录了数据库键的过期时间,过期时间是一个以毫秒为单位的UNIX时间戳。</p>
 
                   </article>
                   <div class="comments-wrap">

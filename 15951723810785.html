@@ -153,7 +153,7 @@
 <pre><code class="language-shell">cluster meet &lt;ip&gt; &lt;port&gt;
 </code></pre>
 
-<p>向一个节点 node发送 cluster meet命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
+<p>向一个节点 node 发送 cluster meet命令，可以让node节点与ip和port所指定的节点进行握手（handshake），当握手成功时，node节点就会将ip和port所指定的节点添加到node节点当前所在的集群中。</p>
 
 <p>通过命令查看集群当前包含的节点信息</p>
 
@@ -163,20 +163,17 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 
 <p>通过 cluster meet 命令将 指定节点添加到集群后，cluster nodes 命令将返回多个节点信息。</p>
 
-<p>收到命令的节点A将与节点B进行握手( handshake),以此来确认彼此的存在,并为将来的进一步通信打好基础: <br/>
-1)节点A会为节点B创建一个c1 osterode结构,并将该结构添加到自己的c1 interstate. nodes字典里面。</p>
+<p>收到命令的节点A将与节点B进行握手( handshake),以此来确认彼此的存在,并为将来的进一步通信打好基础: </p>
 
-<p>2)之后,节点A将根据CLUSTER MEET命令给定的P地址和端口号,向节点B发送一条MET消息( message) </p>
-
-<p>3)如果一切顺利,节点B将接收到节点A发送的MEET消息,节点B会为节点A创建一个c1 osterode结构,并将该结构添加到自己的c1 usterstate. nodes字典里面。</p>
-
-<p>4)之后,节点B将向节点A返回一条PONG消息。</p>
-
-<p>5)如果一切顺利,节点A将接收到节点B返回的PONG消息,通过这条PONG消息节点A可以知道节点B已经成功地接收到了自己发送的MEET消息。</p>
-
-<p>6)之后,节点A将向节点B返回一条PING消息。</p>
-
-<p>7)如果一切顺利,节点B将接收到节点A返回的PING消息,通过这条PING消息节点B可以知道节点A已经成功地接收到了自己返回的PONG消息,握手完成。</p>
+<ul>
+<li><p>1)节点A会为节点B创建一个c1 osterode结构,并将该结构添加到自己的c1 interstate. nodes字典里面。</p></li>
+<li><p>2)之后,节点A将根据CLUSTER MEET命令给定的P地址和端口号,向节点B发送一条MET消息( message) </p></li>
+<li><p>3)如果一切顺利,节点B将接收到节点A发送的MEET消息,节点B会为节点A创建一个c1 osterode结构,并将该结构添加到自己的c1 usterstate. nodes字典里面。</p></li>
+<li><p>4)之后,节点B将向节点A返回一条PONG消息。</p></li>
+<li><p>5)如果一切顺利,节点A将接收到节点B返回的PONG消息,通过这条PONG消息节点A可以知道节点B已经成功地接收到了自己发送的MEET消息。</p></li>
+<li><p>6)之后,节点A将向节点B返回一条PING消息。</p></li>
+<li><p>7)如果一切顺利,节点B将接收到节点A返回的PING消息,通过这条PING消息节点B可以知道节点A已经成功地接收到了自己返回的PONG消息,握手完成。</p></li>
+</ul>
 
 <h2 id="toc_1">slot 槽</h2>
 
@@ -189,7 +186,7 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 <pre><code class="language-text">HASH_SLOT = CRC16(key) mod 16384
 </code></pre>
 
-<p>客户端可以请求任意一个节点，每个节点中都会保存所有16384个slot对应到哪一个节点的信息。如果一个key所属的slot正好由被请求的节点提供服务，则直接处理并返回结果，否则返回MOVED重定向信息。</p>
+<p><strong>客户端可以请求任意一个节点，每个节点中都会保存所有16384个slot对应到哪一个节点的信息。如果一个key所属的slot正好由被请求的节点提供服务，则直接处理并返回结果，否则返回MOVED重定向信息。</strong></p>
 
 <pre><code class="language-text">-MOVED slot IP:PORT
 </code></pre>
@@ -198,7 +195,7 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 
 <p>实际应用中，Redis客户端可以通过向集群请求slot 和节点的映射关系并缓存，然后通过本地计算要操作的key所属的slot，查询映射关系，直接向正确的节点发起请求，这样可以获得几乎等价于单节点部署的性能。</p>
 
-<p>集群中的数据分片之后由不同的节点提供服务，即每个主节点的数据都不相同，此种情况下，为了确保没有单点故障，主服务必须挂载至少一个从服务。</p>
+<p><strong>集群中的数据分片之后由不同的节点提供服务，即每个主节点的数据都不相同，此种情况下，为了确保没有单点故障，主服务必须挂载至少一个从服务。</strong></p>
 
 <p>客户端请求时可以向任意一个主节点或者从节点发起，当向从节点发起请求时，从节点会返回MOVED信息重定向到相应的主节点。</p>
 
@@ -212,8 +209,9 @@ a3e1647af22358f9923f05779c2f36699361e969 :6379@16379 myself,master - 0 0 0 conne
 <p>当一个主节点发生故障后，其挂载的从节点会切换为主节点继续提供服务。</p>
 
 <p>当一条命令需要操作的key分属于不同的节点时，Redis会报错。<br/>
-Redis提供了一种称为hash tags的机制，由业务方保证当需要进行多个key的处理时，将所有key分布到同一个节点。<br/>
-该机制实现原理如下：如果一个key包括{substring}这种模式，则计算slot时只计算“{”和“}”之间的子字符串。即keys{sub}1、keys{sub}2、keys{sub}3 计算slot时都会按照sub串进行。这样保证这3个字符串会分布到同一个节点。</p>
+Redis提供了一种称为hash tags的机制，由业务方保证当需要进行多个key的处理时，将所有key分布到同一个节点。</p>
+
+<p>该机制实现原理如下：如果一个key包括{substring}这种模式，则计算slot时只计算“{”和“}”之间的子字符串。即keys{sub}1、keys{sub}2、keys{sub}3 计算slot时都会按照sub串进行。这样保证这3个字符串会分布到同一个节点。</p>
 
 <p>使用 CLUSTER KEYSLOT<kegy>命令可以査看一个给定键属于哪个槽:</p>
 
@@ -245,9 +243,79 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <h3 id="toc_3">传播节点的槽指派信息</h3>
 
-<p>个节点除了会将自己负责处理的槽记录在clusternode结构的s1ots属性和numslots属性之外,它还会将自己的s1ots数组通过消息发送给集群中的其他节点,以此来告知其他节点自己目前负责处理哪些槽。</p>
+<p>节点除了会将自己负责处理的槽记录在clusternode结构的s1ots属性和numslots属性之外,它还会将自己的s1ots数组通过消息发送给集群中的其他节点,以此来告知其他节点自己目前负责处理哪些槽。</p>
 
-<h2 id="toc_4">在集群中执行命令</h2>
+<h2 id="toc_4">Redis 集群配置集群</h2>
+
+<pre><code class="language-conf">port 70000 // 监听端口
+cluster-enabled yes //是否开启集群模式
+cluster-config-file nodes7000.conf //集群中该节点的配置文件
+cluster-node-timeout 5000 //节点超时时间，超过该时间之后会认为处于故障状态
+daemonize yes
+</code></pre>
+
+<p>7000端口用来处理客户端请求，除了7000端口，Redis集群中每个节点会起一个新的端口（默认为监听端口 +10000）用来和集群中的其它节点进行通信。</p>
+
+<p>cluster-config-file 指定的配置文件需要加 可写权限</p>
+
+<p>节点通过 redis-server命令启动</p>
+
+<pre><code class="language-bash">&gt; redis-server /path/to/redis-cluster.conf
+</code></pre>
+
+<h3 id="toc_5">在redis-server中的具体代码流程如下：</h3>
+
+<pre><code class="language-text">main(){
+    ...
+    if (server.cluster_enabled) clusterInit();
+    ... 
+}
+</code></pre>
+
+<p>clusterInit函数会加载配置并且初始化一些状态指标，监听集群通信端口。</p>
+
+<ul>
+<li>1)集群通信端口建立监听后，注册回调函数 clusterAcceptHandler。当节点之间建立连接时先由该函数进行处理</li>
+<li>当节点之间建立连接后，为新建立的连接注册读事件的回调 函数clusterRead-Handler</li>
+<li>当有读事件发生时，当 clusterReadHandler 读取到一个完整的 包体后，调用clusterProcessPacket 解析具体的包体。</li>
+</ul>
+
+<h3 id="toc_6">同时Redis时间任务函数serverCron中会调度集群的周期性函数：</h3>
+
+<pre><code class="language-c">serverCron(){
+    if (server.cluster_enabled) clusterCron();
+}
+</code></pre>
+
+<p>clusterCron 函数流程如下：</p>
+
+<ul>
+<li>向其他节点发送MEET消息，将其加入集群</li>
+<li>每1s会随机选择一个节点，发送ping消息</li>
+<li>如果一个节点在超时时间之内仍未收到ping包的响应 (cluster-node-timeout配置项指定的时间)，则将其标记为pfail<br/>
+当大 多数Master节点确认B为pfail之后，就会将B标记为fail。fail状态的节 点才会需要执行主从切换。</li>
+<li>检查是否需要进行主从切换，如果需要则执行切换</li>
+<li>检查是否需要进行副本漂移，如果需要，执行副本漂移操作</li>
+</ul>
+
+<h3 id="toc_7">在serverCron函数中进行调度之外，会调用 before-Sleep 函数</h3>
+
+<pre><code class="language-text">beforeSleep(){
+    if (server.cluster_enabled) clusterBeforeSleep();
+}
+</code></pre>
+
+<ul>
+<li>检查主从切换状态，如果需要，执行主从切换相关操作</li>
+<li>更新集群状态，通过检查是否所有slot都有相应的节点提供服务以及是否大部分主服务都是可用状态，来决定集群处于正常状态还是失败状态</li>
+<li>刷新集群状态到配置文件。</li>
+</ul>
+
+<p>clusterCron和clusterBeforeSleep函数中都会进行主从 切换相关状态的判断，如果需要进行主从切换，还会进行切换相关的 操作</p>
+
+<h2 id="toc_8">Redis 主从切换</h2>
+
+<h2 id="toc_9">在集群中执行命令</h2>
 
 <p>在对数据库中的16384个槽都进行了指派之后,集群就会进人上线状态,这时客户端就可以向集群中的节点发送数据命令了。</p>
 
@@ -260,13 +328,13 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <p><figure><img src="media/15951723810785/15957684407998.jpg" alt=""/></figure></p>
 
-<h2 id="toc_5">重新分片</h2>
+<h2 id="toc_10">重新分片</h2>
 
 <p>Redis集群的重新分片操作可以将任意数量已经指派给某个节点(源节点)的槽改为指派给另一个节点(目标节点),并且相关槽所属的键值对也会从源节点被移动到目标节点。</p>
 
 <p>重新分片操作可以在线(online)进行,在重新分片的过程中,集群不需要下线,并且源节点和目标节点都可以继续处理命令请求。</p>
 
-<h3 id="toc_6">重新分片的实现原理</h3>
+<h3 id="toc_11">重新分片的实现原理</h3>
 
 <p>Redis集群的重新分片操作是由 Redis 的集群管理软件 redis-trib负责执行的, Redis提供了进行重新分片所需的所有命令,而 redis-trib则通过向源节点和目标节点发送命令来进行重新分片操作。</p>
 
@@ -317,7 +385,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <p><figure><img src="media/15951723810785/15957692235238.jpg" alt=""/></figure></p>
 
-<h3 id="toc_7">ASK错误</h3>
+<h3 id="toc_12">ASK错误</h3>
 
 <p>在进行重新分片期间，源节点向目标节点迁移一个槽的过程中，可能会出现这样一种情况：属于被迁移槽的一部分键值对保存在源节点里面，而另一部分键值对则保存在目标节点里面。</p>
 
@@ -328,7 +396,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 <li>相反地,如果源节点没能在自己的数据库里面找到指定的键,那么这个键有可能已经被迁移到了目标节点,源节点将向客户端返回一个ASK错误,指引客户端转向正在导入槽的目标节点,并再次发送之前想要执行的命令。</li>
 </ul>
 
-<h2 id="toc_8">复制与故障转移</h2>
+<h2 id="toc_13">复制与故障转移</h2>
 
 <p>Redis集群中的节点分为主节点(master)和从节点(slave),其中主节点用于处理槽,而从节点则用于复制某个主节点, 并在被复制的主节点下线时,代替下线主节点继续处理命令请求。<br/>
 例如下图所示的集群结构：</p>
@@ -340,7 +408,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <p>如果这时，节点7000进入下线状态，那么集群中仍在正常运作的几个主节点将在节点7000的两个从节点(7004、7005)中选出一个节点作为新的主节点，加入7004选为新的主节点，7005将切换为7004的从节点，这个新的主节点将接管原来节点7000负责处理的槽，并继续处理客户端发送的命令请求。如果切换之后 7000重新上线，那么它将成为节点7004的从节点。</p>
 
-<h2 id="toc_9">设置从节点</h2>
+<h2 id="toc_14">设置从节点</h2>
 
 <p>向一个节点发送命令</p>
 
@@ -357,7 +425,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 </code></pre></li>
 </ul>
 
-<h3 id="toc_10">故障检测</h3>
+<h3 id="toc_15">故障检测</h3>
 
 <p>集群中的每个节点都会定期的想集群中的其它节点发送 PING 消息，以次来检测对方是否在线，如果接收 ping 消息的节点没有在规定的时间内，想发送 ping 消息的节点返回 pong 消息，那么发送 ping 消息的节点就会将接收 ping 消息的节点标记为<strong>疑似下线（probable fail）</strong>。</p>
 
@@ -367,7 +435,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <p>如果在一个集群里面,半数以上负责处理槽的主节点都将某个主节点x报告为疑似下线那么这个主节点x将被标记为已下线(FAIL),将主节点x标记为已下线的节点会向集群广播条关于主节点x的FAIL消息,所有收到这条FAIL消息的节点都会立即将主节点x标记为已下线。</p>
 
-<h3 id="toc_11">故障转移</h3>
+<h3 id="toc_16">故障转移</h3>
 
 <p>当一个从节点发现自己正在复制的主节点进入了已下线状态时,从节点将开始对下线主节点进行故障转移,以下是故障转移的执行步骤: </p>
 
@@ -381,7 +449,7 @@ Redis提供了一种称为hash tags的机制，由业务方保证当需要进行
 
 <p>5)新的主节点开始接收和自己负责处理的槽有关的命令请求,故障转移完成。</p>
 
-<h3 id="toc_12">选举新的主节点</h3>
+<h3 id="toc_17">选举新的主节点</h3>
 
 <p>新的节点是如何通过选举产生的呢？</p>
 

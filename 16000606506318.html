@@ -191,7 +191,12 @@ EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39; AND age = 25 AND pos = 
 
 <p>不在索引列上做任何操作(计算、函数、(自动 or 手动)类型转换)，会导致索引失效而转向 全表扫描</p>
 
-<h3 id="toc_7">范围条件放最后</h3>
+<h3 id="toc_7">范围条件放最后,主要是针对索引的字段位置</h3>
+
+<p>比如 </p>
+
+<pre><code class="language-sql">select * from student where name = &#39;dali&#39; and address=&#39;ay&#39; and age &gt; 20;
+</code></pre>
 
 <h3 id="toc_8">覆盖索引尽量用</h3>
 
@@ -203,8 +208,9 @@ EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39; AND age = 25 AND pos = 
 
 <h4 id="toc_11">字段定义为 NOT NULL</h4>
 
-<p>在字段为 not null 的情况下，使用 is null 或 is not null 会导致索引失效。<br/>
-解决方式:覆盖索引<br/>
+<p>在字段为 not null 的情况下，使用 is null 或 is not null 会导致索引失效。</p>
+
+<p>解决方式:覆盖索引<br/>
 EXPLAIN select name,age,pos from staffs where name is not null</p>
 
 <h4 id="toc_12">字段自定义为 NULL 或者不定义</h4>
@@ -240,6 +246,15 @@ select * from staffs where name = &#39;z3&#39;
 
 <p>解决方式:覆盖索引<br/>
 EXPLAIN select name,age from staffs where name=&#39;July&#39; or name = &#39;z3&#39;</p>
+
+<h2 id="toc_16">顺口溜</h2>
+
+<p>全值匹配我最爱，最左前缀要遵守<br/>
+带头大哥不能死，中间小弟不能断<br/>
+索引列上少计算，范围之后全失效<br/>
+like百分写最右，覆盖索引不写*<br/>
+不等空值还有or，索引影响要注意<br/>
+varchar引号不能丢，sql优化有诀窍</p>
 
                   </article>
                   <div class="comments-wrap">

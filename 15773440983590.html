@@ -167,11 +167,11 @@
 <tbody>
 <tr>
 <td>-Xms</td>
-<td>初始堆大小</td>
+<td>初始堆大小，默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制</td>
 </tr>
 <tr>
 <td>-Xmx</td>
-<td>最大堆空间k、m为单位</td>
+<td>最大堆空间k、m为单位，默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制</td>
 </tr>
 <tr>
 <td>-Xmn</td>
@@ -269,6 +269,10 @@
 <td>串行垃圾回收，已很少使用</td>
 </tr>
 <tr>
+<td>-XX:+UseParallelGC</td>
+<td></td>
+</tr>
+<tr>
 <td>-XX:+UseParNewGC</td>
 <td>新生代使用并行，老年代使用串行</td>
 </tr>
@@ -277,8 +281,20 @@
 <td>新生代使用并行，老年代使用 CMS</td>
 </tr>
 <tr>
+<td>-XX:+UseG1GC</td>
+<td>使用G1垃圾收集器</td>
+</tr>
+<tr>
 <td>-XX:ParallelGCThreads</td>
 <td>指定并行的垃圾手机线程的数量，最好等于CPU数量</td>
+</tr>
+<tr>
+<td>-XX:+UseParallelOldGC</td>
+<td>年老代垃圾收集方式为并行收集(Parallel Compacting)</td>
+</tr>
+<tr>
+<td>-XX:GCTimeRatio</td>
+<td>设置垃圾回收时间占程序运行时间的百分比</td>
 </tr>
 <tr>
 <td>-XX:+DisableExplicitGC</td>
@@ -354,6 +370,18 @@
 <td>verbose:gc</td>
 <td>显式gc事件</td>
 </tr>
+<tr>
+<td>-XX:-TraceClassLoading</td>
+<td>跟踪类的加载</td>
+</tr>
+<tr>
+<td>-Xloggc:filename</td>
+<td>把相关日志信息记录到文件以便分析.</td>
+</tr>
+<tr>
+<td>与上面几个配合使用</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -377,9 +405,11 @@
 
 <p>jstat（JVM Statistics Monitoring Tool）是用于监视虚拟机各种运行状态信息的命令行工具。它可以显示本地或者远程虚拟机进程中的类加载、内存、垃圾收集、即时编译等运行时数据。</p>
 
-<p>jstat [ option vmid [interval[s|ms] [count]] ]</p>
+<p>jstat -<option> [-t] [-h<lines>] vmid [interval[s|ms] [count]]</p>
 
 <p>option主要分为三类：类加载、垃圾收集、运行期编译状况。<br/>
+-t 参数可以在输出信息前加上一个 timestamp 列，显示程序的运行时间<br/>
+-h 参数可以在周期性数据输出时，输出多少行数据后，跟着输出一个表头信息<br/>
 interval和count代表查询间隔和次数,例如间隔250毫秒查看运行状态10次，</p>
 
 <p><figure><img src="media/15773440983590/15975893994393.jpg" alt=""/></figure></p>
@@ -429,15 +459,16 @@ YGC YGCT FGC FGCT GCT
 
 <h2 id="toc_8">jinfo：Java配置信息工具</h2>
 
-<p>jinfo（Configuration Info for Java）的作用是实时查看和调整虚拟机各项参数。jinfo还可以使用-sysprops选项把虚拟机进程的System.getProperties()的内容打印出来</p>
+<p>jinfo（Configuration Info for Java）的作用是实时查看和调整虚拟机各项参数。jinfo 还可以使用-sysprops选项把虚拟机进程的System.getProperties()的内容打印出来</p>
 
 <p>jinfo -sysprops VID 把虚拟机进程的System.getProperties()的内容打印出来<br/>
 java -XX:+PrintFlagsFinal -version  查看所有高级参数的当前情况</p>
 
 <p>在运行期修改部分参数值（可以使用-flag[+|-]name或者-flag name=value在运行期修改一部分运行期可写的虚拟机参数值）。</p>
 
-<p>jinfo -flags PrintGC 7825 查看PrintGC 是否开启<br/>
-jinfo -flags +PrintGC 7825 开启PrintGC</p>
+<p>jinfo -flag PrintGC 7825 查看PrintGC 是否开启<br/>
+jinfo -flag +PrintGC 7825 开启PrintGC<br/>
+jinfo -flag -PrintGC 7825 关闭PrintGC</p>
 
 <h3 id="toc_9">VM 参数分类</h3>
 
@@ -573,7 +604,7 @@ PS Old Generation
 2295 interned Strings occupying 161832 bytes.
 </code></pre>
 
-<p>jmap –histo <pid><br/>
+<p>jmap –histo <pid> 显示对象统计信息<br/>
 jmap –histo:live <pid> 如果 live 子参数加上后,只统计活的对象数量</p>
 
 <p>jmap -histo 20488  按照数量排名对象<br/>
@@ -606,9 +637,21 @@ jmap -histo:live  20488 | head -10 前十行</p>
   20:           258           4128  java.lang.Integer
 </code></pre>
 
+<p>jmap -dump:format=b,file=/heap.hprof pid 导出堆快照文件</p>
+
 <h2 id="toc_16">jhat: 虚拟机对转储快照分析工具</h2>
 
 <p>JDK提供jhat（JVM Heap Analysis Tool）命令与jmap搭配使用，来分析jmap生成的堆转储快照。jhat内置了一个微型的HTTP/Web服务器，生成堆转储快照的分析结果后，可以在浏览器中查看。但是尽量不要在实际工作中使用这个命令工具，因为这个命令比较简陋，也因为分析工作一般都不会再服务器上进行，把jmap dump下来的文件转储到其它机器上可以使用更加友好的工具进行分析。</p>
+
+<p>jhat /heap.hprof 分析快照文件<br/>
+<figure><img src="media/15773440983590/16149130702351.jpg" alt="" style="width:757px;"/></figure></p>
+
+<p>在浏览器中访问 <a href="http://127.0.0.1:7000">http://127.0.0.1:7000</a> 查看分析结果</p>
+
+<p>OQL查询对象路径</p>
+
+<pre><code class="language-text">select file.path.value.toString() from java.io.File file
+</code></pre>
 
 <h2 id="toc_17">jstack：Java堆栈跟踪工具</h2>
 
@@ -665,147 +708,7 @@ jmap -histo:live  20488 | head -10 前十行</p>
 
 <pre><code class="language-shell">&gt; jstack -l 29087
 Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.121-b13 mixed mode):
-
-&quot;Attach Listener&quot; #14 daemon prio=9 os_prio=31 tid=0x00007ffc040f0000 nid=0x5a03 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;DestroyJavaVM&quot; #13 prio=5 os_prio=31 tid=0x00007ffbfe8cf800 nid=0xe03 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Thread-1&quot; #12 prio=5 os_prio=31 tid=0x00007ffbfe8cf000 nid=0xa603 waiting for monitor entry [0x000070000736b000]
-   java.lang.Thread.State: BLOCKED (on object monitor)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$1(SynchronizedObjDeadLock.java:41)
-    - waiting to lock &lt;0x000000076ac8e828&gt; (a java.lang.Object)
-    - locked &lt;0x000000076ac8e838&gt; (a java.lang.Object)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$2/1349393271.run(Unknown Source)
-    at java.lang.Thread.run(Thread.java:745)
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Thread-0&quot; #11 prio=5 os_prio=31 tid=0x00007ffbfe8ce000 nid=0x5903 waiting for monitor entry [0x0000700007268000]
-   java.lang.Thread.State: BLOCKED (on object monitor)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
-    - waiting to lock &lt;0x000000076ac8e838&gt; (a java.lang.Object)
-    - locked &lt;0x000000076ac8e828&gt; (a java.lang.Object)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
-    at java.lang.Thread.run(Thread.java:745)
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Service Thread&quot; #10 daemon prio=9 os_prio=31 tid=0x00007ffc03073000 nid=0xa803 runnable [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;C1 CompilerThread3&quot; #9 daemon prio=9 os_prio=31 tid=0x00007ffc0402b800 nid=0x5503 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;C2 CompilerThread2&quot; #8 daemon prio=9 os_prio=31 tid=0x00007ffc0402b000 nid=0x4003 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;C2 CompilerThread1&quot; #7 daemon prio=9 os_prio=31 tid=0x00007ffbfe842800 nid=0x3e03 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;C2 CompilerThread0&quot; #6 daemon prio=9 os_prio=31 tid=0x00007ffbfe841800 nid=0x4303 waiting on condition [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Monitor Ctrl-Break&quot; #5 daemon prio=5 os_prio=31 tid=0x00007ffc03074800 nid=0x3d03 runnable [0x0000700006b53000]
-   java.lang.Thread.State: RUNNABLE
-    at java.net.SocketInputStream.socketRead0(Native Method)
-    at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
-    at java.net.SocketInputStream.read(SocketInputStream.java:171)
-    at java.net.SocketInputStream.read(SocketInputStream.java:141)
-    at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
-    at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
-    at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
-    - locked &lt;0x000000076adce860&gt; (a java.io.InputStreamReader)
-    at java.io.InputStreamReader.read(InputStreamReader.java:184)
-    at java.io.BufferedReader.fill(BufferedReader.java:161)
-    at java.io.BufferedReader.readLine(BufferedReader.java:324)
-    - locked &lt;0x000000076adce860&gt; (a java.io.InputStreamReader)
-    at java.io.BufferedReader.readLine(BufferedReader.java:389)
-    at com.intellij.rt.execution.application.AppMainV2$1.run(AppMainV2.java:61)
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Signal Dispatcher&quot; #4 daemon prio=9 os_prio=31 tid=0x00007ffbfd05f000 nid=0x4503 runnable [0x0000000000000000]
-   java.lang.Thread.State: RUNNABLE
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Finalizer&quot; #3 daemon prio=8 os_prio=31 tid=0x00007ffbfd04e800 nid=0x4c03 in Object.wait() [0x0000700006847000]
-   java.lang.Thread.State: WAITING (on object monitor)
-    at java.lang.Object.wait(Native Method)
-    - waiting on &lt;0x000000076ab08ec8&gt; (a java.lang.ref.ReferenceQueue$Lock)
-    at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:143)
-    - locked &lt;0x000000076ab08ec8&gt; (a java.lang.ref.ReferenceQueue$Lock)
-    at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:164)
-    at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:209)
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;Reference Handler&quot; #2 daemon prio=10 os_prio=31 tid=0x00007ffbfd04c000 nid=0x4d03 in Object.wait() [0x0000700006744000]
-   java.lang.Thread.State: WAITING (on object monitor)
-    at java.lang.Object.wait(Native Method)
-    - waiting on &lt;0x000000076ab06b68&gt; (a java.lang.ref.Reference$Lock)
-    at java.lang.Object.wait(Object.java:502)
-    at java.lang.ref.Reference.tryHandlePending(Reference.java:191)
-    - locked &lt;0x000000076ab06b68&gt; (a java.lang.ref.Reference$Lock)
-    at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)
-
-   Locked ownable synchronizers:
-    - None
-
-&quot;VM Thread&quot; os_prio=31 tid=0x00007ffbfd049800 nid=0x3203 runnable
-
-&quot;GC task thread#0 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd816800 nid=0x1d07 runnable
-
-&quot;GC task thread#1 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd817800 nid=0x2103 runnable
-
-&quot;GC task thread#2 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd818000 nid=0x1e03 runnable
-
-&quot;GC task thread#3 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd818800 nid=0x2a03 runnable
-
-&quot;GC task thread#4 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd819000 nid=0x2b03 runnable
-
-&quot;GC task thread#5 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbff808800 nid=0x2c03 runnable
-
-&quot;GC task thread#6 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfe809000 nid=0x5203 runnable
-
-&quot;GC task thread#7 (ParallelGC)&quot; os_prio=31 tid=0x00007ffc00008800 nid=0x5103 runnable
-
-&quot;GC task thread#8 (ParallelGC)&quot; os_prio=31 tid=0x00007ffc00009000 nid=0x5003 runnable
-
-&quot;GC task thread#9 (ParallelGC)&quot; os_prio=31 tid=0x00007ffbfd00a000 nid=0x3003 runnable
-
-&quot;VM Periodic Task Thread&quot; os_prio=31 tid=0x00007ffc0404c800 nid=0x5703 waiting on condition
-
-JNI global references: 325
-
+省略好多东西.....
 
 Found one Java-level deadlock:
 =============================
@@ -834,7 +737,12 @@ Java stack information for the threads listed above:
 Found 1 deadlock.
 </code></pre>
 
-<h3 id="toc_18">jhsdb 基于服务性代理的调试工具</h3>
+<h3 id="toc_18">性能统计工具-----hprof</h3>
+
+<p>java -agentlib:hprof=help 查看hprof的帮助文档<br/>
+<figure><img src="media/15773440983590/16149136296528.jpg" alt="" style="width:2134px;"/></figure></p>
+
+<h3 id="toc_19">jhsdb 基于服务性代理的调试工具</h3>
 
 <p>JDK9及以上版本中提供了JCMD和JHSDB两个集成式的多功能工具箱，它们不仅整合了上一节介绍到的所有基础工具所能提供的专项功能，而且由于有着“后发优势”，能够做得往往比之前的老工具们更好、更强大</p>
 
@@ -843,9 +751,9 @@ Found 1 deadlock.
 <p>使用以下命令进入JHSDB的图形化模式:<br/>
 jhsdb hsdb --pid 29087</p>
 
-<h2 id="toc_19">可视化工具</h2>
+<h2 id="toc_20">可视化工具</h2>
 
-<h3 id="toc_20">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
+<h3 id="toc_21">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
 
 <p>JMX 是一个为应用程序、设备、系统等植入管理功能的框架。</p>
 
@@ -856,7 +764,7 @@ jhsdb hsdb --pid 29087</p>
 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
 </code></pre>
 
-<h3 id="toc_21">Jconsole</h3>
+<h3 id="toc_22">Jconsole</h3>
 
 <p><figure><img src="media/15773440983590/15976826355683.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976826842222.jpg" alt=""/></figure><br/>
@@ -864,7 +772,7 @@ jhsdb hsdb --pid 29087</p>
 <figure><img src="media/15773440983590/15976827131457.jpg" alt=""/></figure><br/>
 <figure><img src="media/15773440983590/15976827354222.jpg" alt=""/></figure></p>
 
-<h3 id="toc_22">visualvm</h3>
+<h3 id="toc_23">visualvm</h3>
 
 <p><figure><img src="media/15773440983590/15976829051342.jpg" alt=""/></figure></p>
 

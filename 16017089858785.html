@@ -132,7 +132,11 @@
 
 <h2 id="toc_1">CLH</h2>
 
-<p>CLH 是 Craig、Landin 和 Hagersten 三位作者的缩写，我们 JDK 中 java.util.concurrent.locks.AbstractQueuedSynchronizer 就是根据 CLH 锁的变种实现的；</p>
+<p>CLH 是 Craig、Landin 和 Hagersten 三位作者的缩写</p>
+
+<p>CLH自旋锁是一种基于隐式链表（节点里面没有next指针）的可扩展、高性能、公平的自旋锁，申请线程只在本地变量上自旋，它不断轮询前驱的状态，如果发现前驱释放了锁就结束自旋。CLH队列锁的优点是空间复杂度低（如果有n个线程，L个锁，每个线程每次只获取一个锁，那么需要的存储空间是O（L+n），n个线程有n个。myNode，L个锁有L个tail），CLH的一种变体被应用在了JAVA并发框架中。  CLH在SMP系统结构下该法是非常有效的。但在NUMA系统结构下，每个线程有自己的内存，如果前趋结点的内存位置比较远，自旋判断前趋结点的locked域，性能将大打折扣</p>
+
+<p>我们 JDK 中 java.util.concurrent.locks.AbstractQueuedSynchronizer 就是根据 CLH 锁的变种实现的</p>
 
 <pre><code class="language-java">public class CLH implements Lock {
   private final ThreadLocal&lt;Node&gt; preNode = ThreadLocal.withInitial(() -&gt; null);
@@ -167,7 +171,9 @@
 
 <h2 id="toc_2">MCS锁</h2>
 
-<p>同样 MCS 是 John M. Mellor-Crummey 和 Michael L. Scott 名字的缩写，</p>
+<p>MCS Spinlock 是 John M. Mellor-Crummey 和 Michael L. Scott 名字的缩写</p>
+
+<p>MCS Spinlock是一种基于显式链表（节点里面拥有next指针）的可扩展、高性能、公平的自旋锁，申请线程只在本地变量上自旋，由直接前驱负责通知其结束自旋（与CLH自旋锁不同的地方，不在轮询前驱的状态，而是由前驱主动通知），从而极大地减少了不必要的处理器缓存同步的次数，降低了总线和内存的开销。而MCS是在自己的结点的locked域上自旋等待。正因为如此，它解决了CLH在NUMA系统架构中获取locked域状态内存过远的问题。</p>
 
 <pre><code class="language-java">public class MCS implements Lock {
   private final ThreadLocal&lt;Node&gt; node = ThreadLocal.withInitial(Node::new);
@@ -209,7 +215,7 @@
 
 <h2 id="toc_3">CLH 锁和 MCS 锁区别</h2>
 
-<p>却别主要有两点：</p>
+<p>区别主要有两点：</p>
 
 <ul>
 <li>1、 链表结构的区别；</li>

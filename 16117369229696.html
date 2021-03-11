@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Servlet 规范 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Servlet 规范   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/01/30</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='tomcat.html'>tomcat</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>在servlet3.1中Servlet的结构如下图所示：</p>
+
+<p><figure><img src="media/16117369229696/16117370452580.jpg" alt="" style="width:537px;"/></figure></p>
+
+<h2 id="toc_0">Servlet接口</h2>
+
+<pre><code class="language-java">public interface Servlet {
+   
+    public void init(ServletConfig config) throws ServletException;
+
+    public ServletConfig getServletConfig();
+
+    public void service(ServletRequest req, ServletResponse res)
+            throws ServletException, IOException;
+
+    public String getServletInfo();
+
+    public void destroy();
+}
+</code></pre>
+
+<ul>
+<li><p>init方法在容器启动的时候被容器调用（当 load-on-startup 设置为负数或者不设置时会在 Servlet 第一次用到时才会被调用），只会调用一次；</p></li>
+<li><p>getServletConfig方法用于获取 ServletConfig</p></li>
+<li><p>service 方法用于处理一个请求</p></li>
+<li><p>getServletInfo 方法可以获取一些 Servlet 相关信息，如作者、版权等，需要自己实现，默认返回空字符串</p></li>
+<li><p>destroy 方法主要在Servlet 销毁的时候释放一些资源，也只会调用一次。</p></li>
+</ul>
+
+<p>再次说回 ServletConfig ，它是Servlet 容器启动时传入给 Servlet.init(ServletConfig config) 方法的，它指 Servlet 相关配置，我们在 web.xml 文件中配置的 init-param 标签配置的参数就是通过 ServletConfig 保存的。</p>
+
+<p>如下所示：</p>
+
+<pre><code class="language-markup">&lt;servlet&gt;   
+  &lt;servlet-name&gt;snoop&lt;/servlet-name&gt;   
+  &lt;servlet-class&gt;SnoopServlet&lt;/servlet-class&gt;   
+  &lt;init-param&gt;   
+     &lt;param-name&gt;foo&lt;/param-name&gt;   
+     &lt;param-value&gt;bar&lt;/param-value&gt;   
+  &lt;/init-param&gt;   
+&lt;/servlet&gt;  
+</code></pre>
+
+<p>在 Tomcat 中Servlet的 init 方法是通过 org.apache.catalina.core.StandardWrapper 中的 initServlet 方法调用，在init 方法调用时 传入的参数是 ServletConfig的实现类 StandardWrapperFacade，</p>
+
+<pre><code class="language-java">public interface ServletConfig {
+    // 获取Servlet的名称,就是在 web.xml 中的 servlet-name
+    public String getServletName();
+  // 获取 ServletContext 上下文，即应用本身
+    public ServletContext getServletContext();
+  // 获取 init-param 配置的参数
+    public String getInitParameter(String name);
+  // 获取 init-param 参数名称的集合
+    public Enumeration&lt;String&gt; getInitParameterNames();
+}
+</code></pre>
+
+<p>ServletConfig 是 Servlet级别的，而 ServletContext 则是应用级别的</p>
+
+<pre><code class="language-markup">&lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;classpath:jws-service-beans.xml&lt;/param-value&gt;
+&lt;/context-param&gt;
+
+&lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+&lt;/listener&gt;
+
+&lt;servlet&gt;
+    &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;init-param&gt;    
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;    
+        &lt;param-value&gt;classpath*:/springMVC.xml&lt;/param-value&gt;    
+    &lt;/init-param&gt; 
+&lt;/servlet&gt;
+
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre>
+
+<p>如上配置文件 context-param 配置参数保存到ServletContext中，而 servlet 标签中的 init-param 参数保存到 ServletConfig 中。</p>
+
+<h2 id="toc_1">GenericServlet</h2>
+
+<p>GenericServlet 是 Servlet 接口的默认实现，主要做了三件事：</p>
+
+<ul>
+<li>实现 ServletConfig 接口，可以直接使用 ServletConfig 接口中的方法</li>
+<li>提供了无参的 init 方法</li>
+<li>提供了 log 方法</li>
+</ul>
+
+<p><figure><img src="media/16117369229696/16124241035352.jpg" alt="提供的方法"/><figcaption>提供的方法</figcaption></figure></p>
+
+<pre><code class="language-java">public void init(ServletConfig config) throws ServletException {
+    this.config = config;
+    this.init();
+}
+
+public void init() throws ServletException {
+    // NOOP by default
+}
+</code></pre>
+
+<p>无参数的 init 方法为我们提供了独立的业务处理能力，而不用操心处理 Servlet相关的系统设置。</p>
+
+<h2 id="toc_2">HttpServlet</h2>
+
+<p>HttpServlet 是实现了 http 协议的 Servlet 基类，在spring 体系中的 springMvc 中的 DispatcherServlet 就是实现了 HttpServlet 基类。既然HttpServlet 是专门用来处理 Http 协议的，它重写了 Servlet 的 service 方法，在 service 方法中将 ServletRequest 和 ServletResponse 转换为 HttpServletRequest  和 HttpServletResponse，然后根据 http 请求类型不同分发到不同的处理方法。</p>
+
+<pre><code class="language-java">public abstract class HttpServlet extends GenericServlet {
+    
+    .......
+    
+    @Override
+    public void service(ServletRequest req, ServletResponse res)
+        throws ServletException, IOException {
+    
+        HttpServletRequest  request;
+        HttpServletResponse response;
+    
+        try {
+            request = (HttpServletRequest) req;
+            response = (HttpServletResponse) res;
+        } catch (ClassCastException e) {
+            throw new ServletException(&quot;non-HTTP request or response&quot;);
+        }
+        service(request, response);
+    }
+    
+    
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
+
+        String method = req.getMethod();
+
+        if (method.equals(METHOD_GET)) {
+            long lastModified = getLastModified(req);
+            if (lastModified == -1) {
+                // servlet doesn&#39;t support if-modified-since, no reason
+                // to go through further expensive logic
+                doGet(req, resp);
+            } else {
+                long ifModifiedSince;
+                try {
+                    ifModifiedSince = req.getDateHeader(HEADER_IFMODSINCE);
+                } catch (IllegalArgumentException iae) {
+                    // Invalid date header - proceed as if none was set
+                    ifModifiedSince = -1;
+                }
+                if (ifModifiedSince &lt; (lastModified / 1000 * 1000)) {
+                    // If the servlet mod time is later, call doGet()
+                    // Round down to the nearest second for a proper compare
+                    // A ifModifiedSince of -1 will always be less
+                    maybeSetLastModified(resp, lastModified);
+                    doGet(req, resp);
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                }
+            }
+
+        } else if (method.equals(METHOD_HEAD)) {
+            long lastModified = getLastModified(req);
+            maybeSetLastModified(resp, lastModified);
+            doHead(req, resp);
+
+        } else if (method.equals(METHOD_POST)) {
+            doPost(req, resp);
+
+        } else if (method.equals(METHOD_PUT)) {
+            doPut(req, resp);
+
+        } else if (method.equals(METHOD_DELETE)) {
+            doDelete(req, resp);
+
+        } else if (method.equals(METHOD_OPTIONS)) {
+            doOptions(req,resp);
+
+        } else if (method.equals(METHOD_TRACE)) {
+            doTrace(req,resp);
+
+        } else {
+            //
+            // Note that this means NO servlet supports whatever
+            // method was requested, anywhere on this server.
+            //
+
+            String errMsg = lStrings.getString(&quot;http.method_not_implemented&quot;);
+            Object[] errArgs = new Object[1];
+            errArgs[0] = method;
+            errMsg = MessageFormat.format(errMsg, errArgs);
+
+            resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
+        }
+    }
+    
+}
+</code></pre>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

@@ -278,6 +278,24 @@
 <li>
 <a href="#toc_52">Linux环境下如何查找哪个线程使用CPU最长</a>
 </li>
+<li>
+<a href="#toc_53">现在有 T1、T2、T3 三个线程，你怎样保证 T2 在 T1 执行完后执行，T3 在 T2 执行完后执行?</a>
+</li>
+<li>
+<a href="#toc_54">在 Java 中 Lock 接口比 synchronized 的优势是什么？</a>
+</li>
+<li>
+<a href="#toc_55">你需要实现一个高效的缓存，它允许多个用户读，但只允许一个用户写，以此来保持它的完整性，你会怎样去实现它?</a>
+</li>
+<li>
+<a href="#toc_56">用java 实现阻塞队列</a>
+</li>
+<li>
+<a href="#toc_57">用 java 实现 生产者消费者</a>
+</li>
+<li>
+<a href="#toc_58">什么是竞争条件?你怎样发现和解决竞争?</a>
+</li>
 </ul>
 
 
@@ -738,6 +756,23 @@
 <p>使用&quot;top -H -p pid&quot; + &quot;jps pid&quot; 可以很容易地找到某条占用CPU高的线程的线程堆栈，从而定位占用CPU高的原因，一般是因为不当的代码操作导致了死循环。</p>
 
 <p>最后提一点，&quot;top -H -p pid&quot;打出来的LWP是十进制的，&quot;jps pid&quot;打出来的本地线程号是十六进制的，转换一下，就能定位到占用CPU高的线程的当前线程堆栈了。</p>
+
+<h2 id="toc_53">现在有 T1、T2、T3 三个线程，你怎样保证 T2 在 T1 执行完后执行，T3 在 T2 执行完后执行?</h2>
+
+<p>可以用 join 方法实现或者信号量semaphore去解决</p>
+
+<h2 id="toc_54">在 Java 中 Lock 接口比 synchronized 的优势是什么？</h2>
+
+<h2 id="toc_55">你需要实现一个高效的缓存，它允许多个用户读，但只允许一个用户写，以此来保持它的完整性，你会怎样去实现它?</h2>
+
+<h2 id="toc_56">用java 实现阻塞队列</h2>
+
+<p><a href="16018869228940.html">阻塞队列</a><br/>
+<a href="15896322618729.html">线程的等待/通知机制</a></p>
+
+<h2 id="toc_57">用 java 实现 生产者消费者</h2>
+
+<h2 id="toc_58">什么是竞争条件?你怎样发现和解决竞争?</h2>
 
                   </article>
                   <div class="comments-wrap">

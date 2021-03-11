@@ -199,11 +199,11 @@ private static void setImplementation(Class&lt;? extends Log&gt; implClass) {
 <li>增强PreparedStatement的execute相关方法，当方法执行时，通过动态代理打印参数，返回动态代理能力的resultSet。</li>
 <li>如果是查询，增强PreparedStatement的getResultSet方法，返回动态代理能力的resultSet；如果是更新，直接打印受影响的行数</li>
 </ul></li>
-<li><strong>ResultSetLogger</strong> 􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴负责打印数据结果信息。</li>
+<li><strong>ResultSetLogger</strong> 负责打印数据结果信息。</li>
 <li><strong>StatementLogger</strong>  Statement日志增强代理类</li>
 </ul>
 
-<p>􏳚􏳛􏲯􏲰􏳃􏳄􏳎􏳐􏳬􏳭􏱴以上介绍的日志增强类是在什么时候，哪个地方被mybatis所调用的呢？看下面的代码：</p>
+<p>以上介绍的日志增强类是在什么时候，哪个地方被mybatis所调用的呢？看下面的代码：</p>
 
 <pre><code class="language-java">/*org.apache.ibatis.executor.SimpleExecutor#prepareStatement*/
 private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {

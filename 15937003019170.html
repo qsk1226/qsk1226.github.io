@@ -149,7 +149,7 @@
 </tr>
 <tr>
 <td>set</td>
-<td>intset、dict</td>
+<td>intset、dict、ziplist</td>
 <td>不重复的无序集合，但当底层实现是intset的时候则是有序的</td>
 <td>添加、获取、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素</td>
 </tr>
@@ -182,7 +182,7 @@
 
 <p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。</p>
 
-<p>字符串值robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
+<p>字符串值 robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
 
 <table>
 <thead>
