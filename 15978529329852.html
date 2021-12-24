@@ -114,41 +114,29 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">简介</h2>
-
+                    <h2><a id="%E7%AE%80%E4%BB%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>简介</h2>
 <p>Arthas 是 Alibaba 开源的 Java 诊断工具,在线排查问题，无需重启；动态跟踪Java代码；实时监控JVM状态。</p>
-
-<p><a href="https://alibaba.github.io/arthas/">官方文档参考</a><br/>
+<p><a href="https://alibaba.github.io/arthas/">官方文档参考</a><br />
 <a href="https://arthas.aliyun.com/doc/quick-start.html">快速入门</a></p>
-
 <p>当你遇到以下类似问题而束手无策时，Arthas可以帮助你解决：</p>
-
-<p>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？<br/>
-我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？<br/>
-遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？<br/>
-线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！<br/>
-是否有一个全局视角来查看系统的运行状况？<br/>
-有什么办法可以监控到JVM的实时运行状态？<br/>
+<p>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？<br />
+我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？<br />
+遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？<br />
+线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！<br />
+是否有一个全局视角来查看系统的运行状况？<br />
+有什么办法可以监控到JVM的实时运行状态？<br />
 怎么快速定位应用的热点，生成火焰图？</p>
-
-<h2 id="toc_1">下载和安装</h2>
-
+<h2><a id="%E4%B8%8B%E8%BD%BD%E5%92%8C%E5%AE%89%E8%A3%85" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>下载和安装</h2>
 <p>不需要安装，就是一个 jar 包</p>
-
-<pre><code class="language-text">curl -O https://alibaba.github.io/arthas/arthas-boot.jar 
+<pre><code class="language-plain_text">curl -O https://alibaba.github.io/arthas/arthas-boot.jar 
 
 java -jar arthas-boot.jar
 </code></pre>
-
 <p>启动 arthas 的 jar 包是 arthas-boot.jar</p>
-
-<p>直接 java -jar arthas-boot.jar。选择 attach 的进程绑定<br/>
-<figure><img src="media/15773440983590/15976833500370.jpg" alt=""/></figure></p>
-
-<h2 id="toc_2">arthas 命令</h2>
-
+<p>直接 java -jar arthas-boot.jar。选择 attach 的进程绑定<br />
+<figure><img src="media/15773440983590/15976833500370.jpg" alt="" /></figure></p>
+<h2><a id="arthas%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>arthas 命令</h2>
 <p>输入help查看 arthas 支持的命令</p>
-
 <pre><code class="language-shell">[arthas@29087]$ help
  NAME         DESCRIPTION
  help         Display Arthas Help
@@ -169,7 +157,7 @@ java -jar arthas-boot.jar
  ognl         Execute ognl expression.
  mc           Memory compiler, compiles java files into bytecode and class files in memory.
  redefine     Redefine classes. @see Instrumentation#redefineClasses(ClassDefinition...)
- dashboard    Overview of target jvm&#39;s thread, memory, gc, vm, tomcat info.
+ dashboard    Overview of target jvm's thread, memory, gc, vm, tomcat info.
  dump         Dump class byte array from JVM
  heapdump     Heap dump
  options      View and change various Arthas options
@@ -191,23 +179,16 @@ java -jar arthas-boot.jar
  profiler     Async Profiler. https://github.com/jvm-profiling-tools/async-profiler
  stop         Stop/Shutdown Arthas server and exit the console.
 </code></pre>
-
-<h3 id="toc_3">dashboard</h3>
-
-<p><figure><img src="media/15773440983590/15976836704891.jpg" alt="" style="width:1891px;"/></figure></p>
-
-<h3 id="toc_4">thread</h3>
-
+<h3><a id="dashboard" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>dashboard</h3>
+<p><figure><img src="media/15773440983590/15976836704891.jpg" alt="" style="width:1891px;" /></figure></p>
+<h3><a id="thread" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>thread</h3>
 <p>这个命令和 jstack 很相似，但是功能更加强大，主要是查看当前 JVM 的线程堆栈信息 同时可以结合使用 thread –b 来进行死锁的排查死锁。</p>
-
 <p>参数说明:</p>
-
-<pre><code class="language-text">-n 指定最忙的前 n 个线程并打印堆栈
+<pre><code class="language-plain_text">-n 指定最忙的前 n 个线程并打印堆栈
 -b 找出阻塞当前线程的线程
 -i 指定 cpu 占比统计的采样间隔，单位为毫秒
 </code></pre>
-
-<pre><code class="language-text">[arthas@29087]$ thread -b
+<pre><code class="language-plain_text">[arthas@29087]$ thread -b
 &quot;Thread-0&quot; Id=11 BLOCKED on java.lang.Object@602bace6 owned by &quot;Thread-1&quot; Id=12
     at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
     -  blocked on java.lang.Object@602bace6
@@ -215,30 +196,18 @@ java -jar arthas-boot.jar
     at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
     at java.lang.Thread.run(Thread.java:745)
 </code></pre>
-
 <p>thread -i 1000 -n 3 每过 1000 毫秒进行采样，显示最占 CPU 时间的前 3 个线程</p>
-
 <p>thread --state WAITING 查看处于等待状态的线程</p>
-
-<h3 id="toc_5">jvm</h3>
-
-<p>查看jvm信息<br/>
-<figure><img src="media/15773440983590/15976840064874.jpg" alt=""/></figure></p>
-
-<h3 id="toc_6">jad 反编译指定已加载类的源码</h3>
-
-<p><figure><img src="media/15773440983590/15976841522972.jpg" alt="" style="width:1293px;"/></figure></p>
-
-<h3 id="toc_7">trace</h3>
-
+<h3><a id="jvm" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm</h3>
+<p>查看jvm信息<br />
+<figure><img src="media/15773440983590/15976840064874.jpg" alt="" /></figure></p>
+<h3><a id="jad%E5%8F%8D%E7%BC%96%E8%AF%91%E6%8C%87%E5%AE%9A%E5%B7%B2%E5%8A%A0%E8%BD%BD%E7%B1%BB%E7%9A%84%E6%BA%90%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jad 反编译指定已加载类的源码</h3>
+<p><figure><img src="media/15773440983590/15976841522972.jpg" alt="" style="width:1293px;" /></figure></p>
+<h3><a id="trace" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>trace</h3>
 <p>使用 trace 命令可以跟踪统计方法耗时。</p>
-
 <p>例如：trace com.goddess.base.controller.UserController get</p>
-
-<h3 id="toc_8">monitor 方法监控</h3>
-
+<h3><a id="monitor%E6%96%B9%E6%B3%95%E7%9B%91%E6%8E%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>monitor 方法监控</h3>
 <p>监控的维度说明：</p>
-
 <table>
 <thead>
 <tr>
@@ -246,7 +215,6 @@ java -jar arthas-boot.jar
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>timestamp</td>
@@ -282,21 +250,15 @@ java -jar arthas-boot.jar
 </tr>
 </tbody>
 </table>
-
 <p>每 5 秒统计一次 com.goddess.base.controller.UserController 类的 get 方法执行情况</p>
-
-<pre><code class="language-text">&gt; monitor -c 5 com.goddess.base.controller.UserController get
+<pre><code class="language-plain_text">&gt; monitor -c 5 com.goddess.base.controller.UserController get
 timestamp            class          method        total  success  fail  avg-rt(ms)  fail-rate
 -----------------------------------------------------------------------------------------------
  2018-12-03 19:06:38  demo.MathGame  primeFactors  5      1        4     1.15        80.00%
 </code></pre>
-
-<h3 id="toc_9">watch</h3>
-
+<h3><a id="watch" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>watch</h3>
 <p>让你能方便的观察到指定方法的调用情况。能观察到的范围为：返回值、抛出异常、入参，通过编写 OGNL 表达式进行对应变量的查看。</p>
-
 <p>参数说明：</p>
-
 <ul>
 <li>class-pattern 类名表达式</li>
 <li>method-pattern 方法名表达式匹配</li>
@@ -309,18 +271,22 @@ timestamp            class          method        total  success  fail  avg-rt(m
 <li>E 开启正则表达式匹配，默认为通配符匹配</li>
 <li>[x:] 指定输出结果的属性遍历深度，默认为1</li>
 </ul>
-
 <p>特别说明：</p>
-
 <ul>
-<li><p>watch 命令定义了4个观察事件点，即 -b 方法调用前，-e 方法异常后，-s 方法返回后，-f 方法结束后</p></li>
-<li><p>4个观察事件点 -b、-e、-s 默认关闭，-f 默认打开，当指定观察点被打开后，在相应事件点会对观察表达式进行求值并输出</p></li>
-<li><p>这里要注意方法入参和方法出参的区别，有可能在中间被修改导致前后不一致，除了 -b 事件点 params 代表方法入参外，其余事件都代表方法出参</p></li>
-<li><p>当使用 -b 时，由于观察事件点是在方法调用前，此时返回值或异常均不存在</p></li>
+<li>
+<p>watch 命令定义了4个观察事件点，即 -b 方法调用前，-e 方法异常后，-s 方法返回后，-f 方法结束后</p>
+</li>
+<li>
+<p>4个观察事件点 -b、-e、-s 默认关闭，-f 默认打开，当指定观察点被打开后，在相应事件点会对观察表达式进行求值并输出</p>
+</li>
+<li>
+<p>这里要注意方法入参和方法出参的区别，有可能在中间被修改导致前后不一致，除了 -b 事件点 params 代表方法入参外，其余事件都代表方法出参</p>
+</li>
+<li>
+<p>当使用 -b 时，由于观察事件点是在方法调用前，此时返回值或异常均不存在</p>
+</li>
 </ul>
-
 <p>变量说明：</p>
-
 <table>
 <thead>
 <tr>
@@ -328,7 +294,6 @@ timestamp            class          method        total  success  fail  avg-rt(m
 <th>变量解释</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>loader</td>
@@ -372,19 +337,15 @@ timestamp            class          method        total  success  fail  avg-rt(m
 </tr>
 </tbody>
 </table>
-
 <pre><code class="language-shell"># 查看get方法的入参和出参
-&gt; watch com.goddess.base.controller.UserController get &#39;{params[0],returnObj}&#39; -x 2
+&gt; watch com.goddess.base.controller.UserController get '{params[0],returnObj}' -x 2
 
 # 按照耗时进行过滤,#cost&gt;200(单位是ms)表示只有当耗时大于200ms时才会输出，过滤掉执行时间小于200ms的调用
-&gt; watch com.goddess.base.controller.UserController get &#39;{params[0],returnObj}&#39; &#39;#cost&gt;200&#39; -x 2
+&gt; watch com.goddess.base.controller.UserController get '{params[0],returnObj}' '#cost&gt;200' -x 2
 &gt; 
 </code></pre>
-
-<h3 id="toc_10">stack 输出当前方法被调用的调用路径</h3>
-
+<h3><a id="stack%E8%BE%93%E5%87%BA%E5%BD%93%E5%89%8D%E6%96%B9%E6%B3%95%E8%A2%AB%E8%B0%83%E7%94%A8%E7%9A%84%E8%B0%83%E7%94%A8%E8%B7%AF%E5%BE%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>stack 输出当前方法被调用的调用路径</h3>
 <p>参数说明：</p>
-
 <ul>
 <li>class-pattern 类名表达式匹配</li>
 <li>method-pattern 方法名表达式匹配</li>
@@ -392,18 +353,12 @@ timestamp            class          method        total  success  fail  avg-rt(m
 <li>[n:] 执行次数限制</li>
 <li>[E] 开启正则表达式匹配，默认为通配符匹配</li>
 </ul>
-
-<p>据执行时间来过滤：<br/>
-stack demo.MathGame primeFactors &#39;#cost&gt;5&#39;</p>
-
-<h3 id="toc_11">tt</h3>
-
+<p>据执行时间来过滤：<br />
+stack demo.MathGame primeFactors '#cost&gt;5'</p>
+<h3><a id="tt" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>tt</h3>
 <p>方法执行数据的时空隧道，记录下指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测</p>
-
-<h3 id="toc_12">vmoption 查看，更新JVM 诊断相关参数</h3>
-
+<h3><a id="vmoption%E6%9F%A5%E7%9C%8B%EF%BC%8C%E6%9B%B4%E6%96%B0-jvm%E8%AF%8A%E6%96%AD%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>vmoption 查看，更新JVM 诊断相关参数</h3>
 <p>查看JVM诊断相关参数：</p>
-
 <pre><code class="language-shell">[arthas@56963]$ vmoption
  KEY                    VALUE                   ORIGIN                 WRITEABLE
 ---------------------------------------------------------------------------------------------
@@ -430,40 +385,30 @@ stack demo.MathGame primeFactors &#39;#cost&gt;5&#39;</p>
  MaxHeapFreeRatio       100                     DEFAULT                true
  PrintConcurrentLocks   false                   DEFAULT                true
 </code></pre>
-
 <p>查看指定option</p>
-
 <pre><code class="language-shell">[arthas@56963]$ vmoption PrintGCDetails
  KEY                    VALUE                   ORIGIN                 WRITEABLE
 ---------------------------------------------------------------------------------------------
  PrintGCDetails         false                   MANAGEMENT             true
 
 </code></pre>
-
 <p>更新指定option：</p>
-
 <pre><code class="language-shell">[arthas@56963]$ vmoption PrintGCDetails true
 Successfully updated the vm option.
 PrintGCDetails=true
 </code></pre>
-
-<h3 id="toc_13">sc 查看jvm已加载的类信息</h3>
-
-<p>参数说明：<br/>
-<figure><img src="media/15773440983590/15978503405145.jpg" alt=""/></figure></p>
-
-<pre><code class="language-text">#模糊搜索
+<h3><a id="sc%E6%9F%A5%E7%9C%8B-jvm%E5%B7%B2%E5%8A%A0%E8%BD%BD%E7%9A%84%E7%B1%BB%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>sc 查看jvm已加载的类信息</h3>
+<p>参数说明：<br />
+<figure><img src="media/15773440983590/15978503405145.jpg" alt="" /></figure></p>
+<pre><code class="language-plain_text">#模糊搜索
 $ sc demo.*
 demo.MathGame
 Affect(row-cnt:1) cost in 55 ms.
 
 </code></pre>
-
-<h3 id="toc_14">sm 查看已加载类的方法信息</h3>
-
-<h3 id="toc_15">classloader 查看 classloader的继承树，urls，类加载信息</h3>
-
-<h3 id="toc_16">heapdum 类似jmap命令的heap dump功能</h3>
+<h3><a id="sm%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%8A%A0%E8%BD%BD%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>sm 查看已加载类的方法信息</h3>
+<h3><a id="classloader%E6%9F%A5%E7%9C%8B-classloader%E7%9A%84%E7%BB%A7%E6%89%BF%E6%A0%91%EF%BC%8Curls%EF%BC%8C%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>classloader 查看 classloader的继承树，urls，类加载信息</h3>
+<h3><a id="heapdum%E7%B1%BB%E4%BC%BC-jmap%E5%91%BD%E4%BB%A4%E7%9A%84heap-dump%E5%8A%9F%E8%83%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>heapdum 类似jmap命令的heap dump功能</h3>
 
                   </article>
                   <div class="comments-wrap">

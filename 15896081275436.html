@@ -119,83 +119,74 @@
                 </div>
                   <article class="markdown-body single-content">
                     <ul>
-<li>
-<a href="#toc_0">适配器定义</a>
-</li>
-<li>
-<a href="#toc_1">适配器模式结构</a>
+<li><a href="#%E9%80%82%E9%85%8D%E5%99%A8%E5%AE%9A%E4%B9%89">适配器定义</a></li>
+<li><a href="#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84">适配器模式结构</a>
 <ul>
-<li>
-<a href="#toc_2">对象适配器模式</a>
-</li>
-<li>
-<a href="#toc_3">类适配器模式</a>
-</li>
-<li>
-<a href="#toc_4">优点</a>
-</li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F">对象适配器模式</a></li>
+<li><a href="#%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F">类适配器模式</a></li>
+<li><a href="#%E4%BC%98%E7%82%B9">优点</a></li>
+<li><a href="#%E7%BC%BA%E7%82%B9">缺点</a></li>
 </ul>
 </li>
-<li>
-<a href="#toc_6">代码示例</a>
-</li>
-<li>
-<a href="#toc_7">使用场景</a>
-</li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B">代码示例</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">使用场景</a></li>
 </ul>
 
-
-<h2 id="toc_0">适配器定义</h2>
-
+<h2><a id="%E9%80%82%E9%85%8D%E5%99%A8%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适配器定义</h2>
 <p>适配器模式(Adapter Pattern) ：将一个接口转换成客户希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作，其别名为包装器(Wrapper)。适配器模式既可以作为类结构型模式，也可以作为对象结构型模式。</p>
-
-<h2 id="toc_1">适配器模式结构</h2>
-
+<h2><a id="%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适配器模式结构</h2>
 <p>适配器模式角色：</p>
-
 <ul>
 <li>Target： 目标角色，客户端期待得到的接口</li>
 <li>Adaptee: 适配者角色，被适配的接口</li>
 <li>Adapter：适配器角色，将原接口转换成目标接口</li>
 </ul>
-
-<h3 id="toc_2">对象适配器模式</h3>
-
-<p><figure><img src="media/15896081275436/%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="对象适配器模式"/><figcaption>对象适配器模式</figcaption></figure></p>
-
-<h3 id="toc_3">类适配器模式</h3>
-
-<p><figure><img src="media/15896081275436/%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="类适配器模式"/><figcaption>类适配器模式</figcaption></figure></p>
-
-<h3 id="toc_4">优点</h3>
-
+<h3><a id="%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>对象适配器模式</h3>
+<p><figure><img src="media/15896081275436/%E5%AF%B9%E8%B1%A1%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="对象适配器模式" /><figcaption>对象适配器模式<figcaption></figure></p>
+<h3><a id="%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>类适配器模式</h3>
+<p><figure><img src="media/15896081275436/%E7%B1%BB%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="类适配器模式" /><figcaption>类适配器模式<figcaption></figure></p>
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
 <ul>
-<li><p>将目标类和适配者类解耦，通过引入一个适配器类来重用现有的适配者类，而无须修改原有代码。</p></li>
-<li><p>增加了类的透明性和复用性，将具体的实现封装在适配者类中，对于客户端类来说是透明的，而且提高了适配者的复用性。</p></li>
-<li><p>灵活性和扩展性都非常好，通过使用配置文件，可以很方便地更换适配器，也可以在不修改原有代码的基础上增加新的适配器类，完全符合“开闭原则”。</p></li>
-<li><p>类适配器模式还具有如下优点：<br/>
-由于适配器类是适配者类的子类，因此可以在适配器类中置换一些适配者的方法，使得适配器的灵活性更强。</p></li>
-<li><p>对象适配器模式还具有如下优点：<br/>
-一个对象适配器可以把多个不同的适配者适配到同一个目标，也就是说，同一个适配器可以把适配者类和它的子类都适配到目标接口。 </p>
-<h3 id="toc_5">缺点</h3></li>
-<li><p>类适配器模式的缺点如下：<br/>
-对于Java、C#等不支持多重继承的语言，一次最多只能适配一个适配者类，而且目标抽象类只能为抽象类，不能为具体类，其使用有一定的局限性，不能将一个适配者类和它的子类都适配到目标接口。</p></li>
-<li><p>对象适配器模式的缺点如下：<br/>
-与类适配器模式相比，要想置换适配者类的方法就不容易。如果一定要置换掉适配者类的一个或多个方法，就只好先做一个适配者类的子类，将适配者类的方法置换掉，然后再把适配者类的子类当做真正的适配者进行适配，实现过程较为复杂。 </p></li>
+<li>
+<p>将目标类和适配者类解耦，通过引入一个适配器类来重用现有的适配者类，而无须修改原有代码。</p>
+</li>
+<li>
+<p>增加了类的透明性和复用性，将具体的实现封装在适配者类中，对于客户端类来说是透明的，而且提高了适配者的复用性。</p>
+</li>
+<li>
+<p>灵活性和扩展性都非常好，通过使用配置文件，可以很方便地更换适配器，也可以在不修改原有代码的基础上增加新的适配器类，完全符合“开闭原则”。</p>
+</li>
+<li>
+<p>类适配器模式还具有如下优点：<br />
+由于适配器类是适配者类的子类，因此可以在适配器类中置换一些适配者的方法，使得适配器的灵活性更强。</p>
+</li>
+<li>
+<p>对象适配器模式还具有如下优点：<br />
+一个对象适配器可以把多个不同的适配者适配到同一个目标，也就是说，同一个适配器可以把适配者类和它的子类都适配到目标接口。</p>
+</li>
 </ul>
-
-<h2 id="toc_6">代码示例</h2>
-
+<h3><a id="%E7%BC%BA%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缺点</h3>
+<ul>
+<li>
+<p>类适配器模式的缺点如下：<br />
+对于Java、C#等不支持多重继承的语言，一次最多只能适配一个适配者类，而且目标抽象类只能为抽象类，不能为具体类，其使用有一定的局限性，不能将一个适配者类和它的子类都适配到目标接口。</p>
+</li>
+<li>
+<p>对象适配器模式的缺点如下：<br />
+与类适配器模式相比，要想置换适配者类的方法就不容易。如果一定要置换掉适配者类的一个或多个方法，就只好先做一个适配者类的子类，将适配者类的方法置换掉，然后再把适配者类的子类当做真正的适配者进行适配，实现过程较为复杂。</p>
+</li>
+</ul>
+<h2><a id="%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>代码示例</h2>
 <pre><code class="language-java">
 /**
  * 被适配接口--安卓传统方式充电接口
  */
 public interface TraditionalCharge {
 
-    /**
-     * 传统充电
-     */
-    void chargeWithTraditional();
+	/**
+	 * 传统充电
+	 */
+	void chargeWithTraditional();
 }
 
 /**
@@ -203,10 +194,10 @@ public interface TraditionalCharge {
  *
  **/
 public class TraditionalChargeImpl implements TraditionalCharge {
-    @Override
-    public void chargeWithTraditional() {
-        System.out.println(&quot;使用传统的安卓充电头进行充电&quot;);
-    }
+	@Override
+	public void chargeWithTraditional() {
+		System.out.println(&quot;使用传统的安卓充电头进行充电&quot;);
+	}
 }
 
 
@@ -214,65 +205,59 @@ public class TraditionalChargeImpl implements TraditionalCharge {
  * typeC充电接口 target
  **/
 public interface TypeCCharge {
-    /**
-     * type-C充电
-     */
-    void chargeWithTypeC();
+	/**
+	 * type-C充电
+	 */
+	void chargeWithTypeC();
 }
 
 </code></pre>
-
 <p>对象适配器</p>
-
 <pre><code class="language-java">/**
  * 对象适配器  --- adapter
  **/
 public class ChargeAdapter implements TypeCCharge {
-    /**
-     * 被适配对象
-     */
-    private TraditionalCharge traditionalCharge;
+	/**
+	 * 被适配对象
+	 */
+	private TraditionalCharge traditionalCharge;
 
-    public ChargeAdapter(TraditionalCharge traditionalCharge) {
-        this.traditionalCharge = traditionalCharge;
-    }
+	public ChargeAdapter(TraditionalCharge traditionalCharge) {
+		this.traditionalCharge = traditionalCharge;
+	}
 
-    @Override
-    public void chargeWithTypeC() {
-        System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
-        traditionalCharge.chargeWithTraditional();
-    }
+	@Override
+	public void chargeWithTypeC() {
+		System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
+		traditionalCharge.chargeWithTraditional();
+	}
 
-    public static void main(String[] args) {
-        ChargeAdapter chargeAdapter = new ChargeAdapter(new TraditionalChargeImpl());
-        chargeAdapter.chargeWithTypeC();
-    }
+	public static void main(String[] args) {
+		ChargeAdapter chargeAdapter = new ChargeAdapter(new TraditionalChargeImpl());
+		chargeAdapter.chargeWithTypeC();
+	}
 }
 </code></pre>
-
 <p>类适配器</p>
-
 <pre><code class="language-java">/**
  * 类适配器  --- adapter
  **/
 public class AndroidChargeAdapter extends TraditionalChargeImpl implements TypeCCharge{
 
-    @Override
-    public void chargeWithTypeC() {
-        System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
-        chargeWithTraditional();
-    }
+	@Override
+	public void chargeWithTypeC() {
+		System.out.println(&quot;使用Type-C 转接头适配安卓传统充电器&quot;);
+		chargeWithTraditional();
+	}
 
-    public static void main(String[] args) {
-        AndroidChargeAdapter androidChargeAdapter = new AndroidChargeAdapter();
-        androidChargeAdapter.chargeWithTypeC();
-    }
+	public static void main(String[] args) {
+		AndroidChargeAdapter androidChargeAdapter = new AndroidChargeAdapter();
+		androidChargeAdapter.chargeWithTypeC();
+	}
 }
 
 </code></pre>
-
-<h2 id="toc_7">使用场景</h2>
-
+<h2><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h2>
 <ul>
 <li>系统需要使用现有的类，而这些类的接口不符合系统的需要。</li>
 <li>想要建立一个可以重复使用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作。</li>

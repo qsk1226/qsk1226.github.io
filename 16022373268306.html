@@ -97,7 +97,7 @@
                                  <span class="date">2020/10/09</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6.html'>消息中间件</a></span>
+                                      <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
                                          
                                   
 
@@ -114,94 +114,59 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">消息的获取方式</h2>
-
-<h3 id="toc_1">拉取 Get</h3>
-
+                    <h2><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的获取方式</h2>
+<h3><a id="%E6%8B%89%E5%8F%96get" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>拉取 Get</h3>
 <p>属于一种轮询模型，发送一次 get 请求，获得一个消息。如果此时 RabbitMQ 中没有消息，会获得一个表示空的回复。总的来说，这种方式性能比较 差，很明显，每获得一条消息，都要和 RabbitMQ 进行网络通信发出请求。而且对 RabbitMQ 来说，RabbitMQ 无法进行任何优化，因为它永远不知道应用 程序何时会发出请求。对我们实现者来说，要在一个循环里，不断去服务器 get 消息。</p>
-
-<h3 id="toc_2">推送 Consume</h3>
-
+<h3><a id="%E6%8E%A8%E9%80%81consume" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>推送 Consume</h3>
 <p>属于一种推送模型。注册一个消费者后，RabbitMQ 会在消息可用时，自动将消息进行推送给消费者，这种模式我们已经使用过很多次。</p>
-
-<h3 id="toc_3">消息的应答</h3>
-
+<h3><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E5%BA%94%E7%AD%94" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的应答</h3>
 <p>消费者收到的每一条消息都必须进行确认。消息确认后，RabbitMQ 才会从队列删除这条消息，RabbitMQ 不会为未确认的消息设置超时时间，它判断此消息是否需要重新投递给消费者的唯一依据是消费该消息的消费者连接是否已经断开。这么设计的原因是 RabbitMQ 允许消费者消费一条消 息的时间可以很久很久。</p>
-
-<h3 id="toc_4">自动确认</h3>
-
-<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=true 时，一旦消费者接收到了消息，就视为自动确认了消息。如果消费者在处理消息的过程中，出了错，就没有什么办法重新处理这条消息，所以我们很多时候，需要在消息处理成功后，再确认消息，这就需要手动确认。</p>
-
-<h3 id="toc_5">手动确认</h3>
-
+<p>###自动确认<br />
+消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=true 时，一旦消费者接收到了消息，就视为自动确认了消息。如果消费者在处理消息的过程中，出了错，就没有什么办法重新处理这条消息，所以我们很多时候，需要在消息处理成功后，再确认消息，这就需要手动确认。</p>
+<h3><a id="%E6%89%8B%E5%8A%A8%E7%A1%AE%E8%AE%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>手动确认</h3>
 <p>当 autoAck=false 时，RabbitMQ 会等待消费者显式发回 ack 信号后才从内存(和磁盘，如果是持久化消息的话)中移去消息。否则，RabbitMQ 会在队列 中消息被消费后立即删除它。</p>
-
 <p>采用消息确认机制后，只要令 autoAck=false，消费者就有足够的时间处理消息(任务)，不用担心处理消息过程中消费者进程挂掉后消息丢失的问题， 因为 RabbitMQ 会一直持有消息直到消费者显式调用 basicAck 为止。</p>
-
 <p>当 autoAck=false 时，对于 RabbitMQ 服务器端而言，队列中的消息分成了两部分:一部分是等待投递给消费者的消息;一部分是已经投递给消费者， 但是还没有收到消费者 ack 信号的消息。如果服务器端一直没有收到消费者的 ack 信号，并且消费此消息的消费者已经断开连接，则服务器端会安排该消 息重新进入队列，等待投递给下一个消费者(也可能还是原来的那个消费者)</p>
-
-<h3 id="toc_6">QoS 预取模式</h3>
-
+<h3><a id="qos%E9%A2%84%E5%8F%96%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>QoS 预取模式</h3>
 <p>在确认消息被接收之前，消费者可以预先要求接收一定数量的消息，在处理完一定数量的消息后，批量进行确认。如果消费者应用程序在确认消息之前崩溃，则所有未确认的消息将被重新发送给其他消费者。所以这里存在着一定程度上的可靠性风险。</p>
-
 <p>这种机制一方面可以实现限速(将消息暂存到 RabbitMQ 内存中)的作用，一方面可以保证消息确认质量(比如确认了但是处理有异常的情况)。</p>
-
 <p><strong>注意</strong>: 消费确认模式必须是非自动 ACK 机制(这个是使用 baseQos 的前提条件，否则会 Qos 不生效)，然后设置 basicQos 的值;另外，还可以基于 consume 和 channel 的粒度进行设置(global)。</p>
-
 <p>basicQos 方法参数详细解释:</p>
-
 <ul>
 <li>prefetchSize:最多传输的内容的大小的限制，0 为不限制，但据说 prefetchSize 参数，rabbitmq 没有实现。</li>
 <li>prefetchCount:会告诉 RabbitMQ 不要同时给一个消费者推送多于 N 个消息，即一旦有 N 个消息还没有 ack，则该 consumer 将 block 掉，直到有消息 ack</li>
 <li>global:true\false 是否将上面设置应用于 channel，简单点说，就是上面限制是 channel 级别的还是 consumer 级别。</li>
 </ul>
-
-<p>如果同时设置 channel 和消费者，会怎么样?AMQP 规范没有解释如果使用不同的全局值多次调用 basic.qos 会发生什么。 RabbitMQ 将此解释为意味着两个预取限制应该彼此独立地强制执行; 消费者只有在未达到未确认消息限制时才会收到新消息。 </p>
-
-<h2 id="toc_7">消费者中的事务</h2>
-
+<p>如果同时设置 channel 和消费者，会怎么样?AMQP 规范没有解释如果使用不同的全局值多次调用 basic.qos 会发生什么。 RabbitMQ 将此解释为意味着两个预取限制应该彼此独立地强制执行; 消费者只有在未达到未确认消息限制时才会收到新消息。</p>
+<h2><a id="%E6%B6%88%E8%B4%B9%E8%80%85%E4%B8%AD%E7%9A%84%E4%BA%8B%E5%8A%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消费者中的事务</h2>
 <p>使用方法和生产者一致 假设消费者模式中使用了事务，并且在消息确认之后进行了事务回滚，会是什么样的结果? 结果分为两种情况:</p>
-
 <ul>
 <li>autoAck=false 手动应对的时候是支持事务的，也就是说即使你已经手动确认了消息已经收到了，但 RabbitMQ 对消息的确认会等事务的 返回结果，再做最终决定是确认消息还是重新放回队列，如果你手动确认之后，又回滚了事务，那么以事务回滚为准，此条消息会重新放回队列;</li>
 <li>autoAck=true 如果自动确认为 true 的情况是不支持事务的，也就是说你即使在收到消息之后在回滚事务也是于事无补的，队列已经把 消息移除了。</li>
 </ul>
-
-<h2 id="toc_8">消息的拒绝</h2>
-
-<h3 id="toc_9">Reject 和 Nack</h3>
-
+<h2><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E6%8B%92%E7%BB%9D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的拒绝</h2>
+<h3><a id="reject%E5%92%8C-nack" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reject 和 Nack</h3>
 <p>消息确认可以让 RabbitMQ 知道消费者已经接受并处理完消息。但是如果消息本身或者消息的处理过程出现问题怎么办?需要一种机制通知 RabbitMQ 这个消息我无法处理，请让别的消费者处理。</p>
-
 <p>这里就有两种机制，Reject 和 Nack。</p>
-
 <ul>
 <li>Reject 在拒绝消息时，可以使用 requeue 标识，告诉 RabbitMQ 是否需要重新发送给别的消费者。如果是 false 则不重新发送，一般这个消息就会被RabbitMQ 丢弃。Reject 一次只能拒绝一条消息。如果是 true 则消息发生了重新投递。</li>
 <li>Nack 跟 Reject 类似，只是它可以一次性拒绝多个消息。也可以使用 requeue 标识，这是 RabbitMQ 对 AMQP 规范的一个扩展。</li>
 </ul>
-
-<h2 id="toc_10">如何保证消费者消息不丢失</h2>
-
+<h2><a id="%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E6%81%AF%E4%B8%8D%E4%B8%A2%E5%A4%B1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何保证消费者消息不丢失</h2>
 <p>消费者获取到消息之后，没有来得及处理完毕，自己直接宕机了,因为消息者默认采用自动ack，此时RabbitMQ的自动ack机制会通知MQ Server这条消息已经处理好了，此时消息就丢了，并不是预期的。</p>
-
 <p>那么我们采用手动ack机制来解决这个问题，消费端处理完逻辑之后再通知MQ Server，这样消费者没处理完消息不会发送ack,如果在消费者拿到消息，没来得及处理的情况下自己挂了，此时MQ集群会自动感知到，它就会自觉的重发消息给其他的消费者服务实例。</p>
-
 <p>设置消费者手动确认机制需要</p>
-
 <ul>
 <li>消费者监听调整应答方式为 手动ack</li>
 </ul>
-
 <pre><code class="language-java">this.channel = channelManager.getListenerChannel(namespace);
 this.queue = queue;
 this.channel.basicConsume(queue, false, consumerTag, this);
 this.disconnectedCallback.setChannel(channel);
 </code></pre>
-
 <ul>
 <li>业务代码执行完成之后手动发送 ack 应答</li>
 </ul>
-
 <pre><code class="language-java">public static void ack(MessageContext context) {
     long deliveryTag = context.getEnvelope().getDeliveryTag();
     try {

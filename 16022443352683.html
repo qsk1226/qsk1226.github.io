@@ -97,7 +97,7 @@
                                  <span class="date">2020/10/09</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6.html'>消息中间件</a></span>
+                                      <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
                                          
                                   
 
@@ -115,46 +115,27 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>RabbitMQ 中消费行为主要跟队列有直接关系，那么我们接下来深入的分析队列。</p>
-
-<h2 id="toc_0">临时队列</h2>
-
+<h2><a id="%E4%B8%B4%E6%97%B6%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>临时队列</h2>
 <p>临时队列对应的是没有持久化的队列，也就是如果 RabbitMQ 服务器重启，那么这些队列就不会存在，所以我们称之为临时队列。</p>
-
-<h2 id="toc_1">自动删除队列</h2>
-
+<h2><a id="%E8%87%AA%E5%8A%A8%E5%88%A0%E9%99%A4%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>自动删除队列</h2>
 <p>自动删除队列和普通队列在使用上没有什么区别，唯一的区别是，当消费者断开连接时，队列将会被删除。</p>
-
 <p>自动删除队列允许的消费者没有限制， 也就是说当这个队列上最后一个消费者断开连接才会执行删除。</p>
-
 <p>自动删除队列只需要在声明队列时，设置属性 auto-delete 标识为 true 即可</p>
-
-<h2 id="toc_2">单消费者队列</h2>
-
+<h2><a id="%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>单消费者队列</h2>
 <p>普通队列允许的消费者没有限制，多个消费者绑定到多个队列时，RabbitMQ 会采用轮询进行投递。如果需要消费者独占队列，在队列创建的时候， 设定属性参数exclusive 为 true。</p>
-
-<h2 id="toc_3">自动过期队列</h2>
-
+<h2><a id="%E8%87%AA%E5%8A%A8%E8%BF%87%E6%9C%9F%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>自动过期队列</h2>
 <p>指队列在超过一定时间没使用，队列会从 RabbitMQ 中被删除。</p>
-
 <p>什么是没使用?</p>
-
 <ul>
 <li>一定时间内没有 Get 操作发生。</li>
 <li>没有 Consumer 连接在队列上</li>
 </ul>
-
 <p>就算一直有消息进入队列，也不算队列在被使用。 通过声明队列时，设定x-expires 参数即可，单位毫秒。</p>
-
-<h2 id="toc_4">队列的持久性</h2>
-
+<h2><a id="%E9%98%9F%E5%88%97%E7%9A%84%E6%8C%81%E4%B9%85%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>队列的持久性</h2>
 <p>持久化队列和非持久化队列的区别是，持久化队列会被保存在磁盘中，固定并持久的存储，当 RabbitMQ 服务重启后，该队列会保持原来的状态在 RabbitMQ 中被管理，而非持久化队列不会被保存在磁盘中，RabbitMQ 服务重启后队列就会消失。</p>
-
-<h2 id="toc_5">队列级别消息过期</h2>
-
+<h2><a id="%E9%98%9F%E5%88%97%E7%BA%A7%E5%88%AB%E6%B6%88%E6%81%AF%E8%BF%87%E6%9C%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>队列级别消息过期</h2>
 <p>就是为每个队列设置消息的超时时间。只要给队列设置 x-message-ttl 参数，就设定了该队列所有消息的存活时间，时间单位是毫秒。如果声明队列时指定了死信交换器，则过期消息会成为死信消息。</p>
-
-<h2 id="toc_6">队列参数列表</h2>
-
+<h2><a id="%E9%98%9F%E5%88%97%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>队列参数列表</h2>
 <table>
 <thead>
 <tr>
@@ -162,7 +143,6 @@
 <th>目的</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>x-dead-letter-exchange</td>
@@ -202,23 +182,15 @@
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_7">消息的属性</h2>
-
-<p>按照 AMQP 的协议单个最大的消息大小为 16EB(2 的 64 次方)，但是 RabbitMQ 将消息大小限定为 2GB(2的31次方)。<br/>
-<figure><img src="media/16022443352683/16022456945696.jpg" alt="" style="width:882px;"/></figure></p>
-
-<p><figure><img src="media/16022443352683/16022457151235.jpg" alt=""/></figure></p>
-
-<h3 id="toc_8">消息存活时间</h3>
-
-<p>当队列消息的 TTL 和消息 TTL 都被设置，时间短的 TTL 设置生效。<br/>
+<h2><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E5%B1%9E%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的属性</h2>
+<p>按照 AMQP 的协议单个最大的消息大小为 16EB(2 的 64 次方)，但是 RabbitMQ 将消息大小限定为 2GB(2的31次方)。<br />
+<figure><img src="media/16022443352683/16022456945696.jpg" alt="" style="width:882px;" /></figure></p>
+<p><figure><img src="media/16022443352683/16022457151235.jpg" alt="" /></figure></p>
+<h3><a id="%E6%B6%88%E6%81%AF%E5%AD%98%E6%B4%BB%E6%97%B6%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息存活时间</h3>
+<p>当队列消息的 TTL 和消息 TTL 都被设置，时间短的 TTL 设置生效。<br />
 如果将一个过期消息发送给 RabbitMQ，该消息不会路由到任何队列，而是直接丢弃。</p>
-
 <p>为消息设置 TTL 有一个问题:RabbitMQ 只对处于队头的消息判断是否过期(即不会扫描队列)，所以，很可能队列中已存在死消息，但是队列并不 知情。这会影响队列统计数据的正确性，妨碍队列及时释放资源。</p>
-
-<h3 id="toc_9">消息的持久化</h3>
-
+<h3><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的持久化</h3>
 <p>默认情况下，队列和交换器在服务器重启后都会消失，消息当然也是。将队列和交换器的 durable 属性设为 true，缺省为 false，但是消息要持久化还 不够，还需要将消息在发布前，将投递模式设置为 2。消息要持久化，必须要有持久化的队列、交换器和投递模式都为 2 。</p>
 
                   </article>

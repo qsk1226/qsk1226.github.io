@@ -114,21 +114,14 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">中的listener、 filter、servlet 加载顺序及其详解</h2>
-
+                    <h2><a id="%E4%B8%AD%E7%9A%84listener%E3%80%81-filter%E3%80%81servlet%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%E5%8F%8A%E5%85%B6%E8%AF%A6%E8%A7%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>中的listener、 filter、servlet 加载顺序及其详解</h2>
 <p>首先可以肯定的是，加载顺序与它们在 web.xml 文件中的先后顺序无关。即不会因为 filter 写在 listener 的前面而会先加载 filter。最终得出的结论是：listener -&gt; filter -&gt; servlet</p>
-
 <p>同时还存在着这样一种配置节：context-param，它用于向 ServletContext 提供键值对，即应用程序上下文信息。我们的 listener, filter 等在初始化时会用到这些上下文中的信息，那么 context-param 配置节是不是应该写在 listener 配置节前呢？实际上 context-param 配置节可写在任意位置，因此真正的加载顺序为：context-param -&gt; listener -&gt; filter -&gt; servlet</p>
-
 <p>对于某类配置节而言，与它们出现的顺序是有关的。以 filter 为例，web.xml 中当然可以定义多个 filter，与 filter 相关的一个配置节是 filter-mapping，这里一定要注意，对于拥有相同 filter-name 的 filter 和 filter-mapping 配置节而言，filter-mapping 必须出现在 filter 之后，否则当解析到 filter-mapping 时，它所对应的 filter-name 还未定义。web 容器启动时初化每个 filter 时，是按照 filter 配置节出现的顺序来初始化的，当请求资源匹配多个 filter-mapping 时，filter 拦截资源是按照 filter-mapping 配置节出现的顺序来依次调用 doFilter() 方法的。</p>
-
 <p>servlet 同 filter 类似，此处不再赘述。</p>
-
 <p>由此，可以看出，web.xml 的加载顺序是：context-param -&gt; listener -&gt; filter -&gt; servlet ，而同个类型之间的实际程序调用的时候的顺序是根据对应的 mapping 的顺序进行调用的。</p>
-
-<h2 id="toc_1">web.xml 蛛丝马迹</h2>
-
-<pre><code class="language-markup">&lt;web-app&gt;   
+<h2><a id="web-xml%E8%9B%9B%E4%B8%9D%E9%A9%AC%E8%BF%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>web.xml 蛛丝马迹</h2>
+<pre><code class="language-xml">&lt;web-app&gt;   
     &lt;display-name&gt;&lt;/display-name&gt;定义了WEB应用的名字   
     &lt;description&gt;&lt;/description&gt; 声明WEB应用的描述信息   
       
@@ -160,8 +153,7 @@
     &lt;ejb-local-ref&gt;&lt;/ ejb-local-ref&gt;声明一个EJB的本地主目录的应用。   
 &lt;/web-app&gt;   
 </code></pre>
-
-<pre><code class="language-markup">1、Web应用图标：指出IDE和GUI工具用来表示Web应用的大图标和小图标   
+<pre><code class="language-xml">1、Web应用图标：指出IDE和GUI工具用来表示Web应用的大图标和小图标   
 &lt;icon&gt;   
     &lt;small-icon&gt;/images/app_small.gif&lt;/small-icon&gt;   
     &lt;large-icon&gt;/images/app_large.gif&lt;/large-icon&gt;   

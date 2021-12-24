@@ -116,19 +116,14 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">容器生命周期管理</h2>
-
+                    <h2><a id="%E5%AE%B9%E5%99%A8%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>容器生命周期管理</h2>
 <ul>
 <li>run  创建一个新的容器并运行一个命令</li>
 </ul>
-
-<p>eg: docker run -d --name nginx -p 80:80 -v /docker/nginx:/etc/nginx/conf.d nginx:latest </p>
-
+<p>eg: docker run -d --name nginx -p 80:80 -v /docker/nginx:/etc/nginx/conf.d nginx:latest</p>
 <p>说明： 使用镜像nginx:latest以后台模式启动一个容器,将容器的80端口映射到主机的80端口,主机的目录/docker/nginx/conf.d 映射到容器的 /etc/nginx/conf.d</p>
-
 <p>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</p>
-
-<pre><code class="language-text">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；
+<pre><code class="language-plain_text">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；
 -d: 后台运行容器，并返回容器ID；
 -i: 以交互模式运行容器，通常与 -t 同时使用；
 -P: 随机端口映射，容器内部端口随机映射到主机的高端口
@@ -147,59 +142,59 @@
 --expose=[]: 开放一个端口或一组端口；
 --volume , -v: 绑定一个卷
 </code></pre>
-
-<p>注意： 关于容器的输出以及配置的文件一定要挂载到宿主机上<br/>
-配置文件<br/>
-日志文件<br/>
+<p>注意： 关于容器的输出以及配置的文件一定要挂载到宿主机上<br />
+配置文件<br />
+日志文件<br />
 业务数据</p>
-
-<p>数据卷容器：<br/>
-创建数据卷容器 data<br/>
+<p>数据卷容器：<br />
+创建数据卷容器 data<br />
 docker run -d --name data -v /home/godson/docker/nginx/conf.d:/etc/nginx/conf.d -v /home/godson/docker/mysql/conf:/etc/mysql hello-world</p>
-
-<p>创建容器挂载到 data 容器数据卷上 (volumes-from参数)<br/>
+<p>创建容器挂载到 data 容器数据卷上 (volumes-from参数)<br />
 docker run -d --name nginx -p 80:80 --volumes-from data nginx</p>
-
 <ul>
 <li>start/stop/restart</li>
 </ul>
-
-<pre><code class="language-text">start： 启动一个或多个已被停止的容器
+<pre><code class="language-plain_text">start： 启动一个或多个已被停止的容器
 stop： 停止一个或多个运行中的容器
 restart: 重启一个或多个容器
 </code></pre>
-
 <ul>
-<li><p>kill 杀掉一个运行中的容器</p></li>
-<li><p>rm 删除一个或多个容器</p></li>
+<li>
+<p>kill 杀掉一个运行中的容器</p>
+</li>
+<li>
+<p>rm 删除一个或多个容器</p>
+</li>
 </ul>
-
-<pre><code class="language-text">-f :通过SIGKILL信号强制删除一个运行中的容器
+<pre><code class="language-plain_text">-f :通过SIGKILL信号强制删除一个运行中的容器
 -l :移除容器间的网络连接，而非容器本身
 -v :-v 删除与容器关联的卷
 </code></pre>
-
 <ul>
-<li><p>docker rm -fv 删除容器服务</p></li>
-<li><p>pause/unpause  暂停/恢复 容器中的所有进程</p></li>
-<li><p>create 创建一个新容器，但是不启动它<br/>
-语法同 run</p></li>
-<li><p>exec</p></li>
+<li>
+<p>docker rm -fv 删除容器服务</p>
+</li>
+<li>
+<p>pause/unpause  暂停/恢复 容器中的所有进程</p>
+</li>
+<li>
+<p>create 创建一个新容器，但是不启动它<br />
+语法同 run</p>
+</li>
+<li>
+<p>exec</p>
+</li>
 </ul>
-
-<pre><code class="language-text">&gt; docker exec -it nginx /bin/bash
+<pre><code class="language-plain_text">&gt; docker exec -it nginx /bin/bash
 -d :分离模式: 在后台运行
 -i :即使没有附加也保持STDIN 打开
 -t :分配一个伪终端
 </code></pre>
-
-<h2 id="toc_1">容器操作</h2>
-
+<h2><a id="%E5%AE%B9%E5%99%A8%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>容器操作</h2>
 <ul>
 <li>ps  列出容器</li>
 </ul>
-
-<pre><code class="language-text">-a :显示所有的容器，包括未运行的。
+<pre><code class="language-plain_text">-a :显示所有的容器，包括未运行的。
 -f :根据条件过滤显示的内容。
 --format :指定返回值的模板文件。
 -l :显示最近创建的容器。
@@ -208,92 +203,75 @@ restart: 重启一个或多个容器
 -q :静默模式，只显示容器编号。
 -s :显示总的文件大小。
 </code></pre>
-
 <ul>
-<li>inspect 获取容器/镜像的元数据。<br/>
-docker inspect -f &#39;{{.NetworkSettings.IPAddress}}&#39; nginx</li>
+<li>inspect 获取容器/镜像的元数据。<br />
+docker inspect -f '{{.NetworkSettings.IPAddress}}' nginx</li>
 </ul>
-
-<pre><code class="language-text">-f :指定返回值的模板文件。
+<pre><code class="language-plain_text">-f :指定返回值的模板文件。
 -s :显示总的文件大小。
 --type :为指定类型返回JSON。
 </code></pre>
-
 <ul>
 <li>top</li>
 <li>attach</li>
 <li>events</li>
 <li>logs</li>
 </ul>
-
-<pre><code class="language-text">-f : 跟踪日志输出
+<pre><code class="language-plain_text">-f : 跟踪日志输出
 --since :显示某个开始时间的所有日志
 -t : 显示时间戳
 --tail :仅列出最新N条容器日志
 </code></pre>
-
 <ul>
 <li>wait</li>
 <li>export</li>
 <li>port  列出指定的容器的端口映射，或者查找将PRIVATE_PORT NAT到面向公众的端口。</li>
 </ul>
-
-<pre><code class="language-text">&gt; docker port nginx
+<pre><code class="language-plain_text">&gt; docker port nginx
 80/tcp -&gt; 0.0.0.0:8080
 </code></pre>
-
-<h2 id="toc_2">容器rootfs命令</h2>
-
+<p>##容器rootfs命令</p>
 <ul>
-<li>commit  从容器创建一个新的镜像。<br/>
-docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]<br/>
+<li>commit  从容器创建一个新的镜像。<br />
+docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]<br />
 docker commit -a &quot;作者&quot; -m &quot;描述&quot; nginx  mynginx:v1</li>
-<li>cp<br/>
-容器和宿主机的文件传输 nginx:表示了容器目录<br/>
+<li>cp<br />
+容器和宿主机的文件传输 nginx:表示了容器目录<br />
 docker cp nginx:/etc/nginx/conf.ddefault.conf ./</li>
 <li>diff</li>
 </ul>
-
-<h2 id="toc_3">镜像仓库</h2>
-
+<p>##镜像仓库</p>
 <ul>
 <li>login</li>
 <li>pull</li>
 <li>push</li>
 <li>search</li>
 </ul>
-
-<h2 id="toc_4">本地镜像管理</h2>
-
+<h2><a id="%E6%9C%AC%E5%9C%B0%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>本地镜像管理</h2>
 <ul>
 <li>images  列出本地镜像。</li>
 </ul>
-
-<pre><code class="language-text">-a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
+<pre><code class="language-plain_text">-a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
 --digests :显示镜像的摘要信息；
 -f :显示满足条件的镜像；
 --format :指定返回值的模板文件；
 --no-trunc :显示完整的镜像信息；
 -q :只显示镜像ID。
 </code></pre>
-
 <ul>
 <li>rmi</li>
 <li>tag  标记本地镜像，将其归入某一仓库。</li>
 </ul>
-
-<pre><code class="language-text">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+<pre><code class="language-plain_text">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]
 
 将镜像ubuntu:15.10标记为 w3cschool/ubuntu:v3 镜像
 
 docker tag nginx w3cschool/ubuntu:v3
 </code></pre>
-
 <ul>
 <li>build   使用Dockerfile创建镜像。</li>
 </ul>
-
-<pre><code class="language-text">&gt; docker build -t w3cschool/ubuntu:v1 ./
+<pre><code class="language-plain_text">&gt; docker build -t w3cschool/ubuntu:v1 ./
 &gt; docker build -f /home/user/Dockerfile ./
 
 --build-arg=[] :设置镜像创建时的变量；
@@ -318,25 +296,18 @@ docker tag nginx w3cschool/ubuntu:v3
 --tag, -t: 镜像的名字及标签，通常 name:tag 或者 name 格式；可以在一次构建中为一个镜像设置多个标签。
 --network: 默认 default。在构建期间设置RUN指令的网络模式
 </code></pre>
-
-<p>history<br/>
-save<br/>
+<p>history<br />
+save<br />
 import</p>
-
-<h2 id="toc_5">info|version</h2>
-
-<p>info<br/>
+<h2><a id="info-version" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>info|version</h2>
+<p>info<br />
 version</p>
-
-<p>获取 selinux 是否关闭<br/>
-getenforce<br/>
-暂时关闭<br/>
+<p>获取 selinux 是否关闭<br />
+getenforce<br />
+暂时关闭<br />
 setenforce 1</p>
-
 <p>vi /etc/sysconfig/selinux</p>
-
-<p><figure><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;"/></figure></p>
-
+<p><figure><img src="media/15855064473314/15855732599905.jpg" alt="" style="width:620px;" /></figure></p>
 <p>SELINUX=disable</p>
 
                   </article>

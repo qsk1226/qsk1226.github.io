@@ -116,123 +116,83 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">FROM 指定基础镜像</h2>
-
-<h2 id="toc_1">RUN</h2>
-
+                    <h2><a id="from%E6%8C%87%E5%AE%9A%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>FROM 指定基础镜像</h2>
+<h2><a id="run" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RUN</h2>
 <ul>
-<li><p>shell 格式：<br/>
-RUN &lt;命令行命令&gt;<br/>
-&lt;命令行命令&gt; 等同于，在终端操作的 shell 命令。</p></li>
-<li><p>exec 格式： RUN [&quot;可执行文件&quot;, &quot;参数1&quot;, &quot;参数2&quot;]<br/>
-例如： RUN [&quot;./test.php&quot;, &quot;dev&quot;, &quot;offline&quot;] 等价于 RUN ./test.php dev offline</p></li>
+<li>
+<p>shell 格式：<br />
+RUN &lt;命令行命令&gt;<br />
+&lt;命令行命令&gt; 等同于，在终端操作的 shell 命令。</p>
+</li>
+<li>
+<p>exec 格式： RUN [&quot;可执行文件&quot;, &quot;参数1&quot;, &quot;参数2&quot;]<br />
+例如： RUN [&quot;./test.php&quot;, &quot;dev&quot;, &quot;offline&quot;] 等价于 RUN ./test.php dev offline</p>
+</li>
 </ul>
-
-<h2 id="toc_2">CMD 执行命令</h2>
-
+<h2><a id="cmd%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CMD 执行命令</h2>
 <p>类似于 RUN 指令，用于运行程序，但二者运行的时间点不同:</p>
-
 <ul>
 <li>CMD 在docker run 时运行。</li>
-<li>RUN 是在 docker build。<br/>
+<li>RUN 是在 docker build。<br />
 作用：为启动的容器指定默认要运行的程序，程序运行结束，容器也就结束。CMD 指令指定的程序可被 docker run 命令行参数中指定要运行的程序所覆盖。</li>
 </ul>
-
 <p>注意：如果 Dockerfile 中如果存在多个 CMD 指令，仅最后一个生效。</p>
-
 <p>格式：</p>
-
-<pre><code class="language-text">CMD &lt;shell 命令&gt; 
+<pre><code class="language-plain_text">CMD &lt;shell 命令&gt; 
 CMD [&quot;&lt;可执行文件或命令&gt;&quot;,&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...] 
 CMD [&quot;&lt;param1&gt;&quot;,&quot;&lt;param2&gt;&quot;,...]  # 该写法是为 ENTRYPOINT 指令指定的程序提供
 默认参数
 </code></pre>
-
 <p>推荐使用第二种格式，执行过程比较明确。第一种格式实际上在运行的过程中也会自动转换成第二种格式运行，并且默认可执行文件是 sh</p>
-
-<h2 id="toc_3">ADD 复制指定的文件到容器中（压缩包会自动解压）</h2>
-
-<h2 id="toc_4">COPY 复制</h2>
-
-<p>复制指令，同 ADD 从上下文目录中复制文件或者目录到容器里指定路径。<br/>
+<h2><a id="add%E5%A4%8D%E5%88%B6%E6%8C%87%E5%AE%9A%E7%9A%84%E6%96%87%E4%BB%B6%E5%88%B0%E5%AE%B9%E5%99%A8%E4%B8%AD%EF%BC%88%E5%8E%8B%E7%BC%A9%E5%8C%85%E4%BC%9A%E8%87%AA%E5%8A%A8%E8%A7%A3%E5%8E%8B%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ADD 复制指定的文件到容器中（压缩包会自动解压）</h2>
+<h2><a id="copy%E5%A4%8D%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>COPY 复制</h2>
+<p>复制指令，同 ADD 从上下文目录中复制文件或者目录到容器里指定路径。<br />
 格式：</p>
-
-<pre><code class="language-text">COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;
+<pre><code class="language-plain_text">COPY [--chown=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;
 COPY [--chown=&lt;user&gt;:&lt;group&gt;] [&quot;&lt;源路径1&gt;&quot;,...  &quot;&lt;目标路径&gt;&quot;]
 </code></pre>
-
 <p>[--chown=<user>:<group>]：可选参数，用户改变复制到容器内文件的拥有者和属组。</p>
-
 <p>&lt;源路径&gt;：源文件或者源目录，这里可以是通配符表达式，其通配符规则要满足 Go 的 filepath.Match 规则。例如：</p>
-
-<pre><code class="language-text">COPY hom* /mydir/
+<pre><code class="language-plain_text">COPY hom* /mydir/
 COPY hom?.txt /mydir/
 </code></pre>
-
-<h2 id="toc_5">WORKDIR 指定工作空间</h2>
-
+<h2><a id="workdir%E6%8C%87%E5%AE%9A%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>WORKDIR 指定工作空间</h2>
 <p>指定工作目录。用 WORKDIR 指定的工作目录，会在构建镜像的每一层中都存在。（WORKDIR 指定的工作目录，必须是提前创建好的）。</p>
-
 <p>docker build 构建镜像过程中的，每一个 RUN 命令都是新建的一层。只有通过 WORKDIR 创建的目录才会一直存在。</p>
-
-<h2 id="toc_6">VOLUME 为容器创建一个本地主机或其他容器的挂载点</h2>
-
-<h2 id="toc_7">EXPOSE 容器需要暴露的端口</h2>
-
-<h2 id="toc_8">USER 指定运行容器时的用户名，后续的 RUN 也会指定该用户</h2>
-
-<h2 id="toc_9">ENTRYPOINT</h2>
-
+<h2><a id="volume%E4%B8%BA%E5%AE%B9%E5%99%A8%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0%E4%B8%BB%E6%9C%BA%E6%88%96%E5%85%B6%E4%BB%96%E5%AE%B9%E5%99%A8%E7%9A%84%E6%8C%82%E8%BD%BD%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>VOLUME 为容器创建一个本地主机或其他容器的挂载点</h2>
+<h2><a id="expose%E5%AE%B9%E5%99%A8%E9%9C%80%E8%A6%81%E6%9A%B4%E9%9C%B2%E7%9A%84%E7%AB%AF%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>EXPOSE 容器需要暴露的端口</h2>
+<h2><a id="user%E6%8C%87%E5%AE%9A%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8%E6%97%B6%E7%9A%84%E7%94%A8%E6%88%B7%E5%90%8D%EF%BC%8C%E5%90%8E%E7%BB%AD%E7%9A%84-run%E4%B9%9F%E4%BC%9A%E6%8C%87%E5%AE%9A%E8%AF%A5%E7%94%A8%E6%88%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>USER 指定运行容器时的用户名，后续的 RUN 也会指定该用户</h2>
+<h2><a id="entrypoint" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ENTRYPOINT</h2>
 <p>类似于 CMD 指令，但其不会被 docker run 的命令行参数指定的指令所覆盖，而且这些命令行参数会被当作参数送给 ENTRYPOINT 指令指定的程序。</p>
-
 <p>但是, 如果运行 docker run 时使用了 --entrypoint 选项，此选项的参数可当作要运行的程序覆盖 ENTRYPOINT 指令指定的程序。</p>
-
 <p>优点：在执行 docker run 的时候可以指定 ENTRYPOINT 运行所需的参数。</p>
-
 <p>注意：如果 Dockerfile 中如果存在多个 ENTRYPOINT 指令，仅最后一个生效。</p>
-
 <p>格式：</p>
-
-<p>ENTRYPOINT [&quot;<executeable>&quot;,&quot;<param1>&quot;,&quot;<param2>&quot;,...]<br/>
+<p>ENTRYPOINT [&quot;<executeable>&quot;,&quot;<param1>&quot;,&quot;<param2>&quot;,...]<br />
 可以搭配 CMD 命令使用：一般是变参才会使用 CMD ，这里的 CMD 等于是在给 ENTRYPOINT 传参，以下示例会提到。</p>
-
 <p>示例：</p>
-
 <p>假设已通过 Dockerfile 构建了 nginx:test 镜像：</p>
-
 <p>FROM nginx</p>
-
-<p>ENTRYPOINT [&quot;nginx&quot;, &quot;-c&quot;] # 定参<br/>
-CMD [&quot;/etc/nginx/nginx.conf&quot;] # 变参 <br/>
+<p>ENTRYPOINT [&quot;nginx&quot;, &quot;-c&quot;] # 定参<br />
+CMD [&quot;/etc/nginx/nginx.conf&quot;] # 变参<br />
 1、不传参运行</p>
-
-<p>$ docker run  nginx:test<br/>
+<p>$ docker run  nginx:test<br />
 容器内会默认运行以下命令，启动主进程。</p>
-
-<p>nginx -c /etc/nginx/nginx.conf<br/>
+<p>nginx -c /etc/nginx/nginx.conf<br />
 2、传参运行</p>
-
-<p>$ docker run  nginx:test -c /etc/nginx/new.conf<br/>
+<p>$ docker run  nginx:test -c /etc/nginx/new.conf<br />
 容器内会默认运行以下命令，启动主进程(/etc/nginx/new.conf:假设容器内已有此文件)</p>
-
 <p>nginx -c /etc/nginx/new.conf</p>
-
-<h2 id="toc_10">ENV 环境变量</h2>
-
+<h2><a id="env%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ENV 环境变量</h2>
 <p>设置环境变量，定义了环境变量，那么在后续的指令中，就可以使用这个环境变量。</p>
-
 <p>格式：</p>
-
-<p>ENV <key> <value><br/>
-ENV <key1>=<value1> <key2>=<value2>...<br/>
+<p>ENV <key> <value><br />
+ENV <key1>=<value1> <key2>=<value2>...<br />
 以下示例设置 NODE_VERSION = 7.2.0 ， 在后续的指令中可以通过 $NODE_VERSION 引用：</p>
-
 <p>ENV NODE_VERSION 7.2.0</p>
-
-<p>RUN curl -SLO &quot;<a href="https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz">https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz</a>&quot; \<br/>
-  &amp;&amp; curl -SLO &quot;<a href="https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc">https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc</a>&quot;</p>
-
-<h2 id="toc_11">MAINTAINER 维护者信息</h2>
+<p>RUN curl -SLO &quot;<a href="https://nodejs.org/dist/v%60%60NODE_VERSION/node-v%60%60NODE_VERSION-linux-x64.tar.xz">https://nodejs.org/dist/v``NODE_VERSION/node-v``NODE_VERSION-linux-x64.tar.xz</a>&quot; <br />
+&amp;&amp; curl -SLO &quot;<a href="https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc">https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc</a>&quot;</p>
+<h2><a id="maintainer%E7%BB%B4%E6%8A%A4%E8%80%85%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MAINTAINER 维护者信息</h2>
 
                   </article>
                   <div class="comments-wrap">
@@ -262,6 +222,9 @@ ENV <key1>=<value1> <key2>=<value2>...<br/>
       </footer>
 
 
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
 
   
 

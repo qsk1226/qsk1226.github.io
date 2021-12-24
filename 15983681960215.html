@@ -115,31 +115,23 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>top命令是常用的性能分析工具，被广泛用于监视服务器的负载，能够实时显示系统中各个进程的资源占用情况。</p>
-
-<p>前言<br/>
+<p>前言<br />
 开发环境使用Mac后，经常使用 活动监视器 查看所有进程CPU、内存等。top命令的快捷键在Mac下的快捷键不生效。一直这样用下来，感觉不是很顺手。整理记录。</p>
-
-<h2 id="toc_0">1、linux top</h2>
-
-<pre><code class="language-text">P 键 按照cpu使用率排序
+<h2><a id="1%E3%80%81linux-top" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、linux top</h2>
+<pre><code class="language-plain_text">P 键 按照cpu使用率排序
 M 键 按照内存使用率排序
 l 键 切换显示平均负载和启动时间信息
 m 键 切换显示内存信息
 t 键 切换显示进程和cpu状态信息
 c 键 切换显示命令名称和完成命令行信息
 </code></pre>
-
-<pre><code class="language-text">top - 11:15:45 up 14 min,  1 user,  load average: 0.74, 0.58, 0.31
+<pre><code class="language-plain_text">top - 11:15:45 up 14 min,  1 user,  load average: 0.74, 0.58, 0.31
 Tasks: 143 total,   1 running, 142 sleeping,   0 stopped,   0 zombie
 %Cpu(s):  2.4 us,  2.2 sy,  0.0 ni, 95.3 id,  0.0 wa,  0.0 hi,  0.2 si,  0.0 st
 </code></pre>
-
-<h2 id="toc_1">2、Mac top</h2>
-
+<h2><a id="2%E3%80%81mac-top" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2、Mac top</h2>
 <p>先输入 o 键 ,再输入 cpu 则按cpu使用量排序，输入 rsize 按内存使用量排序。</p>
-
-<h2 id="toc_2">3、 字符含义</h2>
-
+<h2><a id="3%E3%80%81%E5%AD%97%E7%AC%A6%E5%90%AB%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3、 字符含义</h2>
 <pre><code class="language-shell"># 代表人物的队列信息，结果等同于uptime命令
 top - 11:25:56 up 25 min,  1 user,  load average: 0.22, 0.36, 0.31
 # 进程数、睡眠进程数、停止的进程数、僵尸进程数
@@ -161,9 +153,7 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
   2188 root      20   0  107688   6524   2700 S   0.3  0.4   0:00.04 containerd-shim -namespace moby -workdir /var/lib/containerd/io.containerd.runtime.v1.linux/moby/4cbd4244ccf55f156b620e442678e20a85fc2f28c4edb5e7f517c3539b5fdea1 -address /run/containerd/containerd.+
   
 </code></pre>
-
 <p>l 键 切换显示平均负载和启动时间信息:</p>
-
 <table>
 <thead>
 <tr>
@@ -173,7 +163,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>load average: 0.17, 0.23, 0.15</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>当前系统时间</td>
@@ -183,7 +172,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <table>
 <thead>
 <tr>
@@ -195,7 +183,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>0 zombie</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-</td>
@@ -207,9 +194,7 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <p>t键，cpu信息：</p>
-
 <table>
 <thead>
 <tr>
@@ -224,7 +209,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>0.0 st</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-</td>
@@ -239,9 +223,7 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <p>m键 内存信息：</p>
-
 <table>
 <thead>
 <tr>
@@ -252,7 +234,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>4514724 buff/cache</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-</td>
@@ -263,9 +244,7 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <p>交换区信息：</p>
-
 <table>
 <thead>
 <tr>
@@ -276,7 +255,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>4678020 avail Mem</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-</td>
@@ -287,7 +265,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <table>
 <thead>
 <tr>
@@ -305,7 +282,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 <th>COMMAND</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>进程号</td>
@@ -323,7 +299,6 @@ KiB Swap:        0 total,        0 free,        0 used.   767876 avail Mem
 </tr>
 </tbody>
 </table>
-
 <ul>
 <li>NI nice值。越小优先级越高，最小-20，最大20（用户设置最大19）</li>
 <li>VIRT 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES</li>

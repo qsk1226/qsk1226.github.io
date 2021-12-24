@@ -114,12 +114,9 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>使框架去除 web.xml 实现 servlet 容器的初始化 </p>
-
-<h2 id="toc_0">SpringServletContainerInitializer</h2>
-
+                    <p>使框架去除 web.xml 实现 servlet 容器的初始化</p>
+<h2><a id="springservletcontainerinitializer" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SpringServletContainerInitializer</h2>
 <p>SpringServletContainerInitializer 继承自 Servlet3.0 包中的 ServletContainerInitializer 类，它借助 JAVA 中 SPI 思想进行调用，已达到去 web.xml 配置文件的容器初始化。</p>
-
 <pre><code class="language-java">@HandlesTypes(WebApplicationInitializer.class)
 public class SpringServletContainerInitializer implements ServletContainerInitializer {
 
@@ -130,24 +127,18 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
         ....
         
         for (WebApplicationInitializer initializer : initializers) {
-            initializer.onStartup(servletContext);
-        }
+			initializer.onStartup(servletContext);
+		}
         
     }
 }
 </code></pre>
-
-<h2 id="toc_1">HandlesTypes 注解</h2>
-
+<h2><a id="handlestypes%E6%B3%A8%E8%A7%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HandlesTypes 注解</h2>
 <p>通过上面的代码 SpringServletContainerInitializer 被 @HandlesTypes 标注，这行的作用是将 WebApplicationInitializer 的实现类作为参数传递给 ServletContainerInitializer 的 onStartup 方法。</p>
-
-<h2 id="toc_2">WebApplicationInitializer 接口</h2>
-
+<h2><a id="webapplicationinitializer%E6%8E%A5%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>WebApplicationInitializer 接口</h2>
 <p>WebApplicationInitializer 接口方便了以编程的方式配置 ServletContext</p>
-
 <p>例如下面的这段配置</p>
-
-<pre><code class="language-markup">&lt;servlet&gt;
+<pre><code class="language-xml">&lt;servlet&gt;
  &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
  &lt;servlet-class&gt;
    org.springframework.web.servlet.DispatcherServlet
@@ -164,9 +155,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
  &lt;url-pattern&gt;/&lt;/url-pattern&gt;
 &lt;/servlet-mapping&gt;
 </code></pre>
-
 <p>将其通过代码实现的话如下所示：</p>
-
 <pre><code class="language-java">public class MyWebAppInitializer implements WebApplicationInitializer {
   
   @Override
@@ -182,14 +171,12 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
   
 }
 </code></pre>
-
 <p>更进一步看怎么省去 dispatcher-config.xml 文件，将配置移交到 DispatherConfig 配置类中</p>
-
 <pre><code class="language-java">public class MyWebAppInitializer implements WebApplicationInitializer {
   
   @Override
   public void onStartup(ServletContext container) {
-    // Create the &#39;root&#39; Spring application context
+    // Create the 'root' Spring application context
     AnnotationConfigWebApplicationContext rootContext =
       new AnnotationConfigWebApplicationContext();
     rootContext.register(AppConfig.class);
@@ -197,7 +184,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
     // Manage the lifecycle of the root application context
     container.addListener(new ContextLoaderListener(rootContext));
   
-    // Create the dispatcher servlet&#39;s Spring application context
+    // Create the dispatcher servlet's Spring application context
     AnnotationConfigWebApplicationContext dispatcherContext =
       new AnnotationConfigWebApplicationContext();
     dispatcherContext.register(DispatcherConfig.class);

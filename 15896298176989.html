@@ -116,56 +116,41 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">享元模式的定义</h2>
-
+                    <h2><a id="%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>享元模式的定义</h2>
 <p>享元模式是一种<strong>结构性设计模式</strong>，它是考虑系统性能的设计模式，通过使用享元模式可以节约内存空间，提高系统的性能。</p>
-
 <p>采用一个共享类来避免大量拥有相同内容的“小类”的开销。这种开销中最常见、直观的影响就是增加了内存的损耗。</p>
-
 <p>享元模式以共享的方式高效地支持大量的细粒度对象，减少其带来的开销，享元对象能做到共享的关键是区分内部状态(Internal State)和外部状态(External State)。其中：</p>
-
 <ul>
 <li>内部状态 是存储在享元对象内部并且不会随环境改变而改变的状态，因此内部状态可以共享。</li>
-<li>外部状态 是随环境改变而改变的、不可以共享的状态。享元对象的外部状态必须由客户端保存，并在享元对象被创建之后，在需要使用的时候再传入到享元对象内部。一个外部状态与另一个外部状态之间是相互独立的。 </li>
+<li>外部状态 是随环境改变而改变的、不可以共享的状态。享元对象的外部状态必须由客户端保存，并在享元对象被创建之后，在需要使用的时候再传入到享元对象内部。一个外部状态与另一个外部状态之间是相互独立的。</li>
 </ul>
-
-<h2 id="toc_1">享元模式结构</h2>
-
+<h2><a id="%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>享元模式结构</h2>
 <p>单纯享元模式的结构。</p>
-
 <ul>
 <li>抽象享元角色: 为具体享元角色规定了必须实现的方法，而外蕴状态就是以参数的形式 通过此方法传入。在 Java 中可以由抽象类、接口来担当。</li>
 <li>具体享元角色: 实现抽象角色规定的方法。如果存在内蕴状态，就负责为内蕴状态提供 存储空间。</li>
 <li>享元工厂角色: 负责创建和管理享元角色。要想达到共享的目的，这个角色的实现是关 键!</li>
 <li>客户端角色: 维护对所有享元对象的引用，而且还需要存储对应的外蕴状态。 来用类图来形象地表示出它们的关系吧。</li>
 </ul>
-
-<p><figure><img src="media/15896298176989/15917826923765.jpg" alt=""/></figure></p>
-
-<h3 id="toc_2">优点</h3>
-
-<p>1）它可以极大减少内存中对象的数量，使得相同对象或相似对象在内存中只保存一份；<br/>
+<p><figure><img src="media/15896298176989/15917826923765.jpg" alt="" /></figure></p>
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
+<p>1）它可以极大减少内存中对象的数量，使得相同对象或相似对象在内存中只保存一份；<br />
 2）享元模式的外部状态相对独立，而且不会影响其内部状态，从而使得享元对象可以在不同的环境中被共享。</p>
-
-<h3 id="toc_3">缺点</h3>
-
-<p>1）享元模式使得系统更加复杂，需要分离出内部状态和外部状态，这使得程序的逻辑复杂化；<br/>
+<h3><a id="%E7%BC%BA%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缺点</h3>
+<p>1）享元模式使得系统更加复杂，需要分离出内部状态和外部状态，这使得程序的逻辑复杂化；<br />
 2）为了使对象可以共享，享元模式需要将享元对象的状态外部化，而读取外部状态使得运行时间变长。</p>
-
-<h2 id="toc_4">代码示例</h2>
-
+<h2><a id="%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>代码示例</h2>
 <pre><code class="language-java">/**
  * 抽象享元角色类
  *
  **/
 public interface Flyweight {
-    /**
-     * 一个示意性方法，参数state是外蕴状态
-     */
-    public void operation(String state);
+	/**
+	 * 一个示意性方法，参数state是外蕴状态
+	 */
+	public void operation(String state);
 }
 </code></pre>
-
 <pre><code class="language-java">/**
  * 具体享元角色类
  * &lt;p&gt;
@@ -175,33 +160,32 @@ public interface Flyweight {
  *
  **/
 public class ConcreteFlyweight implements Flyweight {
-    private Character intrinsicState = null;
+	private Character intrinsicState = null;
 
-    /**
-     * 构造函数，内蕴状态作为参数传入
-     *
-     * @param state
-     */
-    public ConcreteFlyweight(Character state) {
-        this.intrinsicState = state;
-    }
+	/**
+	 * 构造函数，内蕴状态作为参数传入
+	 *
+	 * @param state
+	 */
+	public ConcreteFlyweight(Character state) {
+		this.intrinsicState = state;
+	}
 
 
-    /**
-     * 外蕴状态作为参数传入方法中，改变方法的行为，但是并不改变对象的内蕴状态。
-     *
-     * @param state 外蕴状态
-     */
-    @Override
-    public void operation(String state) {
-        // TODO Auto-generated method stub
-        System.out.println(&quot;Intrinsic State = &quot; + this.intrinsicState);
-        System.out.println(&quot;Extrinsic State = &quot; + state);
-    }
+	/**
+	 * 外蕴状态作为参数传入方法中，改变方法的行为，但是并不改变对象的内蕴状态。
+	 *
+	 * @param state 外蕴状态
+	 */
+	@Override
+	public void operation(String state) {
+		// TODO Auto-generated method stub
+		System.out.println(&quot;Intrinsic State = &quot; + this.intrinsicState);
+		System.out.println(&quot;Extrinsic State = &quot; + state);
+	}
 
 }
 </code></pre>
-
 <pre><code class="language-java">/**
  * 享元工厂角色类
  * &lt;p&gt;
@@ -210,35 +194,34 @@ public class ConcreteFlyweight implements Flyweight {
  * 当客户端需要单纯享元对象的时候，需要调用享元工厂的factory()方法，并传入所需的单纯享元对象的内蕴状态，由工厂方法产生所需要的享元对象。
  **/
 public class FlyweightFactory {
-    private Map&lt;Character, Flyweight&gt; files = new HashMap&lt;&gt;();
+	private Map&lt;Character, Flyweight&gt; files = new HashMap&lt;&gt;();
 
-    public Flyweight factory(Character state) {
-        //先从缓存中查找对象
-        Flyweight fly = files.get(state);
-        if (fly == null) {
-            //如果对象不存在则创建一个新的Flyweight对象
-            fly = new ConcreteFlyweight(state);
-            //把这个新的Flyweight对象添加到缓存中
-            files.put(state, fly);
-        }
-        return fly;
-    }
+	public Flyweight factory(Character state) {
+		//先从缓存中查找对象
+		Flyweight fly = files.get(state);
+		if (fly == null) {
+			//如果对象不存在则创建一个新的Flyweight对象
+			fly = new ConcreteFlyweight(state);
+			//把这个新的Flyweight对象添加到缓存中
+			files.put(state, fly);
+		}
+		return fly;
+	}
 
-    public static void main(String[] args) {
-        FlyweightFactory factory = new FlyweightFactory();
-        Flyweight fly = factory.factory(&#39;a&#39;);
-        fly.operation(&quot;First Call&quot;);
+	public static void main(String[] args) {
+		FlyweightFactory factory = new FlyweightFactory();
+		Flyweight fly = factory.factory('a');
+		fly.operation(&quot;First Call&quot;);
 
-        fly = factory.factory(&#39;b&#39;);
-        fly.operation(&quot;Second Call&quot;);
+		fly = factory.factory('b');
+		fly.operation(&quot;Second Call&quot;);
 
-        fly = factory.factory(&#39;a&#39;);
-        fly.operation(&quot;Third Call&quot;);
-    }
+		fly = factory.factory('a');
+		fly.operation(&quot;Third Call&quot;);
+	}
 
 }
 </code></pre>
-
 <pre><code class="language-java">/**
  * 复合享元角色类
  * &lt;p&gt;
@@ -250,31 +233,30 @@ public class FlyweightFactory {
  **/
 public class ConcreteCompositeFlyweight implements Flyweight {
 
-    private Map&lt;Character, Flyweight&gt; flyweightMap = new HashMap&lt;&gt;();
+	private Map&lt;Character, Flyweight&gt; flyweightMap = new HashMap&lt;&gt;();
 
-    /**
-     * 增加一个新的单纯享元对象到聚集中
-     */
-    public void add(Character key, Flyweight fly) {
-        flyweightMap.put(key, fly);
-    }
+	/**
+	 * 增加一个新的单纯享元对象到聚集中
+	 */
+	public void add(Character key, Flyweight fly) {
+		flyweightMap.put(key, fly);
+	}
 
-    /**
-     * 外蕴状态作为参数传入到方法中
-     */
-    @Override
-    public void operation(String state) {
-        Flyweight fly = null;
-        for (Object o : flyweightMap.keySet()) {
-            fly = flyweightMap.get(o);
-            fly.operation(state);
-        }
+	/**
+	 * 外蕴状态作为参数传入到方法中
+	 */
+	@Override
+	public void operation(String state) {
+		Flyweight fly = null;
+		for (Object o : flyweightMap.keySet()) {
+			fly = flyweightMap.get(o);
+			fly.operation(state);
+		}
 
-    }
+	}
 
 }
 </code></pre>
-
 <pre><code class="language-java">/**
  * 复合享元工厂角色类
  * &lt;p&gt;
@@ -282,71 +264,67 @@ public class ConcreteCompositeFlyweight implements Flyweight {
  **/
 public class CompositeFlyweightFactory {
 
-    private Map&lt;Character, Flyweight&gt; flyweightMap = new HashMap&lt;&gt;();
+	private Map&lt;Character, Flyweight&gt; flyweightMap = new HashMap&lt;&gt;();
 
-    /**
-     * 复合享元工厂方法
-     */
-    public Flyweight factory(List&lt;Character&gt; compositeState) {
-        ConcreteCompositeFlyweight compositeFly = new ConcreteCompositeFlyweight();
+	/**
+	 * 复合享元工厂方法
+	 */
+	public Flyweight factory(List&lt;Character&gt; compositeState) {
+		ConcreteCompositeFlyweight compositeFly = new ConcreteCompositeFlyweight();
 
-        for (Character state : compositeState) {
-            compositeFly.add(state, this.factory(state));
-        }
+		for (Character state : compositeState) {
+			compositeFly.add(state, this.factory(state));
+		}
 
-        return compositeFly;
-    }
+		return compositeFly;
+	}
 
-    /**
-     * 单纯享元工厂方法
-     */
-    public Flyweight factory(Character state) {
-        //先从缓存中查找对象
-        Flyweight fly = flyweightMap.get(state);
-        if (fly == null) {
-            //如果对象不存在则创建一个新的Flyweight对象
-            fly = new ConcreteFlyweight(state);
-            //把这个新的Flyweight对象添加到缓存中
-            flyweightMap.put(state, fly);
-        }
-        return fly;
-    }
+	/**
+	 * 单纯享元工厂方法
+	 */
+	public Flyweight factory(Character state) {
+		//先从缓存中查找对象
+		Flyweight fly = flyweightMap.get(state);
+		if (fly == null) {
+			//如果对象不存在则创建一个新的Flyweight对象
+			fly = new ConcreteFlyweight(state);
+			//把这个新的Flyweight对象添加到缓存中
+			flyweightMap.put(state, fly);
+		}
+		return fly;
+	}
 
-    public static void main(String[] args) {
-        List&lt;Character&gt; compositeState = new ArrayList&lt;&gt;();
-        compositeState.add(&#39;a&#39;);
-        compositeState.add(&#39;b&#39;);
-        compositeState.add(&#39;c&#39;);
-        compositeState.add(&#39;a&#39;);
-        compositeState.add(&#39;b&#39;);
+	public static void main(String[] args) {
+		List&lt;Character&gt; compositeState = new ArrayList&lt;&gt;();
+		compositeState.add('a');
+		compositeState.add('b');
+		compositeState.add('c');
+		compositeState.add('a');
+		compositeState.add('b');
 
-        CompositeFlyweightFactory flyFactory = new CompositeFlyweightFactory();
-        Flyweight compositeFly1 = flyFactory.factory(compositeState);
-        Flyweight compositeFly2 = flyFactory.factory(compositeState);
-        compositeFly1.operation(&quot;Composite Call&quot;);
+		CompositeFlyweightFactory flyFactory = new CompositeFlyweightFactory();
+		Flyweight compositeFly1 = flyFactory.factory(compositeState);
+		Flyweight compositeFly2 = flyFactory.factory(compositeState);
+		compositeFly1.operation(&quot;Composite Call&quot;);
 
-        System.out.println(&quot;---------------------------------&quot;);
-        System.out.println(&quot;复合享元模式是否可以共享对象：&quot; + (compositeFly1 == compositeFly2));
+		System.out.println(&quot;---------------------------------&quot;);
+		System.out.println(&quot;复合享元模式是否可以共享对象：&quot; + (compositeFly1 == compositeFly2));
 
-        Character state = &#39;a&#39;;
-        Flyweight fly1 = flyFactory.factory(state);
-        Flyweight fly2 = flyFactory.factory(state);
-        System.out.println(&quot;单纯享元模式是否可以共享对象：&quot; + (fly1 == fly2));
-    }
+		Character state = 'a';
+		Flyweight fly1 = flyFactory.factory(state);
+		Flyweight fly2 = flyFactory.factory(state);
+		System.out.println(&quot;单纯享元模式是否可以共享对象：&quot; + (fly1 == fly2));
+	}
 
 }
 </code></pre>
-
-<h2 id="toc_5">适用场景</h2>
-
+<h2><a id="%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适用场景</h2>
 <p>在以下情况下可以使用享元模式：</p>
-
 <ul>
 <li>一个系统有大量相同或者相似的对象，由于这类对象的大量使用，造成内存的大量耗费；</li>
 <li>对象的大部分状态都可以外部化，可以将这些外部状态传入对象中(细粒度对象)；</li>
 <li>使用享元模式需要维护一个存储享元对象的享元池，而这需要耗费资源，因此，应当在多次重复使用享元对象时才值得使用享元模式。</li>
 </ul>
-
 <p><strong>享元模式的核心在于享元工厂类，享元工厂类的作用在于提供一个用于存储享元对象的享元池，用户需要对象时，首先从享元池中获取，如果享元池中不存在，则创建一个新的享元对象返回给用户，并在享元池中保存该新增对象。</strong></p>
 
                   </article>

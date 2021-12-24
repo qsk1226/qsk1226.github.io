@@ -115,11 +115,8 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>在servlet3.1中Servlet的结构如下图所示：</p>
-
-<p><figure><img src="media/16117369229696/16117370452580.jpg" alt="" style="width:537px;"/></figure></p>
-
-<h2 id="toc_0">Servlet接口</h2>
-
+<p><figure><img src="media/16117369229696/16117370452580.jpg" alt="" style="width:537px;" /></figure></p>
+<h2><a id="servlet%E6%8E%A5%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Servlet接口</h2>
 <pre><code class="language-java">public interface Servlet {
    
     public void init(ServletConfig config) throws ServletException;
@@ -134,20 +131,26 @@
     public void destroy();
 }
 </code></pre>
-
 <ul>
-<li><p>init方法在容器启动的时候被容器调用（当 load-on-startup 设置为负数或者不设置时会在 Servlet 第一次用到时才会被调用），只会调用一次；</p></li>
-<li><p>getServletConfig方法用于获取 ServletConfig</p></li>
-<li><p>service 方法用于处理一个请求</p></li>
-<li><p>getServletInfo 方法可以获取一些 Servlet 相关信息，如作者、版权等，需要自己实现，默认返回空字符串</p></li>
-<li><p>destroy 方法主要在Servlet 销毁的时候释放一些资源，也只会调用一次。</p></li>
+<li>
+<p>init方法在容器启动的时候被容器调用（当 load-on-startup 设置为负数或者不设置时会在 Servlet 第一次用到时才会被调用），只会调用一次；</p>
+</li>
+<li>
+<p>getServletConfig方法用于获取 ServletConfig</p>
+</li>
+<li>
+<p>service 方法用于处理一个请求</p>
+</li>
+<li>
+<p>getServletInfo 方法可以获取一些 Servlet 相关信息，如作者、版权等，需要自己实现，默认返回空字符串</p>
+</li>
+<li>
+<p>destroy 方法主要在Servlet 销毁的时候释放一些资源，也只会调用一次。</p>
+</li>
 </ul>
-
 <p>再次说回 ServletConfig ，它是Servlet 容器启动时传入给 Servlet.init(ServletConfig config) 方法的，它指 Servlet 相关配置，我们在 web.xml 文件中配置的 init-param 标签配置的参数就是通过 ServletConfig 保存的。</p>
-
 <p>如下所示：</p>
-
-<pre><code class="language-markup">&lt;servlet&gt;   
+<pre><code class="language-xml">&lt;servlet&gt;   
   &lt;servlet-name&gt;snoop&lt;/servlet-name&gt;   
   &lt;servlet-class&gt;SnoopServlet&lt;/servlet-class&gt;   
   &lt;init-param&gt;   
@@ -156,30 +159,26 @@
   &lt;/init-param&gt;   
 &lt;/servlet&gt;  
 </code></pre>
-
 <p>在 Tomcat 中Servlet的 init 方法是通过 org.apache.catalina.core.StandardWrapper 中的 initServlet 方法调用，在init 方法调用时 传入的参数是 ServletConfig的实现类 StandardWrapperFacade，</p>
-
 <pre><code class="language-java">public interface ServletConfig {
-    // 获取Servlet的名称,就是在 web.xml 中的 servlet-name
-    public String getServletName();
+	// 获取Servlet的名称,就是在 web.xml 中的 servlet-name
+	public String getServletName();
   // 获取 ServletContext 上下文，即应用本身
-    public ServletContext getServletContext();
+	public ServletContext getServletContext();
   // 获取 init-param 配置的参数
-    public String getInitParameter(String name);
+	public String getInitParameter(String name);
   // 获取 init-param 参数名称的集合
-    public Enumeration&lt;String&gt; getInitParameterNames();
+	public Enumeration&lt;String&gt; getInitParameterNames();
 }
 </code></pre>
-
 <p>ServletConfig 是 Servlet级别的，而 ServletContext 则是应用级别的</p>
-
-<pre><code class="language-markup">&lt;context-param&gt;
-    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
-    &lt;param-value&gt;classpath:jws-service-beans.xml&lt;/param-value&gt;
+<pre><code class="language-xml">&lt;context-param&gt;
+	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	&lt;param-value&gt;classpath:jws-service-beans.xml&lt;/param-value&gt;
 &lt;/context-param&gt;
 
 &lt;listener&gt;
-    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+	&lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
 &lt;/listener&gt;
 
 &lt;servlet&gt;
@@ -197,21 +196,15 @@
     &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
 &lt;/servlet-mapping&gt;
 </code></pre>
-
 <p>如上配置文件 context-param 配置参数保存到ServletContext中，而 servlet 标签中的 init-param 参数保存到 ServletConfig 中。</p>
-
-<h2 id="toc_1">GenericServlet</h2>
-
+<h2><a id="genericservlet" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>GenericServlet</h2>
 <p>GenericServlet 是 Servlet 接口的默认实现，主要做了三件事：</p>
-
 <ul>
 <li>实现 ServletConfig 接口，可以直接使用 ServletConfig 接口中的方法</li>
 <li>提供了无参的 init 方法</li>
 <li>提供了 log 方法</li>
 </ul>
-
-<p><figure><img src="media/16117369229696/16124241035352.jpg" alt="提供的方法"/><figcaption>提供的方法</figcaption></figure></p>
-
+<p><figure><img src="media/16117369229696/16124241035352.jpg" alt="提供的方法" /><figcaption>提供的方法<figcaption></figure></p>
 <pre><code class="language-java">public void init(ServletConfig config) throws ServletException {
     this.config = config;
     this.init();
@@ -221,13 +214,9 @@ public void init() throws ServletException {
     // NOOP by default
 }
 </code></pre>
-
 <p>无参数的 init 方法为我们提供了独立的业务处理能力，而不用操心处理 Servlet相关的系统设置。</p>
-
-<h2 id="toc_2">HttpServlet</h2>
-
+<h2><a id="httpservlet" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HttpServlet</h2>
 <p>HttpServlet 是实现了 http 协议的 Servlet 基类，在spring 体系中的 springMvc 中的 DispatcherServlet 就是实现了 HttpServlet 基类。既然HttpServlet 是专门用来处理 Http 协议的，它重写了 Servlet 的 service 方法，在 service 方法中将 ServletRequest 和 ServletResponse 转换为 HttpServletRequest  和 HttpServletResponse，然后根据 http 请求类型不同分发到不同的处理方法。</p>
-
 <pre><code class="language-java">public abstract class HttpServlet extends GenericServlet {
     
     .......
@@ -257,7 +246,7 @@ public void init() throws ServletException {
         if (method.equals(METHOD_GET)) {
             long lastModified = getLastModified(req);
             if (lastModified == -1) {
-                // servlet doesn&#39;t support if-modified-since, no reason
+                // servlet doesn't support if-modified-since, no reason
                 // to go through further expensive logic
                 doGet(req, resp);
             } else {

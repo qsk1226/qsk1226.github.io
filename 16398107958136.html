@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    管理 ElasticSearch 索引和文档 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            管理 ElasticSearch 索引和文档   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/12/18</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='ELK.html'>ELK</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li><a href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E7%AE%A1%E7%90%86">索引的管理</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE%E7%B4%A2%E5%BC%95">配置索引</a>
+<ul>
+<li><a href="#%E9%9D%99%E6%80%81%E8%AE%BE%E7%BD%AE">静态设置</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E8%AE%BE%E7%BD%AE">动态设置</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE%E6%98%A0%E5%B0%84">配置映射</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C">基本操作</a>
+<ul>
+<li><a href="#%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E7%B4%A2%E5%BC%95">列出所有索引</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95">创建索引</a></li>
+<li><a href="#%E5%85%B3%E9%97%AD%E5%92%8C%E6%89%93%E5%BC%80%E7%B4%A2%E5%BC%95">关闭和打开索引</a></li>
+<li><a href="#%E5%A2%9E%E5%8A%A0%E6%96%87%E6%A1%A3">增加文档</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E6%96%87%E6%A1%A3">查询文档</a></li>
+<li><a href="#%E6%9B%B4%E6%96%B0%E6%96%87%E6%A1%A3">更新文档</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E6%96%87%E6%A1%A3">删除文档</a></li>
+</ul>
+</li>
+</ul>
+
+<p>在 es 中，索引和文档是 REST 接口操作的最基本资源，所以对索引和文档的 管理也是我们必须要知道的。</p>
+<p>索引一般是以索引名称出现在 REST 请求操作的资 源路径上，而文档是以文档 ID 为标识出现在资源路径上。</p>
+<h2><a id="%E7%B4%A2%E5%BC%95%E7%9A%84%E7%AE%A1%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>索引的管理</h2>
+<p>在REST 接口中，通常GET 用来获取资源，POST 用来更新资源， DELETE 用来删除资源。所以对索引，GET 用来查看索引，PUT 用来创建索引，DELETE 用来删除索引，还有一个 HEAD 请求，用来检验索引是否存在</p>
+<hr />
+<h2><a id="%E9%85%8D%E7%BD%AE%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>配置索引</h2>
+<p>通过 settings 参数配置索引，索引的所有配置项都以“index”开头。索引的 管理分为静态设置和动态设置两种。</p>
+<h3><a id="%E9%9D%99%E6%80%81%E8%AE%BE%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>静态设置</h3>
+<p>只能在索引创建时或在状态为 closed index(闭合索引)上设置，主要配置 索引主分片、压缩编码、路由等相关信息。</p>
+<ul>
+<li>
+<p>index.number_of_shards主分片数，默认为 5.只能在创建索引时设置，不能修改</p>
+</li>
+<li>
+<p>index.shard.check_on_startup 是否应在索引打开前检查分片是否损坏，当 检查到分片损坏将禁止分片被打开。</p>
+<ul>
+<li>false:默认值;</li>
+<li>checksum:检查物理损坏;</li>
+<li>true:检查物理和逻辑损坏，这将消耗大量内存和 CPU;</li>
+<li>fix:检查物理和逻辑损坏。有损坏的分片将被集群自动删除，这可能导致数据丢失</li>
+</ul>
+</li>
+<li>
+<p>index.routing_partition_size 自定义路由值可以转发的目的分片数。默认为 1， 只能在索引创建时设置。此值必须小于 index.number_of_shards</p>
+</li>
+<li>
+<p>index.codec 默认使用LZ4压缩方式存储数据，也可以设置为best_compression，它使用 DEFLATE 方式以牺牲字段存储性能为代价来获得更高 的压缩比例。</p>
+</li>
+</ul>
+<pre><code class="language-bash">PUT articles
+{
+    &quot;settings&quot;: {
+        &quot;index.number_of_shards&quot;:3,
+        &quot;index.codec&quot;:&quot;best_compression&quot; 
+    }
+}
+</code></pre>
+<h3><a id="%E5%8A%A8%E6%80%81%E8%AE%BE%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动态设置</h3>
+<p>通过接口 &quot;_settings&quot; 进行，同时查询配置也通过这个接口进行</p>
+<pre><code class="language-bash">get /articles/_settings
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;articles&quot; : {
+    &quot;settings&quot; : {
+      &quot;index&quot; : {
+        &quot;codec&quot; : &quot;best_compression&quot;,
+        &quot;routing&quot; : {
+          &quot;allocation&quot; : {
+            &quot;include&quot; : {
+              &quot;_tier_preference&quot; : &quot;data_content&quot;
+            }
+          }
+        },
+        &quot;number_of_shards&quot; : &quot;3&quot;,
+        &quot;provided_name&quot; : &quot;articles&quot;,
+        &quot;creation_date&quot; : &quot;1639902918245&quot;,
+        &quot;number_of_replicas&quot; : &quot;1&quot;,
+        &quot;uuid&quot; : &quot;C4sWtSqaQX2MnTInk4VDig&quot;,
+        &quot;version&quot; : {
+          &quot;created&quot; : &quot;7150199&quot;
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>配置索引则通过:</p>
+<pre><code class="language-bash">PUT articles/_settings 
+{
+    &quot;refresh_interval&quot;:&quot;2s&quot;
+}
+</code></pre>
+<p>常用的配置参数如下:</p>
+<ul>
+<li>index.number_of_replicas 每个主分片的副本数。默认为 1</li>
+<li>index.auto_expand_replicas 基于可用节点的数量自动分配副本数量,默认为 false(即禁用此功能)。</li>
+<li>index.refresh_interval 执行刷新操作的频率。默认为 1s。可以设置为 -1 以禁用刷新。</li>
+<li>index.max_result_window 用于索引搜索的 from+size 的最大值。默认为10000。</li>
+<li>index.blocks.read_only 设置为 true 使索引和索引元数据为只读，false 为允许写入和元数据更改。</li>
+<li>index.blocks.read 设置为 true 可禁用对索引的读取操作</li>
+<li>index.blocks.write 设置为 true 可禁用对索引的写入操作</li>
+<li>index.blocks.metadata 设置为 true 可禁用索引元数据的读取和写入</li>
+<li>index.max_refresh_listeners 索引的每个分片上可用的最大刷新侦听器数</li>
+<li>index.max_docvalue_fields_search 一次查询最多包含开启 doc_values 字段的个数，默认为 100</li>
+<li>index.max_script_fields 查询中允许的最大script_fields数量。默认为32。 index.max_terms_count 可以在 terms 查询中使用的术语的最大数量。默认为 65536。</li>
+<li>index.routing.allocation.enable 控制索引分片分配。
+<ul>
+<li>All(所有分片)</li>
+<li>primaries(主分片)</li>
+<li>new_primaries(新创建分片)</li>
+<li>none(不分片)</li>
+</ul>
+</li>
+<li>index.routing.rebalance.enable 索引的分片重新平衡机制。all、primaries、replicas、none</li>
+<li>index.gc_deletes 文档删除后(删除后版本号)还可以存活的周期，默认为 60s</li>
+<li>index.max_regex_length 用于正在表达式查询(regex query)正在表达式长度，默认为 1000</li>
+</ul>
+<hr />
+<h3><a id="%E9%85%8D%E7%BD%AE%E6%98%A0%E5%B0%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>配置映射</h3>
+<p>通过_mapping 接口进行</p>
+<pre><code class="language-bash">get /my_index/_mapping
+# 或者只看某个字段的属性:
+get /my_index/_mapping/field/xxx
+</code></pre>
+<pre><code class="language-JSON">PUT articles/_mapping
+{
+  &quot;properties&quot;: {
+    &quot;author&quot;: {
+      &quot;type&quot;: &quot;keyword&quot;
+    },
+    &quot;content&quot;: {
+      &quot;type&quot;: &quot;text&quot;
+    },
+    &quot;createdTime&quot;: {
+      &quot;type&quot;: &quot;date&quot;
+    },
+    &quot;title&quot;: {
+      &quot;type&quot;: &quot;text&quot;
+    },
+    &quot;pages&quot;: {
+      &quot;type&quot;: &quot;integer&quot;
+    }
+  }
+}
+</code></pre>
+<p>修改映射，当然就是通过 PUT 或者 POST 方法了。但是要注意，已经存在的映射只能添加字段或者字段的多类型。但是字段创建后就不能删除，大多数参数也不能修改，可以改的是 ignore_above。所以设计索引时要做好规划，至少初始 时的必要字段要规划好</p>
+<hr />
+<h2><a id="%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基本操作</h2>
+<hr />
+<h3><a id="%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>列出所有索引</h3>
+<pre><code class="language-bash">GET /_cat/indices?v&amp;pretty
+</code></pre>
+<p>response :</p>
+<pre><code class="language-plain_text">health status index                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   kibana_sample_data_flights      _OyHWDtqRDuPzEG3EGFjZg   1   0      13059            0      5.2mb          5.2mb
+green  open   kibana_sample_data_ecommerce    Z-rv4oSEQbObq_Ird1iw6Q   1   0       4675            0      3.7mb          3.7mb
+green  open   kibana_sample_data_logs         Ih3CTx1bTCaAl2gLSuTqog   1   0      14074            0      7.8mb          7.8mb
+yellow open   saleorder                       oY6Ay0GXQdWT-lUL4K3f9w   5   1         20            0       72kb           72kb
+</code></pre>
+<hr />
+<h3><a id="%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>创建索引</h3>
+<pre><code class="language-bash">PUT articles
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;acknowledged&quot; : true,
+  &quot;shards_acknowledged&quot; : true,
+  &quot;index&quot; : &quot;articles&quot;
+}
+</code></pre>
+<hr />
+<h3><a id="%E5%85%B3%E9%97%AD%E5%92%8C%E6%89%93%E5%BC%80%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>关闭和打开索引</h3>
+<p>关闭索引，如果关闭了一个索引,就无法通过Elasticsearch 来读取和写人其中的数据，直到再次打开它。</p>
+<pre><code class="language-bash">POST /articles/_close
+
+# 打开索引
+POST /articles/_open
+</code></pre>
+<p>response :</p>
+<pre><code class="language-bash">{
+  # 关闭索引
+  &quot;acknowledged&quot; : true,
+  &quot;shards_acknowledged&quot; : true,
+  &quot;indices&quot; : {
+    &quot;articles&quot; : {
+      &quot;closed&quot; : true
+    }
+  }
+}
+
+{
+  # 打开索引
+  &quot;acknowledged&quot; : true,
+  &quot;shards_acknowledged&quot; : true
+}
+</code></pre>
+<hr />
+<h3><a id="%E5%A2%9E%E5%8A%A0%E6%96%87%E6%A1%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>增加文档</h3>
+<pre><code class="language-json">POST articles/_doc/1
+{
+  &quot;author&quot;: &quot;Leo Tolstoy&quot;,
+  &quot;content&quot;: &quot;War and Peace is a literary work mixed with chapters on history and philosophy by the Russian author Leo Tolstoy, first published serially, then published in its entirety in 1869. It is regarded as one of Tolstoy's finest literary achievements and remains an internationally praised classic of world literature.&quot;,
+  &quot;createdTime&quot;:&quot;2021-12-19 15:14:25&quot;,
+  &quot;title&quot;:&quot;War and Peace&quot;,
+  &quot;page&quot;:1225
+  
+}
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;_index&quot; : &quot;articles&quot;,
+  &quot;_type&quot; : &quot;_doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 1,
+  &quot;_seq_no&quot; : 0,
+  &quot;_primary_term&quot; : 1,
+  &quot;found&quot; : true,
+  &quot;_source&quot; : {
+    &quot;author&quot; : &quot;Leo Tolstoy&quot;,
+    &quot;content&quot; : &quot;War and Peace is a literary work mixed with chapters on history and philosophy by the Russian author Leo Tolstoy, first published serially, then published in its entirety in 1869. It is regarded as one of Tolstoy's finest literary achievements and remains an internationally praised classic of world literature.&quot;,
+    &quot;createdTime&quot; : &quot;2021-12-19 15:14:25&quot;,
+    &quot;title&quot; : &quot;War and Peace&quot;,
+    &quot;page&quot; : 1225
+  }
+}
+</code></pre>
+<p>当创建文档的时候，如果不指定 ID，系统会自动创建 ID。自动生成的 ID 是一个不会重复的随机数。使用 GUID 算法，可以保证在分布式环境下，不同节点同一时间创建的_id 一定是不冲突的。</p>
+<hr />
+<h3><a id="%E6%9F%A5%E8%AF%A2%E6%96%87%E6%A1%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>查询文档</h3>
+<pre><code class="language-bash">GET /articles/_doc/1
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;_index&quot; : &quot;articles&quot;,
+  &quot;_type&quot; : &quot;_doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 3,
+  &quot;_seq_no&quot; : 2,
+  &quot;_primary_term&quot; : 1,
+  &quot;found&quot; : true,
+  &quot;_source&quot; : {
+    &quot;author&quot; : &quot;Leo Tolstoy&quot;,
+    &quot;content&quot; : &quot;War and Peace is a literary work mixed with chapters on history and philosophy by the Russian author Leo Tolstoy, first published serially, then published in its entirety in 1869. It is regarded as one of Tolstoy's finest literary achievements and remains an internationally praised classic of world literature.&quot;,
+    &quot;createdTime&quot; : &quot;2021-12-19 15:14:25&quot;,
+    &quot;title&quot; : &quot;《War and Peace》&quot;,
+    &quot;page&quot; : 1225
+  }
+}
+
+</code></pre>
+<hr />
+<h3><a id="%E6%9B%B4%E6%96%B0%E6%96%87%E6%A1%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>更新文档</h3>
+<p>前面我们用put方法更新了已经存在的文档，但是可以看见他是整体更新文 档，如果我们要更新文档中的某个字段怎么办?需要使用_update 接口。</p>
+<pre><code class="language-bash">POST articles/_update/1
+{
+  &quot;doc&quot;: {
+    &quot;createdTime&quot;:&quot;2008-12-19 15:14:25&quot;
+  }
+}
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;_index&quot; : &quot;articles&quot;,
+  &quot;_type&quot; : &quot;_doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 4,
+  &quot;_seq_no&quot; : 3,
+  &quot;_primary_term&quot; : 1,
+  &quot;found&quot; : true,
+  &quot;_source&quot; : {
+    &quot;author&quot; : &quot;Leo Tolstoy&quot;,
+    &quot;content&quot; : &quot;War and Peace is a literary work mixed with chapters on history and philosophy by the Russian author Leo Tolstoy, first published serially, then published in its entirety in 1869. It is regarded as one of Tolstoy's finest literary achievements and remains an internationally praised classic of world literature.&quot;,
+    &quot;createdTime&quot; : &quot;2008-12-19 15:14:25&quot;,
+    &quot;title&quot; : &quot;《War and Peace》&quot;,
+    &quot;page&quot; : 1225
+  }
+}
+</code></pre>
+<p>如果文档中存在 createdTime 字段，更新 createdTime 字段的值，如果不存在 createdTime 字段，则 会新增 createdTime 字段，并将值设为 2008-12-19 15:14:25</p>
+<p>update 接口在文档不存在时提示错误，如果希望在文档不存在时创建文档， 则可以在请求中添加 upsert 参数或 doc_as_upsert 参数，</p>
+<p>upsert 参数定义了创建新文档使用的文档内容，而 doc_as_upsert 参数的含义是直接使用 doc 参数中的内容作为创建文档时使用的文档内容。</p>
+<pre><code class="language-bash">POST articles/_update/2
+{
+  &quot;doc&quot;: {
+    &quot;author&quot;: &quot;Liu Cixin&quot;,
+  &quot;content&quot;: &quot;The Three-Body Problem is a science fiction novel written by the Chinese writer Liu Cixin. The title refers to the three-body problem in orbital mechanics. It is the first novel of the Remembrance of Earth's Past trilogy, but the whole series is normally referred to as The Three-Body Problem.&quot;,
+  &quot;createdTime&quot;:&quot;2008-12-19 15:14:25&quot;,
+  &quot;title&quot;:&quot;The Three-Body Problem&quot;,
+  &quot;page&quot;:302
+  },
+  &quot;doc_as_upsert&quot;:true
+}
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;_index&quot; : &quot;articles&quot;,
+  &quot;_type&quot; : &quot;_doc&quot;,
+  &quot;_id&quot; : &quot;2&quot;,
+  &quot;_version&quot; : 1,
+  &quot;result&quot; : &quot;created&quot;,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 2,
+    &quot;successful&quot; : 1,
+    &quot;failed&quot; : 0
+  },
+  &quot;_seq_no&quot; : 4,
+  &quot;_primary_term&quot; : 1
+}
+</code></pre>
+<hr />
+<h3><a id="%E5%88%A0%E9%99%A4%E6%96%87%E6%A1%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>删除文档</h3>
+<pre><code class="language-bash">delete /articles/_doc/1
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;_index&quot; : &quot;articles&quot;,
+  &quot;_type&quot; : &quot;_doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 5,
+  &quot;result&quot; : &quot;deleted&quot;,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 2,
+    &quot;successful&quot; : 1,
+    &quot;failed&quot; : 0
+  },
+  &quot;_seq_no&quot; : 5,
+  &quot;_primary_term&quot; : 1
+}
+
+</code></pre>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

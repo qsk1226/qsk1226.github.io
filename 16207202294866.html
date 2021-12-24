@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    初识 Kafka - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            初识 Kafka   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/05/11</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='kafka.html'>kafka</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>Kafka 是一个分布式实时数据流平台，可独立部署在单台服务器上，也可以在多台服务器上构成集群。它用Zookeeper 来管理、协调 Kafka 集群的各个代理Broker节点，提供了发布与订阅功能。</p>
+<h2><a id="%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基本概念</h2>
+<h3><a id="%E4%BB%A3%E7%90%86%E3%80%81%E7%94%9F%E4%BA%A7%E8%80%85%E3%80%81%E6%B6%88%E8%B4%B9%E8%80%85%E3%80%81%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>代理、生产者、消费者、消费者组</h3>
+<ul>
+<li>代理<br />
+通常，一个Kafka 进程被称为 一个代理 Broker 节点。</li>
+<li>生产者<br />
+生产者将消息记录发送到 Kafka 集群指定的 主题 Topic 中进行存储，同时生产者也可以通过自定义算法决定将消息发送到哪个分区(partition)。</li>
+<li>消费者<br />
+消费者 consumer 从 Kafka 系统指定的主题 Topic 中读取消息记录<br />
+在读取主题数据的时候，需要设置消费组名称(GroupId),如果不设置Kafka消费者会默认生成一个消费组名称。</li>
+<li>消费者组<br />
+消费者程序在读取 Kafka 系统主题 Topic 中的数据时，通常会使用多个线程来执行。一个消费组可以包含一个或多个消费者程序，使用多分区和多线程模式可以极大提高读取数据的效率。</li>
+</ul>
+<p>一般而言，一个消费者对应一个线程，并遵循 <em><strong><em>线程数小于等于分区数</em></strong></em> 的原则。</p>
+<h3><a id="%E4%B8%BB%E9%A2%98%E3%80%81%E5%88%86%E5%8C%BA%E3%80%81%E5%89%AF%E6%9C%AC%E3%80%81%E8%AE%B0%E5%BD%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>主题、分区、副本、记录</h3>
+<ul>
+<li>
+<p>主题 Topic<br />
+Kafka 系统通过主题来区分不同业务类型的消息记录。</p>
+</li>
+<li>
+<p>分区 Partition<br />
+每个主题中可以有一个或者多个分区。每个分区内部的消息记录是有序的，每个消息都有一个连续的偏移量序号(offset)。一个分区只对应一个代理节点，一个代理节点可以管理多个分区</p>
+</li>
+<li>
+<p>副本 replication<br />
+在 Kafka 系统中，每个主题 Topic 在创建时会要求指定它的副本数，默认是 1。通过副本机制来保证 kafka 分布式集群数据的高可用性。创建主题时，主题的副本系数值应如下设置：</p>
+<ul>
+<li>若集群数量大于等于 3，则主题的副本系数可以设置为 3，如果副本系数小于3的话，可能会造成数据丢失的问题</li>
+<li>若集群数量小于 3，则主题的副本系数可以设置为小于等于集群数量值</li>
+</ul>
+</li>
+<li>
+<p>记录 Record<br />
+被实际写入到 Kafka 集群并且可以被消费者应用程序读取的数据，被称为记录 Record，每条记录包含一个 键(Key)、值(value)、和时间戳(timestamp)</p>
+</li>
+</ul>
+<h2><a id="kafka%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kafka 设计目标</h2>
+<ul>
+<li>高吞吐量</li>
+<li>高可用队列</li>
+<li>低延时</li>
+<li>分布式机制</li>
+</ul>
+<h2><a id="kafka%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kafka 的使用场景</h2>
+<p>Kafka 拥有处理海量数据的能力，可以在实时业务场景发挥天然优势，也可以在离线任务场景下发挥不俗的能力，这都得力于 Kafka 底层的通用性和其强大的应用接口API。</p>
+<p>在实时业务场景中，Kafka 能够和 Spark、Flink、Storm 等实时计算引擎完美结合，同时 Kafka 也提供了应用接口 API，可以将 主题 Topic 中国的数据导入到 Hive 仓库做离线计算。</p>
+<p>日志收集、消息系统、用户轨迹、记录运营监控数据、实现流处理、事件源</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

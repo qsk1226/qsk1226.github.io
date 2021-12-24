@@ -114,10 +114,8 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">配置文件</h2>
-
+                    <h2><a id="%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>配置文件</h2>
 <p>generator.properties</p>
-
 <pre><code class="language-properties">jdbc.driverClass=com.mysql.jdbc.Driver
 jdbc.connectionURL=jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false
 jdbc.user=root
@@ -128,10 +126,8 @@ mapper.target.package=com.shengke.sbd.mapper
 sql.mapper.target.package=mapper
 
 </code></pre>
-
 <p>generatorConfig.xml</p>
-
-<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE generatorConfiguration
         PUBLIC &quot;-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN&quot;
         &quot;http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd&quot;&gt;
@@ -188,7 +184,7 @@ sql.mapper.target.package=mapper
         &lt;/commentGenerator&gt;
 
         &lt;!--数据库链接URL，用户名、密码 --&gt;
-        &lt;jdbcConnection driverClass=&quot;${jdbc.driverClass}&quot; connectionURL=&quot;${jdbc.connectionURL}&quot; userId=&quot;${jdbc.user}&quot;
+        &lt;jdbcConnection driverClass=&quot;``{jdbc.driverClass}&quot; connectionURL=&quot;``{jdbc.connectionURL}&quot; userId=&quot;${jdbc.user}&quot;
                         password=&quot;${jdbc.password}&quot;&gt;
             &lt;property name=&quot;useInformationSchema&quot; value=&quot;true&quot;/&gt;
         &lt;/jdbcConnection&gt;
@@ -368,10 +364,8 @@ sql.mapper.target.package=mapper
 
 
 </code></pre>
-
-<h2 id="toc_1">maven关于mybatis反向工程的插件</h2>
-
-<pre><code class="language-markup">&lt;plugin&gt;
+<h2><a id="maven%E5%85%B3%E4%BA%8Emybatis%E5%8F%8D%E5%90%91%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%8F%92%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>maven关于mybatis反向工程的插件</h2>
+<pre><code class="language-xml">&lt;plugin&gt;
     &lt;groupId&gt;org.mybatis.generator&lt;/groupId&gt;
     &lt;artifactId&gt;mybatis-generator-maven-plugin&lt;/artifactId&gt;
     &lt;version&gt;1.3.6&lt;/version&gt;
@@ -425,6 +419,9 @@ sql.mapper.target.package=mapper
       </footer>
 
 
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
 
   
 

@@ -117,13 +117,9 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>Redis 支持多种类型的数据结构，如 字符串（string）， 散列（hashe）， 列表（list）， 集合（sets）， 有序集合（zset） 与范围查询， bitmap， hyperloglogs 和 地理空间（geospatial） 索引半径查询，stream消息队列。</p>
-
 <p>Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令。</p>
-
-<h2 id="toc_0">1、Redis基本数据类型</h2>
-
+<h2><a id="1%E3%80%81redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、Redis基本数据类型</h2>
 <p>Redis可以存储键与 5 种不同数据结构类型之间映射的数据，这 5 种数据结构类型分别为 string(字符串)、list(列表)、set(集合)、zset(有序集合)、hash(散列)。</p>
-
 <table>
 <thead>
 <tr>
@@ -133,7 +129,6 @@
 <th>结构的读写能力</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>string</td>
@@ -167,23 +162,16 @@
 </tr>
 </tbody>
 </table>
-
 <p><strong>关于key的几条建议</strong></p>
-
 <ul>
 <li>不建议太长的键值，原因：1、消耗内存；2、这类键值计算成本很高</li>
 <li>不建议太短的键值，设计键值要有良好的可读性，太短的话，看不懂就有点尴尬了</li>
 <li>最好有一个相对固定的键值模式，比如这样的模式： 业务名:对象名:id:[属性] ，业务有销售订单、采购订单，销售订单的键值可以是： sale:order:100:orderId这样的</li>
 </ul>
-
-<h2 id="toc_1">Redis 中的 string 字符串</h2>
-
+<h2><a id="redis%E4%B8%AD%E7%9A%84-string%E5%AD%97%E7%AC%A6%E4%B8%B2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 中的 string 字符串</h2>
 <p>字符串在Redis中是以key-value形式存储在redisDb的dict中的。</p>
-
 <p>字符串的key经过Hash 之后作为dict的键，只能是string类型，字符串的value是dict的值，用结构体robj来表示。</p>
-
 <p>字符串值 robj 的 type 值为 OBJ_STRING 。当字符串值是string类型时，encoding的值根据字符串的长度(NCODING_EMBSTR_SIZE_LIMIT = 44)分别为OBJ_ENCODING_RAW或OBJ_ENCODING_EMBSTR(字符串长度&lt;=44)；当字符串值是long类型时，encoding的值为OBJ_ENCODING_INT。</p>
-
 <table>
 <thead>
 <tr>
@@ -194,7 +182,6 @@
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>设置</td>
@@ -324,23 +311,15 @@
 </tr>
 </tbody>
 </table>
-
-<p>此外还有一种字符串的位操作：<br/>
+<p>此外还有一种字符串的位操作：<br />
 位操作是高级语言的基础，Redis提供了位设置、操作、统计等命令，这些命令主要包括setbit、getbit、bitpos、bitcount、bittop 和 bitfield。</p>
-
-<p>Q：追加字符串时，需要判断追加后的字符串长度必须小于512MB，否则会报错，那么在set命令时为什么没有限制最大长度呢？<br/>
+<p>Q：追加字符串时，需要判断追加后的字符串长度必须小于512MB，否则会报错，那么在set命令时为什么没有限制最大长度呢？<br />
 A: 在服务端接收到命令的时候，就已经判断了命令的最大长度不能大于512 MB，所以set命令不需要再次判断了</p>
-
 <p>字符串追加会修改原字符串的值，所以必须保证字符串是非共享的。如果字符串是共享的，则需要解除共享，新创建一个值对象。</p>
-
-<h2 id="toc_2">Redis 中的 list 列表</h2>
-
+<h2><a id="redis%E4%B8%AD%E7%9A%84-list%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 中的 list 列表</h2>
 <p>在 Redis 引入 quicklist之前，Redis采用压缩链表（ziplist）以及双向链表（adlist）作为List的底层实现。当元素个数比较少并且元素长度比较小时，Redis 采用 ziplist 作为其底层存储；当任意一个条件不满足时，Redis采用adlist作为底层存储结构。这么做的主要原因是，当元素长度较小时，采用ziplist可以有效节省存储空间，但ziplist的存储空间是连续的，当元素个数比较多时，修改元素时，必须重新分配存储空间，这无疑会影响Redis的执行效率，故而采用一般的双向链表。</p>
-
 <p>Redis3.2版本之后，列表底层使用快速链表（quicklist）数据结构存储，而快速链表是双向链表与压缩列表 ziplist 的组合。</p>
-
 <p>链表广泛应用于实现 Redis 的各种功能，比如列表键、发布与订阅、慢查询、监视器等。</p>
-
 <table>
 <thead>
 <tr>
@@ -350,7 +329,6 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>blpop key [key ...] timeout</td>
@@ -444,15 +422,10 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_3">栈和队列命令列表</h3>
-
+<h3><a id="%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97%E5%91%BD%E4%BB%A4%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>栈和队列命令列表</h3>
 <p>栈与队列是操作受限制的线性表</p>
-
 <p>栈只允许在线性表的同一侧执行插入或删除操作，具有先进后出的特性；</p>
-
 <p>队列只允许在一侧插入另一侧删除，具有先进先出的特性。</p>
-
 <table>
 <thead>
 <tr>
@@ -465,7 +438,6 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 <th>右侧必须键存在</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>push类</td>
@@ -487,31 +459,27 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_4">Redis 中的 set 集合</h2>
-
+<h2><a id="redis%E4%B8%AD%E7%9A%84-set%E9%9B%86%E5%90%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 中的 set 集合</h2>
 <p>在Redis中，集合元素为字符串和数字，分别用dict和intset存储。对于单个集合，Redis 实现了元素的新增、删除、遍历等操作；对于多个集合，Redis实现了集合间求交集、并集和差集等操作。</p>
-
 <p>set集合中添加元素的时候分两种情况：</p>
-
 <ul>
-<li><p>当encoding方式为OBJ_ENCODING_HT时，set的底层用的是字典，将key直接添加进dict。需要注意的是，用dict存储集合元素时，元素值存储于字典的key中，字典的value值为null。</p></li>
-<li><p>当encoding方式为OBJ_ENCODING_INTSET时，又有两种情况：</p>
+<li>
+<p>当encoding方式为OBJ_ENCODING_HT时，set的底层用的是字典，将key直接添加进dict。需要注意的是，用dict存储集合元素时，元素值存储于字典的key中，字典的value值为null。</p>
+</li>
+<li>
+<p>当encoding方式为OBJ_ENCODING_INTSET时，又有两种情况：</p>
 <ul>
 <li>若新增的元素本身非数字（value转long long失败），需要通过setTypeConvert转化后再存储；</li>
 <li>若新增的元素本身是数字，则用intsetAdd新增元素。且当新增成功，但intset的元素个数过多（个数大于server.set_max_intset_entries时。该参数可配置，默认为512），同样会触发setTypeConvert，将OBJ_ENCODING_INTSET转化为OBJ_ENCODING_HT，为避免转化过程中发生字典的rehash操作，代码中用 dictExpand主动扩容。</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <p>移除元素的时候同样分两种情况进行处理：</p>
-
 <ul>
 <li>若encoding为OBJ_ENCODING_HT时，则调用dictDelete处理删除元素时，会检查字典容量，字典容量不足也会触发扩容操作。</li>
 <li>当encoding为OBJ_ENCODING_INTSET时，调用intsetRemove处理</li>
 </ul>
-
 <p>Set集合相关命令如下表：</p>
-
 <table>
 <thead>
 <tr>
@@ -521,7 +489,6 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>sadd key member [member ...]</td>
@@ -615,13 +582,9 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_5">Redis 中的 zset  有序集合</h2>
-
+<h2><a id="redis%E4%B8%AD%E7%9A%84-zset%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 中的 zset  有序集合</h2>
 <p>有序集合中，用到的关键数据结构是ziplist以及dict和skiplist，当服务器属性server.zset_max_ziplist_entries的值大于0且元素的member 长度小于服务器属性server.zset_max_ziplist_value的值（默认为64）时，使用的是ziplist，否则使用的是dict和skiplist。</p>
-
 <p>有序集合里面的成员是不能重复的都是唯一的，但是，不同成员间有可能有相同的分数。当多个成员有相同的分数时，相同分数的成员按照字典规则相对排序，字典顺序排序用的是二进制，它比较的是字符串的字节数组。</p>
-
 <table>
 <thead>
 <tr>
@@ -631,12 +594,11 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
-<td>zadd key [nx|xx] [ch] [incr] score member [score member]</td>
+<td>zadd key [nx</td>
+<td>xx] [ch] [incr] score member [score member]</td>
 <td>将一个或多个member元素及其分值score加入到有序集合对应的key当中。其中，分值score可以是整数值或双精度浮点数。XX：只更新已经存在的元素，不添加元素。NX：不更新已经存在的元素，总是添加新的元素。CH：将返回值从添加的新元素数量修改为更改的元素总数。INCR：对成员的分数进行递增操作。</td>
-<td></td>
 <td></td>
 </tr>
 <tr>
@@ -785,18 +747,13 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_6">Redis 中的 hash 散列表</h2>
-
+<h2><a id="redis%E4%B8%AD%E7%9A%84-hash%E6%95%A3%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 中的 hash 散列表</h2>
 <p>Redis散列存储有 ziplist 和 散列表(hashtable) 2种，有时我们需要从ziplist编码转换为散列表编码。值得注意的是，即使后期满足条件，也不会从散列表编码转换为ziplist编码。</p>
-
 <p>当需要存储的key-value结构同时满足下面两个条件时，采用ziplist作为底层存储：</p>
-
 <ul>
 <li>key-value结构的所有键值对的字符串长度都小于hash-max- ziplist-value（默认值64），该值可以通过配置文件配置</li>
 <li>散列对象保存的键值对的个数（一个键值对记为1个）小于hash-max-ziplist-entries（默认值512），该值也可以通过配置文件配置。</li>
 </ul>
-
 <table>
 <thead>
 <tr>
@@ -806,7 +763,6 @@ A: 在服务端接收到命令的时候，就已经判断了命令的最大长�
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>hset key field value</td>

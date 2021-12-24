@@ -117,32 +117,22 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>哨兵是Redis的高可用方案，可以在Redis Master发生故障时自动选择一个Redis Slave切换为Master，继续对外提供服务。</p>
-
 <p>redis中 sentinel 有效的解决了故障转移的问题，也解决了主节点下线客户端无法识别新的可用节点的问题，但是如果是从节点下线了，sentinel是不会对其进行故障转移的，并且连接从节点的客户端也无法获取到新的可用从节点，而这些问题在Cluster中都得到了有效的解决。</p>
-
-<h2 id="toc_0">Redis 哨兵</h2>
-
-<p>首先我们看一个典型的哨兵部署方案，如下图所示：<br/>
-<figure><img src="media/15948275035029/15949126995404.jpg" alt="" style="width:845px;"/></figure></p>
-
+<h2><a id="redis%E5%93%A8%E5%85%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 哨兵</h2>
+<p>首先我们看一个典型的哨兵部署方案，如下图所示：<br />
+<figure><img src="media/15948275035029/15949126995404.jpg" alt="" style="width:845px;" /></figure></p>
 <p>该方案中，有一个Redis Master，该Master下有两个Slave。3个哨兵同时与Master和Slave建立连接，并且哨兵之间也互相建立了连接。</p>
-
 <p>哨兵通过与Master和Slave的通信，能够清楚每个Redis服务的健康状态。这样，当Master发生故障时，哨兵能够知晓Master的此种情况，然后通过对Slave健康状态、优先级、同步数据状态等的综合判断，选取其中一个Slave切换为Master，并且修改其他Slave指向新的Master地址。</p>
-
 <p>为什么实际中至少会部署3个以上哨兵并且哨兵数量最好是奇数呢？</p>
-
 <p>哨兵是Redis的高可用机制，保证了Redis服务不出现单点故障。如果哨兵只部署一个，哨兵本身就成为了一个单点。那假如部署2个哨兵呢？当Redis的Master发生故障时，如果2个哨兵同时执行切换操作肯定不行，哨兵之间必须先约定好由谁来执行此次切换操作，此时就涉及了哨兵之间选leader的操作。</p>
-
-<p>思考如下问题：<br/>
-1、切换完成之后，客户端和其他哨兵如何知道现在提供服务的Redis Master是哪一个呢？<br/>
-答: 可以通过subscribe__sentinel__:hello频道，知道当前提供服务的Master的IP和Port。<br/>
-2、假设执行切换的哨兵发生了故障，切换操作是否会由其他哨兵继续完成呢？<br/>
-答 ：执行切换的哨兵发生故障后，剩余哨兵会重新选主，并且重新开始执行切换流程<br/>
-3、当故障Master恢复之后，会继续作为Master提供服务还是会作为一个Slave提供服务？<br/>
+<p>思考如下问题：<br />
+1、切换完成之后，客户端和其他哨兵如何知道现在提供服务的Redis Master是哪一个呢？<br />
+答: 可以通过subscribe__sentinel__:hello频道，知道当前提供服务的Master的IP和Port。<br />
+2、假设执行切换的哨兵发生了故障，切换操作是否会由其他哨兵继续完成呢？<br />
+答 ：执行切换的哨兵发生故障后，剩余哨兵会重新选主，并且重新开始执行切换流程<br />
+3、当故障Master恢复之后，会继续作为Master提供服务还是会作为一个Slave提供服务？<br />
 答 ：Redis中主从切换完成之后，当故障Master恢复之后，会作为新Master的一个Slave来提供服务。</p>
-
 <p>这里有一份典型的哨兵配置文件（哨兵的配置文件必须具有可写权限。）：</p>
-
 <pre><code class="language-conf">//监控一个名称为mymaster的Redis Master服务，地址和端口号为127.0.0.1:6379,quorum为2 
 sentinel monitor mymaster 127.0.0.1 6379 2 
 //如果哨兵60s内未收到mymaster的有效ping回复，则认为mymaster处于down的状态
@@ -159,43 +149,30 @@ sentinel down-after-milliseconds resque 10000
 sentinel failover-timeout resque 180000 
 sentinel parallel-syncs resque 5
 </code></pre>
-
 <p>quorum在哨兵中有两层含义。</p>
-
 <ul>
 <li>第一层含义为：如果某个哨兵认为其监听的Master处于下线的状态，这个状态在Redis中标记为S_DOWN，即<strong>主观下线</strong>。假设quorum配置为2，则当有两个哨兵同时认为一个Master处于下线的状态时，会标记该Master为O_DOWN，即客观下线。只有一个Master处于客观下线状态时才会开始执行切换。</li>
 <li>第二层含义为：假设有5个哨兵，quorum配置为4。首先，判断<strong>客观下线</strong>需要4个哨兵才能认定。其次，当开始执行切换时，会从5个哨兵中选择一个leader执行该次选举，此时一个哨兵也必须得到4票才能被选举为leader，而不是3票（即哨兵的大多数）。</li>
 </ul>
-
 <p>可以看到配置文件中首先配置了需要监控的Redis Master服务器，然后设置了一些服务相关的参数，并没有Redis Slave和其他哨兵的配置。而通过图22-1，我们看到每个哨兵都必须与所有监控的Redis Master下的Slave服务器以及其他监控该Master的哨兵建立连接。显然，哨兵只通过配置文件是不能知道这些信息的。进一步，如果在配置文件中硬编码写出从服务器和其他哨兵的信息，会丧失灵活性。</p>
-
 <p>那么，Redis是如何实现如上所述的信息发现呢，我们通过下面的章节来了解一下。</p>
-
-<h3 id="toc_1">哨兵机制的实现</h3>
-
+<h3><a id="%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6%E7%9A%84%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>哨兵机制的实现</h3>
 <p>哨兵启动之后会先与配置文件中监控的Master建立两条连接，一条称为命令连接，另一条称为消息连接。哨兵就是通过如上两条连接发现其他哨兵和Redis Slave服务器，并且与每个Redis Slave也建立同样的两条连接。</p>
-
 <p>哨兵可以直接使用 redis-server 命令启动，如下：</p>
-
 <pre><code class="language-shell">redis-server /path/sentinel.conf --sentinel
 或者
 redis-sentinel /path/sentinel.conf
 </code></pre>
-
-<p>sentinel 启动时的执行步骤如下：<br/>
-1)初始化服务器。<br/>
-2)将普通 Redis服务器使用的代码替换成 Sentinel专用代码。<br/>
-3)初始化 Sentinel状态。<br/>
-4)根据给定的配置文件,初始化 Sentinel的监视主服务器列表。<br/>
+<p>sentinel 启动时的执行步骤如下：<br />
+1)初始化服务器。<br />
+2)将普通 Redis服务器使用的代码替换成 Sentinel专用代码。<br />
+3)初始化 Sentinel状态。<br />
+4)根据给定的配置文件,初始化 Sentinel的监视主服务器列表。<br />
 5)创建连向主服务器的网络连接。</p>
-
 <p>单个哨兵连接示意图：</p>
-
-<p><figure><img src="media/15948275035029/15950831184191.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/15948275035029/15950831184191.jpg" alt="" /></figure></p>
 <p>那么哨兵启动后两条连接是怎么建立的呢？</p>
-
-<pre><code class="language-c">main() {     ...
+<pre><code class="language-C">main() {     ...
     //检测是否以sentinel模式启动    
     server.sentinel_mode = checkForSentinelMode(argc,argv);    
      ...
@@ -212,50 +189,42 @@ redis-sentinel /path/sentinel.conf
     ...
 }
 </code></pre>
-
 <p>查看哨兵启动的主流程发现，并没有建立连接相关的逻辑。那么只可能是 Redis的时间任务 serverCron了，</p>
-
-<pre><code class="language-c">serverCron(){
+<pre><code class="language-C">serverCron(){
     if (server.sentinel_mode) sentinelTimer();
 }
 </code></pre>
-
 <p>哨兵中每次执行serverCron时，都会调用sentinelTimer()函数。该函数会建立连接，并且定时发送心跳包并采集信息。该函数主要功能如下：</p>
-
 <ul>
-<li>建立命令连接和消息连接。消息连接建立之后会订阅Redis服务的__sentinel__:hello频道。</li>
-<li><p>在命令连接上每10s发送info命令进行信息采集；每1s在命令连接上发送ping命令探测存活性；每2s在命令连接上发布一条信息，信息格式如下:</p>
-<pre><code class="language-text">sentinel_ip,sentinel_port,sentinel_runid,current_epoch,master_name,master_ip,master_port,master_config_epoch 
-</code></pre>
-<p>哨兵的IP、哨兵的端口、哨兵的ID（即上文所述40字节的随机字符串）、当前纪元（用于选举和主从切换）、Redis Master的名称、Redis Master的IP、Redis Master的端口、Redis Master的配置纪元（用于选举和主从切换）。</p></li>
-<li><p>检测服务是否处于主观下线状态。<br/>
-主观下线状态的探测针对所有的Master，Slave和哨兵。</p></li>
-<li><p>检测服务是否处于客观下线状态并且需要进行主从切换。<br/>
-只会对Master服务器进行客观下线的判断。</p></li>
+<li>
+<p>建立命令连接和消息连接。消息连接建立之后会订阅Redis服务的__sentinel__:hello频道。</p>
+</li>
+<li>
+<p>在命令连接上每10s发送info命令进行信息采集；每1s在命令连接上发送ping命令探测存活性；每2s在命令连接上发布一条信息，信息格式如下:</p>
+<pre><code class="language-plain_text"></code></pre>
+</li>
 </ul>
-
+<p>sentinel_ip,sentinel_port,sentinel_runid,current_epoch,master_name,master_ip,master_port,master_config_epoch<br />
+```<br />
+哨兵的IP、哨兵的端口、哨兵的ID（即上文所述40字节的随机字符串）、当前纪元（用于选举和主从切换）、Redis Master的名称、Redis Master的IP、Redis Master的端口、Redis Master的配置纪元（用于选举和主从切换）。</p>
+<ul>
+<li>检测服务是否处于主观下线状态。<br />
+主观下线状态的探测针对所有的Master，Slave和哨兵。</li>
+<li>检测服务是否处于客观下线状态并且需要进行主从切换。<br />
+只会对Master服务器进行客观下线的判断。</li>
+</ul>
 <p>哨兵启动之后通过info命令进行信息采集，据此能够知道一个Redis Master有多少Slaves，然后在下一次执行sentinelTimer函数时会和所有的Slaves分别建立命令连接与消息连接。而通过订阅消息连接上的消息可以知道其他的哨兵。哨兵与哨兵之间只会建立一条命令连接，每1s发送一个ping命令进行存活性探测，每2s推送（publish）一条消息。</p>
-
 <p>对于哨兵来说，如果有大于等于quorum个哨兵同时认为一台Master处于主观下线状态，才会将该Master标记为客观下线。那么，一个哨兵如何知道其他哨兵对一台Master服务器的判断状态呢？</p>
-
 <p>Redis会向监控同一台Master的所有哨兵通过命令连接发送如下格式的命令:</p>
-
-<pre><code class="language-text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者* 
+<pre><code class="language-plain_text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者* 
 </code></pre>
-
 <p>其中最后一项当需要投票时发送sentinel_runid，否则发送一个* 号。</p>
-
 <p>据此能够知道其他哨兵对该Master服务状态的判断，如果达到要求，就标记该Master为客观下线。</p>
-
 <p>如果判断一个Redis Master处于客观下线状态，这时就需要开始执行主从切换了。</p>
-
-<h2 id="toc_2">选举哨兵领头节点</h2>
-
-<p>Sentinel系统选举领头 Sentinel的方法是对Raf算法的领头选举方法的实现。<br/>
+<h2><a id="%E9%80%89%E4%B8%BE%E5%93%A8%E5%85%B5%E9%A2%86%E5%A4%B4%E8%8A%82%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>选举哨兵领头节点</h2>
+<p>Sentinel系统选举领头 Sentinel的方法是对Raf算法的领头选举方法的实现。<br />
 当一个主服务器被判断为客观下线时,监视这个下线主服务器的各个 Sentinel会进行协商，选举出一个领头 Sentinel,并由领头 Sentinel对下线主服务器执行故障转移操作。</p>
-
 <p>Redis选举领头 Sentinel的规则和方法：</p>
-
 <ul>
 <li>所有在线的 Sentinel都有被选为领头 Sentinel的资格,换句话说,监视同一个主服务器的多个在线 Sentinel中的任意一个都有可能成为领头 Sentinel 口每次进行领头 Sentinel选举之后,不论选举是否成功,所有 Sentinel的配置纪元( configuration epoch)的值都会自增一次。配置纪元实际上就是一个计数器,并没有什么特别的。</li>
 <li>在一个配置纪元里面,所有 Sentinel都有一次将某个 Sentinel设置为局部领头Sentinel的机会,并且局部领头一旦设置,在这个配置纪元里面就不能再更改。</li>
@@ -264,23 +233,18 @@ redis-sentinel /path/sentinel.conf
 <li>Sentinel设置局部领头 Sentinel的规则是先到先得:最先向目标 Sentinel发送设置要求的源 Sentinel将成为目标 Sentinel的局部领头 Sentinel,而之后接收到的所有设置要求都会被目标 Sentinel拒绝。</li>
 <li>目标 Sentinel在接收到 SENTINEL is- master-down-by-addr命令之后,将向源 Sentinel返回一条命令回复,回复中的1 eader_ runid参数和 leader epoch 参数分别记录了目标 Sentinel的局部领头 Sentinel的运行ID和配置纪元。</li>
 <li>源 Sentinel在接收到目标 Sentinel返回的命令回复之后,会检查回复中1 eader epoch参数的值和自己的配置纪元是否相同,如果相同的话,那么源 Sentinel g继续取出回复中的1 eader runid参数,如果1 eader runid参数的值和源 Sentinel 的运行D一致,那么表示目标 Sentinel将源 Sentinel设置成了局部领头 Sentinel</li>
-<li>如果有某个 Sentinel被半数以上的 Sentinel设置成了局部领头 Sentinel,那么这个Sentinel成为领头 Sentinel。举个例子,在一个由10个 Sentinel组成的 Sentinel系统里面,只要有大于等于10/2+1=6个 Sentinel将某个 Sentinel设置为局部领头Sentinel,那么被设置的那个 Sentinel就会成为领头 Sentinel </li>
+<li>如果有某个 Sentinel被半数以上的 Sentinel设置成了局部领头 Sentinel,那么这个Sentinel成为领头 Sentinel。举个例子,在一个由10个 Sentinel组成的 Sentinel系统里面,只要有大于等于10/2+1=6个 Sentinel将某个 Sentinel设置为局部领头Sentinel,那么被设置的那个 Sentinel就会成为领头 Sentinel</li>
 <li>因为领头 Sentinel的产生需要半数以上 Sentinel I的支持,并且每个 Sentinel在每个配置纪元里面只能设置一次局部领头 Sentinel,所以在一个配置纪元里面,只会出现个领头 Sentinel 在一段时间之后再次进行选举,直到选出领头 Sentinel为此。</li>
 <li>那如果在给定时限内,没有一个 Sentinel被选举为领头 Sentinel，那么各个 Sentinel将在一段时间之后再次进行选举，直到选出领头sentinel为止。</li>
 </ul>
-
-<h2 id="toc_3">故障转移</h2>
-
-<p>在选举产生出领头 Sentinel之后,领头 Sentinel将对已下线的主服务器执行故障转移操作,该操作包含以下三个步骤: <br/>
-1)在已下线主服务器属下的所有从服务器里面,挑选出一个从服务器,并将其转换为主服务器。<br/>
-2)让已下线主服务器属下的所有从服务器改为复制新的主服务器。<br/>
+<h2><a id="%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>故障转移</h2>
+<p>在选举产生出领头 Sentinel之后,领头 Sentinel将对已下线的主服务器执行故障转移操作,该操作包含以下三个步骤:<br />
+1)在已下线主服务器属下的所有从服务器里面,挑选出一个从服务器,并将其转换为主服务器。<br />
+2)让已下线主服务器属下的所有从服务器改为复制新的主服务器。<br />
 3)将已下线主服务器设置为新的主服务器的从服务器,当这个旧的主服务器重新上线时,它就会成为新的主服务器的从服务器。</p>
-
-<h2 id="toc_4">主从切换</h2>
-
+<h2><a id="%E4%B8%BB%E4%BB%8E%E5%88%87%E6%8D%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>主从切换</h2>
 <p>当Redis哨兵方案中的Master处于客观下线状态，为了保证Redis 的高可用性，此时需要执行主从切换。即将其中一个Slave提升为Master，其他Slave从该提升的Slave继续同步数据，主从切换有一个状态迁移图，其所有状态定义如下：</p>
-
-<pre><code class="language-c">//没有进行切换
+<pre><code class="language-C">//没有进行切换
 #define SENTINEL_FAILOVER_STATE_NONE 0                  
 //等待开始进行切换(等待哨兵之间进行选主) 
 #define SENTINEL_FAILOVER_STATE_WAIT_START 1 
@@ -295,32 +259,22 @@ redis-sentinel /path/sentinel.conf
 //重置Master，将Master的IP：PORT设置为被选中从服务器的IP：PORT        
 #define SENTINEL_FAILOVER_STATE_UPDATE_CONFIG 6
 </code></pre>
-
 <p>主从切换状态转换图</p>
-
-<p><figure><img src="media/15948275035029/15951641443338.jpg" alt="" style="width:622px;"/></figure></p>
-
+<p><figure><img src="media/15948275035029/15951641443338.jpg" alt="" style="width:622px;" /></figure></p>
 <p>当一个哨兵发现一台Master处于主观下线状态时，会首先将切换状态更新为SENTINEL_FAILOVER_STATE_WAIT_START，并且将当前纪元加1。然后发送如下命令要求其他哨兵给自己投票。</p>
-
-<pre><code class="language-text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者*
+<pre><code class="language-plain_text">SENTINEL   is-master-down-by-addr    master_ip   master_port   current_epoch   sentinel_runid或者*
 </code></pre>
-
 <p>最后一项参数为sentinel_runid，即该哨兵的ID，第5项current_epoch在开始执行切换后会加1。 当从哨兵中选出一个主哨兵之后，接下来的切换都由该主哨兵执行。</p>
-
 <p>主哨兵首先会将当前切换状态更改为SENTINEL_FAILOVER_STATE_SELECT_SLAVE，即开始选择一台从服务器作为新的主服务器。那么，假设有多台从服务器，该选择哪台呢？</p>
-
 <p>Redis中选择主服务器的规则如下:</p>
-
 <ul>
 <li>如果该Slave处于主观下线状态，则不能被选中。</li>
 <li>如果该Slave 5s之内没有有效回复ping命令或者与主服务器断开时间过长，则不能被选中</li>
 <li>如果slave-prio-rity为0，则不能被选中（slave-priority可以在配置文件中指定。正整数，值越小优先级越高，当指定为0时，不能被选为主服务器）。</li>
 <li>在剩余Slave中比较优先级，优先级高的被选中；如果优先级相同，则有较大复制偏移量的被选中；否则按字母序选择排名靠前的Slave。</li>
 </ul>
-
 <p>当选中从服务器之后，将当前切换状态更改为SENTINEL_FAILOVER_STATE_SEND_SLAVEOF_NOONE，并且在下一次时间任务调度时执行该步骤。该状态需要把选择的Redis Slave切换为Redis Master。</p>
-
-<pre><code class="language-text">//开启一个事务
+<pre><code class="language-plain_text">//开启一个事务
 MULTI
 //关闭该从服务器的复制功能，将其转换为一个主服务器     
 SLAVEOF NO ONE    
@@ -331,12 +285,9 @@ CLIENT KILL TYPE normal
 //执行事务
 EXEC                
 </code></pre>
-
 <p>执行完该步骤之后，会将切换状态更新为SENTINEL_FAILOVER_STATE_WAIT_PRO-MOTION, 上一步我们向被选中的从服务器发送了slaveof no one命令，执行完之后Redis中并没有处理返回值，而是在下一次info命令的返回中检查该从服务器的role字段，如果返回role:master，说明该从服务器已变更自己的角色为主服务器。于是切换状态变更为SENTINEL_FAILOVER_STATE_RECONF_SLAVES。</p>
-
 <p>在该步骤设置SENTINEL_FAILOVER_STATE_RECONF_SLAVES后，哨兵会依次向其他从服务器发送切换主服务器的slaveof命令 ：</p>
-
-<pre><code class="language-text">//开启一个事务
+<pre><code class="language-plain_text">//开启一个事务
 MULTI
 //将该服务器设置为向新的主服务器请求数据
 SLAVEOF IP PORT
@@ -347,11 +298,8 @@ CLIENT KILL TYPE normal
 //执行事务
 EXEC
 </code></pre>
-
 <p>如果所有的从服务器都已更新完毕，则切换状态更新为SENTINEL_FAILOVER_STATE_UPDATE_CONFIG。该步骤会将哨兵中监听的Master（旧Master）重置为被选中的从服务器（新Master），并且将旧Master也配置为新Master的从服务器。然后将切换状态更新为SENTINEL_FAILOVER_STATE_NONE。至此，主从切换已完成。</p>
-
-<h2 id="toc_5">哨兵相关命令</h2>
-
+<h2><a id="%E5%93%A8%E5%85%B5%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>哨兵相关命令</h2>
 <ul>
 <li>SENTINEL MASTERS：返回该哨兵监控的所有Master的相关信息。</li>
 <li>SENTINEL MASTER<name>：返回指定名称Master的相关信息。</li>
@@ -368,9 +316,7 @@ EXEC
 <li>SENTINEL SET<mastername>[<option><value>...]：设置指定名称的Master的各类参数（例如超时时间等）。</li>
 <li>SENTINEL SIMULATE-FAILURE<flag><flag>...<flag>：模拟崩溃。flag可以为crash-after-election或者crash-after-promotion，分别代表切换时选举完成主哨兵之后崩溃以及将被选中的从服务器推举为Master之后崩溃。</li>
 </ul>
-
-<h2 id="toc_6">总结</h2>
-
+<h2><a id="%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>总结</h2>
 <ul>
 <li>Sentinel只是一个运行在特殊模式下的 Redis服务器,它使用了和普通模式不同的命第三部分多机据库的实现令表,所以 Sentinel模式能够使用的命令和普通 Redis服务器能够使用的命令不同。</li>
 <li>Sentinel会读入用户指定的配置文件,为每个要被监视的主服务器创建相应的实例结构,并创建连向主服务器的命令连接和订阅连接,其中命令连接用于向主服务器发送命令请求,而订阅连接则用于接收指定频道的消息。</li>

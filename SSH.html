@@ -116,36 +116,26 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>现在有服务器 Server-A,用户名: jetty, ip: 172.16.65.133, 现在希望从本地能够免密访问 Server-A。<br/>
+                    <p>现在有服务器 Server-A,用户名: jetty, ip: 172.16.65.133, 现在希望从本地能够免密访问 Server-A。<br />
 这里我们需要 ssh-keygen 命令来帮我们完成这项任务。</p>
-
-<p>ssh-keygen: 为了让两个linux机器之间使用ssh不需要用户名和密码。<br/>
+<p>ssh-keygen: 为了让两个linux机器之间使用ssh不需要用户名和密码。<br />
 采用了数字签名RSA或者DSA来完成这个操作。</p>
-
-<h2 id="toc_0">生成本地公钥和私钥</h2>
-
-<pre><code class="language-text">&gt; ssh-keygen -t rsa -C &#39;注释&#39;
+<h2><a id="%E7%94%9F%E6%88%90%E6%9C%AC%E5%9C%B0%E5%85%AC%E9%92%A5%E5%92%8C%E7%A7%81%E9%92%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>生成本地公钥和私钥</h2>
+<pre><code class="language-plain_text">&gt; ssh-keygen -t rsa -C '注释'
 </code></pre>
-
 <p>本地机器 .ssh 目录下生成文件 :  id_rsa  id_rsa.pub</p>
-
-<h2 id="toc_1">将本地生成的id_rsa.pub(公钥)追加到 Server-A 的目录~/.ssh/authorized_keys文件中</h2>
-
-<pre><code class="language-text">&gt; ssh-copyid jetty@172.16.65.133
+<h2><a id="%E5%B0%86%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90%E7%9A%84id-rsa-pub%E5%85%AC%E9%92%A5%E8%BF%BD%E5%8A%A0%E5%88%B0-server-a%E7%9A%84%E7%9B%AE%E5%BD%95-sshauthorized-keys%E6%96%87%E4%BB%B6%E4%B8%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>将本地生成的id_rsa.pub(公钥)追加到 Server-A 的目录~/.ssh/authorized_keys文件中</h2>
+<pre><code class="language-plain_text">&gt; ssh-copyid jetty@172.16.65.133
 </code></pre>
-
 <p>上传文件方式：</p>
-
 <ul>
-<li>cat ~/.ssh/id_rsa.pub | ssh -p 22 jetty@172.16.65.133 &#39;cat &gt;&gt; ~/.ssh/authorized_keys&#39;</li>
+<li>cat ~/.ssh/id_rsa.pub | ssh -p 22 jetty@172.16.65.133 'cat &gt;&gt; ~/.ssh/authorized_keys'</li>
 <li>ssh-copyid jetty@172.16.65.133</li>
-<li>scp -P 22 ~/.ssh/id_rsa.pub jetty@172.16.65.133:~/。<br/>
+<li>scp -P 22 ~/.ssh/id_rsa.pub jetty@172.16.65.133:~/。<br />
 注意： Server-A 服务器上.ssh 目录的权限为700，其下文件authorized_keys和私钥的权限为600。否则会因为权限问题导致无法免密码登录。</li>
 </ul>
-
 <p>上面步骤做完之后我们就可以免密登录 Server-A 了</p>
-
-<pre><code class="language-text">&gt; ssh jetty@172.16.65.133
+<pre><code class="language-plain_text">&gt; ssh jetty@172.16.65.133
 Last login: Sun Mar 29 12:17:53 2020 from 172.16.65.1
 -bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
 &gt; [jetty@jetty ~]$ 

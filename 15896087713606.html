@@ -117,54 +117,41 @@
                 </div>
                   <article class="markdown-body single-content">
                     <ul>
-<li>
-<a href="#toc_0">模板方法模式的定义</a>
-</li>
-<li>
-<a href="#toc_1">模板方法模式结构</a>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AE%9A%E4%B9%89">模板方法模式的定义</a></li>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84">模板方法模式结构</a>
 <ul>
-<li>
-<a href="#toc_2">模板方法模式 UML</a>
-</li>
+<li><a href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8Fuml">模板方法模式 UML</a></li>
 </ul>
 </li>
-<li>
-<a href="#toc_3">使用场景</a>
-</li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">使用场景</a></li>
 </ul>
 
-
-<h2 id="toc_0">模板方法模式的定义</h2>
-
-<p>模板方法(Template Method)模式: 定义一个操作中的算法的骨架，而将一些步骤延<br/>
+<h2><a id="%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>模板方法模式的定义</h2>
+<p>模板方法(Template Method)模式: 定义一个操作中的算法的骨架，而将一些步骤延<br />
 迟到子类中。使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
-
 <p>模板方法模式也是为了解决某些变化对系统带来的影响而设计的。使用模板方法使系统扩展性增强，最小化了变化对系统的影响。</p>
-
-<h2 id="toc_1">模板方法模式结构</h2>
-
+<h2><a id="%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>模板方法模式结构</h2>
 <ul>
-<li><p>抽象类</p>
+<li>
+<p>抽象类</p>
 <ul>
 <li>定义了一到多个的抽象方法，以供具体的子类来实现它们</li>
 <li>需要实现一个模板方法，来定义一个算法的骨架。该模板方法不仅调用前面的抽象方法，也可以调用其他的操作，只要能完成自身的使命。</li>
-</ul></li>
-<li><p>具体类<br/>
-实现父类中的抽象方法以完成算法中与特定子类相关的步骤。</p></li>
 </ul>
-
-<h3 id="toc_2">模板方法模式 UML</h3>
-
-<p><figure><img src="media/15896087713606/15917532214702.jpg" alt=""/></figure></p>
-
-<h2 id="toc_3">使用场景</h2>
-
+</li>
+<li>
+<p>具体类<br />
+实现父类中的抽象方法以完成算法中与特定子类相关的步骤。</p>
+</li>
+</ul>
+<h3><a id="%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8Fuml" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>模板方法模式 UML</h3>
+<p><figure><img src="media/15896087713606/15917532214702.jpg" alt="" /></figure></p>
+<h2><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h2>
 <p>模板方法适用于以下情况:</p>
-
 <ul>
 <li>一次性实现一个算法的不变的部分，并将可变的行为留给子类来实现。</li>
 <li>各子类中公共的行为应被提取出来并集中到一个公共父类中以避免代码重复。</li>
-<li>控制子类扩展。<br/>
+<li>控制子类扩展。<br />
 模板方法只在特定点调用操作，这样就只允许在这些点进行扩展。如果你不愿子类来修改你的模板方法定义的框架，你可以采用两种方式来做:一是在 API 中不体现出你的模板方法;或者将你的模板方法置为 final 就可以了。 可以看出，使用模板方法模式可以将代码的公共行为提取出来，达到复用的目的。而且，在模板方法模式中，是由父类的模板方法来控制子类中的具体实现。这样你在实现子类的时候，根本不需要对业务流程有太多的了解。</li>
 </ul>
 

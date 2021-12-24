@@ -116,40 +116,27 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">配置静态IP</h2>
-
-<h3 id="toc_1">把网络配置改成nat模式</h3>
-
-<h3 id="toc_2">通过Mac终端进入VMware Fusion的vmnet8目录</h3>
-
-<pre><code class="language-text">cd /Library/Preferences/VMware Fusion/vmnet8
+                    <p>##配置静态IP</p>
+<h3><a id="%E6%8A%8A%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE%E6%94%B9%E6%88%90nat%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>把网络配置改成nat模式</h3>
+<h3><a id="%E9%80%9A%E8%BF%87mac%E7%BB%88%E7%AB%AF%E8%BF%9B%E5%85%A5vmware-fusion%E7%9A%84vmnet8%E7%9B%AE%E5%BD%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>通过Mac终端进入VMware Fusion的vmnet8目录</h3>
+<pre><code class="language-plain_text">cd /Library/Preferences/VMware Fusion/vmnet8
 </code></pre>
-
 <ul>
 <li>查看nat.conf内容</li>
 </ul>
-
-<p><figure><img src="media/15855011797141/15855038592835.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/15855011797141/15855038592835.jpg" alt="" /></figure></p>
 <ul>
 <li>查看cat dhcpd.conf</li>
 </ul>
-
-<p><figure><img src="media/15855011797141/15855037846968.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/15855011797141/15855037846968.jpg" alt="" /></figure></p>
 <p>注意range 这个是虚拟机允许选择的静态ip地址范围，自定义的静态ip地址必须要在这个范围内</p>
-
-<h3 id="toc_3">登录虚拟机 CentOS7</h3>
-
+<h3><a id="%E7%99%BB%E5%BD%95%E8%99%9A%E6%8B%9F%E6%9C%BAcentos7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>登录虚拟机 CentOS7</h3>
 <p>进入虚拟机的network-scripts目录</p>
-
-<pre><code class="language-text">cd /etc/sysconfig/network-scripts
+<pre><code class="language-plain_text">cd /etc/sysconfig/network-scripts
 </code></pre>
-
-<p>找到ifcfg-en开头的文件,上图中我的是ifcfg-ens33<br/>
+<p>找到ifcfg-en开头的文件,上图中我的是ifcfg-ens33<br />
 修改前：</p>
-
-<pre><code class="language-text">&gt; cd /etc/sysconfig/network-scripts
+<pre><code class="language-plain_text">&gt; cd /etc/sysconfig/network-scripts
 &gt; vim ifcfg-ens33
 
 TYPE=Ethernet
@@ -170,10 +157,8 @@ ONBOOT=yes
 MACADDR=random
 IPV6_PRIVACY=no
 </code></pre>
-
 <p>我们将它改成如下配置:</p>
-
-<pre><code class="language-text">TYPE=Ethernet
+<pre><code class="language-plain_text">TYPE=Ethernet
 PROXY_METHOD=none
 BROWSER_ONLY=no
 BOOTPROTO=static
@@ -195,12 +180,9 @@ GATEWAY=172.16.65.2
 NETMASK=255.255.255.0
 DNS1=114.114.114.114
 </code></pre>
-
 <p>保存之后，重启服务使修改生效</p>
-
-<p>service network restart<br/>
+<p>service network restart<br />
 ping一下百度看看，成功Ping到</p>
-
 <p>接下来我们就可以通过SecureCRT等工具远程连接了，有一点请记住，如果你换了一个地方上网的话，可能会发现你的虚拟机有不通了，那是因为DNS地址发生了变化，此时只需要再次编辑ifcfg-enxxx文件，然后加上你现在网络的DNS地址即可</p>
 
                   </article>

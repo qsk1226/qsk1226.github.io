@@ -114,7 +114,164 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    
+                    <p>RequestResponseBodyAdviceChain 实现了接口 RequestBodyAdvice, ResponseBodyAdvice</p>
+<p>ControllerAdviceBean</p>
+<p>经常和 @RestControllerAdvice，ExceptionHandler 注解一起使用</p>
+<p>通过实现 ResponseBodyAdvice 接口对返回值进行处理，如下面代码所示：</p>
+<pre><code class="language-java">@Component
+@RestControllerAdvice(&quot;com.taoche.gift&quot;)
+public class RetTypeHandler implements ResponseBodyAdvice&lt;Object&gt; {
+
+	/**
+	 * 处理非 void、json序列化的、返回值类型非 ResponseResult的方法
+	 */
+	@Override
+	public boolean supports(MethodParameter returnType, Class&lt;? extends HttpMessageConverter&lt;?&gt;&gt; converterType) {
+		Class&lt;?&gt; type = Objects.requireNonNull(returnType.getMethod()).getReturnType();
+		return AbstractJackson2HttpMessageConverter.class.isAssignableFrom(converterType) &amp;&amp; !ResponseResult.class.isAssignableFrom(type);
+	}
+
+	@Override
+	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class&lt;? extends HttpMessageConverter&lt;?&gt;&gt; selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+		if (response instanceof ServletServerHttpResponse) {
+			HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
+			HttpStatus.Series series = HttpStatus.Series.valueOf(servletResponse.getStatus());
+			//客户端或服务端错误
+			if (series == HttpStatus.Series.CLIENT_ERROR || series == HttpStatus.Series.SERVER_ERROR) {
+				return body;
+			}
+
+			if (returnType.getDeclaringClass().equals(GlobalExceptionHandler.class)) {
+				return body;
+			}
+		}
+
+		if (body != null &amp;&amp; body.getClass().equals(ResponseResult.class)) {
+			return body;
+		}
+
+		return ResponseResult.successful(body);
+	}
+}
+
+</code></pre>
+<p>对应用的异常进行统一处理</p>
+<pre><code class="language-java">@Slf4j
+@RestControllerAdvice(&quot;com.taoche.gift&quot;)
+public class GlobalExceptionHandler {
+
+	/**
+	 * hibernate validator 数据绑定验证异常拦截
+	 *
+	 * @param e 绑定验证异常
+	 * @return 错误返回消息
+	 */
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(BindException.class)
+	public ResponseResult&lt;?&gt; validateErrorHandler(BindException e) {
+		ObjectError error = e.getAllErrors().get(0);
+		log.info(&quot;数据验证异常：{}&quot;, error.getDefaultMessage());
+		return ResponseResult.fail(new ApiException(ResponseCode.ApiExceptions.BAD_REQUEST.getCode(), error.getDefaultMessage()));
+	}
+
+	/**
+	 * 未拦截错误
+	 */
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(Exception.class)
+	public ResponseResult&lt;?&gt; otherException(Exception exception, HandlerMethod handlerMethod) {
+		if (log.isDebugEnabled()) {
+			log.debug(exception.getMessage(), exception);
+		} else {
+			outPutExceptionLog(exception, handlerMethod);
+		}
+		return ResponseResult.fail(new ApiException(ResponseCode.ApiExceptions.BAD_REQUEST));
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseResult&lt;?&gt; methodArgumentNotValidException(MethodArgumentNotValidException exception) {
+		BindingResult result = exception.getBindingResult();
+		//错误信息
+		StringBuilder message = new StringBuilder();
+		//详细信息
+		List&lt;Map&lt;String, Object&gt;&gt; fieldErrors =
+				result.getFieldErrors()
+						.stream()
+						.map(value -&gt; {
+							//错误信息
+							message.append(value.getDefaultMessage());
+							//具体错误字段信息
+							Map&lt;String, Object&gt; errorMessage = Maps.newLinkedHashMap();
+							errorMessage.put(&quot;field&quot;, value.getField());
+							errorMessage.put(&quot;code&quot;, value.getCode());
+							errorMessage.put(&quot;message&quot;, value.getDefaultMessage());
+							return errorMessage;
+						})
+						.collect(Collectors.toList());
+		log.error(&quot;参数校验异常:{}&quot;, JSON.toJSONString(fieldErrors));
+		return ResponseResult.fail(ResponseCode.ApiExceptions.BAD_REQUEST.getCode(), message.toString(), null);
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(ApiException.class)
+	public ResponseResult&lt;?&gt; ApiException(ApiException exception, HandlerMethod handlerMethod) {
+		if (log.isDebugEnabled()) {
+			log.debug(exception.getMessage(), exception);
+		} else {
+			outPutExceptionLog(exception, handlerMethod);//记录日志
+		}
+
+		return ResponseResult.fail(exception.getCode(), exception.getMessage(), null);
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(JsonMappingException.class)
+	public ResponseResult&lt;?&gt; jsonMappingException(JsonMappingException jsonMappingException, HandlerMethod handlerMethod) {
+		List&lt;JsonMappingException.Reference&gt; path = jsonMappingException.getPath();
+		if (CollectionUtils.isEmpty(path)) {
+			return ResponseResult.fail(new ApiException(500, jsonMappingException.getMessage()));
+		}
+
+		String errorMsg = path.stream()
+				.filter(value -&gt; !Strings.isNullOrEmpty(value.getFieldName()))
+				.map(value -&gt; &quot;[ &quot; + value.getFieldName() + &quot; 格式或类型错误 ]&quot;)
+				.collect(Collectors.joining(&quot;,&quot;));
+		return ResponseResult.fail(new ApiException(ResponseCode.ApiExceptions.BAD_REQUEST.getCode(), errorMsg));
+
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseResult&lt;?&gt; messageNotReadable(HttpMessageNotReadableException exception, HandlerMethod handlerMethod) {
+		if (exception.getCause() instanceof JsonMappingException) {
+			return jsonMappingException((JsonMappingException) exception.getCause(), handlerMethod);
+		}
+		String msg = &quot;请求JSON格式不正确:&quot;;
+		log.error(msg, exception);
+		return ResponseResult.fail(new ApiException(ResponseCode.ApiExceptions.BAD_REQUEST.getCode(), msg + exception.getMessage()));
+	}
+
+
+	/**
+	 * 输出错误信息
+	 */
+	private void outPutExceptionLog(Exception exception, HandlerMethod handlerMethod) {
+		StackTraceElement element = exception.getStackTrace()[0];
+		Optional&lt;StackTraceElement&gt; optional = Optional.of(element);
+		log.error(String.format(&quot;Launch className:%s,methodName:%s -&gt; is error,Exception fileName:%s,methodName:%s,lineNumber:%s,message:%s&quot;
+				, handlerMethod.getMethod().getDeclaringClass().getSimpleName()
+				, handlerMethod.getMethod().getName()
+				, optional.map(e -&gt; e.getFileName()).orElse(&quot;&quot;)
+				, optional.map(e -&gt; e.getMethodName()).orElse(&quot;&quot;)
+				, optional.map(e -&gt; e.getLineNumber()).orElse(0)
+				, exception.getMessage())
+				, exception);
+	}
+}
+
+</code></pre>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
@@ -157,6 +314,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

@@ -360,8 +360,7 @@ public class RedisUtils {
  
 }
 </code></pre>
-
-<pre><code class="language-text">public void commitUserReq(HttpServletRequest request){
+<pre><code class="language-plain_text">public void commitUserReq(HttpServletRequest request){
         final RedissonClient redisson = RedisUtils.getInstance().getRedisson(redisIp,redisPort,redisPasswd);
         // 防重复提交锁
         RLock lock = redisson.getLock(orderId + &quot;COMMIT_ORDER&quot; + userId);
@@ -387,9 +386,9 @@ public class RedisUtils {
             logger.info(&quot;系统提交已经开始&quot;);
             throw new SimpleMessageException(&quot;你有请求正在处理，请20分钟后再试！&quot;);
         }
-        System.out.println(&quot;处理业务代码==========正常执行&quot;);
-        
-        }
+		System.out.println(&quot;处理业务代码==========正常执行&quot;);
+		
+		}
 </code></pre>
 
                   </article>

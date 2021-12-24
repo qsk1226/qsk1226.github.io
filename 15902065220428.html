@@ -115,45 +115,38 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>Mybatis-Spring 用于帮助你将 MyBatis 代码无缝地整合到 Spring 中，集成过程中的增强主 要体现在如下四个方面：</p>
-
 <ul>
-<li>Spring 将会加载必要的 MyBatis 工厂类和 session 类 </li>
-<li>提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean<br/>
+<li>Spring 将会加载必要的 MyBatis 工厂类和 session 类</li>
+<li>提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean<br />
 中</li>
 <li>方便集成 spring 事务</li>
 <li>翻译 MyBatis 的异常到 Spring 的 DataAccessException 异常(数据访问异常)中</li>
 </ul>
-
-<h2 id="toc_0">MyBatis-Spring 集成配置最佳实践</h2>
-
+<h2><a id="mybatis-spring%E9%9B%86%E6%88%90%E9%85%8D%E7%BD%AE%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MyBatis-Spring 集成配置最佳实践</h2>
 <ul>
 <li>准备Mybatis-spring的maven项目</li>
 <li>pom文件中添加mybatis-spring依赖</li>
 <li>配置 SqlSessionFactoryBean，在 MyBatis-Spring 中， SqlSessionFactoryBean 用于创建 SqlSessionFactory，几个关键配置选项如下所示：
 <ul>
 <li>dataSource ：用于配置数据源，该属性为必选项，必须通过这个属性配置数 据源 ，这里使用了上一节中配置好的 dataSource 数据库连接池 。</li>
-<li> mapper Locations ： 配置 SqlSessionFactoryBean 扫描 XML 映射文件的路径， 可以使用 Ant 风格的路径进行配置。</li>
-<li> configLocation ： 用于配置mybatis config XML的路径，除了数据源外，对MyBatis 的各种配直仍然可以通过这种方式进行，并且配置 MyBatis settings 时只能使 用这种方式。但配置文件中任意环境,数据源 和 MyBatis 的事务管理器都会被 忽略；</li>
-<li> typeAliasesPackage ： 配置包中类的别名，配置后，包中的类在 XML 映射文 件中使用时可以省略包名部分 ，直接使用类名。这个配置不支持 Ant 风格的 路径，当需要配置多个包路径时可以使用分号或逗号进行分隔 ；</li>
-</ul></li>
+<li>mapper Locations ： 配置 SqlSessionFactoryBean 扫描 XML 映射文件的路径， 可以使用 Ant 风格的路径进行配置。</li>
+<li>configLocation ： 用于配置mybatis config XML的路径，除了数据源外，对MyBatis 的各种配直仍然可以通过这种方式进行，并且配置 MyBatis settings 时只能使 用这种方式。但配置文件中任意环境,数据源 和 MyBatis 的事务管理器都会被 忽略；</li>
+<li>typeAliasesPackage ： 配置包中类的别名，配置后，包中的类在 XML 映射文 件中使用时可以省略包名部分 ，直接使用类名。这个配置不支持 Ant 风格的 路径，当需要配置多个包路径时可以使用分号或逗号进行分隔 ；</li>
+</ul>
+</li>
 <li>配置 MapperScannerConfigurer，通过 MapperScannerConfigurer 类自动扫描所有的 Mapper 接口，使用时可以直接注入接口。MapperScannerConfigurer 中常配置以下两个 属性 ：
 <ul>
 <li>basePackage ： 用于配置基本的包路径。可以使用分号或逗号作为分隔符设 置多于一个的包路径，每个映射器将会在指定的包路径中递归地被搜索到 。</li>
 <li>annotationClass ： 用于过滤被扫描的接口，如果设置了该属性，那么 MyBatis 的接口只有包含该注解才会被扫描进去</li>
-</ul></li>
+</ul>
+</li>
 <li>配置事务，让 Mybatis 集成 spring 的事务；</li>
 </ul>
-
 <p>项目GitHub地址： <a href="https://github.com/qsk1226/mybatis-spring-study">mybatis-spring-study</a></p>
-
-<h2 id="toc_1">mybatis-spring 集成原理分析</h2>
-
-<h3 id="toc_2">SqlSessionFactoryBean 源码分析</h3>
-
+<h2><a id="mybatis-spring%E9%9B%86%E6%88%90%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>mybatis-spring 集成原理分析</h2>
+<h3><a id="sqlsessionfactorybean%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SqlSessionFactoryBean 源码分析</h3>
 <p>它创建一个MyBatis SqlSessionFactory。这是在Spring应用程序上下文中设置共享MyBatis SqlSessionFactory的常用方法;然后，SqlSessionFactory可以通过依赖注入传递到基于mybatiso的dao。DataSourceTransactionManager或JtaTransactionManager都可以与SqlSessionFactory一起用于事务界定。JTA应该用于跨多个数据库的事务或正在使用容器管理事务(container managed transactions, CMT)的事务。</p>
-
 <p>SqlSessionFactoryBean 来充当 SqlSessionFactory，这里我们要搞清楚的就是为什么 SqlSessionFactoryBean 为什么能在 Spring IOC 容器中以 SqlSessionFactory 的类型保存并被获 取？先来看看 SqlSessionFactoryBean 的定义是怎样的：</p>
-
 <pre><code class="language-java">public class SqlSessionFactoryBean
     implements FactoryBean&lt;SqlSessionFactory&gt;, InitializingBean, ApplicationListener&lt;ApplicationEvent&gt; {
 
@@ -212,22 +205,18 @@
 
 }
 </code></pre>
-
-<h4 id="toc_3">SqlSessionFactoryBean 实现了 <strong><em>InitializingBean</em></strong> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
-
+<h4><a id="sqlsessionfactorybean%E5%AE%9E%E7%8E%B0%E4%BA%86-initializingbean%E6%8E%A5%E5%8F%A3%EF%BC%8C%E9%82%A3%E4%B9%88%E5%AE%B9%E5%99%A8%E5%9C%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E5%AE%8C%E6%88%90-sqlsessionfactorybean%E4%B9%8B%E5%90%8E%E5%BF%85%E7%84%B6%E4%BC%9A%E8%B0%83%E7%94%A8-afterpropertiesset%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SqlSessionFactoryBean 实现了 <em><strong>InitializingBean</strong></em> 接口，那么容器在初始化完成 SqlSessionFactoryBean 之后必然会调用 afterPropertiesSet()方法</h4>
 <pre><code class="language-java"> @Override
   public void afterPropertiesSet() throws Exception {
-notNull(dataSource, &quot;Property &#39;dataSource&#39; is required&quot;);
-notNull(sqlSessionFactoryBuilder, &quot;Property &#39;sqlSessionFactoryBuilder&#39; is required&quot;);
+notNull(dataSource, &quot;Property 'dataSource' is required&quot;);
+notNull(sqlSessionFactoryBuilder, &quot;Property 'sqlSessionFactoryBuilder' is required&quot;);
 state((configuration == null &amp;&amp; configLocation == null) || !(configuration != null &amp;&amp; configLocation != null),
-    &quot;Property &#39;configuration&#39; and &#39;configLocation&#39; can not specified with together&quot;);
+    &quot;Property 'configuration' and 'configLocation' can not specified with together&quot;);
 // 封装者MyBatis的配置初始化阶段
 this.sqlSessionFactory = buildSqlSessionFactory();
 }
 </code></pre>
-
-<h4 id="toc_4">SqlSessionFactoryBean 实现了 <strong><em>FactoryBean</em></strong> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
-
+<h4><a id="sqlsessionfactorybean%E5%AE%9E%E7%8E%B0%E4%BA%86-factorybean%E6%8E%A5%E5%8F%A3%EF%BC%8C%E5%BD%93%E5%9C%A8%E5%AE%B9%E5%99%A8%E4%B8%AD%E9%85%8D%E7%BD%AE-factorybean%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%B9%B6%E4%B8%8D%E6%98%AF%E5%B0%86%E8%AF%A5-factorybean%E6%B3%A8%E5%85%A5%E5%88%B0%E5%AE%B9%E5%99%A8%EF%BC%8C%E8%80%8C%E6%98%AF%E8%B0%83%E7%94%A8-factorybean%E7%9A%84-getobject%E6%96%B9%E6%B3%95%E4%BA%A7%E7%94%9F%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E5%AE%B9%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SqlSessionFactoryBean 实现了 <em><strong>FactoryBean</strong></em> 接口，当在容器中配置 FactoryBean 的实现类时，并不是将该 FactoryBean 注入到容器，而是调用 FactoryBean 的 getObject 方法产生的实例对象注入容器</h4>
 <pre><code class="language-java">/**
  * 将sqlSessionFactory对象注入spring容器
  */
@@ -239,13 +228,9 @@ if (this.sqlSessionFactory == null) {
 return this.sqlSessionFactory;
 }
 </code></pre>
-
 <p>SqlSessionFactoryBean 就是将 sqlSessionFactory 注入容器， IOC 容器中的其他类型能拿到 SqlSession 实例了，就可以进行相关的 SQL 执行任务了；</p>
-
-<h3 id="toc_5">MapperFactoryBean 源码分析</h3>
-
+<h3><a id="mapperfactorybean%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MapperFactoryBean 源码分析</h3>
 <p>在之前的所有配置中都没有出现过MapperFactoryBean，但实际上真正帮助Spring生成Mapper接口实现类的就是MapperFactoryBean</p>
-
 <pre><code class="language-java">public class MapperFactoryBean&lt;T&gt; extends SqlSessionDaoSupport implements FactoryBean&lt;T&gt; {
 
   private Class&lt;T&gt; mapperInterface;
@@ -264,17 +249,11 @@ return this.sqlSessionFactory;
   }
 }
 </code></pre>
-
 <p>MapperFactoryBean 实现了 FactoryBean 接口，getObject 方法实际是封装了 MyBatis 的第二阶段，注入容器的是 SqlSession 实例化的 Mapper 接口的实现类。</p>
-
 <p>它是支持注入MyBatis映射器接口的BeanFactory，可以使用SqlSessionFactory或预先配置的SqlSessionTemplate进行设置，这个工厂只能注入接口，而不能注入具体的类。</p>
-
-<h3 id="toc_6">MapperScannerConfigurer 源码分析</h3>
-
+<h3><a id="mapperscannerconfigurer%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MapperScannerConfigurer 源码分析</h3>
 <p>MapperFactoryBean 用于帮助 Spring 生成 Mapper 接口，但我们很少直接配置 MapperFactoryBean 而是配置 MapperScannerConfigurer。</p>
-
 <p>原因在于又可能工程中的 mapper 接口数量比较多，为每个 mapper 接口都配置 MapperFactoryBean，配置文件会变得非常庞大，所以才会使用 MapperScannerConfigurer 为 每个 mapper 接口一对一的生成 MapperFactoryBean，那 MapperScannerConfigurer 是怎么做 到的呢？先看看其源码：</p>
-
 <pre><code class="language-java">/**
  * BeanDefinitionRegistryPostProcessor： spring容器的后置处理器的一种实现，可以将Bean的结构调整之后注入容器中
  * 
@@ -339,9 +318,7 @@ public class MapperScannerConfigurer
   // 省略一大堆代码
 }
 </code></pre>
-
 <p>MapperScannerConfigurer 实现了 BeanDefinitionRegistryPostProcessor 接口， 因此可以对 Bean 的结构调整之后再注入容器。那 MapperScannerConfigurer 在扫描完这些 mapper 接口之后，主要是通过ClassPathMapperScanner将 Mapper 接口一个个的转换成 MapperFactoryBean 之后注入容器。</p>
-
 <p>至此就完成了 MyBatis 与 Spring框架的整合。</p>
 
                   </article>

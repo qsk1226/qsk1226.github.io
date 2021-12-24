@@ -114,64 +114,44 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/16017909054092/16018069992959.jpg" alt=""/></figure></p>
-
-<h2 id="toc_0">疑问</h2>
-
+                    <p><figure><img src="media/16017909054092/16018069992959.jpg" alt="" /></figure></p>
+<h2><a id="%E7%96%91%E9%97%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>疑问</h2>
 <ul>
-<li>为什么 HashTable 慢? 它的并发度是什么? 那么ConcurrentHashMap并发度是什么? </li>
-<li>ConcurrentHashMap在JDK1.7和JDK1.8中实现有什么差别? JDK1.8解決了JDK1.7中什么问题 </li>
-<li>ConcurrentHashMap JDK1.7实现的原理是什么? 分段锁机制 </li>
-<li>ConcurrentHashMap JDK1.8实现的原理是什么? 数组+链表+红黑树，CAS </li>
-<li>ConcurrentHashMap JDK1.7中Segment数(concurrencyLevel)默认值是多少? 为何一旦初始化就不可再扩容? </li>
-<li>ConcurrentHashMap JDK1.7说说其 put 的机制? </li>
-<li>ConcurrentHashMap JDK1.7是如何扩容的?  rehash(注：segment 数组不能扩容，扩容是 segment 数组某个位置内部的数组 HashEntry<K,V>[] 进行扩容) </li>
-<li>ConcurrentHashMap JDK1.8是如何扩容的? tryPresize </li>
-<li>ConcurrentHashMap JDK1.8链表转红黑树的时机是什么? 临界值为什么是8? </li>
+<li>为什么 HashTable 慢? 它的并发度是什么? 那么ConcurrentHashMap并发度是什么?</li>
+<li>ConcurrentHashMap在JDK1.7和JDK1.8中实现有什么差别? JDK1.8解決了JDK1.7中什么问题</li>
+<li>ConcurrentHashMap JDK1.7实现的原理是什么? 分段锁机制</li>
+<li>ConcurrentHashMap JDK1.8实现的原理是什么? 数组+链表+红黑树，CAS</li>
+<li>ConcurrentHashMap JDK1.7中Segment数(concurrencyLevel)默认值是多少? 为何一旦初始化就不可再扩容?</li>
+<li>ConcurrentHashMap JDK1.7说说其 put 的机制?</li>
+<li>ConcurrentHashMap JDK1.7是如何扩容的?  rehash(注：segment 数组不能扩容，扩容是 segment 数组某个位置内部的数组 HashEntry&lt;K,V&gt;[] 进行扩容)</li>
+<li>ConcurrentHashMap JDK1.8是如何扩容的? tryPresize</li>
+<li>ConcurrentHashMap JDK1.8链表转红黑树的时机是什么? 临界值为什么是8?</li>
 <li>ConcurrentHashMap JDK1.8是如何进行数据迁移的? transfer</li>
 </ul>
-
-<h2 id="toc_1">为什么 HashTable 慢</h2>
-
-<p>Hashtable之所以效率低下主要是因为其实现使用了synchronized关键字对put等操作进行加锁，而synchronized关键字加锁是对整个对象进行加锁，也就是说在进行put等修改Hash表的操作时，锁住了整个Hash表，从而使得其表现的效率低下。 </p>
-
-<h2 id="toc_2">jdk1.7 ConcurrentHashMap解析</h2>
-
-<p><figure><img src="media/16017909054092/16018260090249.jpg" alt="ConcurrentHashMap 数据结构"/><figcaption>ConcurrentHashMap 数据结构</figcaption></figure></p>
-
+<h2><a id="%E4%B8%BA%E4%BB%80%E4%B9%88hashtable%E6%85%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>为什么 HashTable 慢</h2>
+<p>Hashtable之所以效率低下主要是因为其实现使用了synchronized关键字对put等操作进行加锁，而synchronized关键字加锁是对整个对象进行加锁，也就是说在进行put等修改Hash表的操作时，锁住了整个Hash表，从而使得其表现的效率低下。</p>
+<h2><a id="jdk1-7-concurrenthashmap%E8%A7%A3%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jdk1.7 ConcurrentHashMap解析</h2>
+<p><figure><img src="media/16017909054092/16018260090249.jpg" alt="ConcurrentHashMap 数据结构" /><figcaption>ConcurrentHashMap 数据结构<figcaption></figure></p>
 <p>ConcurrentHashMap 是由 HashEntry 数组结构 和 Segment 数组结构组成，</p>
-
 <ul>
 <li>HashEntry 用于存储键值对数据；</li>
 <li>Segment 是一种可重入锁，一个 Segment 里包含一个 HashEntry 数组，其中每个 HashEntry 一个链表结构的元素。</li>
 </ul>
-
 <p>每个 Segment 守护着一个 HashEntry 数组里的元素，当对 HashEntry 数组的数据 进行修改时，必须首先获得与它对应的 Segment 锁。</p>
-
 <p>ConcurrentHashMap 使用了分段锁的思想提高了并发的的访问量, 就是使用很多把锁,每一个segment代表了一把锁,每一段只能有一个线程获取锁;但是 segment 的数量初始化了,就不能修改,所以这也代表了并发的不能修改,这也是1.7的一个局限性.</p>
-
 <p>从get方法可以看出使用了UNSAFE的一些方法和volatile关键字来代替锁,提高了并发性。在size和containsValue这些方法提供一种尝试思想,先不加锁尝试统计,如果其中没有变化就返回,有变化接着尝试,达到尝试次数再加锁,这样也避免了立即加锁对并发的影响。</p>
-
-<p>查询是对链表遍历判断是否存在 key 相同的节点以及获得该节点的 value。但<br/>
+<p>查询是对链表遍历判断是否存在 key 相同的节点以及获得该节点的 value。但<br />
 由于遍历过程中其他线程可能对链表结构做了调整，因此 get 和 containsKey 返 回的可能是过时的数据，这一点是 ConcurrentHashMap 在弱一致性上的体现。如 果要求强一致性，那么必须使用 Collections.synchronizedMap()方法。</p>
-
-<h3 id="toc_3">并发级别</h3>
-
+<h3><a id="%E5%B9%B6%E5%8F%91%E7%BA%A7%E5%88%AB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>并发级别</h3>
 <p>并发级别可以理解为程序运行时能够同时更新 ConccurentHashMap 且不产生锁竞争的最大线程数，实际上就是 ConcurrentHashMap 中的分段锁个数，即 Segment[]的数组长度。</p>
-
 <p>ConcurrentHashMap 默认的并发度为 16，但用户也可以在构造函数中设置并发度。当用户设置并发度时，ConcurrentHashMap 会使用大于等于该值的最小 2 的幂指数作为实际并发度(假如用户设置并发度为 17，实际 并发度则为 32)。</p>
-
 <p>如果并发度设置的过小，会带来严重的锁竞争问题; 如果并发度设置的过大 原本位于同一个 Segment 内的访问会扩散到不同的 Segment 中，CPU cache 命中率会下降，从而引起程序性能下降。(文档的说法是根据你并发的线程数量决定， 太多会导性能降低)</p>
-
-<p>segments 数组的长度 ssize 是通过 concurrencyLevel 计算得出的。为了能通 过按位与的散列算法来定位 segments 数组的索引，必须保证 segments 数组的长 度是 2 的 N 次方(power-of-two size)，所以必须计算出一个大于或等于 concurrencyLevel 的最小的 2 的 N 次方值来作为 segments 数组的长度。假如 concurrencyLevel 等于 14、15 或 16，ssize 都会等于 16，即容器里锁的个数也是 16。 </p>
-
-<h3 id="toc_4">构造方法</h3>
-
+<p>segments 数组的长度 ssize 是通过 concurrencyLevel 计算得出的。为了能通 过按位与的散列算法来定位 segments 数组的索引，必须保证 segments 数组的长 度是 2 的 N 次方(power-of-two size)，所以必须计算出一个大于或等于 concurrencyLevel 的最小的 2 的 N 次方值来作为 segments 数组的长度。假如 concurrencyLevel 等于 14、15 或 16，ssize 都会等于 16，即容器里锁的个数也是 16。</p>
+<h3><a id="%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>构造方法</h3>
 <ul>
 <li>initialCapacity：初始容量，这个值指的是整个 ConcurrentHashMap 的初始容量，实际操作的时候需要平均分给每个 Segment。</li>
 <li>loadFactor: 负载因子，之前我们说了，Segment 数组不可以扩容，所以这个负载因子是给每个 Segment 内部使用的</li>
 </ul>
-
 <pre><code class="language-java">public ConcurrentHashMap(int initialCapacity,
                          float loadFactor, int concurrencyLevel) {
     if (!(loadFactor &gt; 0) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)
@@ -218,20 +198,15 @@
     this.segments = ss;
 }
 </code></pre>
-
-<p>用 new ConcurrentHashMap() 无参构造函数进行初始化的，那么初始化完成后: </p>
-
+<p>用 new ConcurrentHashMap() 无参构造函数进行初始化的，那么初始化完成后:</p>
 <ul>
-<li>Segment 数组长度为 16，不可以扩容 </li>
-<li>Segment[i] 的默认大小为 2，负载因子是 0.75，得出初始阈值为 1.5，也就是以后插入第一个元素不会触发扩容，插入第二个会进行第一次扩容 </li>
-<li>这里初始化了 segment[0]，其他位置还是 null，至于为什么要初始化 segment[0]，后面的代码会介绍 </li>
+<li>Segment 数组长度为 16，不可以扩容</li>
+<li>Segment[i] 的默认大小为 2，负载因子是 0.75，得出初始阈值为 1.5，也就是以后插入第一个元素不会触发扩容，插入第二个会进行第一次扩容</li>
+<li>这里初始化了 segment[0]，其他位置还是 null，至于为什么要初始化 segment[0]，后面的代码会介绍</li>
 <li>当前 segmentShift 的值为 32 - 4 = 28，segmentMask 为 16 - 1 = 15</li>
 </ul>
-
-<h3 id="toc_5">成员变量定义</h3>
-
+<h3><a id="%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>成员变量定义</h3>
 <p>与HashMap相比，ConcurrentHashMap 增加了两个属性用于定位段，分别是 segmentMask 和 segmentShift。此外，不同于HashMap的是，ConcurrentHashMap底层结构是一个Segment数组，具体源码如下：</p>
-
 <pre><code class="language-java">/**
  * 默认的初始容量 16
  */
@@ -275,9 +250,7 @@ final int segmentShift;
  */
 final Segment&lt;K,V&gt;[] segments;  
 </code></pre>
-
-<h3 id="toc_6">HashEntry存储数据的链式结构</h3>
-
+<h3><a id="hashentry%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E7%9A%84%E9%93%BE%E5%BC%8F%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HashEntry存储数据的链式结构</h3>
 <pre><code class="language-java">static final class HashEntry&lt;K,V&gt; {
     // hash值
     final int hash;
@@ -303,11 +276,8 @@ final Segment&lt;K,V&gt;[] segments;
     ....
 }
 </code></pre>
-
-<h3 id="toc_7">Segment</h3>
-
+<h3><a id="segment" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Segment</h3>
 <p>Segment 类继承于 ReentrantLock 类，从而使得 Segment 对象能充当锁的角色。每个 Segment 对象用来守护它的成员对象 table 中包含的若干个桶。</p>
-
 <pre><code class="language-java">static final class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
     private static final long serialVersionUID = 2249069246763182397L;
 
@@ -358,9 +328,7 @@ final Segment&lt;K,V&gt;[] segments;
     ...
 }
 </code></pre>
-
-<h3 id="toc_8">put方法</h3>
-
+<h3><a id="put%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put方法</h3>
 <pre><code class="language-java">/**
  * map的put方法,定位segment
  */
@@ -442,17 +410,13 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return oldValue;
 }
 </code></pre>
-
 <p>执行流程：</p>
-
 <ul>
 <li>map的put方法就做了三件事情, 找出segments的位置;判断当前位置有没有初始化,没有就调用ensureSegment()方法初始化;然后调用segment的put方法.</li>
 <li>segment的put方法,获取当前segment的锁,成功接着执行,失败调用scanAndLockForPut方法自旋获取锁,成功后也是接着往下执行，失败的话调用lock申请锁.</li>
 <li>通过hash计算出位置,获取节点,找出相同的key和hash替换value,返回.没有找到相同的,设置找出的节点为当前创建节点的next节点,设置创建节点前,判断是否需要扩容,需要调用扩容方法rehash();不需要,设置节点,返回,释放锁.</li>
 </ul>
-
-<h3 id="toc_9">ensureSegment(int k) 初始化 segment</h3>
-
+<h3><a id="ensuresegment-int-k%E5%88%9D%E5%A7%8B%E5%8C%96-segment" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ensureSegment(int k) 初始化 segment</h3>
 <pre><code class="language-java">private Segment&lt;K,V&gt; ensureSegment(int k) {
     final Segment&lt;K,V&gt;[] ss = this.segments;  // 当前的segments数组
     long u = (k &lt;&lt; SSHIFT) + SBASE;  // 计算原始偏移量,在segments数组的位置
@@ -483,13 +447,9 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return seg;
 }
 </code></pre>
-
 <p>计算 Segment 位置,使用 UNSAFE 的方法判断当前位置有没有初始化,然后使用segmets[0]的模板创建一个新的HashEntry[],再次判断当前位置有没有初始化,可能存在多线程同时初始化,然后创建一个新的segment,最后使用自旋cas设置新的segment的位置,保证只有一个线程初始化成功.</p>
-
-<h3 id="toc_10">scanAndLockForPut(K key, int hash, V value)</h3>
-
+<h3><a id="scanandlockforput-k-key-int-hash-v-value" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>scanAndLockForPut(K key, int hash, V value)</h3>
 <p>scanAndLockForPut 方法获取写入锁</p>
-
 <pre><code class="language-java">private HashEntry&lt;K,V&gt; scanAndLockForPut(K key, int hash, V value) {
     // 根据hash获取头结点
     HashEntry&lt;K,V&gt; first = entryForHash(this, hash); 
@@ -526,13 +486,9 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return node;
 }
 </code></pre>
-
 <p>我们在put方法获取锁失败,才会进入这个方法,这个方法采用自旋获取锁,直到成功才返回,但是使用了自旋次数的限制,这么做的好处是什么了,就是竞争太激烈的话,这个线程可能一直获取不到锁,自旋也是消耗cpu性能的,所以当达到自旋次数时,就阻塞当前线程,直到有线程释放了锁,通知这些线程.在等待过程中是不消耗cpu的.</p>
-
 <p>当我们进入这个方法时,说明获取锁失败,那么可能是别的线程在对这个segment进行修改操作,所以说如果别的线程在操作之后,我们自己的工作内存中的数据可能已经不是最新的了,这个时候我们使用具有volatile语义的方法重新读了数据,在自旋过程中遍历这些数据,把最新的数据缓存在工作内存中,当前线程再次获取锁时,我们的数据是最新的,就不用重新去主内存中获取,这样在自旋获取的锁的过程中就预热了这些数据,在获取锁之后的执行中就提升了效率.</p>
-
-<h3 id="toc_11">rehash()</h3>
-
+<h3><a id="rehash" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>rehash()</h3>
 <pre><code class="language-java">private void rehash(HashEntry&lt;K,V&gt; node) {
 
     // 旧的table
@@ -599,11 +555,8 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     table = newTable;
 }
 </code></pre>
-
 <p>这里的扩容比之前的 HashMap 要复杂一些，代码难懂一点。上面有两个挨着的 for 循环，第一个 for 有什么用呢? 仔细一看发现，如果没有第一个 for 循环，也是可以工作的，但是，这个 for 循环下来，如果 lastRun 的后面还有比较多的节点，那么这次就是值得的。因为我们只需要克隆 lastRun 前面的节点，后面的一串节点跟着 lastRun 走就是了，不需要做任何操作。 我觉得 Doug Lea 的这个想法也是挺有意思的，不过比较坏的情况就是每次 lastRun 都是链表的最后一个元素或者很靠后的元素，那么这次遍历就有点浪费了。不过 Doug Lea 也说了，根据统计，如果使用默认的阈值，大约只有 1/6 的节点需要克隆。</p>
-
-<h3 id="toc_12">get(Object key)</h3>
-
+<h3><a id="get-object-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>get(Object key)</h3>
 <pre><code class="language-java">public V get(Object key) {
     Segment&lt;K,V&gt; s; // manually integrate access methods to reduce overhead
     HashEntry&lt;K,V&gt;[] tab;
@@ -626,19 +579,14 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return null;
 }
 </code></pre>
-
 <p>get 操作先经过一次再散列，然后使用这个散列值通过散列运算定位到 Segment(使用了散列值的高位部分)，再通过散列算法定位到 table(使用了散列值 的全部)。整个 get 过程，没有加锁，而是通过 volatile 保证 get 总是可以拿到最新值。</p>
-
 <p>注意:get方法使用了 getObjectVolatile 方法读取 segment 和 hashEntry,保证是最新的,具有锁的语义,可见性</p>
-
-<p>分析:为什么get不加锁可以保证线程安全<br/>
-(1) 首先获取value,我们要先定位到segment,使用了UNSAFE的getObjectVolatile 具有读的 volatile 语义,也就表示在多线程情况下,我们依旧能获取最新的segment.<br/>
-(2) 获取 hashEntry[],由于 table 是每个 segment 内部的成员变量,使用volatile修饰的,所以我们也能获取最新的table.<br/>
-(3) 然后我们获取具体的 hashEntry ,也时使用了UNSAFE的getObjectVolatile 具有读的 volatile 语义,然后遍历查找返回.<br/>
+<p>分析:为什么get不加锁可以保证线程安全<br />
+(1) 首先获取value,我们要先定位到segment,使用了UNSAFE的getObjectVolatile 具有读的 volatile 语义,也就表示在多线程情况下,我们依旧能获取最新的segment.<br />
+(2) 获取 hashEntry[],由于 table 是每个 segment 内部的成员变量,使用volatile修饰的,所以我们也能获取最新的table.<br />
+(3) 然后我们获取具体的 hashEntry ,也时使用了UNSAFE的getObjectVolatile 具有读的 volatile 语义,然后遍历查找返回.<br />
 (4) 总结我们发现怎个get过程中使用了大量的 volatile 关键字,其实就是保证了可见性(加锁也可以,但是降低了性能),get 只是读取操作,所以我们只需要保证读取的是最新的数据即可.</p>
-
-<h3 id="toc_13">size()</h3>
-
+<h3><a id="size" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>size()</h3>
 <pre><code class="language-java">public int size() {
     // Try a few times to get accurate count. On failure due to
     // continuous async changes in table, resort to locking.
@@ -679,16 +627,13 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return overflow ? Integer.MAX_VALUE : size;
 }
 </code></pre>
-
-<p>尝试3次不加锁获取sum,如果发生变化就全部加锁,size和containsValue方法的思想也是基本类似.<br/>
-执行流程<br/>
-(1) 第一次,retries++=0,不满足全部加锁条件,遍历所有的segment,sum就是所有segment的容量,last等于0,第一次不相等,last=sum.<br/>
-(2) 第二次,retries++=1,不满足加锁条件,计算所有的segment,sum就是所有的segment的容量,last是上一次的sum,相等结束循环,不相等下次循环.<br/>
-(3) 第三次,retries++=2,先运算后赋值,所以此时还是不满足加锁条件和上面一样统计sum,判断这一次的sum和last(上一次的sum)是否相等,相等结束,不相等,下一次循环.<br/>
+<p>尝试3次不加锁获取sum,如果发生变化就全部加锁,size和containsValue方法的思想也是基本类似.<br />
+执行流程<br />
+(1) 第一次,retries++=0,不满足全部加锁条件,遍历所有的segment,sum就是所有segment的容量,last等于0,第一次不相等,last=sum.<br />
+(2) 第二次,retries++=1,不满足加锁条件,计算所有的segment,sum就是所有的segment的容量,last是上一次的sum,相等结束循环,不相等下次循环.<br />
+(3) 第三次,retries++=2,先运算后赋值,所以此时还是不满足加锁条件和上面一样统计sum,判断这一次的sum和last(上一次的sum)是否相等,相等结束,不相等,下一次循环.<br />
 (4) 第四次,retries++=2,满足加锁条件,给segment全部加锁,这样所有线程就没有办法进行修改操作,统计每个segment的数量求和,然后返回size.(ps:全部加锁提高了size的准确率,但是降低了吞吐量,统计size的过程中如果其它线程进行修改操作这些线程全部自旋或者阻塞).</p>
-
-<h3 id="toc_14">isEmpty()</h3>
-
+<h3><a id="isempty" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>isEmpty()</h3>
 <pre><code class="language-java">public boolean isEmpty() {
     long sum = 0L;
     final Segment&lt;K,V&gt;[] segments = this.segments;
@@ -718,45 +663,32 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
     return true;
 }
 </code></pre>
-
-<h3 id="toc_15">并发问题分析</h3>
-
+<h3><a id="%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>并发问题分析</h3>
 <p>现在我们已经说完了 put 过程和 get 过程，我们可以看到 get 过程中是没有加锁的，那自然我们就需要去考虑并发问题。添加节点的操作 put 和删除节点的操作 remove 都是要加 segment 上的独占锁的，所以它们之间自然不会有问题，我们需要考虑的问题就是 get 的时候在同一个 segment 中发生了 put 或 remove 操作。</p>
-
-<h4 id="toc_16">put 操作的线程安全性。</h4>
-
+<h4><a id="put%E6%93%8D%E4%BD%9C%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put 操作的线程安全性。</h4>
 <ul>
-<li>初始化槽，这个我们之前就说过了，使用了 CAS 来初始化 Segment 中的数组。 </li>
-<li>添加节点到链表的操作是插入到表头的，所以，如果这个时候 get 操作在链表遍历的过程已经到了中间，是不会影响的。当然，另一个并发问题就是 get 操作在 put 之后，需要保证刚刚插入表头的节点被读取，这个依赖于 setEntryAt 方法中使用的 UNSAFE.putOrderedObject。 </li>
-<li>扩容。扩容是新创建了数组，然后进行迁移数据，最后面将 newTable 设置给属性 table。所以，如果 get 操作此时也在进行，那么也没关系，如果 get 先行，那么就是在旧的 table 上做查询操作；而 put 先行，那么 put 操作的可见性保证就是 table 使用了 volatile 关键字。 </li>
+<li>初始化槽，这个我们之前就说过了，使用了 CAS 来初始化 Segment 中的数组。</li>
+<li>添加节点到链表的操作是插入到表头的，所以，如果这个时候 get 操作在链表遍历的过程已经到了中间，是不会影响的。当然，另一个并发问题就是 get 操作在 put 之后，需要保证刚刚插入表头的节点被读取，这个依赖于 setEntryAt 方法中使用的 UNSAFE.putOrderedObject。</li>
+<li>扩容。扩容是新创建了数组，然后进行迁移数据，最后面将 newTable 设置给属性 table。所以，如果 get 操作此时也在进行，那么也没关系，如果 get 先行，那么就是在旧的 table 上做查询操作；而 put 先行，那么 put 操作的可见性保证就是 table 使用了 volatile 关键字。</li>
 </ul>
-
-<h4 id="toc_17">remove 操作的线程安全性。</h4>
-
+<h4><a id="remove%E6%93%8D%E4%BD%9C%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>remove 操作的线程安全性。</h4>
 <ul>
-<li>get 操作需要遍历链表，但是 remove 操作会&quot;破坏&quot;链表。 </li>
-<li>如果 remove 破坏的节点 get 操作已经过去了，那么这里不存在任何问题。 </li>
-<li>如果 remove 先破坏了一个节点，分两种情况考虑。 
+<li>get 操作需要遍历链表，但是 remove 操作会&quot;破坏&quot;链表。</li>
+<li>如果 remove 破坏的节点 get 操作已经过去了，那么这里不存在任何问题。</li>
+<li>如果 remove 先破坏了一个节点，分两种情况考虑。
 <ul>
 <li>1、如果此节点是头结点，那么需要将头结点的 next 设置为数组该位置的元素，table 虽然使用了 volatile 修饰，但是 volatile 并不能提供数组内部操作的可见性保证，所以源码中使用了 UNSAFE 来操作数组，请看方法 setEntryAt。</li>
 <li>2、如果要删除的节点不是头结点，它会将要删除节点的后继节点接到前驱节点中，这里的并发保证就是 next 属性是 volatile 的。</li>
-</ul></li>
 </ul>
-
-<h2 id="toc_18">jdk8 版本的 ConcurrentHashMap</h2>
-
-<p>取消 segments 字段，直接采用 transient volatile HashEntry<K,V>[] table 保存数据，采用 table 数组元素作为锁，从而实现了对缩小锁的粒度，进一 步减少并发冲突的概率，并大量使用了采用了 CAS + synchronized 来保证并发安 全性。</p>
-
+</li>
+</ul>
+<h2><a id="jdk8%E7%89%88%E6%9C%AC%E7%9A%84-concurrenthashmap" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jdk8 版本的 ConcurrentHashMap</h2>
+<p>取消 segments 字段，直接采用 transient volatile HashEntry&lt;K,V&gt;[] table 保存数据，采用 table 数组元素作为锁，从而实现了对缩小锁的粒度，进一 步减少并发冲突的概率，并大量使用了采用了 CAS + synchronized 来保证并发安 全性。</p>
 <p>将原先 table 数组 + 单向链表的数据结构，变更为 table 数组 + 单向链表 + 红黑树的结构。</p>
-
 <p>对于 hash 表来说，最核心的能力在于将 key hash 之后能均匀的分布在数组中。如果 hash 之后散列的很均匀，那么 table 数组中的每个队列长度主要为 0 或者 1，人品不好的话，还是会存在一些队列长度过长的情况，如果还是采用单向链表方式，那么查询某个节点的时间复杂度为 O(n)，因此链表个数超过 8 的时候，将有链表转换为红黑树，那么查询的时间复杂度可以降低到 O(logN)</p>
-
 <p>使用 Node(1.7 为 Entry) 作为链表的数据结点，仍然包含 key，value， hash 和 next 四个属性。 红黑树的情况使用的是 TreeNode(extends Node)。</p>
-
-<p><figure><img src="media/16017909054092/16091409687767.jpg" alt="ConcurrentHashMap 结构图"/><figcaption>ConcurrentHashMap 结构图</figcaption></figure></p>
-
-<h3 id="toc_19">成员变量</h3>
-
+<p><figure><img src="media/16017909054092/16091409687767.jpg" alt="ConcurrentHashMap 结构图" /><figcaption>ConcurrentHashMap 结构图<figcaption></figure></p>
+<h3><a id="%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>成员变量</h3>
 <pre><code class="language-java">//最大容量
 private static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;
 
@@ -805,20 +737,15 @@ private transient volatile int sizeCtl;
 //用以维护多线程扩容时候的线程安全
 private transient volatile int transferIndex;
 </code></pre>
-
 <p><strong>非常重要</strong>：sizeCtl 非常非常非常重要的一个参数，统御全局, 控制标识符，用来控制table初始化和扩容操作的，在不同的地方有不同的用途，其值也不同，所代表的含义也不同</p>
-
 <ul>
 <li>负数代表正在进行初始化或扩容操作</li>
 <li>-1代表正在初始化</li>
 <li>-N 表示有N-1个线程正在进行扩容操作</li>
 <li>正数或0代表hash表还没有被初始化，这个数值表示初始化或下一次进行扩容的大小</li>
 </ul>
-
-<h3 id="toc_20">链表的Node对象</h3>
-
+<h3><a id="%E9%93%BE%E8%A1%A8%E7%9A%84node%E5%AF%B9%E8%B1%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>链表的Node对象</h3>
 <p>Node 是最核心的内部类，它包装了key-value键值对</p>
-
 <pre><code class="language-java">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {
     final int hash;
     final K key;
@@ -831,11 +758,8 @@ private transient volatile int transferIndex;
 /** 插入的时候，才初始化，大小必须是2的次幂*/
 transient volatile Node&lt;K,V&gt;[] table;
 </code></pre>
-
-<h3 id="toc_21">红黑树节点TreeNode</h3>
-
+<h3><a id="%E7%BA%A2%E9%BB%91%E6%A0%91%E8%8A%82%E7%82%B9treenode" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>红黑树节点TreeNode</h3>
 <p>树节点类，另外一个核心的数据结构。当链表长度过长的时候，会转换为 TreeNode。</p>
-
 <pre><code class="language-java">static final class TreeNode&lt;K,V&gt; extends Node&lt;K,V&gt; {
     TreeNode&lt;K,V&gt; parent;  // red-black tree links
     TreeNode&lt;K,V&gt; left;
@@ -845,18 +769,13 @@ transient volatile Node&lt;K,V&gt;[] table;
     ......
 }
 </code></pre>
-
 <p>与 jdk8 中的 HashMap 不同点：</p>
-
 <ul>
 <li>他并不是直接转换为红黑树的，而是把这些节点放在 TreeBin 对象中，由 TreeBin 完成对红黑树的包装</li>
-<li>TreeNode 在ConcurrentHashMap 扩展自 Node 类，而并非 HashMap 中的扩展自 LinkedHashMap.Entry<K,V> ，也就是说 TreeNode 带有 next 指针</li>
+<li>TreeNode 在ConcurrentHashMap 扩展自 Node 类，而并非 HashMap 中的扩展自 LinkedHashMap.Entry&lt;K,V&gt; ，也就是说 TreeNode 带有 next 指针</li>
 </ul>
-
-<h3 id="toc_22">装 TreeNode 节点的 TreeBin 对象</h3>
-
+<h3><a id="%E8%A3%85treenode%E8%8A%82%E7%82%B9%E7%9A%84-treebin%E5%AF%B9%E8%B1%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>装 TreeNode 节点的 TreeBin 对象</h3>
 <p>TreeBin 继承自 Node ，负责 TreeNode 节点。它代替了 TreeNode 的根节点，也就是说在实际的 ConcurrentHashMap “数组”中，存放的是 TreeBin 对象，而不是 TreeNode 对象。 另外这个类还带有了读写锁机制。</p>
-
 <pre><code class="language-java">//红黑树的根节点
 TreeNode&lt;K,V&gt; root;
 
@@ -879,14 +798,10 @@ static final int WAITER = 2;
 //读锁标志位
 static final int READER = 4; 
 </code></pre>
-
-<h3 id="toc_23">ForwardingNode</h3>
-
-<p>一个特殊的 Node 结点，hash 值为 -1，其中存储 nextTable 的引用。有<br/>
+<h3><a id="forwardingnode" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ForwardingNode</h3>
+<p>一个特殊的 Node 结点，hash 值为 -1，其中存储 nextTable 的引用。有<br />
 table 发生扩容的时候，ForwardingNode 发挥作用，作为一个占位符放在 table 中表示当前结点为 null 或者已经被移动。</p>
-
-<h3 id="toc_24">方法：tabAt、casTabAt、setTabAt</h3>
-
+<h3><a id="%E6%96%B9%E6%B3%95%EF%BC%9Atabat%E3%80%81castabat%E3%80%81settabat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>方法：tabAt、casTabAt、setTabAt</h3>
 <pre><code class="language-java">/**
  * 利用硬件级别的原子操作，获得在i位置上的Node节点
  * Unsafe.getObjectVolatile可以直接获取指定内存的数据
@@ -894,7 +809,7 @@ table 发生扩容的时候，ForwardingNode 发挥作用，作为一个占位�
  */
 @SuppressWarnings(&quot;unchecked&quot;)
 static final &lt;K, V&gt; Node&lt;K, V&gt; tabAt(Node&lt;K, V&gt;[] tab, int i) {
-    return (Node&lt;K, V&gt;) U.getObjectVolatile(tab, ((long) i &lt;&lt; ASHIFT) + ABASE);
+	return (Node&lt;K, V&gt;) U.getObjectVolatile(tab, ((long) i &lt;&lt; ASHIFT) + ABASE);
 }
 
 /**
@@ -902,7 +817,7 @@ static final &lt;K, V&gt; Node&lt;K, V&gt; tabAt(Node&lt;K, V&gt;[] tab, int i) 
  */
 static final &lt;K, V&gt; boolean casTabAt(Node&lt;K, V&gt;[] tab, int i,
                                      Node&lt;K, V&gt; c, Node&lt;K, V&gt; v) {
-    return U.compareAndSwapObject(tab, ((long) i &lt;&lt; ASHIFT) + ABASE, c, v);
+	return U.compareAndSwapObject(tab, ((long) i &lt;&lt; ASHIFT) + ABASE, c, v);
 }
 
 /**
@@ -911,183 +826,169 @@ static final &lt;K, V&gt; boolean casTabAt(Node&lt;K, V&gt;[] tab, int i,
  * 保证了其它线程访问这个节点时一定可以看到最新的数据
  */
 static final &lt;K, V&gt; void setTabAt(Node&lt;K, V&gt;[] tab, int i, Node&lt;K, V&gt; v) {
-    U.putObjectVolatile(tab, ((long) i &lt;&lt; ASHIFT) + ABASE, v);
+	U.putObjectVolatile(tab, ((long) i &lt;&lt; ASHIFT) + ABASE, v);
 }
 </code></pre>
-
-<h3 id="toc_25">构造函数</h3>
-
+<h3><a id="%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>构造函数</h3>
 <pre><code class="language-java">public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
 
-    if (!(loadFactor &gt; 0.0f) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)
-        throw new IllegalArgumentException();
-    if (initialCapacity &lt; concurrencyLevel)   // Use at least as many bins
-        initialCapacity = concurrencyLevel;   // as estimated threads
-    long size = (long) (1.0 + (long) initialCapacity / loadFactor);
-    int cap = (size &gt;= (long) MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : tableSizeFor((int) size);
-    this.sizeCtl = cap;
+	if (!(loadFactor &gt; 0.0f) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)
+		throw new IllegalArgumentException();
+	if (initialCapacity &lt; concurrencyLevel)   // Use at least as many bins
+		initialCapacity = concurrencyLevel;   // as estimated threads
+	long size = (long) (1.0 + (long) initialCapacity / loadFactor);
+	int cap = (size &gt;= (long) MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : tableSizeFor((int) size);
+	this.sizeCtl = cap;
 }
 </code></pre>
-
 <p>在构造方法中并不会创建其中的数组等相关部件，只是进行简单的属性设置，同样的，table的大小也被规定为 必须是 2的 幂次方</p>
-
 <p>真正的初始化是放在了 向 ConcurrentHashMap 中插入元素的时候发生的，比如：put、computeIfAbsent、compute、merge 等方法，调用实际是检查 table == null</p>
-
-<h3 id="toc_26">get 操作</h3>
-
-<p>get 方法比较简单，给定一个 key 来确定 value 的时候，必须满足两个条件<br/>
+<h3><a id="get%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>get 操作</h3>
+<p>get 方法比较简单，给定一个 key 来确定 value 的时候，必须满足两个条件<br />
 key 相同 hash 值相同，对于节点可能在链表或树上的情况，需要分别去查找。</p>
-
 <pre><code class="language-java">public V get(Object key) {
-    Node&lt;K, V&gt;[] tab;
-    Node&lt;K, V&gt; e, p;
-    int n, eh;
-    K ek;
-    // 计算 hash 值
-    int h = spread(key.hashCode());
-    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (e = tabAt(tab, (n - 1) &amp; h)) != null) {
-        // node数组中的节点就是要找的节点
-        if ((eh = e.hash) == h) {
-            if ((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek)))
-                return e.val;
-        } else if (eh &lt; 0) // eh &lt; 0 说明这个节点在 树上，调用树的 find 方法寻找
-            return (p = e.find(h, key)) != null ? p.val : null;
-        // key 在 链表上，遍历链表 查找到对应的值并返回
-        while ((e = e.next) != null) {
-            if (e.hash == h &amp;&amp;
-                    ((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek))))
-                return e.val;
-        }
-    }
-    return null;
+	Node&lt;K, V&gt;[] tab;
+	Node&lt;K, V&gt; e, p;
+	int n, eh;
+	K ek;
+	// 计算 hash 值
+	int h = spread(key.hashCode());
+	if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp; (e = tabAt(tab, (n - 1) &amp; h)) != null) {
+		// node数组中的节点就是要找的节点
+		if ((eh = e.hash) == h) {
+			if ((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek)))
+				return e.val;
+		} else if (eh &lt; 0) // eh &lt; 0 说明这个节点在 树上，调用树的 find 方法寻找
+			return (p = e.find(h, key)) != null ? p.val : null;
+		// key 在 链表上，遍历链表 查找到对应的值并返回
+		while ((e = e.next) != null) {
+			if (e.hash == h &amp;&amp;
+					((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek))))
+				return e.val;
+		}
+	}
+	return null;
 }
 </code></pre>
-
-<h3 id="toc_27">put 操作</h3>
-
+<h3><a id="put%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put 操作</h3>
 <pre><code class="language-java">public V put(K key, V value) {
-    return putVal(key, value, false);
+	return putVal(key, value, false);
 }
 
 /**
  * Implementation for put and putIfAbsent
  */
 final V putVal(K key, V value, boolean onlyIfAbsent) {
-    if (key == null || value == null) throw new NullPointerException();
-    // 计算key的hash值
-    int hash = spread(key.hashCode());
-    int binCount = 0;
-    /*死循环 何时插入成功 何时跳出*/
-    for (Node&lt;K, V&gt;[] tab = table; ; ) {
-        Node&lt;K, V&gt; f;
-        int n, i, fh;
-        if (tab == null || (n = tab.length) == 0) {
-            /*如果table为空的话，初始化table*/
-            tab = initTable();
-        } 
-        // 找该 hash 值对应的数组下标，得到第一个节点 f
-        else if ((f = tabAt(tab, i = (n - 1) &amp; hash)) == null) {
-            /* Node数组中的元素，这个位置没有值 ，使用CAS操作放进去,如果CAS 失败，则会产生并发操作问题 */
-            if (casTabAt(tab, i, null, new Node&lt;K, V&gt;(hash, key, value, null)))
-                break;// no lock when adding to empty bin
-        } 
-        // hash 可以等于 MOVED，这个需要到后面才能看明白，不过从名字上也能猜到，肯定是因为在扩容
-        else if ((fh = f.hash) == MOVED) {
-            //正在进行扩容，当前线程帮忙扩容,这个等到看完数据迁移部分的介绍后，再理解这个就很简单了
-            tab = helpTransfer(tab, f);
-        } else {
-            V oldVal = null;
-            //锁Node数组中的元素，f 这个位置是Hash冲突组成链表的头结点或者是红黑树的根节点,而且不为空
-            synchronized (f) {
-                if (tabAt(tab, i) == f) {
-                    // fh &gt;= 0 说明 这个节点是一个链表的节点，而不是树的节点
-                    if (fh &gt;= 0) {
-                       // 用于累加，记录链表的长度
-                        binCount = 1;
-                        for (Node&lt;K, V&gt; e = f; ; ++binCount) {
-                            K ek;
-                            // 如果发现了&quot;相等&quot;的 key，判断是否要进行值覆盖，然后也就可以 break 了
-                            if (e.hash == hash &amp;&amp; ((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek)))) {
-                                oldVal = e.val;
-                                if (!onlyIfAbsent)
-                                    e.val = value;
-                                break;
-                            }
-                            Node&lt;K, V&gt; pred = e;
-                            // 如果遍历到了最后一个节点，使用尾插法，吧它插入到链表尾部
-                            if ((e = e.next) == null) {
-                                pred.next = new Node&lt;K, V&gt;(hash, key,
-                                        value, null);
-                                break;
-                            }
-                        }
-                    } else if (f instanceof TreeBin) { // 按照树的方式插入值
-                        Node&lt;K, V&gt; p;
-                        binCount = 2;
-                        if ((p = ((TreeBin&lt;K, V&gt;) f).putTreeVal(hash, key,
-                                value)) != null) {
-                            oldVal = p.val;
-                            if (!onlyIfAbsent)
-                                p.val = value;
-                        }
-                    }
-                }
-            }
+	if (key == null || value == null) throw new NullPointerException();
+	// 计算key的hash值
+	int hash = spread(key.hashCode());
+	int binCount = 0;
+	/*死循环 何时插入成功 何时跳出*/
+	for (Node&lt;K, V&gt;[] tab = table; ; ) {
+		Node&lt;K, V&gt; f;
+		int n, i, fh;
+		if (tab == null || (n = tab.length) == 0) {
+			/*如果table为空的话，初始化table*/
+			tab = initTable();
+		} 
+		// 找该 hash 值对应的数组下标，得到第一个节点 f
+		else if ((f = tabAt(tab, i = (n - 1) &amp; hash)) == null) {
+			/* Node数组中的元素，这个位置没有值 ，使用CAS操作放进去,如果CAS 失败，则会产生并发操作问题 */
+			if (casTabAt(tab, i, null, new Node&lt;K, V&gt;(hash, key, value, null)))
+				break;// no lock when adding to empty bin
+		} 
+		// hash 可以等于 MOVED，这个需要到后面才能看明白，不过从名字上也能猜到，肯定是因为在扩容
+		else if ((fh = f.hash) == MOVED) {
+			//正在进行扩容，当前线程帮忙扩容,这个等到看完数据迁移部分的介绍后，再理解这个就很简单了
+			tab = helpTransfer(tab, f);
+		} else {
+			V oldVal = null;
+			//锁Node数组中的元素，f 这个位置是Hash冲突组成链表的头结点或者是红黑树的根节点,而且不为空
+			synchronized (f) {
+				if (tabAt(tab, i) == f) {
+					// fh &gt;= 0 说明 这个节点是一个链表的节点，而不是树的节点
+					if (fh &gt;= 0) {
+					   // 用于累加，记录链表的长度
+						binCount = 1;
+						for (Node&lt;K, V&gt; e = f; ; ++binCount) {
+							K ek;
+							// 如果发现了&quot;相等&quot;的 key，判断是否要进行值覆盖，然后也就可以 break 了
+							if (e.hash == hash &amp;&amp; ((ek = e.key) == key || (ek != null &amp;&amp; key.equals(ek)))) {
+								oldVal = e.val;
+								if (!onlyIfAbsent)
+									e.val = value;
+								break;
+							}
+							Node&lt;K, V&gt; pred = e;
+							// 如果遍历到了最后一个节点，使用尾插法，吧它插入到链表尾部
+							if ((e = e.next) == null) {
+								pred.next = new Node&lt;K, V&gt;(hash, key,
+										value, null);
+								break;
+							}
+						}
+					} else if (f instanceof TreeBin) { // 按照树的方式插入值
+						Node&lt;K, V&gt; p;
+						binCount = 2;
+						if ((p = ((TreeBin&lt;K, V&gt;) f).putTreeVal(hash, key,
+								value)) != null) {
+							oldVal = p.val;
+							if (!onlyIfAbsent)
+								p.val = value;
+						}
+					}
+				}
+			}
 
-            if (binCount != 0) {
-                // 达到临界值 8 需要把链表转换为 树形结构
-                if (binCount &gt;= TREEIFY_THRESHOLD)
-                    // 这个方法和 HashMap 中稍微有一点点不同，那就是它不是一定会进行红黑树转换，如果当前数组的长度小于 64，那么会选择进行数组扩容，而不是转换为红黑树
-                    treeifyBin(tab, i);
-                if (oldVal != null)
-                    return oldVal;
-                break;
-            }
-        }
-    }
-    // map的元素数量+1 并检查是否需要扩容
-    addCount(1L, binCount);
-    return null;
+			if (binCount != 0) {
+				// 达到临界值 8 需要把链表转换为 树形结构
+				if (binCount &gt;= TREEIFY_THRESHOLD)
+					// 这个方法和 HashMap 中稍微有一点点不同，那就是它不是一定会进行红黑树转换，如果当前数组的长度小于 64，那么会选择进行数组扩容，而不是转换为红黑树
+					treeifyBin(tab, i);
+				if (oldVal != null)
+					return oldVal;
+				break;
+			}
+		}
+	}
+	// map的元素数量+1 并检查是否需要扩容
+	addCount(1L, binCount);
+	return null;
 }
 </code></pre>
-
-<h3 id="toc_28">initTable()初始化</h3>
-
+<h3><a id="inittable%E5%88%9D%E5%A7%8B%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>initTable()初始化</h3>
 <pre><code class="language-java">private final Node&lt;K, V&gt;[] initTable() {
-    Node&lt;K, V&gt;[] tab;
-    int sc;
-    while ((tab = table) == null || tab.length == 0) {
-        // 小于 0 表示有其他线程正在进行初始化操作，把当前线程CPU时间让出来。因为对于table的初始化工作，只能有一个线程在运行。
-        if ((sc = sizeCtl) &lt; 0)
-            Thread.yield(); // lost initialization race; just spin
-        // 利用 CAS 操作把 sizectl 的值置为  -1  表示本线程正在进行初始化操作，即持有了所资源
-        else if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
-            try {
-                if ((tab = table) == null || tab.length == 0) {
-                   // DEFAULT_CAPACITY 默认值 16
-                    int n = (sc &gt; 0) ? sc : DEFAULT_CAPACITY;
-                    @SuppressWarnings(&quot;unchecked&quot;)
-                    Node&lt;K, V&gt;[] nt = (Node&lt;K, V&gt;[]) new Node&lt;?, ?&gt;[n];
-                    // 将这个数组赋值给 table，table 是 volatile 的
-                    table = tab = nt;
-                    //n 右移 2 位，本质上是 n变为 原来的 1/4，所以sc = 0.75*n
-                    sc = n - (n &gt;&gt;&gt; 2);
-                }
-            } finally {
-                // 设置成扩容的阈值
-                sizeCtl = sc;
-            }
-            break;
-        }
-    }
-    return tab;
+	Node&lt;K, V&gt;[] tab;
+	int sc;
+	while ((tab = table) == null || tab.length == 0) {
+		// 小于 0 表示有其他线程正在进行初始化操作，把当前线程CPU时间让出来。因为对于table的初始化工作，只能有一个线程在运行。
+		if ((sc = sizeCtl) &lt; 0)
+			Thread.yield(); // lost initialization race; just spin
+		// 利用 CAS 操作把 sizectl 的值置为  -1  表示本线程正在进行初始化操作，即持有了所资源
+		else if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
+			try {
+				if ((tab = table) == null || tab.length == 0) {
+				   // DEFAULT_CAPACITY 默认值 16
+					int n = (sc &gt; 0) ? sc : DEFAULT_CAPACITY;
+					@SuppressWarnings(&quot;unchecked&quot;)
+					Node&lt;K, V&gt;[] nt = (Node&lt;K, V&gt;[]) new Node&lt;?, ?&gt;[n];
+					// 将这个数组赋值给 table，table 是 volatile 的
+					table = tab = nt;
+					//n 右移 2 位，本质上是 n变为 原来的 1/4，所以sc = 0.75*n
+					sc = n - (n &gt;&gt;&gt; 2);
+				}
+			} finally {
+				// 设置成扩容的阈值
+				sizeCtl = sc;
+			}
+			break;
+		}
+	}
+	return tab;
 }
 </code></pre>
-
-<h3 id="toc_29">扩容 tryPresize</h3>
-
+<h3><a id="%E6%89%A9%E5%AE%B9trypresize" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>扩容 tryPresize</h3>
 <p>这里的扩容也是做翻倍扩容的，扩容后数组容量为原来的 2 倍。</p>
-
 <pre><code class="language-java">// 首先要说明的是，方法参数 size 传进来的时候就已经翻了倍了
 private final void tryPresize(int size) {
     // c: size 的 1.5 倍，再加 1，再往上取最近的 2 的 n 次方。
@@ -1141,17 +1042,11 @@ private final void tryPresize(int size) {
 }
 
 </code></pre>
-
-<h3 id="toc_30">transfer</h3>
-
-<p>将原来的 tab 数组的元素迁移到新的 nextTab 数组中。 </p>
-
-<p>虽然我们之前说的 tryPresize 方法中多次调用 transfer 不涉及多线程，但是这个 transfer 方法可以在其他地方被调用，典型地，我们之前在说 put 方法的时候就说过了，请往上看 put 方法，是不是有个地方调用了 helpTransfer 方法，helpTransfer 方法会调用 transfer 方法的。 此方法支持多线程执行，外围调用此方法的时候，会保证第一个发起数据迁移的线程，nextTab 参数为 null，之后再调用此方法的时候，nextTab 不会为 null。 </p>
-
-<p>阅读源码之前，先要理解并发操作的机制。原数组长度为 n，所以我们有 n 个迁移任务，让每个线程每次负责一个小任务是最简单的，每做完一个任务再检测是否有其他没做完的任务，帮助迁移就可以了，而 Doug Lea 使用了一个 stride，简单理解就是步长，每个线程每次负责迁移其中的一部分，如每次迁移 16 个小任务。所以，我们就需要一个全局的调度者来安排哪个线程执行哪几个任务，这个就是属性 transferIndex 的作用。 </p>
-
+<h3><a id="transfer" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>transfer</h3>
+<p>将原来的 tab 数组的元素迁移到新的 nextTab 数组中。</p>
+<p>虽然我们之前说的 tryPresize 方法中多次调用 transfer 不涉及多线程，但是这个 transfer 方法可以在其他地方被调用，典型地，我们之前在说 put 方法的时候就说过了，请往上看 put 方法，是不是有个地方调用了 helpTransfer 方法，helpTransfer 方法会调用 transfer 方法的。 此方法支持多线程执行，外围调用此方法的时候，会保证第一个发起数据迁移的线程，nextTab 参数为 null，之后再调用此方法的时候，nextTab 不会为 null。</p>
+<p>阅读源码之前，先要理解并发操作的机制。原数组长度为 n，所以我们有 n 个迁移任务，让每个线程每次负责一个小任务是最简单的，每做完一个任务再检测是否有其他没做完的任务，帮助迁移就可以了，而 Doug Lea 使用了一个 stride，简单理解就是步长，每个线程每次负责迁移其中的一部分，如每次迁移 16 个小任务。所以，我们就需要一个全局的调度者来安排哪个线程执行哪几个任务，这个就是属性 transferIndex 的作用。</p>
 <p>第一个发起数据迁移的线程会将 transferIndex 指向原数组最后的位置，然后从后往前的 stride 个任务属于第一个线程，然后将 transferIndex 指向新的位置，再往前的 stride 个任务属于第二个线程，依此类推。当然，这里说的第二个线程不是真的一定指代了第二个线程，也可以是同一个线程，这个读者应该能理解吧。其实就是将一个大的迁移任务分为了一个个任务包</p>
-
 <pre><code class="language-java">private final void transfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab) {
     int n = tab.length, stride;
 
@@ -1353,17 +1248,11 @@ private final void tryPresize(int size) {
 }
 
 </code></pre>
-
 <p>transfer 这个方法并没有实现所有的迁移任务，每次调用这个方法只实现了 transferIndex 往前 stride 个位置的迁移工作，其他的需要由外围来控制。 这个时候，再回去仔细看 tryPresize 方法可能就会更加清晰一些了</p>
-
-<h3 id="toc_31">remove</h3>
-
+<h3><a id="remove" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>remove</h3>
 <p>移除方法的基本流程和put方法很类似，只不过操作由插入数据变为移除数 据而已，而且如果存在红黑树的情况下，会检查是否需要将红黑树转为链表的步 骤。不再重复讲述。</p>
-
-<h3 id="toc_32">treeifyBin</h3>
-
+<h3><a id="treeifybin" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>treeifyBin</h3>
 <p>用于将过长的链表转换为 TreeBin 对象。但是他并不是直接转换，而是进行一次容量判断，如果容量没有达到转换的要求，直接进行扩容操作并返回; 如果满足条件才将链表的结构转换为 TreeBin ，这与 HashMap 不同的是，它并没有 把 TreeNode 直接放入红黑树，而是利用了 TreeBin 这个小容器来封装所有的 TreeNode。</p>
-
 <pre><code class="language-java">private final void treeifyBin(Node&lt;K,V&gt;[] tab, int index) {
     Node&lt;K,V&gt; b; int n, sc;
     if (tab != null) {

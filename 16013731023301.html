@@ -114,100 +114,67 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">1. 前言</h2>
-
-<p>相信大家对 ZooKeeper 应该不算陌生。但是你真的了解 ZooKeeper 到底有啥用不？如果别人/面试官让你给他讲讲对于 ZooKeeper 的认识，你能回答到什么地步呢？<br/>
-拿我自己来说吧！我本人曾经使用 Dubbo 来做分布式项目的时候，使用了 ZooKeeper 作为注册中心。为了保证分布式系统能够同步访问某个资源，我还使用 ZooKeeper 做过分布式锁。另外，我在学习 Kafka 的时候，知道 Kafka 很多功能的实现依赖了 ZooKeeper。<br/>
+                    <h2><a id="1%E5%89%8D%E8%A8%80" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. 前言</h2>
+<p>相信大家对 ZooKeeper 应该不算陌生。但是你真的了解 ZooKeeper 到底有啥用不？如果别人/面试官让你给他讲讲对于 ZooKeeper 的认识，你能回答到什么地步呢？<br />
+拿我自己来说吧！我本人曾经使用 Dubbo 来做分布式项目的时候，使用了 ZooKeeper 作为注册中心。为了保证分布式系统能够同步访问某个资源，我还使用 ZooKeeper 做过分布式锁。另外，我在学习 Kafka 的时候，知道 Kafka 很多功能的实现依赖了 ZooKeeper。<br />
 前几天，总结项目经验的时候，我突然问自己 ZooKeeper 到底是个什么东西？想了半天，脑海中只是简单的能浮现出几句话：</p>
-
-<p>ZooKeeper 可以被用作注册中心、分布式锁；<br/>
-ZooKeeper 是 Hadoop 生态系统的一员；<br/>
+<p>ZooKeeper 可以被用作注册中心、分布式锁；<br />
+ZooKeeper 是 Hadoop 生态系统的一员；<br />
 构建 ZooKeeper 集群的时候，使用的服务器最好是奇数台。</p>
-
-<p>由此可见，我对于 ZooKeeper 的理解仅仅是停留在了表面。<br/>
-所以，通过本文，希望带大家稍微详细的了解一下 ZooKeeper 。如果没有学过 ZooKeeper ，那么本文将会是你进入 ZooKeeper 大门的垫脚砖。如果你已经接触过 ZooKeeper ，那么本文将带你回顾一下 ZooKeeper 的一些基础概念。<br/>
-另外，本文不光会涉及到 ZooKeeper 的一些概念，后面的文章会介绍到 ZooKeeper 常见命令的使用以及使用 Apache Curator 作为 ZooKeeper 的客户端。<br/>
-如果文章有任何需要改善和完善的地方，欢迎在评论区指出，共同进步！</p>
-
-<h2 id="toc_1">2. ZooKeeper 介绍</h2>
-
-<h3 id="toc_2">2.1. ZooKeeper 由来</h3>
-
-<p>正式介绍 ZooKeeper 之前，我们先来看看 ZooKeeper 的由来，还挺有意思的。<br/>
+<p>由此可见，我对于 ZooKeeper 的理解仅仅是停留在了表面。<br />
+所以，通过本文，希望带大家稍微详细的了解一下 ZooKeeper 。如果没有学过 ZooKeeper ，那么本文将会是你进入 ZooKeeper 大门的垫脚砖。如果你已经接触过 ZooKeeper ，那么本文将带你回顾一下 ZooKeeper 的一些基础概念。<br />
+另外，本文不光会涉及到 ZooKeeper 的一些概念，后面的文章会介绍到 ZooKeeper 常见命令的使用以及使用 Apache Curator 作为 ZooKeeper 的客户端。<br />
+如果文章有任何需要改善和完善的地方，欢迎在评论区指出，共同进步！<br />
+##2. ZooKeeper 介绍<br />
+###2.1. ZooKeeper 由来<br />
+正式介绍 ZooKeeper 之前，我们先来看看 ZooKeeper 的由来，还挺有意思的。<br />
 下面这段内容摘自《从 Paxos 到 ZooKeeper 》第四章第一节，推荐大家阅读一下：</p>
-
-<p>ZooKeeper 最早起源于雅虎研究院的一个研究小组。在当时，研究人员发现，在雅虎内部很多大型系统基本都需要依赖一个类似的系统来进行分布式协调，但是这些系统往往都存在分布式单点问题。所以，雅虎的开发人员就试图开发一个通用的无单点问题的分布式协调框架，以便让开发人员将精力集中在处理业务逻辑上。<br/>
+<p>ZooKeeper 最早起源于雅虎研究院的一个研究小组。在当时，研究人员发现，在雅虎内部很多大型系统基本都需要依赖一个类似的系统来进行分布式协调，但是这些系统往往都存在分布式单点问题。所以，雅虎的开发人员就试图开发一个通用的无单点问题的分布式协调框架，以便让开发人员将精力集中在处理业务逻辑上。<br />
 关于“ZooKeeper”这个项目的名字，其实也有一段趣闻。在立项初期，考虑到之前内部很多项目都是使用动物的名字来命名的（例如著名的 Pig 项目),雅虎的工程师希望给这个项目也取一个动物的名字。时任研究院的首席科学家 RaghuRamakrishnan 开玩笑地说：“在这样下去，我们这儿就变成动物园了！”此话一出，大家纷纷表示就叫动物园管理员吧一一一因为各个以动物命名的分布式组件放在一起，雅虎的整个分布式系统看上去就像一个大型的动物园了，而 ZooKeeper 正好要用来进行分布式环境的协调一一于是，ZooKeeper 的名字也就由此诞生了。</p>
-
-<h3 id="toc_3">2.2. ZooKeeper 概览</h3>
-
-<p>ZooKeeper 是一个开源的分布式协调服务，它的设计目标是将那些复杂且容易出错的分布式一致性服务封装起来，构成一个高效可靠的原语集，并以一系列简单易用的接口提供给用户使用。</p>
-
+<p>###2.2. ZooKeeper 概览<br />
+ZooKeeper 是一个开源的分布式协调服务，它的设计目标是将那些复杂且容易出错的分布式一致性服务封装起来，构成一个高效可靠的原语集，并以一系列简单易用的接口提供给用户使用。</p>
 <p>原语： 操作系统或计算机网络用语范畴。是由若干条指令组成的，用于完成一定功能的一个过程。具有不可分割性·即原语的执行必须是连续的，在执行过程中不允许被中断。</p>
-
-<p>ZooKeeper 为我们提供了高可用、高性能、稳定的分布式数据一致性解决方案，通常被用于实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能。<br/>
-另外，ZooKeeper 将数据保存在内存中，性能是非常棒的。 在“读”多于“写”的应用程序中尤其地高性能，因为“写”会导致所有的服务器间同步状态。（“读”多于“写”是协调服务的典型场景）。</p>
-
-<h3 id="toc_4">2.3. ZooKeeper 特点</h3>
-
-<p>顺序一致性： 从同一客户端发起的事务请求，最终将会严格地按照顺序被应用到 ZooKeeper 中去。<br/>
-原子性： 所有事务请求的处理结果在整个集群中所有机器上的应用情况是一致的，也就是说，要么整个集群中所有的机器都成功应用了某一个事务，要么都没有应用。<br/>
-单一系统映像 ： 无论客户端连到哪一个 ZooKeeper 服务器上，其看到的服务端数据模型都是一致的。<br/>
+<p>ZooKeeper 为我们提供了高可用、高性能、稳定的分布式数据一致性解决方案，通常被用于实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能。<br />
+另外，ZooKeeper 将数据保存在内存中，性能是非常棒的。 在“读”多于“写”的应用程序中尤其地高性能，因为“写”会导致所有的服务器间同步状态。（“读”多于“写”是协调服务的典型场景）。<br />
+###2.3. ZooKeeper 特点</p>
+<p>顺序一致性： 从同一客户端发起的事务请求，最终将会严格地按照顺序被应用到 ZooKeeper 中去。<br />
+原子性： 所有事务请求的处理结果在整个集群中所有机器上的应用情况是一致的，也就是说，要么整个集群中所有的机器都成功应用了某一个事务，要么都没有应用。<br />
+单一系统映像 ： 无论客户端连到哪一个 ZooKeeper 服务器上，其看到的服务端数据模型都是一致的。<br />
 可靠性： 一旦一次更改请求被应用，更改的结果就会被持久化，直到被下一次更改覆盖。</p>
-
-<h3 id="toc_5">2.4. ZooKeeper 典型应用场景</h3>
-
-<p>ZooKeeper 概览中，我们介绍到使用其通常被用于实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能。<br/>
+<p>###2.4. ZooKeeper 典型应用场景<br />
+ZooKeeper 概览中，我们介绍到使用其通常被用于实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能。<br />
 下面选 3 个典型的应用场景来专门说说：</p>
-
-<p>分布式锁 ： 通过创建唯一节点获得分布式锁，当获得锁的一方执行完相关代码或者是挂掉之后就释放锁。<br/>
-命名服务 ：可以通过 ZooKeeper 的顺序节点生成全局唯一 ID<br/>
+<p>分布式锁 ： 通过创建唯一节点获得分布式锁，当获得锁的一方执行完相关代码或者是挂掉之后就释放锁。<br />
+命名服务 ：可以通过 ZooKeeper 的顺序节点生成全局唯一 ID<br />
 数据发布/订阅 ：通过 Watcher 机制 可以很方便地实现数据发布/订阅。当你将数据发布到 ZooKeeper 被监听的节点上，其他机器可通过监听 ZooKeeper 上节点的变化来实现配置的动态更新。</p>
-
-<p>实际上，这些功能的实现基本都得益于 ZooKeeper 可以保存数据的功能，但是 ZooKeeper 不适合保存大量数据，这一点需要注意。</p>
-
-<h3 id="toc_6">2.5. 有哪些著名的开源项目用到了 ZooKeeper?</h3>
-
-<p>Kafka : ZooKeeper 主要为 Kafka 提供 Broker 和 Topic 的注册以及多个 Partition 的负载均衡等功能。<br/>
-Hbase : ZooKeeper 为 Hbase 提供确保整个集群只有一个 Master 以及保存和提供 regionserver 状态信息（是否在线）等功能。<br/>
+<p>实际上，这些功能的实现基本都得益于 ZooKeeper 可以保存数据的功能，但是 ZooKeeper 不适合保存大量数据，这一点需要注意。<br />
+###2.5. 有哪些著名的开源项目用到了 ZooKeeper?</p>
+<p>Kafka : ZooKeeper 主要为 Kafka 提供 Broker 和 Topic 的注册以及多个 Partition 的负载均衡等功能。<br />
+Hbase : ZooKeeper 为 Hbase 提供确保整个集群只有一个 Master 以及保存和提供 regionserver 状态信息（是否在线）等功能。<br />
 Hadoop : ZooKeeper 为 Namenode 提供高可用支持。</p>
-
-<h2 id="toc_7">3. ZooKeeper 重要概念解读</h2>
-
-<p>破音：拿出小本本，下面的内容非常重要哦！</p>
-
-<h3 id="toc_8">3.1. Data model（数据模型）</h3>
-
-<p>ZooKeeper 数据模型采用层次化的多叉树形结构，每个节点上都可以存储数据，这些数据可以是数字、字符串或者是二级制序列。并且。每个节点还可以拥有 N 个子节点，最上层是根节点以“/”来代表。每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。并且，每个 znode 都一个唯一的路径标识。<br/>
-强调一句：ZooKeeper 主要是用来协调服务的，而不是用来存储业务数据的，所以不要放比较大的数据在 znode 上，ZooKeeper 给出的上限是每个结点的数据大小最大是 1M。<br/>
-从下图可以更直观地看出：ZooKeeper 节点路径标识方式和 Unix 文件系统路径非常相似，都是由一系列使用斜杠&quot;/&quot;进行分割的路径表示，开发人员可以向这个节点中写人数据，也可以在节点下面创建子节点。这些操作我们后面都会介绍到。<br/>
-<figure><img src="media/16013731023301/16013732225856.jpg" alt=""/></figure></p>
-
-<h3 id="toc_9">3.2. znode（数据节点）</h3>
-
-<p>介绍了 ZooKeeper 树形数据模型之后，我们知道每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。你要存放的数据就放在上面，是你使用 ZooKeeper 过程中经常需要接触到的一个概念。</p>
-
-<h4 id="toc_10">3.2.1. znode 4种类型</h4>
-
+<h2><a id="3-zookeeper%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%E8%A7%A3%E8%AF%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. ZooKeeper 重要概念解读</h2>
+<p>破音：拿出小本本，下面的内容非常重要哦！<br />
+###3.1. Data model（数据模型）<br />
+ZooKeeper 数据模型采用层次化的多叉树形结构，每个节点上都可以存储数据，这些数据可以是数字、字符串或者是二级制序列。并且。每个节点还可以拥有 N 个子节点，最上层是根节点以“/”来代表。每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。并且，每个 znode 都一个唯一的路径标识。<br />
+强调一句：ZooKeeper 主要是用来协调服务的，而不是用来存储业务数据的，所以不要放比较大的数据在 znode 上，ZooKeeper 给出的上限是每个结点的数据大小最大是 1M。<br />
+从下图可以更直观地看出：ZooKeeper 节点路径标识方式和 Unix 文件系统路径非常相似，都是由一系列使用斜杠&quot;/&quot;进行分割的路径表示，开发人员可以向这个节点中写人数据，也可以在节点下面创建子节点。这些操作我们后面都会介绍到。<br />
+<figure><img src="media/16013731023301/16013732225856.jpg" alt="" /></figure></p>
+<p>###3.2. znode（数据节点）<br />
+介绍了 ZooKeeper 树形数据模型之后，我们知道每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。你要存放的数据就放在上面，是你使用 ZooKeeper 过程中经常需要接触到的一个概念。</p>
+<h4><a id="3-2-1-znode-4%E7%A7%8D%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.2.1. znode 4种类型</h4>
 <p>我们通常是将 znode 分为 4 大类：</p>
-
-<p>持久（PERSISTENT）节点 ：一旦创建就一直存在即使 ZooKeeper 集群宕机，直到将其删除。<br/>
-临时（EPHEMERAL）节点 ：临时节点的生命周期是与 客户端会话（session） 绑定的，会话消失则节点消失 。并且，临时节点只能做叶子节点 ，不能创建子节点。<br/>
-持久顺序（PERSISTENT_SEQUENTIAL）节点 ：除了具有持久（PERSISTENT）节点的特性之外， 子节点的名称还具有顺序性。比如 /node1/app0000000001 、/node1/app0000000002 。<br/>
+<p>持久（PERSISTENT）节点 ：一旦创建就一直存在即使 ZooKeeper 集群宕机，直到将其删除。<br />
+临时（EPHEMERAL）节点 ：临时节点的生命周期是与 客户端会话（session） 绑定的，会话消失则节点消失 。并且，临时节点只能做叶子节点 ，不能创建子节点。<br />
+持久顺序（PERSISTENT_SEQUENTIAL）节点 ：除了具有持久（PERSISTENT）节点的特性之外， 子节点的名称还具有顺序性。比如 /node1/app0000000001 、/node1/app0000000002 。<br />
 临时顺序（EPHEMERAL_SEQUENTIAL）节点 ：除了具备临时（EPHEMERAL）节点的特性之外，子节点的名称还具有顺序性。</p>
-
-<h4 id="toc_11">3.2.2. znode 数据结构</h4>
-
-<p>每个 znode 由 2 部分组成:</p>
-
+<p>####3.2.2. znode 数据结构<br />
+每个 znode 由 2 部分组成:</p>
 <ul>
 <li>stat ：状态信息</li>
 <li>data ： 节点存放的数据的具体内容</li>
 </ul>
-
 <p>如下所示，我通过 get 命令来获取 根目录下的 dubbo 节点的内容。（get 命令在下面会介绍到）。</p>
-
-<pre><code class="language-text">[zk: 127.0.0.1:2181(CONNECTED) 6] get /dubbo
+<pre><code class="language-plain_text">[zk: 127.0.0.1:2181(CONNECTED) 6] get /dubbo
 # 该数据节点关联的数据内容为空
 null
 # 下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出
@@ -223,10 +190,8 @@ ephemeralOwner = 0x0
 dataLength = 0
 numChildren = 1
 </code></pre>
-
-<p>Stat 类中包含了一个数据节点的所有状态信息的字段，包括事务 ID-cZxid、节点创建时间-ctime 和子节点个数-numChildren 等等。<br/>
+<p>Stat 类中包含了一个数据节点的所有状态信息的字段，包括事务 ID-cZxid、节点创建时间-ctime 和子节点个数-numChildren 等等。<br />
 下面我们来看一下每个 znode 状态信息究竟代表的是什么吧！（下面的内容来源于《从 Paxos 到 ZooKeeper 分布式一致性原理与实践》，因为 Guide 确实也不是特别清楚，要学会参考资料的嘛！ ） ：</p>
-
 <table>
 <thead>
 <tr>
@@ -234,7 +199,6 @@ numChildren = 1
 <th>解释</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>cZxid</td>
@@ -282,22 +246,16 @@ numChildren = 1
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_12">3.3. 版本（version）</h3>
-
+<h3><a id="3-3%E7%89%88%E6%9C%AC%EF%BC%88-version%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.3. 版本（version）</h3>
 <p>在前面我们已经提到，对应于每个 znode，ZooKeeper 都会为其维护一个叫作 Stat 的数据结构，Stat 中记录了这个 znode 的三个相关的版本：</p>
-
 <ul>
 <li>dataVersion ：当前 znode 节点的版本号</li>
 <li>cversion ： 当前 znode 子节点的版本</li>
 <li>aclVersion ： 当前 znode 的 ACL 的版本。</li>
 </ul>
-
-<h3 id="toc_13">3.4. ACL（权限控制）</h3>
-
-<p>ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似于 UNIX 文件系统的权限控制。<br/>
+<p>###3.4. ACL（权限控制）<br />
+ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似于 UNIX 文件系统的权限控制。<br />
 对于 znode 操作的权限，ZooKeeper 提供了以下 5 种：</p>
-
 <ul>
 <li>CREATE : 能创建子节点</li>
 <li>READ ：能获取节点数据和列出其子节点</li>
@@ -305,45 +263,31 @@ numChildren = 1
 <li>DELETE : 能删除子节点</li>
 <li>ADMIN : 能设置节点 ACL 的权限</li>
 </ul>
-
-<p>其中尤其需要注意的是，CREATE 和 DELETE 这两种权限都是针对 子节点 的权限控制。<br/>
+<p>其中尤其需要注意的是，CREATE 和 DELETE 这两种权限都是针对 子节点 的权限控制。<br />
 对于身份认证，提供了以下几种方式：</p>
-
 <ul>
 <li>world ： 默认方式，所有用户都可无条件访问。</li>
 <li>auth :不使用任何 id，代表任何已认证的用户。</li>
 <li>digest :用户名:密码认证方式： username:password 。</li>
 <li>ip : 对指定 ip 进行限制。</li>
 </ul>
-
-<h3 id="toc_14">3.5. Watcher（事件监听器）</h3>
-
-<p>Watcher（事件监听器），是 ZooKeeper 中的一个很重要的特性。ZooKeeper 允许用户在指定节点上注册一些 Watcher，并且在一些特定事件触发的时候，ZooKeeper 服务端会将事件通知到感兴趣的客户端上去，该机制是 ZooKeeper 实现分布式协调服务的重要特性。<br/>
-<figure><img src="media/16013731023301/16013733507854.jpg" alt=""/></figure></p>
-
-<p>破音：非常有用的一个特性，都能出小本本记好了，后面用到 ZooKeeper 基本离不开 Watcher（事件监听器）机制。</p>
-
-<h3 id="toc_15">3.6. 会话（Session）</h3>
-
-<p>Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP 长连接，通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向 ZooKeeper 服务器发送请求并接受响应，同时还能够通过该连接接收来自服务器的 Watcher 事件通知。<br/>
-Session 有一个属性叫做：sessionTimeout ，sessionTimeout 代表会话的超时时间。当由于服务器压力太大、网络故障或是客户端主动断开连接等各种原因导致客户端连接断开时，只要在sessionTimeout规定的时间内能够重新连接上集群中任意一台服务器，那么之前创建的会话仍然有效。<br/>
+<p>###3.5. Watcher（事件监听器）<br />
+Watcher（事件监听器），是 ZooKeeper 中的一个很重要的特性。ZooKeeper 允许用户在指定节点上注册一些 Watcher，并且在一些特定事件触发的时候，ZooKeeper 服务端会将事件通知到感兴趣的客户端上去，该机制是 ZooKeeper 实现分布式协调服务的重要特性。<br />
+<figure><img src="media/16013731023301/16013733507854.jpg" alt="" /></figure></p>
+<p>破音：非常有用的一个特性，都能出小本本记好了，后面用到 ZooKeeper 基本离不开 Watcher（事件监听器）机制。<br />
+###3.6. 会话（Session）<br />
+Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP 长连接，通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向 ZooKeeper 服务器发送请求并接受响应，同时还能够通过该连接接收来自服务器的 Watcher 事件通知。<br />
+Session 有一个属性叫做：sessionTimeout ，sessionTimeout 代表会话的超时时间。当由于服务器压力太大、网络故障或是客户端主动断开连接等各种原因导致客户端连接断开时，只要在sessionTimeout规定的时间内能够重新连接上集群中任意一台服务器，那么之前创建的会话仍然有效。<br />
 另外，在为客户端创建会话之前，服务端首先会为每个客户端都分配一个 sessionID。由于 sessionID是 ZooKeeper 会话的一个重要标识，许多与会话相关的运行机制都是基于这个 sessionID 的，因此，无论是哪台服务器为客户端分配的 sessionID，都务必保证全局唯一。</p>
-
-<h2 id="toc_16">4. ZooKeeper 集群</h2>
-
-<p>为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障），那么 ZooKeeper 本身仍然是可用的。通常 3 台服务器就可以构成一个 ZooKeeper 集群了。ZooKeeper 官方提供的架构图就是一个 ZooKeeper 集群整体对外提供服务。<br/>
-<figure><img src="media/16013731023301/16013733606606.jpg" alt=""/></figure></p>
-
-<p>上图中每一个 Server 代表一个安装 ZooKeeper 服务的服务器。组成 ZooKeeper 服务的服务器都会在内存中维护当前的服务器状态，并且每台服务器之间都互相保持着通信。集群间通过 ZAB 协议（ZooKeeper Atomic Broadcast）来保持数据的一致性。<br/>
-最典型集群模式： Master/Slave 模式（主备模式）。在这种模式中，通常 Master 服务器作为主服务器提供写服务，其他的 Slave 服务器从服务器通过异步复制的方式获取 Master 服务器最新的数据提供读服务。</p>
-
-<h3 id="toc_17">4.1. ZooKeeper 集群角色</h3>
-
-<p>但是，在 ZooKeeper 中没有选择传统的 Master/Slave 概念，而是引入了 Leader、Follower 和 Observer 三种角色。如下图所示<br/>
-<figure><img src="media/16013731023301/16013733698840.jpg" alt=""/></figure></p>
-
+<h2><a id="4-zookeeper%E9%9B%86%E7%BE%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. ZooKeeper 集群</h2>
+<p>为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障），那么 ZooKeeper 本身仍然是可用的。通常 3 台服务器就可以构成一个 ZooKeeper 集群了。ZooKeeper 官方提供的架构图就是一个 ZooKeeper 集群整体对外提供服务。<br />
+<figure><img src="media/16013731023301/16013733606606.jpg" alt="" /></figure></p>
+<p>上图中每一个 Server 代表一个安装 ZooKeeper 服务的服务器。组成 ZooKeeper 服务的服务器都会在内存中维护当前的服务器状态，并且每台服务器之间都互相保持着通信。集群间通过 ZAB 协议（ZooKeeper Atomic Broadcast）来保持数据的一致性。<br />
+最典型集群模式： Master/Slave 模式（主备模式）。在这种模式中，通常 Master 服务器作为主服务器提供写服务，其他的 Slave 服务器从服务器通过异步复制的方式获取 Master 服务器最新的数据提供读服务。<br />
+###4.1. ZooKeeper 集群角色<br />
+但是，在 ZooKeeper 中没有选择传统的 Master/Slave 概念，而是引入了 Leader、Follower 和 Observer 三种角色。如下图所示<br />
+<figure><img src="media/16013731023301/16013733698840.jpg" alt="" /></figure></p>
 <p>ZooKeeper 集群中的所有机器通过一个 Leader 选举过程 来选定一台称为 “Leader” 的机器，Leader 既可以为客户端提供写服务又能提供读服务。除了 Leader 外，Follower 和 Observer 都只能提供读服务。Follower 和 Observer 唯一的区别在于 Observer 机器不参与 Leader 的选举过程，也不参与写操作的“过半写成功”策略，因此 Observer 机器可以在不影响写性能的情况下提升集群的读性能。</p>
-
 <table>
 <thead>
 <tr>
@@ -351,7 +295,6 @@ Session 有一个属性叫做：sessionTimeout ，sessionTimeout 代表会话的
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>Leader</td>
@@ -367,51 +310,36 @@ Session 有一个属性叫做：sessionTimeout ，sessionTimeout 代表会话的
 </tr>
 </tbody>
 </table>
-
-<p>当 Leader 服务器出现网络中断、崩溃退出与重启等异常情况时，就会进入 Leader 选举过程，这个过程会选举产生新的 Leader 服务器。<br/>
+<p>当 Leader 服务器出现网络中断、崩溃退出与重启等异常情况时，就会进入 Leader 选举过程，这个过程会选举产生新的 Leader 服务器。<br />
 这个过程大致是这样的：</p>
-
-<p>Leader election（选举阶段）：节点在一开始都处于选举阶段，只要有一个节点得到超半数节点的票数，它就可以当选准 leader。<br/>
-Discovery（发现阶段） ：在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。<br/>
-Synchronization（同步阶段） :同步阶段主要是利用 leader 前一阶段获得的最新提议历史，同步集群中所有的副本。同步完成之后<br/>
-准 leader 才会成为真正的 leader。<br/>
+<p>Leader election（选举阶段）：节点在一开始都处于选举阶段，只要有一个节点得到超半数节点的票数，它就可以当选准 leader。<br />
+Discovery（发现阶段） ：在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。<br />
+Synchronization（同步阶段） :同步阶段主要是利用 leader 前一阶段获得的最新提议历史，同步集群中所有的副本。同步完成之后<br />
+准 leader 才会成为真正的 leader。<br />
 Broadcast（广播阶段） :到了这个阶段，ZooKeeper 集群才能正式对外提供事务服务，并且 leader 可以进行消息广播。同时如果有新的节点加入，还需要对新节点进行同步。</p>
-
-<h3 id="toc_18">4.2. ZooKeeper 集群中的服务器状态</h3>
-
+<p>###4.2. ZooKeeper 集群中的服务器状态</p>
 <ul>
 <li>LOOKING ：寻找 Leader。</li>
 <li>LEADING ：Leader 状态，对应的节点为 Leader。</li>
 <li>FOLLOWING ：Follower 状态，对应的节点为 Follower。</li>
 <li>OBSERVING ：Observer 状态，对应节点为 Observer，该节点不参与 Leader 选举。</li>
 </ul>
-
-<h3 id="toc_19">4.3. ZooKeeper 集群为啥最好奇数台？</h3>
-
-<p>ZooKeeper 集群在宕掉几个 ZooKeeper 服务器之后，如果剩下的 ZooKeeper 服务器个数大于宕掉的个数的话整个 ZooKeeper 才依然可用。假如我们的集群中有 n 台 ZooKeeper 服务器，那么也就是剩下的服务数必须大于 n/2。先说一下结论，2n 和 2n-1 的容忍度是一样的，都是 n-1，大家可以先自己仔细想一想，这应该是一个很简单的数学问题了。<br/>
-比如假如我们有 3 台，那么最大允许宕掉 1 台 ZooKeeper 服务器，如果我们有 4 台的的时候也同样只允许宕掉 1 台。<br/>
-假如我们有 5 台，那么最大允许宕掉 2 台 ZooKeeper 服务器，如果我们有 6 台的的时候也同样只允许宕掉 2 台。<br/>
-综上，何必增加那一个不必要的 ZooKeeper 呢？</p>
-
-<h2 id="toc_20">5. ZAB 协议和Paxos 算法</h2>
-
-<p>Paxos 算法应该可以说是  ZooKeeper 的灵魂了。但是，ZooKeeper 并没有完全采用 Paxos算法 ，而是使用 ZAB 协议作为其保证数据一致性的核心算法。另外，在ZooKeeper的官方文档中也指出，ZAB协议并不像 Paxos 算法那样，是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。</p>
-
-<h3 id="toc_21">5.1. ZAB 协议介绍</h3>
-
-<p>ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。</p>
-
-<h3 id="toc_22">5.2. ZAB 协议两种基本的模式：崩溃恢复和消息广播</h3>
-
+<p>###4.3. ZooKeeper 集群为啥最好奇数台？<br />
+ZooKeeper 集群在宕掉几个 ZooKeeper 服务器之后，如果剩下的 ZooKeeper 服务器个数大于宕掉的个数的话整个 ZooKeeper 才依然可用。假如我们的集群中有 n 台 ZooKeeper 服务器，那么也就是剩下的服务数必须大于 n/2。先说一下结论，2n 和 2n-1 的容忍度是一样的，都是 n-1，大家可以先自己仔细想一想，这应该是一个很简单的数学问题了。<br />
+比如假如我们有 3 台，那么最大允许宕掉 1 台 ZooKeeper 服务器，如果我们有 4 台的的时候也同样只允许宕掉 1 台。<br />
+假如我们有 5 台，那么最大允许宕掉 2 台 ZooKeeper 服务器，如果我们有 6 台的的时候也同样只允许宕掉 2 台。<br />
+综上，何必增加那一个不必要的 ZooKeeper 呢？<br />
+##5. ZAB 协议和Paxos 算法<br />
+Paxos 算法应该可以说是  ZooKeeper 的灵魂了。但是，ZooKeeper 并没有完全采用 Paxos算法 ，而是使用 ZAB 协议作为其保证数据一致性的核心算法。另外，在ZooKeeper的官方文档中也指出，ZAB协议并不像 Paxos 算法那样，是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。<br />
+###5.1. ZAB 协议介绍<br />
+ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。<br />
+###5.2. ZAB 协议两种基本的模式：崩溃恢复和消息广播</p>
 <p>ZAB 协议包括两种基本的模式，分别是：</p>
-
 <ul>
 <li>崩溃恢复  ：当整个服务框架在启动过程中，或是当 Leader 服务器出现网络中断、崩溃退出与重启等异常情况时，ZAB 协议就会进入恢复模式并选举产生新的Leader服务器。当选举产生了新的 Leader 服务器，同时集群中已经有过半的机器与该Leader服务器完成了状态同步之后，ZAB协议就会退出恢复模式。其中，所谓的状态同步是指数据同步，用来保证集群中存在过半的机器能够和Leader服务器的数据状态保持一致。</li>
 <li>消息广播 ：当集群中已经有过半的Follower服务器完成了和Leader服务器的状态同步，那么整个服务框架就可以进入消息广播模式了。 当一台同样遵守ZAB协议的服务器启动后加入到集群中时，如果此时集群中已经存在一个Leader服务器在负责进行消息广播，那么新加入的服务器就会自觉地进入数据恢复模式：找到Leader所在的服务器，并与其进行数据同步，然后一起参与到消息广播流程中去。</li>
 </ul>
-
-<h2 id="toc_23">6. 总结</h2>
-
+<h2><a id="6%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. 总结</h2>
 <ul>
 <li>ZooKeeper 本身就是一个分布式程序（只要半数以上节点存活，ZooKeeper 就能正常服务）。</li>
 <li>为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障），那么 ZooKeeper 本身仍然是可用的。</li>

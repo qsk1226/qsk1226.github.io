@@ -115,22 +115,15 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞,直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。</p>
-
 <p>CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截 的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。</p>
-
 <p>CyclicBarrier还提供一个更高级的构造函数CyclicBarrie(r intparties，Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复 杂的业务场景。</p>
-
 <p>这时候会发现这个工具类和CountDownLatch差不多，但是他们是有区别的</p>
-
-<h2 id="toc_0">CountDownLatch 和 CyclicBarrier区别：</h2>
-
-<p>CountDownLatch 的计数器只能使用一次，而 CyclicBarrier 的计数器可以反复 使用。<br/>
-CountDownLatch.await 一般阻塞工作线程，所有的进行预备工作的线程执行 countDown，而 CyclicBarrier 通过工作线程调用 await 从而自行阻塞，直到所有工 作线程达到指定屏障，再大家一起往下走。<br/>
-在控制多个线程同时运行上，CountDownLatch 可以不限线程数量，而 CyclicBarrier 是固定线程数。<br/>
+<h2><a id="countdownlatch%E5%92%8C-cyclicbarrier%E5%8C%BA%E5%88%AB%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CountDownLatch 和 CyclicBarrier区别：</h2>
+<p>CountDownLatch 的计数器只能使用一次，而 CyclicBarrier 的计数器可以反复 使用。<br />
+CountDownLatch.await 一般阻塞工作线程，所有的进行预备工作的线程执行 countDown，而 CyclicBarrier 通过工作线程调用 await 从而自行阻塞，直到所有工 作线程达到指定屏障，再大家一起往下走。<br />
+在控制多个线程同时运行上，CountDownLatch 可以不限线程数量，而 CyclicBarrier 是固定线程数。<br />
 同时，CyclicBarrier 还可以提供一个 barrierAction，合并多线程计算结果。</p>
-
-<h2 id="toc_1">CyclicBarrier 实例代码</h2>
-
+<h2><a id="cyclicbarrier%E5%AE%9E%E4%BE%8B%E4%BB%A3%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CyclicBarrier 实例代码</h2>
 <pre><code class="language-java">public class HomeWorkCyclicBarrier {
 
     private static CyclicBarrier barrier

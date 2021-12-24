@@ -114,28 +114,40 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">Socket 参数设置</h2>
-
+                    <h2><a id="socket%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Socket 参数设置</h2>
 <ul>
-<li><p>TCP_NODELAY: 表示立即发送数据<br/>
-采用 Negale 算法，发送方发送的数据不会立刻发出，而是先放在缓冲区内，等缓冲区满了，再发出。发送完一批数据后，会等待接收方对这批数据的回应，然后再发送下一批数据。</p></li>
-<li><p>SO_REUSEADDR: 表示是否允许重用 Socket 所绑定的本地地址Addr,一般情况下，socketA关闭之后，并不是立即释放socketA 所占用的地址Addr，需要等待一段时间后，没有资源传输了才会真实释放，设置此配置参数即是socketA未完全释放资源的时候，允许别的socketB重新绑定地址Addr。</p></li>
-<li><p>SO_TIMEOUT: 表示接收数据时的等待超时时间</p></li>
-<li><p>SO_LINGER: 表示当执行 Socket 的close()方法时，是否立即关闭底层的socket。默认情况下，执行socket的close()方法，底层的socket并不会立即关闭，而是会延时一段时间，知道发送完所有数据之后，才会真的关闭 socket，断开连接。</p></li>
-<li><p>SO_SNFBUF: 表示发送数据的缓冲区大小</p></li>
-<li><p>SO_RCVBUF: 表示接收数据的缓冲区大小</p></li>
-<li><p>SO_KEEPALIVE: 表示对于长时间处于空闲状态的socket，是否要自动把它关闭</p></li>
-<li><p>OOBINLINE: 表示是否支持发送一个字节的TCP紧急数据</p></li>
+<li>
+<p>TCP_NODELAY: 表示立即发送数据<br />
+采用 Negale 算法，发送方发送的数据不会立刻发出，而是先放在缓冲区内，等缓冲区满了，再发出。发送完一批数据后，会等待接收方对这批数据的回应，然后再发送下一批数据。</p>
+</li>
+<li>
+<p>SO_REUSEADDR: 表示是否允许重用 Socket 所绑定的本地地址Addr,一般情况下，socketA关闭之后，并不是立即释放socketA 所占用的地址Addr，需要等待一段时间后，没有资源传输了才会真实释放，设置此配置参数即是socketA未完全释放资源的时候，允许别的socketB重新绑定地址Addr。</p>
+</li>
+<li>
+<p>SO_TIMEOUT: 表示接收数据时的等待超时时间</p>
+</li>
+<li>
+<p>SO_LINGER: 表示当执行 Socket 的close()方法时，是否立即关闭底层的socket。默认情况下，执行socket的close()方法，底层的socket并不会立即关闭，而是会延时一段时间，知道发送完所有数据之后，才会真的关闭 socket，断开连接。</p>
+</li>
+<li>
+<p>SO_SNFBUF: 表示发送数据的缓冲区大小</p>
+</li>
+<li>
+<p>SO_RCVBUF: 表示接收数据的缓冲区大小</p>
+</li>
+<li>
+<p>SO_KEEPALIVE: 表示对于长时间处于空闲状态的socket，是否要自动把它关闭</p>
+</li>
+<li>
+<p>OOBINLINE: 表示是否支持发送一个字节的TCP紧急数据</p>
+</li>
 </ul>
-
-<h2 id="toc_1">ServerSocket  参数设置：</h2>
-
+<h2><a id="serversocket%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ServerSocket  参数设置：</h2>
 <ul>
 <li>SO_TIMEOUT: 表示等待客户连接超时时间</li>
 <li>SO_REUSEADDR: 表示是否允许重用服务器所绑定的地址</li>
 <li>SO_RCVBUF: 表示接收数据的缓冲区的大小</li>
 </ul>
-
 <p>另外还有一个参数： SO_BACKLOG 设置请求连接队列的大小即最大连接数的大小</p>
 
                   </article>

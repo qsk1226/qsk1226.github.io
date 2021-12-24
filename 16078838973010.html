@@ -114,7 +114,91 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    
+                    <p>ServletContextListener 用于监听 Servlet 上线文的变更。<br />
+ContextLoader 用于初始化 application 容器<br />
+ContextLoaderListener 此监听器和 ContextCleanupListener用于引导或关闭spring 根容器</p>
+<pre><code class="language-java">public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
+    @Override
+	public void contextInitialized(ServletContextEvent event) {
+		initWebApplicationContext(event.getServletContext());
+	}
+	
+	@Override
+	public void contextDestroyed(ServletContextEvent event) {
+		closeWebApplicationContext(event.getServletContext());
+		ContextCleanupListener.cleanupAttributes(event.getServletContext());
+	}
+}
+</code></pre>
+<pre><code class="language-java">public interface ServletContextListener extends EventListener {
+
+    public default void contextInitialized(ServletContextEvent sce) {
+    }
+
+    public default void contextDestroyed(ServletContextEvent sce) {
+    }
+}
+</code></pre>
+<p>从上面的代码可以看出，在servlet容器启动的时候会执行initWebApplicationContext(event.getServletContext());</p>
+<pre><code class="language-java">public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+	if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
+		throw new IllegalStateException(
+				&quot;Cannot initialize context because there is already a root application context present - &quot; +
+				&quot;check whether you have multiple ContextLoader* definitions in your web.xml!&quot;);
+	}
+
+	servletContext.log(&quot;Initializing Spring root WebApplicationContext&quot;);
+	Log logger = LogFactory.getLog(ContextLoader.class);
+	if (logger.isInfoEnabled()) {
+		logger.info(&quot;Root WebApplicationContext: initialization started&quot;);
+	}
+	long startTime = System.currentTimeMillis();
+
+	try {
+		// Store context in local instance variable, to guarantee that
+		// it is available on ServletContext shutdown.
+		if (this.context == null) {
+			this.context = createWebApplicationContext(servletContext);
+		}
+		if (this.context instanceof ConfigurableWebApplicationContext) {
+			ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+			if (!cwac.isActive()) {
+				// The context has not yet been refreshed -&gt; provide services such as
+				// setting the parent context, setting the application context id, etc
+				if (cwac.getParent() == null) {
+					// The context instance was injected without an explicit parent -&gt;
+					// determine parent for root web application context, if any.
+					ApplicationContext parent = loadParentContext(servletContext);
+					cwac.setParent(parent);
+				}
+				configureAndRefreshWebApplicationContext(cwac, servletContext);
+			}
+		}
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
+
+		ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+		if (ccl == ContextLoader.class.getClassLoader()) {
+			currentContext = this.context;
+		}
+		else if (ccl != null) {
+			currentContextPerThread.put(ccl, this.context);
+		}
+
+		if (logger.isInfoEnabled()) {
+			long elapsedTime = System.currentTimeMillis() - startTime;
+			logger.info(&quot;Root WebApplicationContext initialized in &quot; + elapsedTime + &quot; ms&quot;);
+		}
+
+		return this.context;
+	}
+	catch (RuntimeException | Error ex) {
+		logger.error(&quot;Context initialization failed&quot;, ex);
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
+		throw ex;
+	}
+}
+</code></pre>
+
                   </article>
                   <div class="comments-wrap">
                     <div class="share-comments">
@@ -157,6 +241,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

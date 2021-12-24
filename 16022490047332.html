@@ -114,39 +114,42 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">数据库事务具备ACID特性</h2>
-
+                    <h2><a id="%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%85%B7%E5%A4%87acid%E7%89%B9%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据库事务具备ACID特性</h2>
 <ul>
 <li>原子性(A)：要执行的事务是一个独立的操作单元，要么全部执行，要么全部不执行</li>
 <li>一致性(C)：事务的一致性是指事务的执行不能破坏数据库的一致性，一致性也称为完整性。一个事务在执行后，数据库必须从一个一致性状态转变为另一个一致性状态</li>
 <li>隔离性(I)：多个事务并发执行时，一个事务的执行不应影响其他事务的执行</li>
 <li>持久性(D)：是事务的保证，事务终结的标志(内存的数据持久到硬盘文件中)</li>
 </ul>
-
-<h2 id="toc_1">无隔离性会出现的问题：</h2>
-
+<h2><a id="%E4%BA%8B%E5%8A%A1%E5%B9%B6%E5%8F%91%E6%97%A0%E9%9A%94%E7%A6%BB%E6%80%A7%E4%BC%9A%E5%BC%95%E5%8F%91%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>事务并发无隔离性会引发的问题：</h2>
 <ul>
-<li><p>丢失更新<br/>
-A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种错误可能造成很严重的问 题，通过下面的账户取款转账就可以看出来，MySQL 通过三级封锁协议的第一级解决了丢 失更新，事务 T 要修改数据 A 时必须加 X 锁，直到 T 结束才释放锁。</p></li>
-<li><p>脏读<br/>
-脏读主要是事务A 读取到了其他事务B未提交的数据，而其他事务B随后发生回滚，此时事务A 读到的数据是脏数据。MySQL 通过三级封锁 协议的第二级解决了脏读，在一级的基础上，要求读取数据 A 时必须加 S 锁，读取完马上 释放 S 锁。</p></li>
-<li><p>不可重复度<br/>
-不可重复读是事务A 读取到数据后，随后其他事务B对数据发生了修改，事务A读取同一条数据，结果不一致。MySQL 通过三级封锁协议的第三级解决了不可重复读。在二级的基础上，要求读取数据 A 时必须 加 S 锁，直到事务结束了才能释放 S 锁。</p></li>
-<li><p>幻读 <br/>
-幻读是事务A读取到数据后，随后其他事务B对数据发生了新增或删除，导致事务A漏掉事务B所做出的的变化。在 InnoDB 引擎 Repeatable Read 的隔离级别下，MySQL 通过 Next-Key Lock 以及 MVCC 解决了幻读，事务中 分为当前读以及快照读。</p></li>
+<li>
+<p>丢失更新<br />
+A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种错误可能造成很严重的问 题，通过下面的账户取款转账就可以看出来，MySQL 通过三级封锁协议的第一级解决了丢 失更新，事务 T 要修改数据 A 时必须加 X 锁，直到 T 结束才释放锁。</p>
+</li>
+<li>
+<p>脏读<br />
+脏读主要是事务A 读取到了其他事务B未提交的数据，而其他事务B随后发生回滚，此时事务A 读到的数据是脏数据。MySQL 通过三级封锁 协议的第二级解决了脏读，在一级的基础上，要求读取数据 A 时必须加 S 锁，读取完马上 释放 S 锁。</p>
+</li>
+<li>
+<p>不可重复度<br />
+不可重复读是事务A 读取到数据后，随后其他事务B对数据发生了修改，事务A读取同一条数据，结果不一致。MySQL 通过三级封锁协议的第三级解决了不可重复读。在二级的基础上，要求读取数据 A 时必须 加 S 锁，直到事务结束了才能释放 S 锁。</p>
+</li>
+<li>
+<p>幻读<br />
+幻读是事务A读取到数据后，随后其他事务B对数据发生了新增或删除，导致事务A漏掉事务B所做出的的变化。在 InnoDB 引擎 Repeatable Read 的隔离级别下，MySQL 通过 Next-Key Lock 以及 MVCC 解决了幻读，事务中 分为当前读以及快照读。</p>
+</li>
 </ul>
-
-<h2 id="toc_2">事务隔离性</h2>
-
+<h2><a id="mysql%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%9A%94%E7%A6%BB%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MySql 中的四种隔离性</h2>
 <p>SQL92规范中对隔离性定义了 4 种隔离级别（隔离性从上向下依次增强，但是导致的问题是并发能力的减弱）：</p>
-
 <ul>
 <li>读未提交(READ UNCOMMITED)
 <ul>
 <li>事物A和事物B，事物A未提交的数据，事物B可以读取到</li>
 <li>这种隔离级别最低，这种级别一般是在理论上存在，数据库隔离级别一般都高于该级别</li>
 <li>这里读取到的数据叫做“脏数据”</li>
-</ul></li>
+</ul>
+</li>
 <li>读已提交(READ COMMITTED)
 <ul>
 <li>事物A和事物B，事物A提交的数据，事物B才能读取到</li>
@@ -154,7 +157,8 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 <li>换句话说，对方事物提交之后的数据，我当前事物才能读取到</li>
 <li>这种级别可以避免“脏数据”</li>
 <li>这种隔离级别会导致“不可重复读取”</li>
-</ul></li>
+</ul>
+</li>
 <li>可重复读(REPEATABLE READ)
 <ul>
 <li>事务A和事务B，事务A提交之后的数据，事务B读取不到</li>
@@ -165,15 +169,16 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 <li>比如1点和2点读到数据是同一个</li>
 <li>MySQL默认级别</li>
 <li>虽然可以达到可重复读取，但是会导致“幻读”</li>
-</ul></li>
+</ul>
+</li>
 <li>序列化(SERIALIZABLE)。
 <ul>
 <li>事务A和事务B，事务A在操作数据库时，事务B只能排队等待</li>
 <li>这种隔离级别很少使用，吞吐量太低，用户体验差</li>
 <li>这种级别可以避免“幻像读”，每一次读取的都是数据库中真实存在数据，事务A与事务B串行，而不并发</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -184,7 +189,6 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 <th>概念</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>READ UNCOMMITED</td>
@@ -216,34 +220,80 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 </tr>
 </tbody>
 </table>
-
 <p>大多数数据库系统的默认隔离级别都是READ COMMITTED（但MySQL不是)，InnoDB存储引擎默认隔离级别REPEATABLE READ，通过多版本并发控制（MVCC，Multiversion Concurrency Control）解决了幻读的问题。</p>
-
-<h3 id="toc_3">隔离级别的实现原理</h3>
-
-<p>为了解决更新丢失、脏读、不可重复读、幻读的问题，MySQL事务提出了4个不同的隔离级别，而这些隔离级别的实现本质上就是通过加锁，解锁来实现的。</p>
-
-<p>那么我们该何时加锁，占锁多长时间，何时解锁呢？这就是我们今天的主题三级封锁协议。三级封锁协议顾名思义是3个不同级别的封锁协议，它们是以何时加锁，何时解锁来区分的。下面我们看一下具体的定义：</p>
-
+<h3><a id="%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何设置事务的隔离级别</h3>
+<p>SET [GLOBAL|SESSION] TRANSACTION ISOLATION LEVEL level;<br />
+其中 level 可选的值有4个：<br />
+level:</p>
 <ul>
-<li><p>一级封锁协议<br/>
-事务T在修改数据R之前必须先对其加X锁，直到事务结束才释放。事务结束包括正常结束（COMMIT）和非正常结束（ROLLBACK）。 一级封锁协议可以防止丢失修改，并保证事务T是可恢复的。使用一级封锁协议可以解决丢失修改问题。在一级封锁协议中，如果仅仅是读数据不对其进行修改，是不需要加锁的，它不能保证可重复读和不读“脏”数据。</p></li>
-<li><p>二级封锁协议<br/>
-在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，读完后方可释放S锁。 二级封锁协议除防止了丢失修改，还可以进一步防止读“脏”数据。但在二级封锁协议中，由于读完数据后即可释放S锁，所以它不能保证可重复读。</p></li>
-<li><p>三级封锁协议<br/>
-在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，直到事务结束才释放。 三级封锁协议除防止了丢失修改和不读“脏”数据外，还进一步防止了不可重复读。</p></li>
+<li>REPEATABLE READ</li>
+<li>READ COMMITTED</li>
+<li>READ UNCOMMITTED</li>
+<li>SERIALIZABLE</li>
 </ul>
+<p>GLOBAL 的范围是全局有效<br />
+SESSION 是会话范围有效</p>
+<p>可以通过一下命令查看 Mysql 的隔离级别</p>
+<pre><code class="language-mysql">show variables like 'transaction_isolation';
+或者
+SELECT @@transaction_isolation;
+</code></pre>
+<h3><a id="mysql%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MySql 事务的基本语法</h3>
+<ul>
+<li>事务开始
+<ul>
+<li>begin</li>
+<li>start transaction</li>
+<li>begin work</li>
+</ul>
+</li>
+<li>事务回滚
+<ul>
+<li>rollback</li>
+</ul>
+</li>
+<li>事务提交
+<ul>
+<li>commit</li>
+</ul>
+</li>
+</ul>
+<p>查看自动提交是否开启</p>
+<pre><code class="language-mysql">show variables like '%autocommit%';
 
+set autocommit=0;
+insert into table_x values(xx,xx,xx);
+savepoint x1;
+insert into table_x values(yy,yy,yy);
+savepoint x2;
+## 回滚到保存点 x1
+rollback to savepoint x1;
+
+## 删除回滚点
+release savepoint x2;
+</code></pre>
+<h3><a id="%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>隔离级别的实现原理</h3>
+<p>为了解决更新丢失、脏读、不可重复读、幻读的问题，MySQL事务提出了4个不同的隔离级别，而这些隔离级别的实现本质上就是通过加锁，解锁来实现的。</p>
+<p>那么我们该何时加锁，占锁多长时间，何时解锁呢？这就是我们今天的主题三级封锁协议。三级封锁协议顾名思义是3个不同级别的封锁协议，它们是以何时加锁，何时解锁来区分的。下面我们看一下具体的定义：</p>
+<ul>
+<li>
+<p>一级封锁协议<br />
+事务T在修改数据R之前必须先对其加X锁，直到事务结束才释放。事务结束包括正常结束（COMMIT）和非正常结束（ROLLBACK）。 一级封锁协议可以防止丢失修改，并保证事务T是可恢复的。使用一级封锁协议可以解决丢失修改问题。在一级封锁协议中，如果仅仅是读数据不对其进行修改，是不需要加锁的，它不能保证可重复读和不读“脏”数据。</p>
+</li>
+<li>
+<p>二级封锁协议<br />
+在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，读完后方可释放S锁。 二级封锁协议除防止了丢失修改，还可以进一步防止读“脏”数据。但在二级封锁协议中，由于读完数据后即可释放S锁，所以它不能保证可重复读。</p>
+</li>
+<li>
+<p>三级封锁协议<br />
+在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，直到事务结束才释放。 三级封锁协议除防止了丢失修改和不读“脏”数据外，还进一步防止了不可重复读。</p>
+</li>
+</ul>
 <p>在继续往下之前，我们需要先搞清楚什么是X锁，S锁。如果我们直接在网上搜索，我们能得到这样的一个关系：</p>
-
 <p>排它锁 == 写锁 == X锁 ， 共享锁 == 读锁 == S锁</p>
-
 <p>简单理解就是如果我对资源A加上了排它锁，那么我既可以读取资源A，也可以插入或更新资源A，而其他人都无法对资源A再加排它锁或共享锁。 如果我对资源A加上了共享锁，那么所有人都不能再对资源A加上排它锁 （包括我自己），而其他人也都可以对资源A再加共享锁。</p>
-
 <p>关于X锁和S锁，我们需要了解，普通的select语句是不需要加锁的，而insert，update，delete，select ... for update 需要加X锁，select ... lock in share mode 这样的语句会加S锁。</p>
-
-<h3 id="toc_4">InnoDB有三种行锁的算法</h3>
-
+<h3><a id="innodb%E6%9C%89%E4%B8%89%E7%A7%8D%E8%A1%8C%E9%94%81%E7%9A%84%E7%AE%97%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>InnoDB有三种行锁的算法</h3>
 <ul>
 <li>Record Lock：单个行记录上的锁。</li>
 <li>Gap Lock：间隙锁，锁定一个范围，但不包括记录本身。GAP锁的目的，是为了防止同一事务的两次当前读，出现幻读的情况。</li>
@@ -292,6 +342,8 @@ A 事务撤销时，把已经提交的 B 事务的更新数据覆盖了。这种
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 

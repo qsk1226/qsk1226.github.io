@@ -114,7 +114,7 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <pre><code class="language-text">#以上--redis启动说明：redis启动指令的第一个参数必须是配置文件路径
+                    <pre><code class="language-plain_text">#以上--redis启动说明：redis启动指令的第一个参数必须是配置文件路径
 # ./redis-server /path/to/redis.conf
 
 # 引入配置，可以将公共配置抽取出来，采用引入的方式，存在参数覆盖，注意include放置的位置，覆盖效果不同。
@@ -475,7 +475,7 @@ replica-priority 100
 # 设置redis最大同时接入的客户端，默认是10000个，如果redis没有设置这个参数，
 # 最大的客户端数量是Linux进程的最大文件句柄数-32，因为redis内部需要占用一定的文件句柄
 #
-# 当连接客户端超过最大数，将提示  &#39;max number of clients reached&#39;
+# 当连接客户端超过最大数，将提示  'max number of clients reached'
 #
 # maxclients 10000
 
@@ -497,7 +497,7 @@ replica-priority 100
 #
 # In short... if you have replicas attached it is suggested that you set a lower
 # limit for maxmemory so that there is some free RAM on the system for replica
-# output buffers (but this is not needed if the policy is &#39;noeviction&#39;).
+# output buffers (but this is not needed if the policy is 'noeviction').
 #
 # maxmemory &lt;bytes&gt;
 
@@ -511,7 +511,7 @@ replica-priority 100
 # volatile-random -&gt; Remove a random key among the ones with an expire set.
 # allkeys-random -&gt; Remove a random key, any key.
 # volatile-ttl -&gt; Remove the key with the nearest expire time (minor TTL)
-# noeviction -&gt; Don&#39;t evict anything, just return an error on write operations.
+# noeviction -&gt; Don't evict anything, just return an error on write operations.
 #
 # LRU means Least Recently Used
 # LFU means Least Frequently Used
@@ -581,7 +581,7 @@ replica-priority 100
 # object in the background as fast as possible.
 #
 # DEL, UNLINK and ASYNC option of FLUSHALL and FLUSHDB are user-controlled.
-# It&#39;s up to the design of the application to understand when it is a good
+# It's up to the design of the application to understand when it is a good
 # idea to use one or the other. However the Redis server sometimes has to
 # delete keys or flush the whole database as a side effect of other operations.
 # Specifically Redis deletes objects independently of a user call in the
@@ -644,16 +644,16 @@ appendfilename &quot;appendonly.aof&quot;
 #
 # Redis supports three different modes:
 #
-# no: don&#39;t fsync, just let the OS flush the data when it wants. Faster.
+# no: don't fsync, just let the OS flush the data when it wants. Faster.
 # always: fsync after every write to the append only log. Slow, Safest.
 # everysec: fsync only one time every second. Compromise.
 #
-# The default is &quot;everysec&quot;, as that&#39;s usually the right compromise between
-# speed and data safety. It&#39;s up to you to understand if you can relax this to
+# The default is &quot;everysec&quot;, as that's usually the right compromise between
+# speed and data safety. It's up to you to understand if you can relax this to
 # &quot;no&quot; that will let the operating system flush the output buffer when
 # it wants, for better performances (but if you can live with the idea of
-# some data loss consider the default persistence mode that&#39;s snapshotting),
-# or on the contrary, use &quot;always&quot; that&#39;s very slow but a bit safer than
+# some data loss consider the default persistence mode that's snapshotting),
+# or on the contrary, use &quot;always&quot; that's very slow but a bit safer than
 # everysec.
 #
 # More details please check the following article:
@@ -672,7 +672,7 @@ appendfsync everysec
 # this currently, as even performing fsync in a different thread will block
 # our synchronous write(2) call.
 #
-# In order to mitigate this problem it&#39;s possible to use the following option
+# In order to mitigate this problem it's possible to use the following option
 # that will prevent fsync() from being called in the main process while a
 # BGSAVE or BGREWRITEAOF is in progress.
 #
@@ -710,7 +710,7 @@ auto-aof-rewrite-min-size 64mb
 # startup process, when the AOF data gets loaded back into memory.
 # This may happen when the system where Redis is running
 # crashes, especially when an ext4 filesystem is mounted without the
-# data=ordered option (however this can&#39;t happen when Redis itself
+# data=ordered option (however this can't happen when Redis itself
 # crashes or aborts but the operating system still works correctly).
 #
 # Redis can either exit with an error when this happens, or load as much
@@ -753,7 +753,7 @@ aof-use-rdb-preamble yes
 # SCRIPT KILL and SHUTDOWN NOSAVE commands are available. The first can be
 # used to stop a script that did not yet called write commands. The second
 # is the only way to shut down the server in the case a write command was
-# already issued by the script but the user doesn&#39;t want to wait for the natural
+# already issued by the script but the user doesn't want to wait for the natural
 # termination of the script.
 #
 # Set it to 0 or a negative value for unlimited execution without warnings.
@@ -820,7 +820,7 @@ lua-time-limit 5000
 # For maximum availability, it is possible to set the replica-validity-factor
 # to a value of 0, which means, that replicas will always try to failover the
 # master regardless of the last time they interacted with the master.
-# (However they&#39;ll always try to apply a delay proportional to their
+# (However they'll always try to apply a delay proportional to their
 # offset rank).
 #
 # Zero is the only value able to guarantee that when all the partitions heal
@@ -830,7 +830,7 @@ lua-time-limit 5000
 
 # Cluster replicas are able to migrate to orphaned masters, that are masters
 # that are left without working replicas. This improves the cluster ability
-# to resist to failures as otherwise an orphaned master can&#39;t be failed over
+# to resist to failures as otherwise an orphaned master can't be failed over
 # in case of failure if it has no working replicas.
 #
 # Replicas migrate to orphaned masters only if there are still at least a
@@ -969,8 +969,8 @@ latency-monitor-threshold 0
 #
 #  notify-keyspace-events Ex
 #
-#  By default all notifications are disabled because most users don&#39;t need
-#  this feature and the feature has some overhead. Note that if you don&#39;t
+#  By default all notifications are disabled because most users don't need
+#  this feature and the feature has some overhead. Note that if you don't
 #  specify at least one of K or E, no events will be delivered.
 notify-keyspace-events &quot;&quot;
 
@@ -1002,12 +1002,12 @@ list-max-ziplist-size -2
 # the list to *exclude* from compression.  The head and tail of the list
 # are always uncompressed for fast push/pop operations.  Settings are:
 # 0: disable all list compression
-# 1: depth 1 means &quot;don&#39;t start compressing until after 1 node into the list,
+# 1: depth 1 means &quot;don't start compressing until after 1 node into the list,
 #    going from either the head or tail&quot;
 #    So: [head]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[tail]
 #    [head], [tail] will always be uncompressed; inner nodes will compress.
 # 2: [head]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[tail]
-#    2 here means: don&#39;t compress head or head-&gt;next or tail-&gt;prev or tail,
+#    2 here means: don't compress head or head-&gt;next or tail-&gt;prev or tail,
 #    but compress all nodes between them.
 # 3: [head]-&gt;[next]-&gt;[next]-&gt;node-&gt;node-&gt;...-&gt;node-&gt;[prev]-&gt;[prev]-&gt;[tail]
 # etc.
@@ -1067,13 +1067,13 @@ stream-node-max-entries 100
 # not a good thing in your environment that Redis can reply from time to time
 # to queries with 2 milliseconds delay.
 #
-# use &quot;activerehashing yes&quot; if you don&#39;t have such hard requirements but
+# use &quot;activerehashing yes&quot; if you don't have such hard requirements but
 # want to free memory asap when possible.
 activerehashing yes
 
 # The client output buffer limits can be used to force disconnection of clients
 # that are not reading data from the server fast enough for some reason (a
-# common reason is that a Pub/Sub client can&#39;t consume messages as fast as the
+# common reason is that a Pub/Sub client can't consume messages as fast as the
 # publisher can produce them).
 #
 # The limit can be set differently for the three different classes of clients:
@@ -1095,7 +1095,7 @@ activerehashing yes
 # disconnected if the client reaches 16 megabytes and continuously overcomes
 # the limit for 10 seconds.
 #
-# By default normal clients are not limited because they don&#39;t receive data
+# By default normal clients are not limited because they don't receive data
 # without asking (in a push way), but just after a request, so only
 # asynchronous clients may create a scenario where data is requested faster
 # than it can read.
@@ -1176,7 +1176,7 @@ rdb-save-incremental-fsync yes
 # counter logarithm factor and the counter decay time. It is important to
 # understand what the two parameters mean before changing them.
 #
-# The LFU counter is just 8 bits per key, it&#39;s maximum value is 255, so Redis
+# The LFU counter is just 8 bits per key, it's maximum value is 255, so Redis
 # uses a probabilistic increment with logarithmic behavior. Given the value
 # of the old counter, when a key is accessed, the counter is incremented in
 # this way:

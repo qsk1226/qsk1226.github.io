@@ -116,67 +116,66 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>Redis 中的事务能够保证一批命令的原子性操作，redis提供了 事务的命令有 watch、unwatch、multi、exec、discard 。<br/>
+                    <p>Redis 中的事务能够保证一批命令的原子性操作，redis提供了 事务的命令有 watch、unwatch、multi、exec、discard 。<br />
 事务从开始到结束经历以下三个阶段：</p>
-
 <ul>
-<li><p>multi 开启事务<br/>
-Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。<br/>
+<li>
+<p>multi 开启事务<br />
+Redis 的事务 不能嵌套，即不能再一个开启的事务内再次调用multi命令开启新的事务。<br />
 multi命令源码：</p>
-<pre><code class="language-redis">void multiCommand(client *c) {     
-    //如果已经执行过multi命令，则不能再次执行<br/>
-    if (c-&gt;flags &amp; CLIENT_MULTI) {        <br/>
-        addReplyError(c,&quot;MULTI calls can not be nested&quot;);         <br/>
-        return;     <br/>
-    }     <br/>
-    //client结构体置CLIENT_MULTI标志<br/>
-    c-&gt;flags |= CLIENT_MULTI;                            <br/>
-    addReply(c,shared.ok); <br/>
+<pre><code class="language-Redis">void multiCommand(client *c) {     
+    //如果已经执行过multi命令，则不能再次执行
+    if (c-&gt;flags &amp; CLIENT_MULTI) {        
+        addReplyError(c,&quot;MULTI calls can not be nested&quot;);         
+        return;     
+    }     
+    //client结构体置CLIENT_MULTI标志
+    c-&gt;flags |= CLIENT_MULTI;                            
+    addReply(c,shared.ok); 
 }
-</code></pre></li>
-<li><p>所有的命令会首先入队而不是直接执行</p>
+</code></pre>
+</li>
+<li>
+<p>所有的命令会首先入队而不是直接执行</p>
 <ul>
 <li>当一个客户端处于非事务状态时，这个客户端发送的命令会立即被服务器执行。</li>
 <li>当一个客户端处于事务状态后，服务器会根据客户端发来的不同命令执行不同的操作
 <ul>
 <li>发送命令 exec、discard、watch、unwatch，服务器会立即执行此命令</li>
 <li>发送非exec、discard、watch、unwatch 命令，将这个命令放入一个事务队列里面，然后向客户端返回QUEUED回复。</li>
-</ul></li>
 </ul>
-<pre><code class="language-text">int processCommand(client *c) {
-    ...<br/>
-        if (c-&gt;flags &amp; CLIENT_MULTI <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand <br/>
-            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand <br/>
-            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {<br/>
-            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            <br/>
-            queueMultiCommand(c);        //放入队列            <br/>
-            addReply(c,shared.queued);         <br/>
-        } else {                        <br/>
-            //否则调用call命令            <br/>
-            call(c,CMD_CALL_FULL);         <br/>
-            ...<br/>
-        } <br/>
- ...<br/>
+</li>
+</ul>
+<pre><code class="language-plain_text">int processCommand(client *c) {
+    ...
+        if (c-&gt;flags &amp; CLIENT_MULTI 
+            &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
+            &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand 
+            &amp;&amp;  c-&gt;cmd-&gt;proc != multiCommand 
+            &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand) {
+            //如果client有CLIENT_MULTI标志并且不是exec，discard，                                          multi和watch命令，则将该命令放入队列            
+            queueMultiCommand(c);        //放入队列            
+            addReply(c,shared.queued);         
+        } else {                        
+            //否则调用call命令            
+            call(c,CMD_CALL_FULL);         
+            ...
+        } 
+ ...
 }
-</code></pre></li>
-<li><p>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</p></li>
+</code></pre>
+</li>
+<li>
+<p>exec提交并开始执行事务，exec命令执行所有入队命令，将命令返回值依次返回给客户端。</p>
+</li>
 </ul>
-
 <p>watch命令提供了一种乐观锁机制。watch命令可以监听多个key，只有当被监听的key未修改时，事务才会执行。当一个事务发送exec或者discard命令后，所有watch的key会自动unwatch。</p>
-
 <p>unwatch 命令其实就是删除相应client端和server端的监听状态。首先从client端的链表中取出key和对应的db，然后删除server端相应的监听信息，删除成功后再将client端的对应链表节点删除。执行完毕后，该连接所有被监听的key都会恢复到未监听状态。</p>
-
 <p>discard命令放弃事务。放弃一个事务时首先会将所有入队命令清空，然后将client上事务相关的flags清空，最后将所有监听的keys取消监听。</p>
-
-<p><strong><em>Redis 事务不支持事务回滚机制</em></strong>，即使事务队列中的某个命令在执行期间发生错误，整个事务也会继续执行下去，直到将事务队列中的所有命令都执行完毕为止。</p>
-
-<h2 id="toc_0">事务队列</h2>
-
+<p><em><strong>Redis 事务不支持事务回滚机制</strong></em>，即使事务队列中的某个命令在执行期间发生错误，整个事务也会继续执行下去，直到将事务队列中的所有命令都执行完毕为止。</p>
+<h2><a id="%E4%BA%8B%E5%8A%A1%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>事务队列</h2>
 <p>每个redis 客户端都有自己的事务状态，这个事务状态保存在客户端状态的mstate属性中</p>
-
-<pre><code class="language-c">typedef struct client {
+<pre><code class="language-C">typedef struct client {
     multiState mstate;   //命令队列，会将所有的命令按照顺序排列好并保存
 } client;
 
@@ -191,13 +190,9 @@ typedef struct multiCmd {
     int argc;//参数数量
     struct redisCommand *cmd;//命令指针
 </code></pre>
-
 <p>事务队列以先进先出(FIFO)的方式保存入队命令。</p>
-
-<h2 id="toc_1">判断事务是否安全</h2>
-
+<h2><a id="%E5%88%A4%E6%96%AD%E4%BA%8B%E5%8A%A1%E6%98%AF%E5%90%A6%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>判断事务是否安全</h2>
 <p>当客户端 执行 exec 提交事务的时候，服务器会根据这个客户端是否打开了 REDIS_DIRTY_CAS 标识来决定是否执行事务。</p>
-
 <ul>
 <li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识已经被打开，那么说明客户端所监视的键当中，至少有一个键已经被修改过，这种情况，客户端提交的事务已经不再安全，这是服务器拒绝执行客户端提交的事务。</li>
 <li>如果客户端的REDIS_DIRTY_CAS (watch命令)标识没有被打开，说明客户端监视的所有键都没有被修改过，事务仍然安全，服务器将执行客户端提交的事务。</li>

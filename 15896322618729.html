@@ -114,57 +114,39 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，<br/>
-而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，<br/>
+                    <p>指一个线程 A 调用了对象 X 的 wait()方法进入等待状态，<br />
+而另一个线程 B 调用了对象 X的 notify()或者 notifyAll()方法，<br />
 线程 A 收到通知后从对象 X 的 wait() 方法返回，进而执行后续操作。</p>
-
 <p>上述两个线程通过对象 X 来完成交互，而对象 上的 wait()和 notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。</p>
-
-<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。 </p>
-
-<p>notifyAll()： 通知所有等待在该对象上的线程 </p>
-
-<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁 </p>
-
+<p>notify()： 通知一个在对象上等待的线程,使其从 wait 方法返回,而返回的前提是该线程 获取到了对象的锁，没有获得锁的线程重新进入 WAITING 状态。</p>
+<p>notifyAll()： 通知所有等待在该对象上的线程</p>
+<p>wait() 调用该方法的线程进入 WAITING 状态,只有等待另外线程的通知或被中断 才会返回.需要注意,调用 wait()方法后,会释放对象的锁</p>
 <p>wait(long) 超时等待一段时间,这里的参数时间是毫秒,也就是等待长达n 毫秒,如果没有 通知就超时返回 wait (long,int) 对于超时时间更细粒度的控制,可以达到纳秒</p>
-
 <p>等待和通知的标准范式 等待方遵循如下原则:</p>
-
-<p>1）获取对象的锁。 <br/>
-2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。 <br/>
+<p>1）获取对象的锁。<br />
+2）如果条件不满足，那么调用对象的 wait()方法，被通知后仍要检查条件。<br />
 3）条件满足则执行对应的逻辑。</p>
-
-<pre><code class="language-text">synchronized(obj) {
+<pre><code class="language-plain_text">synchronized(obj) {
     while(obj.isOk()) {
         obj.wait();
     }
 }
 </code></pre>
-
-<p>通知方遵循如下原则: </p>
-
-<p>1）获得对象的锁。 <br/>
-2）改变条件。 <br/>
+<p>通知方遵循如下原则:</p>
+<p>1）获得对象的锁。<br />
+2）改变条件。<br />
 3）通知所有等待在对象上的线程。</p>
-
-<pre><code class="language-text">synchronized(obj) {
+<pre><code class="language-plain_text">synchronized(obj) {
     obj.notifyAll();
 }
 </code></pre>
-
-<p>在调用 wait()、notify()系列方法之前，线程必须要获得该对象的对象级别锁，<br/>
+<p>在调用 wait()、notify()系列方法之前，线程必须要获得该对象的对象级别锁，<br />
 即只能在同步方法或同步块中调用 wait(）方法、notify()系列方法，进入 wait(）方法后，当前线程释放锁，在从 wait(）返回前，线程与其他线程竞争重新获得锁，执行 notify()系列方法的线程退出调用了 notifyAll 的 synchronized 代码块的时候后，他们就会去竞争。如果其中一个线程获得了该对象锁，它就会 继续往下执行，在它退出 synchronized 代码块，释放锁后，其他的已经被唤醒的 线程将会继续竞争获取该锁，一直进行下去，直到所有被唤醒的线程都执行完毕。</p>
-
-<p>Question: 调用 yield() 、sleep()、wait()、notify()等方法对锁有何影响？ </p>
-
-<p>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。 </p>
-
-<p>调用 wait()方法后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行 wait 方法后面的代码。 </p>
-
+<p>Question: 调用 yield() 、sleep()、wait()、notify()等方法对锁有何影响？</p>
+<p>yield() 、sleep()被调用后，都不会释放当前线程所持有的锁。</p>
+<p>调用 wait()方法后，会释放当前线程持有的锁，而且当前被唤醒后，会重新去竞争锁，锁竞争到后才会执行 wait 方法后面的代码。</p>
 <p>调用 notify()系列方法后，对锁无影响，线程只有在 syn 同步代码执行完后才 会自然而然的释放锁，所以 notify()系列方法一般都是 syn 同步代码的最后一行</p>
-
 <p>使用wait、和notify实现一个连接池的实例如下：</p>
-
 <pre><code class="language-java">public class DBPool {
 
     /*容器，存放连接*/

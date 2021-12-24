@@ -114,59 +114,48 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">volatile 相关问题</h2>
-
+                    <h2><a id="volatile%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 相关问题</h2>
 <ul>
-<li>volatile关键字的作用是什么? </li>
-<li>volatile能保证原子性吗? </li>
-<li>之前32位机器上共享的long和double变量的为什么要用volatile? 现在64位机器上是否也要设置呢? </li>
-<li>i++为什么不能保证原子性? </li>
-<li>volatile是如何实现可见性的?  内存屏障。 </li>
-<li>volatile是如何实现有序性的?  happens-before等 </li>
+<li>volatile关键字的作用是什么?</li>
+<li>volatile能保证原子性吗?</li>
+<li>之前32位机器上共享的long和double变量的为什么要用volatile? 现在64位机器上是否也要设置呢?</li>
+<li>i++为什么不能保证原子性?</li>
+<li>volatile是如何实现可见性的?  内存屏障。</li>
+<li>volatile是如何实现有序性的?  happens-before等</li>
 <li>说下volatile的应用场景?</li>
 </ul>
-
-<h2 id="toc_1">volatile 作用</h2>
-
-<h3 id="toc_2">保证可见性，对于一个volatile 变量的读 总是能看到对这个volatile变量最后的写入</h3>
-
+<h2><a id="volatile%E4%BD%9C%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 作用</h2>
+<h3><a id="%E4%BF%9D%E8%AF%81%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E5%AF%B9%E4%BA%8E%E4%B8%80%E4%B8%AAvolatile%E5%8F%98%E9%87%8F%E7%9A%84%E8%AF%BB%E6%80%BB%E6%98%AF%E8%83%BD%E7%9C%8B%E5%88%B0%E5%AF%B9%E8%BF%99%E4%B8%AA-volatile%E5%8F%98%E9%87%8F%E6%9C%80%E5%90%8E%E7%9A%84%E5%86%99%E5%85%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>保证可见性，对于一个volatile 变量的读 总是能看到对这个volatile变量最后的写入</h3>
 <p>为了说明这个问题，看如下代码，ready 被声明为 volatile 变量，主线程中 改变 ready 的值，在子线程中能立刻感知到 ready被修改为了true 而停止while循环</p>
-
 <pre><code class="language-java">public class VolatileDemo {
-    private volatile static boolean ready;
-    private static int number = 1;
+	private volatile static boolean ready;
+	private static int number = 1;
 
-    private static class PrintThread extends Thread {
-        public PrintThread(String name) {
-            super(name);
-        }
-        @Override
-        public void run() {
-            while (!ready) {
-                System.out.println(&quot;number: &quot; + number++);
-            }
-        }
-    }
+	private static class PrintThread extends Thread {
+		public PrintThread(String name) {
+			super(name);
+		}
+		@Override
+		public void run() {
+			while (!ready) {
+				System.out.println(&quot;number: &quot; + number++);
+			}
+		}
+	}
 
-    public static void main(String[] args) throws InterruptedException {
-        new PrintThread(&quot;volatile apply&quot;).start();
-        Thread.sleep(2000);
-        ready = true;
-    }
+	public static void main(String[] args) throws InterruptedException {
+		new PrintThread(&quot;volatile apply&quot;).start();
+		Thread.sleep(2000);
+		ready = true;
+	}
 }
 </code></pre>
-
-<h3 id="toc_3">原子性：对任意单个 volatile 变量的 读/写 具有原子性，但类似于 volatile++ 这种复合操作不具有原子性</h3>
-
+<h3><a id="%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%9A%E5%AF%B9%E4%BB%BB%E6%84%8F%E5%8D%95%E4%B8%AAvolatile%E5%8F%98%E9%87%8F%E7%9A%84%E8%AF%BB%E5%86%99%E5%85%B7%E6%9C%89%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E4%BD%86%E7%B1%BB%E4%BC%BC%E4%BA%8E-volatile%E8%BF%99%E7%A7%8D%E5%A4%8D%E5%90%88%E6%93%8D%E4%BD%9C%E4%B8%8D%E5%85%B7%E6%9C%89%E5%8E%9F%E5%AD%90%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子性：对任意单个 volatile 变量的 读/写 具有原子性，但类似于 volatile++ 这种复合操作不具有原子性</h3>
 <p>对于原子性，需要强调一点，也是大家容易误解的一点：对volatile变量的单次读/写操作可以保证原子性的，如long和double类型变量，但是并不能保证i++这种操作的原子性，因为本质上i++是读、写两次操作。</p>
-
-<p>i++其实是一个复合操作，包括三步骤： 读取i的值。 对i加1。 将i的值写回内存。<br/>
+<p>i++其实是一个复合操作，包括三步骤： 读取i的值。 对i加1。 将i的值写回内存。<br />
 volatile是无法保证这三个操作是具有原子性的，我们可以通过AtomicInteger或者Synchronized来保证+1操作的原子性。</p>
-
-<h3 id="toc_4">防止重排序</h3>
-
+<h3><a id="%E9%98%B2%E6%AD%A2%E9%87%8D%E6%8E%92%E5%BA%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>防止重排序</h3>
 <p>使用我们经常使用的双重检查加锁(DCL)实现的代理代码来说明：</p>
-
 <pre><code class="language-java">public class Singleton {
     // 为什么 要 volatile 修饰 singleton 呢
     public static volatile Singleton singleton;
@@ -187,69 +176,52 @@ volatile是无法保证这三个操作是具有原子性的，我们可以通过
 }
 
 </code></pre>
-
 <p>现在我们分析一下为什么要在变量singleton之间加上volatile关键字。</p>
-
-<p>要理解这个问题，先要了解对象的构造过程，实例化一个对象其实可以分为三个步骤： - 分配内存空间。 </p>
-
+<p>要理解这个问题，先要了解对象的构造过程，实例化一个对象其实可以分为三个步骤： - 分配内存空间。</p>
 <ul>
-<li>初始化对象。 </li>
+<li>初始化对象。</li>
 <li>将内存空间的地址赋值给对应的引用。</li>
 </ul>
-
-<p>但是由于操作系统可以对指令进行重排序，所以上面的过程也可能会变成如下过程： </p>
-
+<p>但是由于操作系统可以对指令进行重排序，所以上面的过程也可能会变成如下过程：</p>
 <ul>
-<li>分配内存空间。 </li>
-<li>将内存空间的地址赋值给对应的引用。 </li>
-<li>初始化对象 </li>
+<li>分配内存空间。</li>
+<li>将内存空间的地址赋值给对应的引用。</li>
+<li>初始化对象</li>
 </ul>
-
 <p>如果是这个流程，多线程环境下就可能将一个未初始化的对象引用暴露出来，从而导致不可预料的结果。因此，为了防止这个过程的重排序，我们需要将变量设置为volatile类型的变量</p>
-
-<h2 id="toc_5">volatile 的内存语义</h2>
-
+<h2><a id="volatile%E7%9A%84%E5%86%85%E5%AD%98%E8%AF%AD%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 的内存语义</h2>
 <p>内存语义： 可以简单理解为 volatile， synchronize，atomic，lock 之类的在 JVM 中的内存方面实现原则。</p>
-
 <p>volatile 写的内存语义： 当写一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值刷新到主内存。</p>
-
 <p>volatile读的内存语义： 当读一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值刷新到主内存。</p>
-
 <pre><code class="language-java">public class VolatileDemo {
-    private volatile static boolean ready;
-    private static int number = 1;
+	private volatile static boolean ready;
+	private static int number = 1;
 
-    private static class PrintThread extends Thread {
-        public PrintThread(String name) {
-            super(name);
-        }
-        @Override
-        public void run() {
-            while (!ready) {
-                System.out.println(&quot;number: &quot; + number++);
-            }
-        }
-    }
+	private static class PrintThread extends Thread {
+		public PrintThread(String name) {
+			super(name);
+		}
+		@Override
+		public void run() {
+			while (!ready) {
+				System.out.println(&quot;number: &quot; + number++);
+			}
+		}
+	}
 
-    public static void main(String[] args) throws InterruptedException {
-        new PrintThread(&quot;volatile apply&quot;).start();
-        Thread.sleep(2000);
-        ready = true;
-    }
+	public static void main(String[] args) throws InterruptedException {
+		new PrintThread(&quot;volatile apply&quot;).start();
+		Thread.sleep(2000);
+		ready = true;
+	}
 }
 </code></pre>
-
-<h2 id="toc_6">volatile 内存屏障</h2>
-
-<p>内存屏障，又称内存栅栏，是一个 CPU 指令。<br/>
+<h2><a id="volatile%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 内存屏障</h2>
+<p>内存屏障，又称内存栅栏，是一个 CPU 指令。<br />
 在java中 对volatile 修饰的变量，编译器在生成字节码的时候，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序问题，同时也保证了 volatile 变量的可见性问题</p>
-
-<p><figure><img src="media/16019058386155/16020040859402.jpg" alt="volatile 写"/><figcaption>volatile 写</figcaption></figure></p>
-
-<p><figure><img src="media/16019058386155/16020041276962.jpg" alt="volatile 读"/><figcaption>volatile 读</figcaption></figure></p>
-
-<h2 id="toc_7">volatile 的实现原理</h2>
-
+<p><figure><img src="media/16019058386155/16020040859402.jpg" alt="volatile 写" /><figcaption>volatile 写<figcaption></figure></p>
+<p><figure><img src="media/16019058386155/16020041276962.jpg" alt="volatile 读" /><figcaption>volatile 读<figcaption></figure></p>
+<h2><a id="volatile%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 的实现原理</h2>
 <pre><code class="language-java">public class Test {
     private volatile int a;
     public void update() {
@@ -261,10 +233,8 @@ volatile是无法保证这三个操作是具有原子性的，我们可以通过
     }
 }
 </code></pre>
-
 <p>通过 jitwatch 工具得到编译后的汇编代码:</p>
-
-<pre><code class="language-text">......
+<pre><code class="language-plain_text">......
   0x0000000002951563: and    $0xffffffffffffff87,%rdi
   0x0000000002951567: je     0x00000000029515f8
   0x000000000295156d: test   $0x7,%rdi
@@ -283,31 +253,20 @@ volatile是无法保证这三个操作是具有原子性的，我们可以通过
   0x00000000029515aa: or     %r15,%rdi
 ......
 </code></pre>
-
 <p>volatile 关键字修饰的变量会存在一个“lock”的前缀。</p>
-
-<p>Lock 前缀，Lock 不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock<br/>
+<p>Lock 前缀，Lock 不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock<br />
 会对 CPU 总线和高速缓存加锁，可以理解为 CPU 指令级的一种锁。</p>
-
 <p>lock 前缀的指令在多核处理器下会引发两件事情:</p>
-
 <ul>
 <li>将当前处理器缓存行的数据写回到系统内存。</li>
 <li>写回内存的操作会使在其他 CPU 里缓存了该内存地址的额数据无效。</li>
 </ul>
-
-<p>为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存(L1，L2 或其他)后再进行操作，但操作完不知道何时会写到内存。 </p>
-
-<p>如果对声明了 volatile 的变量进行写操作，JVM 就会向处理器发送一条 lock 前缀的指令，将这个变量所在缓存行的数据写回到系统内存。 </p>
-
+<p>为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存(L1，L2 或其他)后再进行操作，但操作完不知道何时会写到内存。</p>
+<p>如果对声明了 volatile 的变量进行写操作，JVM 就会向处理器发送一条 lock 前缀的指令，将这个变量所在缓存行的数据写回到系统内存。</p>
 <p>为了保证各个处理器的缓存是一致的，实现了缓存一致性协议(MESI)，每个处理器通过嗅探在总线上传播的数据来检查自己缓存的值是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据读到处理器缓存里。</p>
-
 <p>所有多核处理器下还会完成：当处理器发现本地缓存失效后，就会从内存中重读该变量数据，即可以获取当前最新值。</p>
-
-<h2 id="toc_8">volatile 的应用场景</h2>
-
+<h2><a id="volatile%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 的应用场景</h2>
 <p>使用 volatile 必须具备的条件</p>
-
 <ul>
 <li>对变量的写操作不依赖于当前值。</li>
 <li>该变量没有包含在具有其他变量的不变式中。</li>

@@ -117,11 +117,8 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>redis 是一个键值对数据库服务器，服务器中的每个数据库都有 redisDB 结构表示( 在<a href="15934396305281.html">redis命令处理生命周期</a> 文章中查找)， redisDb 结构的dict字典保存了数据库中的所有的键值对。</p>
-
 <p>所有针对数据库的操作，比如本章节的键相关命令还是基本数据类型相关的命令，实际上都是通过对键空间字典进行操作来实现的。</p>
-
 <p>在读写键空间的时候，redis会进行一些维护操作</p>
-
 <ul>
 <li>读写一个键之后，服务器会根据键是否存在来更新服务器的键空间命中 (hit) 次数或键空间未命中(miss)次数，这两个值可以在 info stats 命令的keyspace_hits和keyspace_misses 属性中查看</li>
 <li>在读取一个键之后，服务器会更新键的 LRU （最后一次使用）时间，这个值可以用于计算键的空闲时间，以方便对象内存的释放与回收</li>
@@ -130,107 +127,60 @@
 <li>服务器每次修改一个键之后，会对dirty键计数器的值 增 1，这个计数器会触发服务器的持久化以及复制操作</li>
 <li>服务器开启了数据库通知功能，那么在对键进行修改之后，服务器将按照配置发送相应的数据库通知，用于Redis的发布订阅功能。</li>
 </ul>
-
-<h2 id="toc_0">1、Redis 键相关命令</h2>
-
-<h3 id="toc_1">del key [key ...]</h3>
-
+<h2><a id="1%E3%80%81redis%E9%94%AE%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、Redis 键相关命令</h2>
+<h3><a id="del-key-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>del key [key ...]</h3>
 <p>同步方式删除键 key</p>
-
-<h3 id="toc_2">exists key</h3>
-
+<h3><a id="exists-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>exists key</h3>
 <p>查看key是否存在</p>
-
-<h3 id="toc_3">expire key seconds</h3>
-
-<p>设置键的过期时间<br/>
-expire mykey 10<br/>
+<h3><a id="expire-key-seconds" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>expire key seconds</h3>
+<p>设置键的过期时间<br />
+expire mykey 10<br />
 mykey键值对 10秒后过期|</p>
-
-<h3 id="toc_4">pexpire key milliseconds</h3>
-
+<h3><a id="pexpire-key-milliseconds" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>pexpire key milliseconds</h3>
 <p>设置key的过期时间，时间单位是毫秒</p>
-
-<h3 id="toc_5">expireat key timestamp</h3>
-
+<h3><a id="expireat-key-timestamp" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>expireat key timestamp</h3>
 <p>设置key的生存时间，接收的时间参数以秒为单位的unix时间戳</p>
-
-<h3 id="toc_6">pexpireat key milliseconds-timestamp</h3>
-
+<h3><a id="pexpireat-key-milliseconds-timestamp" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>pexpireat key milliseconds-timestamp</h3>
 <p>设置key的生存时间，接收的时间参数为毫秒为单位时间戳</p>
-
-<h3 id="toc_7">keys parttern</h3>
-
+<h3><a id="keys-parttern" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>keys parttern</h3>
 <p>查看所有键, Redis存在大量键时，禁止使用此命令</p>
-
-<h3 id="toc_8">hscan</h3>
-
-<h3 id="toc_9">migrate host post key destination-db timeout [COPY] [REPLACE]</h3>
-
+<h3><a id="hscan" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>hscan</h3>
+<h3><a id="migrate-host-post-key-destination-db-timeout-copy-replace" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>migrate host post key destination-db timeout [COPY] [REPLACE]</h3>
 <p>将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功， key 保证会出现在目标实例上，而当前实例上的 key 会被删除。</p>
-
 <p>这个命令是一个原子操作，它在执行的时候会阻塞进行迁移的两个实例，直到以下任意结果发生：迁移成功，迁移失败，等到超时。</p>
-
-<h3 id="toc_10">dump key</h3>
-
+<h3><a id="dump-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>dump key</h3>
 <p>序列化key并返回序列化后的数据</p>
-
-<h3 id="toc_11">restore key ttl serialized-value [replace]</h3>
-
+<h3><a id="restore-key-ttl-serialized-value-replace" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>restore key ttl serialized-value [replace]</h3>
 <p>反序列化serialized-value，并与key关联</p>
-
-<h3 id="toc_12">move key dbIndex</h3>
-
+<h3><a id="move-key-dbindex" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>move key dbIndex</h3>
 <p>将key移动到另一个数据库</p>
-
-<pre><code class="language-text">move mykey 3 
+<pre><code class="language-plain_text">move mykey 3 
 </code></pre>
-
 <p>移动mykey到3号数据库</p>
-
-<h3 id="toc_13">OBJECT  help/refcount/encoding/idletime/freq key</h3>
-
+<h3><a id="object-helprefcountencodingidletimefreq-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>OBJECT  help/refcount/encoding/idletime/freq key</h3>
 <p>当 maxmemory-policy 设置为LFU策略时，此子命令可用。查看数据库的值对象编码</p>
-
 <ul>
 <li>help ：帮助命令，object命令使用手册。</li>
 <li>refcount ：获得指定键关联的值的引用数，即redisObject对象refcount属性。</li>
 <li>encoding ：获得指定键关联的值的内部存储使用的编码，即redisObject对象encoding属性的字符串表达。</li>
 <li>idletime ：返回键的空闲时间，即自上次读写键以来经过的近似秒数。freq ：返回键的对数访问频率计数器。</li>
 </ul>
-
-<h3 id="toc_14">persist key</h3>
-
+<h3><a id="persist-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>persist key</h3>
 <p>删除key的过期时间，使key长期有效</p>
-
-<h3 id="toc_15">ttl [key]</h3>
-
+<h3><a id="ttl-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ttl [key]</h3>
 <p>查看键所剩的过期时间(时间单位：秒)</p>
-
-<h3 id="toc_16">pttl [key]</h3>
-
+<h3><a id="pttl-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>pttl [key]</h3>
 <p>查看键所剩的过期时间(时间单位：毫秒)</p>
-
-<h3 id="toc_17">randomkey</h3>
-
+<h3><a id="randomkey" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>randomkey</h3>
 <p>从当前数据库随机返回一个key</p>
-
-<h3 id="toc_18">rename key newkey</h3>
-
+<h3><a id="rename-key-newkey" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>rename key newkey</h3>
 <p>将key重命名为newkey，如果newkey已存在，则值将被覆盖</p>
-
-<h3 id="toc_19">renamenx key newkey</h3>
-
+<h3><a id="renamenx-key-newkey" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>renamenx key newkey</h3>
 <p>重命名后的key不存在时才能执行成功</p>
-
-<h3 id="toc_20">scan cursor [MATCH parttern] [COUNT count]</h3>
-
+<h3><a id="scan-cursor-match-parttern-count-count" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>scan cursor [MATCH parttern] [COUNT count]</h3>
 <p>scan命令和hscan、sscan、zscan命令都用于增量迭代，每次只返回少量数据，不会有像keys命令堵塞服务器的隐患</p>
-
-<h3 id="toc_21">sort key key [BY pattern] [LIMIT offset count] [GET pattern] [ASC/DESC] [ALPHA] destination</h3>
-
+<h3><a id="sort-key-key-by-pattern-limit-offset-count-get-pattern-ascdesc-alpha-destination" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>sort key key [BY pattern] [LIMIT offset count] [GET pattern] [ASC/DESC] [ALPHA] destination</h3>
 <p>对列表、集合或有序集合中的元素进行排序，返回或保存List、Set、Zset类型的key中排序后的元素</p>
-
 <ul>
 <li>BY： 使用其他键的值作为权重进行排序，如果其他键不存在则跳过排序。</li>
 <li>LIMIT： 限定排序返回的元素。</li>
@@ -239,42 +189,25 @@ mykey键值对 10秒后过期|</p>
 <li>ALPHA： 对字符串进行排序，默认使用数字排序。</li>
 <li>STORE： 将排序后的结果保存到指定的键。</li>
 </ul>
-
-<h3 id="toc_22">touch key [key]</h3>
-
+<h3><a id="touch-key-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>touch key [key]</h3>
 <p>修改指定key(s) 最后访问时间 若key不存在，不做操作</p>
-
-<h3 id="toc_23">type [key]</h3>
-
-<p>查看键的数据结构类型<br/>
-type mykey<br/>
+<h3><a id="type-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>type [key]</h3>
+<p>查看键的数据结构类型<br />
+type mykey<br />
 键不存在返回 nil</p>
-
-<h3 id="toc_24">unlink key [key ...]</h3>
-
+<h3><a id="unlink-key-key" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>unlink key [key ...]</h3>
 <p>根据删除的工作量决定使用同步方式还是异步方式删除键 key</p>
-
-<h3 id="toc_25">wait numslaves timeout</h3>
-
+<h3><a id="wait-numslaves-timeout" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>wait numslaves timeout</h3>
 <p>阻塞当前客户端，直到所有以前的写命令都成功的传输和指定的slaves确认。如果指定以毫秒为单位，请求超时，即使指定的slaves还没有到达，命令任然返回。</p>
-
-<h2 id="toc_26">2、Redis服务器相关命令</h2>
-
-<h3 id="toc_27">dbsize</h3>
-
-<p>查看当前数据库里面的 keys 总数<br/>
+<h2><a id="2%E3%80%81redis%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2、Redis服务器相关命令</h2>
+<h3><a id="dbsize" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>dbsize</h3>
+<p>查看当前数据库里面的 keys 总数<br />
 Redis存在大量键时，禁止使用此命令|</p>
-
-<h3 id="toc_28">flushall</h3>
-
+<h3><a id="flushall" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>flushall</h3>
 <p>清除所有库的数据</p>
-
-<h3 id="toc_29">flushdb dbIndex</h3>
-
+<h3><a id="flushdb-dbindex" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>flushdb dbIndex</h3>
 <p>清除指定index的库</p>
-
-<h2 id="toc_30">Connection命令</h2>
-
+<h2><a id="connection%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Connection命令</h2>
 <table>
 <thead>
 <tr>
@@ -284,7 +217,6 @@ Redis存在大量键时，禁止使用此命令|</p>
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>save</td>
@@ -300,9 +232,7 @@ Redis存在大量键时，禁止使用此命令|</p>
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_31">Connection命令</h2>
-
+<p>##Connection命令</p>
 <table>
 <thead>
 <tr>
@@ -312,7 +242,6 @@ Redis存在大量键时，禁止使用此命令|</p>
 <th>说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>auth pwd</td>
@@ -346,35 +275,20 @@ Redis存在大量键时，禁止使用此命令|</p>
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_32">集群相关命令</h2>
-
-<h3 id="toc_33">cluster addslots slot [slot]</h3>
-
+<p>##集群相关命令</p>
+<h3><a id="cluster-addslots-slot-slot" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster addslots slot [slot]</h3>
 <p>这个命令是用于修改某个节点上的集群配置。具体的说它把一组hash slots分配给接收命令的节点。 如果命令执行成功，节点将指定的hash slots映射到自身，节点将获得指定的hash slots，同时开始向集群广播新的配置。</p>
-
-<h3 id="toc_34">cluster count-failure-reports node-id</h3>
-
+<h3><a id="cluster-count-failure-reports-node-id" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster count-failure-reports node-id</h3>
 <p>这个命令返回指定节点的故障报告个数，故障报告是Redis Cluster用来使节点的PFAIL状态（这意味着节点不可达）晋升到FAIL状态而的方式，这意味着集群中大多数的主节点在一个事件窗口内同意节点不可达。</p>
-
-<h3 id="toc_35">cluster countkeysinslot slot</h3>
-
+<h3><a id="cluster-countkeysinslot-slot" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster countkeysinslot slot</h3>
 <p>返回连接节点负责的指定hash slot的key的数量。该命令只查询连接节点的数据集，所以如果连接节点指派到该hash slot会返回0</p>
-
-<h3 id="toc_36">cluster delslots slot [slot]</h3>
-
-<h3 id="toc_37">cluster failover [forceitakeover]</h3>
-
-<h3 id="toc_38">cluster forget node-id</h3>
-
+<h3><a id="cluster-delslots-slot-slot" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster delslots slot [slot]</h3>
+<h3><a id="cluster-failover-forceitakeover" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster failover [forceitakeover]</h3>
+<h3><a id="cluster-forget-node-id" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster forget node-id</h3>
 <p>该命令可以从收到命令的Redis群集节点的节点信息列表中移除指定ID的节点。 换句话说，从收到命令的Redis群集节点的nodes table中删除指定节点。</p>
-
 <p>该命令不是将待删除节点的信息简单从内部配置中简单删除，它同时实现了禁止列表功能：不允许已删除 的节点再次被添加进来，否则已删除节点会因为处理其他节点心跳包中的gossip section时被再次添加。</p>
-
-<h4 id="toc_39">命令执行详细</h4>
-
+<h4><a id="%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%AF%A6%E7%BB%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>命令执行详细</h4>
 <p>假设我们有四个节点:A,B,C,D。为了得到一个三节点群集A,B,C，我们可以做如下操作：</p>
-
 <ul>
 <li>将D上的哈希槽重分配到节点A,B,C。</li>
 <li>节点D现在已经空了，但是节点A,B,C的节点信息表中仍然有D的信息</li>
@@ -383,30 +297,28 @@ Redis存在大量键时，禁止使用此命令|</p>
 <li>节点A无节点D信息，无法识别节点D(参见步骤3)，因此开始与节点D握手。</li>
 <li>节点D最终再次添加进节点A的节点信息表中</li>
 </ul>
-
 <p>上述的移除方法很不稳定，因此我们需要尽快发送命令CLUSTER FORGET 给所有节点，以期没有gossip sections在同时处理。 因为这个原因，命令CLUSTER FORGET为每个节点实现了包含超时时间的禁止列表</p>
-
 <p>因此我们命令实际的执行情况如下：</p>
-
 <ul>
-<li><p>从收到命令节点的节点信息列表中删除待删除节点的节点信息。</p></li>
-<li><p>已删除的节点的节点ID被加入禁止列表，保留1分钟</p></li>
-<li><p>收到命令的节点，在处理从其他节点发送过来的gossip sections 会跳过所有在禁止列表中的节点。</p></li>
+<li>
+<p>从收到命令节点的节点信息列表中删除待删除节点的节点信息。</p>
+</li>
+<li>
+<p>已删除的节点的节点ID被加入禁止列表，保留1分钟</p>
+</li>
+<li>
+<p>收到命令的节点，在处理从其他节点发送过来的gossip sections 会跳过所有在禁止列表中的节点。</p>
+</li>
 </ul>
-
 <p>这样，我们就有60秒的时间窗口来通知群集中的所有节点，我们想要删除某个节点。</p>
-
-<h4 id="toc_40">该命令无法执行的特殊情况</h4>
-
+<h4><a id="%E8%AF%A5%E5%91%BD%E4%BB%A4%E6%97%A0%E6%B3%95%E6%89%A7%E8%A1%8C%E7%9A%84%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>该命令无法执行的特殊情况</h4>
 <p>在如下情况下，该命令无法成功执行并返回错误</p>
-
 <ul>
 <li>节点信息表中无法找到指定删除节点的节点信息。</li>
 <li>收到命令的节点是slave 节点，指定要删除的节点被识别出是它的当前master节点。</li>
 <li>收到命令的节点和待删除的节点是同一节点</li>
 </ul>
-
-<h3 id="toc_41">cluster getkeysinslot slot count</h3>
+<h3><a id="cluster-getkeysinslot-slot-count" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cluster getkeysinslot slot count</h3>
 
                   </article>
                   <div class="comments-wrap">

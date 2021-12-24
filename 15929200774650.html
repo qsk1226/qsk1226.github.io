@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    MySql 杂记 - 大爷来玩儿啊~
+    MySql 中 MyIsam 与 InnoDB 存储引擎 - 大爷来玩儿啊~
     
     </title>
     <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
@@ -77,7 +77,7 @@
                   <div class="post-body single-content">
                     
                     <h1 class="title">
-                            MySql 杂记   
+                            MySql 中 MyIsam 与 InnoDB 存储引擎   
                       </h1>
                      
                     
@@ -114,56 +114,9 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>mysql --help | grep my.cnf 此命令会告诉我们会在哪些位置查找配置文件</p>
-
-<p>mysql的缓存推荐关闭</p>
-
-<pre><code class="language-console"># 设置缓存大小
-&gt; set global query_cache_size=4000;
-
-#查看缓存是否开启，需要配置文件中进行配置
-&gt; show variables like &#39;%query_cache_type%&#39; 
-
-#查看当前使用的MySql数据库锁支持的存储引擎。也可以通过查找information_schema架构下的ENGINES表
-&gt; show engines;
-# 查看当前数据库默认的存储引擎
-&gt;show variables LIKE &#39;%storage_engine%&#39;;
-
-# 查看数据文件存储的位置
-&gt; show variables like &#39;datadir&#39;;
-
-&gt; mysql -h host -u user -p pwd -P port
-
-#观察innodb的过去某个时间范围内的状态
-&gt; show engine innodb status 
-
-#查看缓冲池大小
-&gt; show variables like &#39;innodb_buffer_pool_size&#39;  
-
-# 查看有几个缓冲池实例
-&gt; show variables like &#39;innodb_buffer_pool_instances&#39; 
-
-#设置多长时间之后热点页被放入LRU列表前端
-&gt; set global innodb_old_block_time=1000; 
-
-#查看重做日志缓冲池大小
-&gt; show variables like &#39;innodb_log_buffer_size&#39; 
-# 了解各种sql的执行频率
-&gt; show status 
-&gt; show global status
-&gt; show status like &#39;Com_%&#39;  
-&gt; insert into select * from table2 where column=100;
-
-# Com_XXX表示每个XXX语句执行的次数，select、update、insert、delete
-# 只针对 innoDB 引擎的参数：
-# InnoDB_rows_read 执行 select 操作的次数
-# InnoDB_rows_updated 执行 update 操作的次数
-# InnoDB_rows_inserted 执行 insert 操作的次数
-# InnoDB_rows_deleted 执行 delete 操作的次数
-
-#慢查询的次数
-&gt; Slow_queries：
-</code></pre>
+                    <p>首先看下这两中存储引擎的对比图：</p>
+<p><figure><img src="media/15929200774650/16203133628680.jpg" alt="" style="width:602px;" /></figure></p>
+<h2><a id="" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a></h2>
 
                   </article>
                   <div class="comments-wrap">
@@ -207,8 +160,6 @@
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 

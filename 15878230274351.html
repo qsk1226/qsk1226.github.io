@@ -116,33 +116,28 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">什么是线程安全性</h2>
-
-<p>当多个线程访问某个类时，不管运行时环境采用何种调度方式或者这些线程 将如何交替执行，并且在调用代码中不需要任何额外的同步或者协同，这个类都 能表现出正确的行为，那么就称这个类是线程安全的。 </p>
-
-<h2 id="toc_1">线程封闭</h2>
-
+                    <h2><a id="%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>什么是线程安全性</h2>
+<p>当多个线程访问某个类时，不管运行时环境采用何种调度方式或者这些线程 将如何交替执行，并且在调用代码中不需要任何额外的同步或者协同，这个类都 能表现出正确的行为，那么就称这个类是线程安全的。</p>
+<h2><a id="%E7%BA%BF%E7%A8%8B%E5%B0%81%E9%97%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>线程封闭</h2>
 <p>实现好的并发是一件困难的事情，所以很多时候我们都想躲避并发。避免并 发最简单的方法就是线程封闭。什么是线程封闭呢?</p>
-
 <p>线程封闭就是把对象封装到一个线程里，只有这一个线程能看到此对象。那么这个对 象就算不是线程安全的也不会出现任何安全问题。实现线程封闭有哪些方法呢?</p>
-
 <ul>
-<li><p>ad-hoc 线程封闭 <br/>
-这是完全靠实现者控制的线程封闭，他的线程封闭完全靠实现者实现。<br/>
-Ad-hoc 线程封闭非常脆弱，应该尽量避免使用。</p></li>
-<li><p>栈封闭<br/>
-栈封闭是我们编程当中遇到的最多的线程封闭。什么是栈封闭呢?简单的说 就是局部变量。多个线程访问一个方法，此方法中的局部变量都会被拷贝一份到 线程栈中。所以局部变量是不被多个线程所共享的，也就不会出现并发问题。所 以能用局部变量就别用全局的变量，全局变量容易引起并发问题。</p></li>
+<li>
+<p>ad-hoc 线程封闭<br />
+这是完全靠实现者控制的线程封闭，他的线程封闭完全靠实现者实现。<br />
+Ad-hoc 线程封闭非常脆弱，应该尽量避免使用。</p>
+</li>
+<li>
+<p>栈封闭<br />
+栈封闭是我们编程当中遇到的最多的线程封闭。什么是栈封闭呢?简单的说 就是局部变量。多个线程访问一个方法，此方法中的局部变量都会被拷贝一份到 线程栈中。所以局部变量是不被多个线程所共享的，也就不会出现并发问题。所 以能用局部变量就别用全局的变量，全局变量容易引起并发问题。</p>
+</li>
 </ul>
-
-<h3 id="toc_2">无状态的类</h3>
-
+<h3><a id="%E6%97%A0%E7%8A%B6%E6%80%81%E7%9A%84%E7%B1%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>无状态的类</h3>
 <p>没有任何成员变量的类，就叫无状态的类，这种类一定是线程安全的。如果这个类的方法参数中使用了对象，也是线程安全的吗?</p>
-
 <p>也是线程安全的，因为多线程下的使用，固然user这个对象的实例会不正常，但是对于StatelessClass 这个类的对象实例来说，它并不持有 UserVo 的对象引用，它自己不会有问题，有问题的是 UserVo 这个类，而非 StateLessClass 本身。</p>
-
 <pre><code class="language-java">public class StatelessClass {
-    public int service(int a,int b){
-        return a+b;
+	public int service(int a,int b){
+	    return a+b;
     }
 
     public void serviceUser(UserVo user){
@@ -155,22 +150,15 @@ public class UserVo {
     private int age;
 }
 </code></pre>
-
-<h3 id="toc_3">让类不可变</h3>
-
+<h3><a id="%E8%AE%A9%E7%B1%BB%E4%B8%8D%E5%8F%AF%E5%8F%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>让类不可变</h3>
 <p>让状态不可变，两种方式：</p>
-
 <ul>
 <li>加 final 关键字</li>
 <li>不提供可修改成员变量的方法，同时成员变量也不作为方法的返回值</li>
 </ul>
-
-<h3 id="toc_4">volatile</h3>
-
+<h3><a id="volatile" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile</h3>
 <p>并不能保证类的额线程安全性，只能保证类的可见性，最适合一个线程写，多个线程读的情景</p>
-
-<h3 id="toc_5">加锁和cas</h3>
-
+<h3><a id="%E5%8A%A0%E9%94%81%E5%92%8Ccas" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>加锁和cas</h3>
 <p>我们最常使用的保证线程安全的手段，使用 synchronized 关键字，使用显示锁 lock，使用各种原子变量，修改数据时使用 CAS 机制等。</p>
 
                   </article>

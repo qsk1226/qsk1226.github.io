@@ -114,16 +114,12 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/16074361744050/NioEventLoop.jpg" alt="NioEventLoop"/><figcaption>NioEventLoop</figcaption></figure><br/>
-<figure><img src="media/16074361744050/NioEventLoopGroup.jpg" alt="NioEventLoopGroup"/><figcaption>NioEventLoopGroup</figcaption></figure></p>
-
-<h2 id="toc_0">EventLoopGroup 和 EventLoop 代码分析</h2>
-
-<pre><code class="language-text">EventLoopGroup group = new NioEventLoopGroup();
+                    <p><figure><img src="media/16074361744050/NioEventLoop.jpg" alt="NioEventLoop" /><figcaption>NioEventLoop<figcaption></figure><br />
+<figure><img src="media/16074361744050/NioEventLoopGroup.jpg" alt="NioEventLoopGroup" /><figcaption>NioEventLoopGroup<figcaption></figure></p>
+<h2><a id="eventloopgroup%E5%92%8C-eventloop%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>EventLoopGroup 和 EventLoop 代码分析</h2>
+<pre><code class="language-plain_text">EventLoopGroup group = new NioEventLoopGroup();
 </code></pre>
-
 <p>执行这行代码时会发生什么?，由 NioEventLoopGroup 开始，一路调用，到达 MultithreadEventLoopGroup，如果没有指定创建的线程数量，则默认创建的线程个数为 DEFAULT_EVENT_LOOP_THREADS，该数值为:处理器数量 x2。</p>
-
 <pre><code class="language-java">private static final int DEFAULT_EVENT_LOOP_THREADS;
 
 static {
@@ -135,9 +131,7 @@ protected MultithreadEventLoopGroup(int nThreads, Executor executor, Object... a
     super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, executor, args);
 }
 </code></pre>
-
 <p>最终由 MultithreadEventExecutorGroup 实例化</p>
-
 <p>由此可见，每个 NioEventLoop 的执行器为 ThreadPerTaskExecutor，ThreadPerTaskExecutor 实现了 Executor 接口，并会在 execute 方法中启动真正的线程，但是要和 NioEventLoop 的线 程挂钩则在 SingleThreadEventExecutor 的 doStartThread 方法里</p>
 
                   </article>

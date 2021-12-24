@@ -115,13 +115,9 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>ApplicationContextInitializer 用于 ConfigurableApplicationContext通过调用refresh函数来初始化Spring容器之前的回调函数；</p>
-
 <p>通常在web应用中，设计在初始化Spring容器之前调用。例如依赖于容器ConfigurableApplicationContext中 的 Enviroment 来记录一些配置信息或者使一些配置文件生效；</p>
-
 <p>参考 ContextLoader 和 FrameworkServlet 中支持定义contextInitializerClasses 作为 context-param 或定义 init-param。</p>
-
 <p>下面是这个扩展如何使用</p>
-
 <pre><code class="language-java">public class MyApplicationContextInitializer implements ApplicationContextInitializer&lt;ConfigurableApplicationContext&gt; {
  
     @Override
@@ -129,31 +125,24 @@
     }
 }
 </code></pre>
-
 <p>第一种方式：</p>
-
 <pre><code class="language-java">@SpringBootApplication
 public class InitializerDemoApplication {
  
-    public static void main(String[] args) {
-        //type01
-        SpringApplication springApplication = new SpringApplication(InitializerDemoApplication.class);
-        springApplication.addInitializers(new MyApplicationContextInitializer());
-        springApplication.run(args);
-    }
+	public static void main(String[] args) {
+		//type01
+		SpringApplication springApplication = new SpringApplication(InitializerDemoApplication.class);
+		springApplication.addInitializers(new MyApplicationContextInitializer());
+		springApplication.run(args);
+	}
 }
 </code></pre>
-
-<p>第二种方式：<br/>
+<p>第二种方式：<br />
 在 MAVEN 项目 resources 目录下新建 META-INF/spring.factories文件, 在文件加入如下配置项</p>
-
 <pre><code class="language-factory">org.springframework.context.ApplicationContextInitializer = com.xx.xxx.xx.MyApplicationContextInitializer
 </code></pre>
-
 <p>第三种方式：</p>
-
 <p>springboot的 yml 文件中添加如下配置</p>
-
 <pre><code class="language-yml">context.initializer.classes = com.xx.xxx.xx.MyApplicationContextInitializer
 </code></pre>
 

@@ -114,19 +114,14 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">jdk 1.7中的死循环分析</h2>
-
+                    <h2><a id="jdk-1-7%E4%B8%AD%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jdk 1.7中的死循环分析</h2>
 <p>在多线程环境下，使用HashMap进行put操作，会引起死循环，导致cpu利用率接近100%，是因为多线程会导致HashMap的Entry链表形成环形数据结构，一旦形成环形数据结构，Entry的next节点永远不为空，就会产生死循环获取 Entry。那么这个死循环是怎么产生的呢？</p>
-
-<h2 id="toc_1">HashMap扩容流程</h2>
-
-<p>引起死循环是在HashMap的扩容操作中，正常的扩容操作在put操作中触发，主要是3个方法：<br/>
-addEntry(int hash, K key, V value, int bucketIndex)<br/>
-resize(int newCapacity)<br/>
+<h2><a id="hashmap%E6%89%A9%E5%AE%B9%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HashMap扩容流程</h2>
+<p>引起死循环是在HashMap的扩容操作中，正常的扩容操作在put操作中触发，主要是3个方法：<br />
+addEntry(int hash, K key, V value, int bucketIndex)<br />
+resize(int newCapacity)<br />
 transfer(entry[] newTable,boolean rehash)</p>
-
 <p>我们看一下 JDK7中的扩容代码片段：</p>
-
 <pre><code class="language-java">void resize(int newCapacity) {
     Entry[] oldTable = table;
     int oldCapacity = oldTable.length;
@@ -158,62 +153,42 @@ void transfer(Entry[] newTable, boolean rehash) {
 }
 
 </code></pre>
-
 <p>综合来说， HashMap一次扩容过程：</p>
-
 <ul>
 <li>取当前table的2倍作为新table的大小</li>
 <li>根据算出的新 table 的大小 new 出一个新的 Entry 数组，名为 newTable</li>
 <li>轮询原 table 的每个位置，将每个位置上连接的 Entry，算出新的 table 上的位置，并以链表形式连接</li>
 <li>原 table 上的所有 Entry 全部轮询完毕之后，意味着原 table 上面的所有 Entry 已经移动到新的 table 上， HashMap 中的table 指向 newTable。</li>
 </ul>
-
-<h3 id="toc_2">正常的扩容操作</h3>
-
-<p>假设存在这样一个HashMap：<br/>
-<figure><img src="media/16017877048038/16017883683090.jpg" alt=""/></figure></p>
-
-<p>正常的扩容过程如下所示：<br/>
-<figure><img src="media/16017877048038/16017885649268.jpg" alt=""/></figure></p>
-
-<p><figure><img src="media/16017877048038/16017885776965.jpg" alt=""/></figure></p>
-
-<p><figure><img src="media/16017877048038/16017885875556.jpg" alt=""/></figure></p>
-
-<h3 id="toc_3">在并发环境下扩容：</h3>
-
-<p>我们现在假设有两个线程并发操作，都进入了扩容操作<br/>
-我们假设 线程1执行到 Entry<K,V> next = e.next;的时候被操作系统调度挂起，而线程2执行完成了扩容操作。<br/>
-<figure><img src="media/16017877048038/16017888401037.jpg" alt="" style="width:600px;"/></figure></p>
-
-<p>于是在线程1和2看来，就是这样子的：<br/>
-<figure><img src="media/16017877048038/16017889707459.jpg" alt=""/></figure></p>
-
-<p>1）接下来线程1 被调度执行：<br/>
-<figure><img src="media/16017877048038/16017890108688.jpg" alt=""/></figure></p>
-
-<p>2）<br/>
-<figure><img src="media/16017877048038/16017891079881.jpg" alt=""/></figure></p>
-
-<p>3）<br/>
-<figure><img src="media/16017877048038/16017891313750.jpg" alt=""/></figure></p>
-
-<p>4）<br/>
-<figure><img src="media/16017877048038/16017891504410.jpg" alt=""/></figure></p>
-
-<p>5）<br/>
-<figure><img src="media/16017877048038/16017892242698.jpg" alt=""/></figure></p>
-
-<p>6）<br/>
-<figure><img src="media/16017877048038/16017892729978.jpg" alt=""/></figure></p>
-
-<p>7）<br/>
-<figure><img src="media/16017877048038/16017893091024.jpg" alt=""/></figure></p>
-
+<h3><a id="%E6%AD%A3%E5%B8%B8%E7%9A%84%E6%89%A9%E5%AE%B9%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>正常的扩容操作</h3>
+<p>假设存在这样一个HashMap：<br />
+<figure><img src="media/16017877048038/16017883683090.jpg" alt="" /></figure></p>
+<p>正常的扩容过程如下所示：<br />
+<figure><img src="media/16017877048038/16017885649268.jpg" alt="" /></figure></p>
+<p><figure><img src="media/16017877048038/16017885776965.jpg" alt="" /></figure></p>
+<p><figure><img src="media/16017877048038/16017885875556.jpg" alt="" /></figure></p>
+<h3><a id="%E5%9C%A8%E5%B9%B6%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%89%A9%E5%AE%B9%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>在并发环境下扩容：</h3>
+<p>我们现在假设有两个线程并发操作，都进入了扩容操作<br />
+我们假设 线程1执行到 Entry&lt;K,V&gt; next = e.next;的时候被操作系统调度挂起，而线程2执行完成了扩容操作。<br />
+<figure><img src="media/16017877048038/16017888401037.jpg" alt="" style="width:600px;" /></figure></p>
+<p>于是在线程1和2看来，就是这样子的：<br />
+<figure><img src="media/16017877048038/16017889707459.jpg" alt="" /></figure></p>
+<p>1）接下来线程1 被调度执行：<br />
+<figure><img src="media/16017877048038/16017890108688.jpg" alt="" /></figure></p>
+<p>2）<br />
+<figure><img src="media/16017877048038/16017891079881.jpg" alt="" /></figure></p>
+<p>3）<br />
+<figure><img src="media/16017877048038/16017891313750.jpg" alt="" /></figure></p>
+<p>4）<br />
+<figure><img src="media/16017877048038/16017891504410.jpg" alt="" /></figure></p>
+<p>5）<br />
+<figure><img src="media/16017877048038/16017892242698.jpg" alt="" /></figure></p>
+<p>6）<br />
+<figure><img src="media/16017877048038/16017892729978.jpg" alt="" /></figure></p>
+<p>7）<br />
+<figure><img src="media/16017877048038/16017893091024.jpg" alt="" /></figure></p>
 <p>通过这样几步操作之后，之前的链表结构变成了一个环形链表，当执行get操作的时候，就会在这个环形链表中一直循环，将CPU资源消耗殆尽。</p>
-
-<h2 id="toc_4">如何规避HashMap的线程不安全</h2>
-
+<h2><a id="%E5%A6%82%E4%BD%95%E8%A7%84%E9%81%BFhashmap%E7%9A%84%E7%BA%BF%E7%A8%8B%E4%B8%8D%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何规避HashMap的线程不安全</h2>
 <ul>
 <li>使用包装类 Collections.SynchronizedMap()</li>
 <li>使用ConcurrentHashMap</li>

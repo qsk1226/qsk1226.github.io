@@ -115,11 +115,8 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>传统意义的单链表是一个线性结构，向有序的链表中插入一个节点需要 O(n) 的时间，查找操作需要 O(n)的时间。</p>
-
 <p>跳跃表其实也是一种通过“空间来换取时间”的一个算法，令链表的每个结 点不仅记录 next 结点位置，还可以按照 level 层级分别记录后继第 level 个结点。 此法使用的就是“先大步查找确定范围，再逐渐缩小迫近”的思想进行的查找。跳 跃表在算法效率上很接近红黑树。</p>
-
 <p>跳跃表又被称为概率，或者说是随机化的数据结构，目前开源软件 Redis 和 lucence 都有用到它。</p>
-
 <p>都是线程安全的 Map 实现，ConcurrentHashMap 的性能和存储空间要优于 ConcurrentSkipListMap，但是 ConcurrentSkipListMap 有一个功能: 它会按照键的 顺序进行排序。</p>
 
                   </article>

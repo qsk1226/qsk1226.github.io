@@ -115,197 +115,178 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>在 Servlet 容器中，关于 Servlet的处理过程：首先是从 Servlet 接口的 service 方法开始，然后在 HttpServlet 的 service 方法中 根据请求的类型不同将请求路由到 doGet、doHead、doPost、doPut、doDelete、doOptions和doTrace 七个方法。</p>
-
 <p>在FrameworkServlet 中 重写了以上方法，在service方法增加了对PATCH类型请求的处理，其他类型的请求直接交给了父类进行处理，doOptions和doTrace方法可以通过设置 dispatchOptionsRequest 和 dispatchTraceRequest 参数决定是自己处理还是交给父类处理（默认是交给父类处理，doOption会在父类的处理结果中增加 PATCH类型），doGet、doPost、doPut和doDelete 都是自己处理，所有需要自己处理的请求都交给了 processRequest 方法进行统一处理。</p>
-
 <pre><code class="language-java">public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware
     .......
     
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
-        if (httpMethod == HttpMethod.PATCH || httpMethod == null) {
-            processRequest(request, response);
-        }
-        else {
-            super.service(request, response);
-        }
-    }
-    .....
-    
-    @Override
-    protected final void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+		HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
+		if (httpMethod == HttpMethod.PATCH || httpMethod == null) {
+			processRequest(request, response);
+		}
+		else {
+			super.service(request, response);
+		}
+	}
+	.....
+	
+	@Override
+	protected final void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        processRequest(request, response);
-    }
+		processRequest(request, response);
+	}
 }
 </code></pre>
-
 <pre><code class="language-java">protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+		throws ServletException, IOException {
 
-    long startTime = System.currentTimeMillis();
-    Throwable failureCause = null;
-    // 获取 LocalContextHoder 中的 LocalContext
-    LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
-    // 获取当前请求的 LocalContext
-    LocaleContext localeContext = buildLocaleContext(request);
-    // 获取 RequestContextHolder 中的 requestAttributes
-    RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
-    // 获取当前请求的 ServletRequesstAttributes
-    ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
+	long startTime = System.currentTimeMillis();
+	Throwable failureCause = null;
+	// 获取 LocalContextHoder 中的 LocalContext
+	LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+	// 获取当前请求的 LocalContext
+	LocaleContext localeContext = buildLocaleContext(request);
+	// 获取 RequestContextHolder 中的 requestAttributes
+	RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+	// 获取当前请求的 ServletRequesstAttributes
+	ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
-    WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
-    asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
-    // 将当前请求的 LocalContext 和 ServletRequestAttributes 设置到 LocaleContextHolder 和 RequestContextHolder 中
-    initContextHolders(request, localeContext, requestAttributes);
+	WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+	asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
+	// 将当前请求的 LocalContext 和 ServletRequestAttributes 设置到 LocaleContextHolder 和 RequestContextHolder 中
+	initContextHolders(request, localeContext, requestAttributes);
 
-    try {
-        // 设计处理请求的入口
-        doService(request, response);
-    }
-    catch (ServletException | IOException ex) {
-        failureCause = ex;
-        throw ex;
-    }
-    catch (Throwable ex) {
-        failureCause = ex;
-        throw new NestedServletException(&quot;Request processing failed&quot;, ex);
-    }
+	try {
+		// 设计处理请求的入口
+		doService(request, response);
+	}
+	catch (ServletException | IOException ex) {
+		failureCause = ex;
+		throw ex;
+	}
+	catch (Throwable ex) {
+		failureCause = ex;
+		throw new NestedServletException(&quot;Request processing failed&quot;, ex);
+	}
 
-    finally {
-        // 恢复原来的 localContext 和 RequestAttributes 到 LocaleContextHolder 和 RequestContextHolder 中
-        resetContextHolders(request, previousLocaleContext, previousAttributes);
-        if (requestAttributes != null) {
-            requestAttributes.requestCompleted();
-        }
-        logResult(request, response, failureCause, asyncManager);
-        // 发布 ServletRequestHandledEvent 事件
-        publishRequestHandledEvent(request, response, startTime, failureCause);
-    }
+	finally {
+		// 恢复原来的 localContext 和 RequestAttributes 到 LocaleContextHolder 和 RequestContextHolder 中
+		resetContextHolders(request, previousLocaleContext, previousAttributes);
+		if (requestAttributes != null) {
+			requestAttributes.requestCompleted();
+		}
+		logResult(request, response, failureCause, asyncManager);
+		// 发布 ServletRequestHandledEvent 事件
+		publishRequestHandledEvent(request, response, startTime, failureCause);
+	}
 }
 </code></pre>
-
 <p>processRequest 方法的 核心语句是 doService(request, response)，这是一个模板方法，在 DispatcherServlet 中具体实现。</p>
-
-<h2 id="toc_0">LocaleContext 和 RequestAttributes</h2>
-
+<h2><a id="localecontext%E5%92%8C-requestattributes" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>LocaleContext 和 RequestAttributes</h2>
 <p>LocaleContext 里面存放着 Local（也就是本地化信息，如 zh-cn等），RequestAttributes 是spring 的一个借口，通过它可以 get/set/remove attribute, 根据 scope 参数判断操作 request 还是 session。这里具体使用的是 ServletRequestAttributes类，在 ServletRequestAttributes 里面还封装了 request、response、sesssion，而且都提供了 get 方法可以直接获取，下面来看一下 ServletRequestAttributes 里面的 setAttribute 的代码</p>
-
 <pre><code class="language-java">//org.springframework.web.context.request.ServletRequestAttributes#setAttribute
 public void setAttribute(String name, Object value, int scope) {
-    if (scope == SCOPE_REQUEST) {
-        if (!isRequestActive()) {
-            throw new IllegalStateException(
-                    &quot;Cannot set request attribute - request is not active anymore!&quot;);
-        }
-        this.request.setAttribute(name, value);
-    }
-    else {
-        HttpSession session = obtainSession();
-        this.sessionAttributesToUpdate.remove(name);
-        session.setAttribute(name, value);
-    }
+	if (scope == SCOPE_REQUEST) {
+		if (!isRequestActive()) {
+			throw new IllegalStateException(
+					&quot;Cannot set request attribute - request is not active anymore!&quot;);
+		}
+		this.request.setAttribute(name, value);
+	}
+	else {
+		HttpSession session = obtainSession();
+		this.sessionAttributesToUpdate.remove(name);
+		session.setAttribute(name, value);
+	}
 }
 
 </code></pre>
-
 <p>方法中 isRequestActive 方法在调用 方法 requestCompleted 之后 requestActive 就会变为false</p>
-
 <pre><code class="language-java">//org.springframework.web.context.request.AbstractRequestAttributes#requestCompleted
 
 public void requestCompleted() {
-    executeRequestDestructionCallbacks();
-    updateAccessedSessionAttributes();
-    this.requestActive = false;
+	executeRequestDestructionCallbacks();
+	updateAccessedSessionAttributes();
+	this.requestActive = false;
 }
 </code></pre>
-
-<h2 id="toc_1">LocaleContextHolder 和 RequestContextHolder</h2>
-
+<h2><a id="localecontextholder%E5%92%8C-requestcontextholder" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>LocaleContextHolder 和 RequestContextHolder</h2>
 <p>LocaleContextHolder 内部定义了两个 static 的 ThreadLocal 类型的属性</p>
-
 <pre><code class="language-java">public final class LocaleContextHolder {
     private static final ThreadLocal&lt;LocaleContext&gt; localeContextHolder =
-            new NamedThreadLocal&lt;&gt;(&quot;LocaleContext&quot;);
+			new NamedThreadLocal&lt;&gt;(&quot;LocaleContext&quot;);
     //可以被子类继承
     private static final ThreadLocal&lt;LocaleContext&gt; inheritableLocaleContextHolder =
-            new NamedInheritableThreadLocal&lt;&gt;(&quot;LocaleContext&quot;);
-            
+			new NamedInheritableThreadLocal&lt;&gt;(&quot;LocaleContext&quot;);
+			
     public static void resetLocaleContext() {
-        localeContextHolder.remove();
-        inheritableLocaleContextHolder.remove();
-    }
-    public static void setLocaleContext(@Nullable LocaleContext localeContext, boolean inheritable) {
-        if (localeContext == null) {
-            resetLocaleContext();
-        }
-        else {
-            if (inheritable) {
-                inheritableLocaleContextHolder.set(localeContext);
-                localeContextHolder.remove();
-            }
-            else {
-                localeContextHolder.set(localeContext);
-                inheritableLocaleContextHolder.remove();
-            }
-        }
-    }
-    public static void setLocale(@Nullable Locale locale, boolean inheritable) {
-        LocaleContext localeContext = getLocaleContext();
-        TimeZone timeZone = (localeContext instanceof TimeZoneAwareLocaleContext ?
-                ((TimeZoneAwareLocaleContext) localeContext).getTimeZone() : null);
-        if (timeZone != null) {
-            localeContext = new SimpleTimeZoneAwareLocaleContext(locale, timeZone);
-        }
-        else if (locale != null) {
-            localeContext = new SimpleLocaleContext(locale);
-        }
-        else {
-            localeContext = null;
-        }
-        setLocaleContext(localeContext, inheritable);
-    }
-    public static Locale getLocale(@Nullable LocaleContext localeContext) {
-        if (localeContext != null) {
-            Locale locale = localeContext.getLocale();
-            if (locale != null) {
-                return locale;
-            }
-        }
-        return (defaultLocale != null ? defaultLocale : Locale.getDefault());
-    }
+		localeContextHolder.remove();
+		inheritableLocaleContextHolder.remove();
+	}
+	public static void setLocaleContext(@Nullable LocaleContext localeContext, boolean inheritable) {
+		if (localeContext == null) {
+			resetLocaleContext();
+		}
+		else {
+			if (inheritable) {
+				inheritableLocaleContextHolder.set(localeContext);
+				localeContextHolder.remove();
+			}
+			else {
+				localeContextHolder.set(localeContext);
+				inheritableLocaleContextHolder.remove();
+			}
+		}
+	}
+	public static void setLocale(@Nullable Locale locale, boolean inheritable) {
+		LocaleContext localeContext = getLocaleContext();
+		TimeZone timeZone = (localeContext instanceof TimeZoneAwareLocaleContext ?
+				((TimeZoneAwareLocaleContext) localeContext).getTimeZone() : null);
+		if (timeZone != null) {
+			localeContext = new SimpleTimeZoneAwareLocaleContext(locale, timeZone);
+		}
+		else if (locale != null) {
+			localeContext = new SimpleLocaleContext(locale);
+		}
+		else {
+			localeContext = null;
+		}
+		setLocaleContext(localeContext, inheritable);
+	}
+	public static Locale getLocale(@Nullable LocaleContext localeContext) {
+		if (localeContext != null) {
+			Locale locale = localeContext.getLocale();
+			if (locale != null) {
+				return locale;
+			}
+		}
+		return (defaultLocale != null ? defaultLocale : Locale.getDefault());
+	}
 }
 </code></pre>
-
 <p>对于无法轻易通过 request.getLocale() 的地方可以通过这个类的 static 方法很容器的获取到 locale 属性。</p>
-
 <p>RequestContextHolder 也是一样的道理，里面封装了 RequestAttributes，可以 get/set/removeAttribute，而且因为实际封装的是 ServletRequestAttributes，所以还可以 getRequest、getResponse、getSession，这样就可以在任何地方都可以方便的获取这些对象了</p>
-
 <p>在 processRequest 方法的 finally 中 调用了 resetContextHolders 方法将原来的 LocaleContext 和 RequestAttributes 又恢复了，这是因为 在 Servlet 外面可能还有别的操作，如 Filter (springMVC 自己的 HandlerInterceptor是在 doService内部实现的），为了不影响哪些操作，所以需要进行恢复。</p>
-
-<h2 id="toc_2">publishRequestHandledEvent</h2>
-
+<h2><a id="publishrequesthandledevent" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>publishRequestHandledEvent</h2>
 <pre><code class="language-java">private void publishRequestHandledEvent(HttpServletRequest request, HttpServletResponse response, long startTime, @Nullable Throwable failureCause) {
 
-    if (this.publishEvents &amp;&amp; this.webApplicationContext != null) {
-        // Whether or not we succeeded, publish an event.
-        long processingTime = System.currentTimeMillis() - startTime;
-        this.webApplicationContext.publishEvent(
-                new ServletRequestHandledEvent(this,
-                        request.getRequestURI(), request.getRemoteAddr(),
-                        request.getMethod(), getServletConfig().getServletName(),
-                        WebUtils.getSessionId(request), getUsernameForRequest(request),
-                        processingTime, failureCause, response.getStatus()));
-    }
+	if (this.publishEvents &amp;&amp; this.webApplicationContext != null) {
+		// Whether or not we succeeded, publish an event.
+		long processingTime = System.currentTimeMillis() - startTime;
+		this.webApplicationContext.publishEvent(
+				new ServletRequestHandledEvent(this,
+						request.getRequestURI(), request.getRemoteAddr(),
+						request.getMethod(), getServletConfig().getServletName(),
+						WebUtils.getSessionId(request), getUsernameForRequest(request),
+						processingTime, failureCause, response.getStatus()));
+	}
 }
 </code></pre>
-
 <p>此方法发布了一个 ServletRequestHandledEvent 消息，我们可以通过监听此事件来做一些事情，例如记录日志</p>
-
 <pre><code class="language-java">@Component
 public class ServletRequestHandledEventListener implements ApplicationListener&lt;ServletRequestHandledEvent&gt; {
     final static Logger logger = LoggerFactory.getLogger(&quot;RequestProcessLog&quot;);

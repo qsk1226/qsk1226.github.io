@@ -117,188 +117,108 @@
                 </div>
                   <article class="markdown-body single-content">
                     <ul>
-<li>
-<a href="#toc_0">储备知识</a>
+<li><a href="#%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86">储备知识</a>
 <ul>
-<li>
-<a href="#toc_1">CLH锁、CMS锁算法</a>
-</li>
-<li>
-<a href="#toc_2">LockSupport</a>
-</li>
+<li>[<a href="16017089858785.html">CLH锁、CMS锁算法</a>](#clh锁、cms锁算法-16017089858785-html)</li>
+<li><a href="#locksupport">LockSupport</a></li>
 </ul>
 </li>
-<li>
-<a href="#toc_3">AQS 简介</a>
-</li>
-<li>
-<a href="#toc_4">AQS 核心思想</a>
-</li>
-<li>
-<a href="#toc_5">AQS的整体结构</a>
-</li>
-<li>
-<a href="#toc_6">AQS 申请锁流程图</a>
-</li>
-<li>
-<a href="#toc_7">AQS 使用方式</a>
-</li>
-<li>
-<a href="#toc_8">AQS 对资源的共享方式</a>
-</li>
-<li>
-<a href="#toc_9">AQS 定义的模板方法</a>
-</li>
-<li>
-<a href="#toc_10">AQS 源码解读</a>
+<li><a href="#aqs%E7%AE%80%E4%BB%8B">AQS 简介</a></li>
+<li><a href="#aqs%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3">AQS 核心思想</a></li>
+<li><a href="#aqs%E7%9A%84%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84">AQS的整体结构</a></li>
+<li><a href="#aqs%E7%94%B3%E8%AF%B7%E9%94%81%E6%B5%81%E7%A8%8B%E5%9B%BE">AQS 申请锁流程图</a></li>
+<li><a href="#aqs%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F">AQS 使用方式</a></li>
+<li><a href="#aqs%E5%AF%B9%E8%B5%84%E6%BA%90%E7%9A%84%E5%85%B1%E4%BA%AB%E6%96%B9%E5%BC%8F">AQS 对资源的共享方式</a></li>
+<li><a href="#aqs%E5%AE%9A%E4%B9%89%E7%9A%84%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95">AQS 定义的模板方法</a></li>
+<li><a href="#aqs%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB">AQS 源码解读</a>
 <ul>
-<li>
-<a href="#toc_11">AQS 中的数据结构</a>
+<li><a href="#aqs%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84">AQS 中的数据结构</a>
 <ul>
-<li>
-<a href="#toc_12">Node节点</a>
-</li>
-<li>
-<a href="#toc_13">head 和 tail</a>
-</li>
-<li>
-<a href="#toc_14">state</a>
-</li>
+<li><a href="#node%E8%8A%82%E7%82%B9">Node节点</a></li>
+<li><a href="#head%E5%92%8C-tail">head 和 tail</a></li>
+<li><a href="#state">state</a></li>
 </ul>
 </li>
-<li>
-<a href="#toc_15">节点在同步队列中的增加</a>
-</li>
-<li>
-<a href="#toc_16">独占式同步状态获取与释放</a>
+<li><a href="#%E8%8A%82%E7%82%B9%E5%9C%A8%E5%90%8C%E6%AD%A5%E9%98%9F%E5%88%97%E4%B8%AD%E7%9A%84%E5%A2%9E%E5%8A%A0">节点在同步队列中的增加</a></li>
+<li><a href="#%E7%8B%AC%E5%8D%A0%E5%BC%8F%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81%E8%8E%B7%E5%8F%96%E4%B8%8E%E9%87%8A%E6%94%BE">独占式同步状态获取与释放</a>
 <ul>
-<li>
-<a href="#toc_17">acquire(int arg) 获取同步状态</a>
+<li><a href="#acquire-int-arg%E8%8E%B7%E5%8F%96%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81">acquire(int arg) 获取同步状态</a>
 <ul>
-<li>
-<a href="#toc_18">addWaiter(Node node)</a>
-</li>
-<li>
-<a href="#toc_19">acquireQueued(Node node, arg)</a>
+<li><a href="#addwaiter-node-node">addWaiter(Node node)</a></li>
+<li><a href="#acquirequeued-node-node-arg">acquireQueued(Node node, arg)</a>
 <ul>
-<li>
-<a href="#toc_20">shouldParkAfterFailedAcquire(Node pred, Node node)</a>
-</li>
-<li>
-<a href="#toc_21">parkAndCheckInterrupt()</a>
-</li>
-<li>
-<a href="#toc_22">cancelAcquire(Node node) 取消继续获取(资源)</a>
-</li>
+<li><a href="#shouldparkafterfailedacquire-node-pred-node-node">shouldParkAfterFailedAcquire(Node pred, Node node)</a></li>
+<li><a href="#parkandcheckinterrupt">parkAndCheckInterrupt()</a></li>
+<li><a href="#cancelacquire-node-node%E5%8F%96%E6%B6%88%E7%BB%A7%E7%BB%AD%E8%8E%B7%E5%8F%96%E8%B5%84%E6%BA%90">cancelAcquire(Node node) 取消继续获取(资源)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li>
-<a href="#toc_23">release 释放同步状态</a>
-</li>
+<li><a href="#release%E9%87%8A%E6%94%BE%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81">release 释放同步状态</a></li>
 </ul>
 </li>
-<li>
-<a href="#toc_24">共享式同步状态获取与释放</a>
-</li>
-<li>
-<a href="#toc_25">一个共享锁示例</a>
-</li>
+<li><a href="#%E5%85%B1%E4%BA%AB%E5%BC%8F%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81%E8%8E%B7%E5%8F%96%E4%B8%8E%E9%87%8A%E6%94%BE">共享式同步状态获取与释放</a></li>
+<li><a href="#%E4%B8%80%E4%B8%AA%E5%85%B1%E4%BA%AB%E9%94%81%E7%A4%BA%E4%BE%8B">一个共享锁示例</a></li>
 </ul>
 </li>
 </ul>
 
-
-<p><figure><img src="media/15867876320249/16083908953129.jpg" alt="JUC Lock框架和工具类关系图"/><figcaption>JUC Lock框架和工具类关系图</figcaption></figure></p>
-
-<h2 id="toc_0">储备知识</h2>
-
-<h3 id="toc_1"><a href="16017089858785.html">CLH锁、CMS锁算法</a></h3>
-
-<h3 id="toc_2">LockSupport</h3>
-
+<p><figure><img src="media/15867876320249/16083908953129.jpg" alt="JUC Lock框架和工具类关系图" /><figcaption>JUC Lock框架和工具类关系图<figcaption></figure></p>
+<h2><a id="%E5%82%A8%E5%A4%87%E7%9F%A5%E8%AF%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>储备知识</h2>
+<h3><a id="clh%E9%94%81%E3%80%81cms%E9%94%81%E7%AE%97%E6%B3%95-16017089858785-html" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="16017089858785.html">CLH锁、CMS锁算法</a></h3>
+<h3><a id="locksupport" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>LockSupport</h3>
 <p><a href="16084868923185.html">LockSupport</a></p>
-
-<hr/>
-
-<h2 id="toc_3">AQS 简介</h2>
-
+<hr />
+<h2><a id="aqs%E7%AE%80%E4%BB%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 简介</h2>
 <p>简单说一下AQS，AQS全称为 AbstractQueuedSychronizer，翻译过来应该是抽象队列同步器。</p>
-
 <p>AQS提供一个框架来实现基于先进先出(FIFO)同步队列的阻塞锁和相关同步器(信号量、事件等)。它使用了一个 int 成员变量表示同步状态，通过内置的 FIFO 队列来完成资源获取线程的排队工作。</p>
-
 <p>如果说java.util.concurrent 的基础是 CAS 的话，那么 AQS 就是整个Java并发包的核心了，ReentrantLock、CountDownLatch、Semaphore等等都用到了它。</p>
-
 <p>AQS实际上以双向队列的形式连接所有的Entry，比方说ReentrantLock，所有等待的线程都被放在一个Entry中并连成双向队列，前面一个线程使用ReentrantLock好了，则双向队列实际上的第一个Entry开始运行。</p>
-
 <p>AQS定义了对双向队列所有的操作，而只开放了tryLock和tryRelease方法给开发者使用，开发者可以根据自己的实现重写tryLock和tryRelease方法，以实现自己的并发功能。</p>
-
 <p>AQS同步器是实现锁(也可以是任意同步组件)的关键，在锁的实现中聚合同步器。</p>
-
 <p>锁是面向使用者的，它定义了使用者与锁交互的接口(比如可以允许两个线 程并行访问)，隐藏了实现细节;</p>
-
 <p>同步器面向的是锁的实现者，它简化了锁的实现方式，屏蔽了同步状态管理、 线程的排队、等待与唤醒等底层操作。锁和同步器很好地隔离了使用者和实现者 所需关注的领域。</p>
-
-<hr/>
-
-<h2 id="toc_4">AQS 核心思想</h2>
-
+<hr />
+<h2><a id="aqs%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 核心思想</h2>
 <p>AQS核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。</p>
-
-<h2 id="toc_5">AQS的整体结构</h2>
-
-<p><figure><img src="media/15867863097702/16017111534984.jpg" alt=""/></figure></p>
-
-<hr/>
-
-<h2 id="toc_6">AQS 申请锁流程图</h2>
-
-<p><figure><img src="media/15867863097702/AQS.jpg" alt="AQS"/><figcaption>AQS</figcaption></figure></p>
-
-<hr/>
-
-<h2 id="toc_7">AQS 使用方式</h2>
-
+<h2><a id="aqs%E7%9A%84%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS的整体结构</h2>
+<p><figure><img src="media/15867863097702/16017111534984.jpg" alt="" /></figure></p>
+<hr />
+<h2><a id="aqs%E7%94%B3%E8%AF%B7%E9%94%81%E6%B5%81%E7%A8%8B%E5%9B%BE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 申请锁流程图</h2>
+<p><figure><img src="media/15867863097702/AQS.jpg" alt="AQS" /><figcaption>AQS<figcaption></figure></p>
+<hr />
+<h2><a id="aqs%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 使用方式</h2>
 <p>AbstractQueuedSynchronizer 又称为队列同步器(后面简称AQS)。</p>
-
 <p>它是用来构建锁或其他同步组件的基础框架，内部通过一个int类型的成员变量state来控制同步状态：</p>
-
 <ul>
 <li>当state=0时，则说明没有任何线程占有共享资源的锁</li>
 <li>当state=1时，则说明有线程目前正在使用共享变量，其他线程必须加入同步队列进行等待</li>
 </ul>
-
 <p>AQS内部通过内部类 Node 构成 FIFO 的同步队列来完成线程获取锁的排队工作，同时利用内部类 ConditionObject 构建等待队列，当Condition 调用 wait() 方法后，线程将会加入等待队列中，而当Condition 调用signal() 方法后，线程将从等待队列转移动同步队列中进行锁竞争。</p>
-
-<p><strong>注意：</strong>这里涉及到两种队列，一种的同步队列，当线程请求锁而等待的后将加入同步队列等待，而另一种则是等待队列(可有多个)，通过Condition调用await()方法释放锁后，将加入等待队列</p>
-
+<p>**注意：**这里涉及到两种队列，一种的同步队列，当线程请求锁而等待的后将加入同步队列等待，而另一种则是等待队列(可有多个)，通过Condition调用await()方法释放锁后，将加入等待队列</p>
 <p>AQS 的主要使用方式是继承，子类通过继承 AQS 并实现它的抽象方法来管 理同步状态 state，访问或修改同步状态的方法，重写同步器指定的方法时，需要使用同步器提供的如下 3 个方法来访问或修改同步状态：</p>
-
 <ul>
-<li><p>getState():获取当前同步状态。</p></li>
-<li><p>setState(int newState):设置当前同步状态。</p></li>
-<li><p>compareAndSetState(int expect, int update)</p></li>
+<li>
+<p>getState():获取当前同步状态。</p>
+</li>
+<li>
+<p>setState(int newState):设置当前同步状态。</p>
+</li>
+<li>
+<p>compareAndSetState(int expect, int update)</p>
+</li>
 </ul>
-
 <p>使用 CAS 设置当前状态，该方 法能够保证状态设置的原子性。</p>
-
 <p>子类应被定义为自定义同步组件的非公共静态内部类，AQS 自身不实现任何同步接口，它仅仅是定义了若干同步状态获取和释放的方法来供自定义同步组件使用，这样就可以方便实现不同类型的同步组件(ReentrantLock、 ReentrantReadWriteLock、CountDownLatch、Semaphore、CyclicBarrier 等)。</p>
-
-<h2 id="toc_8">AQS 对资源的共享方式</h2>
-
+<h2><a id="aqs%E5%AF%B9%E8%B5%84%E6%BA%90%E7%9A%84%E5%85%B1%E4%BA%AB%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 对资源的共享方式</h2>
 <p>AQS定义两种资源共享方式：</p>
-
 <ul>
-<li>AQS支持独占模式(默认)<br/>
+<li>AQS支持独占模式(默认)<br />
 只有一个线程能执行，如ReentrantLock。又可分为公平锁和非公平锁</li>
 <li>共享模式来获取同步状态</li>
 </ul>
-
-<h2 id="toc_9">AQS 定义的模板方法</h2>
-
+<h2><a id="aqs%E5%AE%9A%E4%B9%89%E7%9A%84%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 定义的模板方法</h2>
 <p>AQS的设计者采用<strong>模板模式</strong>，提供一系列模板方法供不同类型的同步组件使用，如下所示：</p>
-
 <table>
 <thead>
 <tr>
@@ -306,7 +226,6 @@
 <th>描述</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>void acquire(int arg)</td>
@@ -342,9 +261,7 @@
 </tr>
 </tbody>
 </table>
-
 <p>AQS提供的支持类型的方法：</p>
-
 <table>
 <thead>
 <tr>
@@ -352,7 +269,6 @@
 <th>描述</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>Collection<Thread> getExclusiveQueuedThreads()</td>
@@ -392,9 +308,7 @@
 </tr>
 </tbody>
 </table>
-
 <p>需要子类重写的方法：</p>
-
 <table>
 <thead>
 <tr>
@@ -402,7 +316,6 @@
 <th>描述</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>boolean tryAcquire(int arg)</td>
@@ -426,9 +339,7 @@
 </tr>
 </tbody>
 </table>
-
 <p>开发者可以自定义同步器，例如：</p>
-
 <pre><code class="language-java">/**
  * 门闩锁，
  */
@@ -455,15 +366,10 @@ public class BooleanLatch {
    }
  } 
 </code></pre>
-
-<hr/>
-
-<h2 id="toc_10">AQS 源码解读</h2>
-
-<h3 id="toc_11">AQS 中的数据结构</h3>
-
-<p><figure><img src="media/15867863097702/15874785413013.jpg" alt=""/></figure></p>
-
+<hr />
+<h2><a id="aqs%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 源码解读</h2>
+<h3><a id="aqs%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AQS 中的数据结构</h3>
+<p><figure><img src="media/15867863097702/15874785413013.jpg" alt="" /></figure></p>
 <pre><code class="language-java">public abstract class AbstractOwnableSynchronizer implements java.io.Serializable {
     
     // 版本序列号
@@ -476,7 +382,6 @@ public class BooleanLatch {
    ....
 }
 </code></pre>
-
 <pre><code class="language-java">/**
  * AQS抽象类
  */
@@ -521,21 +426,15 @@ public abstract class AbstractQueuedSynchronizer
     //省略其他代码......
 }
 </code></pre>
-
-<h4 id="toc_12">Node节点</h4>
-
+<h4><a id="node%E8%8A%82%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Node节点</h4>
 <p>Node节点是同步队列节点类。同步队列（由Node实现）是“CLH”(Craig、Landin和Hagersten)锁队列的变体，CLH锁通常用于自旋锁。</p>
-
-<p>Node节点会存储如下信息： </p>
-
+<p>Node节点会存储如下信息：</p>
 <ul>
 <li>线程信息；</li>
 <li>当前线程&quot;获取锁&quot;请求的状态（取消、通知下一节点）；</li>
 <li>当前节点的前驱和后驱节点等信息。</li>
 </ul>
-
 <p>Node节点数据结构如下所示：</p>
-
 <pre><code class="language-java">static final class Node {
     // 初始 共享模式节点
     static final Node SHARED = new Node();
@@ -585,74 +484,49 @@ public abstract class AbstractQueuedSynchronizer
     }
 }
 </code></pre>
-
-<h4 id="toc_13">head 和 tail</h4>
-
+<h4><a id="head%E5%92%8C-tail" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>head 和 tail</h4>
 <p>head是指向Node同步队列的头结点，tail是指向Node同步队列的尾结点。</p>
-
-<h4 id="toc_14">state</h4>
-
+<h4><a id="state" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>state</h4>
 <p>同步器当前的的同步状态，通过下面3个方法进行访问：</p>
-
 <ul>
 <li>getState():获取当前同步状态。</li>
 <li>setState(int newState):设置当前同步状态。</li>
 <li>compareAndSetState(int expect, int update):使用 CAS 设置当前状态，该方 法能够保证状态设置的原子性。</li>
 </ul>
-
-<hr/>
-
-<h3 id="toc_15">节点在同步队列中的增加</h3>
-
+<hr />
+<h3><a id="%E8%8A%82%E7%82%B9%E5%9C%A8%E5%90%8C%E6%AD%A5%E9%98%9F%E5%88%97%E4%B8%AD%E7%9A%84%E5%A2%9E%E5%8A%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>节点在同步队列中的增加</h3>
 <p>当一个线程成功地获取了同步状态(或者锁)，其他线程将无法获取到同步状态，也就是获取同步状态失败，AQS 会将这个线程以及等待状态等信息构造成 为一个节点(Node)并将其加入同步队列的尾部。</p>
-
 <p>而这个加入队列的过程必须要保证线程安全，因此同步器提供了一个基于 CAS 的设置尾节点的方法: compareAndSetTail(Node expect,Node update)，它需要传递当前线程“认为”的尾 节点和当前节点，只有设置成功后，当前节点才正式与之前的尾节点建立关联。</p>
-
-<p>首节点的变化<br/>
+<p>首节点的变化<br />
 首节点是获取同步状态成功的节点，首节点的线程在释放同步状态时，将会唤醒后继节点，而后继节点将会在获取同步状态成功时将自己设置为首节点。设 置首节点是通过获取同步状态成功的线程来完成的，由于只有一个线程能够成功 获取到同步状态，因此设置头节点的方法并不需要使用 CAS 来保证，它只需要将 首节点设置成为原首节点的后继节点并断开原首节点的 next 引用即可。</p>
-
-<h3 id="toc_16">独占式同步状态获取与释放</h3>
-
-<p>首先看一下图展示同步状态获取与释放的流程图：<br/>
-<figure><img src="media/15867863097702/15874795148241.jpg" alt=""/></figure></p>
-
-<h4 id="toc_17">acquire(int arg) 获取同步状态</h4>
-
+<h3><a id="%E7%8B%AC%E5%8D%A0%E5%BC%8F%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81%E8%8E%B7%E5%8F%96%E4%B8%8E%E9%87%8A%E6%94%BE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>独占式同步状态获取与释放</h3>
+<p>首先看一下图展示同步状态获取与释放的流程图：<br />
+<figure><img src="media/15867863097702/15874795148241.jpg" alt="" /></figure></p>
+<h4><a id="acquire-int-arg%E8%8E%B7%E5%8F%96%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>acquire(int arg) 获取同步状态</h4>
 <p>获取同步状态通过调用同步器的 acquire(int arg)方法可以获取同步状态，主要完成了同步 状态获取、节点构造、加入同步队列以及在同步队列中自旋等待的相关工作，其主要逻辑是:</p>
-
 <ul>
 <li><strong>首先</strong>调用自定义同步器实现的 tryAcquire(int arg)方法，该方法需要保证线程安全的获取同步状态。</li>
 <li><strong>其次</strong>如果同步状态获取失败(tryAcquire 返回 false)，则构造同步节点(独占式 Node.EXCLUSIVE，同一时刻只能有一个线程成功获取同步状态)并通过 addWaiter(Node node)方法将该节点加入到同步队列的尾部，</li>
 <li><strong>最后</strong>调用 acquireQueued(Node node,int arg)方法，使得该节点以“死循环” 的方式获取同步状态。如果获取不到则阻塞节点中的线程，而被阻塞线程的唤醒 主要依靠前驱节点的出队或阻塞线程被中断来实现。</li>
 </ul>
-
 <pre><code class="language-java">public final void acquire(int arg) {
     if (!tryAcquire(arg) &amp;&amp; acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
         selfInterrupt();
 }
 </code></pre>
-
 <p>从源码中可以看到获取同步状态代码只有3行代码，其中最重要的就是下面的三个方法：</p>
-
 <ul>
 <li>tryAcquire(int arg)</li>
 </ul>
-
 <p>尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许，则应该获取它。需要我们自定义实现</p>
-
 <pre><code class="language-java">protected boolean tryAcquire(int arg) {
     throw new UnsupportedOperationException();
 }
 </code></pre>
-
-<h5 id="toc_18">addWaiter(Node node)</h5>
-
+<h5><a id="addwaiter-node-node" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>addWaiter(Node node)</h5>
 <p>将当前线程包装成 Node 后，队列不为空的情况下，先尝试把当前节点加入 队列并成为尾节点，如果不成功或者队列为空进入 enq(final Node node)方法</p>
-
 <p>在 enq(final Node node)方法中，同步器通过“死循环”来保证节点的正确添加，这个死循环中，做了两件事，第一件，如果队列为空，初始化队列，new 出一个空节点，并让首节点(head)和尾节点(tail)两个引用都指向这个空节点; 第二件事，把当前节点加入队列。</p>
-
 <p>在“死循环”中只有通过 CAS 将节点设置成为尾节点之后，当前线程才能从 该方法返回，否则，当前线程不断地尝试设置。</p>
-
 <pre><code class="language-java">private Node addWaiter(Node mode) {
     Node node = new Node(Thread.currentThread(), mode);
     // 尝试一次快速排队操作，失败的话，enq来补位。
@@ -688,27 +562,19 @@ private Node enq(final Node node) {
     }
 }
 </code></pre>
-
-<h5 id="toc_19">acquireQueued(Node node, arg)</h5>
-
+<h5><a id="acquirequeued-node-node-arg" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>acquireQueued(Node node, arg)</h5>
 <p>首先我们先大致浏览下acquireQueued的流程：</p>
-
 <ul>
-<li>判断结点的前驱是否为head并且是否成功获取(资源)。 </li>
-<li>若步骤1均满足，则设置结点为head，之后会判断是否finally模块，然后返回。 </li>
-<li>若步骤2不满足，则判断是否需要park当前线程，是否需要park当前线程的逻辑是判断结点的前驱结点的状态是否为SIGNAL，若是，则park当前结点，否则，不进行park操作。 </li>
+<li>判断结点的前驱是否为head并且是否成功获取(资源)。</li>
+<li>若步骤1均满足，则设置结点为head，之后会判断是否finally模块，然后返回。</li>
+<li>若步骤2不满足，则判断是否需要park当前线程，是否需要park当前线程的逻辑是判断结点的前驱结点的状态是否为SIGNAL，若是，则park当前结点，否则，不进行park操作。</li>
 <li>若park了当前线程，之后某个线程对本线程unpark后，并且本线程也获得机会运行。那么，将会继续进行步骤①的判断</li>
 </ul>
-
 <p>其实就是一个自旋的过程，每个节点(或者说每个线程)都在自省地观察， 当条件满足，获取到了同步状态，就可以从这个自旋过程中退出，否则依旧留在这个自旋过程中(并会阻塞节点的线程)。</p>
-
 <p>在 acquireQueued(final Node node,int arg)方法中，当前线程在“死循环”中 尝试获取同步状态，而只有前驱节点是头节点才能够尝试获取同步状态，这是为什么?原因有两个。</p>
-
-<p>第一，头节点是成功获取到同步状态的节点，而头节点的线程释放了同步状态之后，将会唤醒其后继节点，后继节点的线程被唤醒后需要检查自己的前驱节点是否是头节点。<br/>
+<p>第一，头节点是成功获取到同步状态的节点，而头节点的线程释放了同步状态之后，将会唤醒其后继节点，后继节点的线程被唤醒后需要检查自己的前驱节点是否是头节点。<br />
 第二，维护同步队列的 FIFO 原则。</p>
-
 <p>当前线程获取到同步状态后，让首节点(head)这个引用指向自己所在节点。 当同步状态获取成功后，当前线程就从 acquire 方法返回了。如果同步器实现的 是锁，那就代表当前线程获得了锁。</p>
-
 <pre><code class="language-java">// sync队列中的结点在独占且忽略中断的模式下获取(资源)
 final boolean acquireQueued(final Node node, int arg) {
     boolean failed = true;
@@ -735,13 +601,9 @@ final boolean acquireQueued(final Node node, int arg) {
     }
 }
 </code></pre>
-
 <p>首先获取当前节点的前驱节点，如果前驱节点是头结点并且能够获取(资源)，代表该当前节点能够占有锁，设置头结点为当前节点，返回。否则，调用shouldParkAfterFailedAcquire和parkAndCheckInterrupt方法，首先，我们看shouldParkAfterFailedAcquire方法</p>
-
-<h6 id="toc_20">shouldParkAfterFailedAcquire(Node pred, Node node)</h6>
-
+<h6><a id="shouldparkafterfailedacquire-node-pred-node-node" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>shouldParkAfterFailedAcquire(Node pred, Node node)</h6>
 <p>首先获取当前节点的前驱节点，如果前驱节点是头结点并且能够获取(资源)，代表该当前节点能够占有锁，设置头结点为当前节点，返回。否则，调用shouldParkAfterFailedAcquire和parkAndCheckInterrupt方法，首先，我们看shouldParkAfterFailedAcquire方法</p>
-
 <pre><code class="language-java">// 当获取(资源)失败后，检查并且更新结点状态
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     // 获取前驱结点的状态
@@ -766,7 +628,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     } else { // 为PROPAGATE -3 或者是0 表示无状态,(为CONDITION -2时，表示此节点在condition queue中) 
         /*
             * waitStatus must be 0 or PROPAGATE.  Indicate that we
-            * need a signal, but don&#39;t park yet.  Caller will need to
+            * need a signal, but don't park yet.  Caller will need to
             * retry to make sure it cannot acquire before parking.
             */
         // 比较并设置前驱结点的状态为SIGNAL
@@ -777,13 +639,9 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 }
 
 </code></pre>
-
 <p>只有当该节点的前驱结点的状态为SIGNAL时，才可以对该结点所封装的线程进行park操作。否则，将不能进行park操作。再看parkAndCheckInterrupt方法</p>
-
-<h6 id="toc_21">parkAndCheckInterrupt()</h6>
-
+<h6><a id="parkandcheckinterrupt" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>parkAndCheckInterrupt()</h6>
 <p>parkAndCheckInterrupt方法里的逻辑是首先执行park操作，即禁用当前线程，然后返回该线程是否已经被中断</p>
-
 <pre><code class="language-java">// 进行park操作并且返回该线程是否被中断
 private final boolean parkAndCheckInterrupt() {
     // 在许可可用之前禁用当前线程，并且设置了blocker
@@ -791,12 +649,10 @@ private final boolean parkAndCheckInterrupt() {
     return Thread.interrupted(); // 当前线程是否已被中断，并清除中断标记位
 }
 </code></pre>
-
-<h6 id="toc_22">cancelAcquire(Node node) 取消继续获取(资源)</h6>
-
+<h6><a id="cancelacquire-node-node%E5%8F%96%E6%B6%88%E7%BB%A7%E7%BB%AD%E8%8E%B7%E5%8F%96%E8%B5%84%E6%BA%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cancelAcquire(Node node) 取消继续获取(资源)</h6>
 <pre><code class="language-java">// 取消继续获取(资源)
 private void cancelAcquire(Node node) {
-    // Ignore if node doesn&#39;t exist
+    // Ignore if node doesn't exist
     // node为空，返回
     if (node == null)
         return;
@@ -826,7 +682,7 @@ private void cancelAcquire(Node node) {
         // 比较并设置pred结点的next节点为null
         compareAndSetNext(pred, predNext, null); 
     } else { // node结点不为尾结点，或者比较设置不成功
-        // If successor needs signal, try to set pred&#39;s next-link
+        // If successor needs signal, try to set pred's next-link
         // so it will get one. Otherwise wake it up to propagate.
         int ws;
         if (pred != head &amp;&amp;
@@ -847,11 +703,8 @@ private void cancelAcquire(Node node) {
 }
 
 </code></pre>
-
 <p>该方法完成的功能就是取消当前线程对资源的获取，即设置该结点的状态为CANCELLED，接着我们再看unparkSuccessor</p>
-
 <p>unparkSuccessor的作用就是为了释放node节点的后继结点</p>
-
 <pre><code class="language-java">// 释放后继结点
 private void unparkSuccessor(Node node) {
     /*
@@ -887,11 +740,8 @@ private void unparkSuccessor(Node node) {
 }
 
 </code></pre>
-
-<h4 id="toc_23">release 释放同步状态</h4>
-
+<h4><a id="release%E9%87%8A%E6%94%BE%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>release 释放同步状态</h4>
 <p>当前线程获取同步状态并执行了相应逻辑之后，就需要释放同步状态，使得后续节点能够继续获取同步状态。通过调用同步器的 release(int arg)方法可以释 放同步状态，该方法在释放了同步状态之后，会唤醒其后继节点(进而使后继节 点重新尝试获取同步状态)。</p>
-
 <pre><code class="language-java">public final boolean release(int arg) {
     if (tryRelease(arg)) {
         Node h = head;
@@ -902,11 +752,8 @@ private void unparkSuccessor(Node node) {
     return false;
 }
 </code></pre>
-
 <p>其中，tryRelease的默认实现是抛出异常，需要具体的子类实现，如果tryRelease成功，那么如果头结点不为空并且头结点的状态不为 0，则释放头结点的后继结点，unparkSuccessor方法在前面已经分析过。</p>
-
 <p>该方法执行时，会唤醒首节点(head)所指向节点的后继节点线程， unparkSuccessor(Node node)方法使用 LockSupport 来唤醒处于等待状态的线程。</p>
-
 <pre><code class="language-java">private void unparkSuccessor(Node node) {
         int ws = node.waitStatus;
         if (ws &lt; 0)
@@ -923,27 +770,19 @@ private void unparkSuccessor(Node node) {
             LockSupport.unpark(s.thread);
     }
 </code></pre>
-
 <p>这段代码的意思，一般情况下，被唤醒的是 head 指向节点的后继节点线程， 如果这个后继节点处于被 cancel 状态， 会转而从尾开始遍历，找到最前面且没有被 cancel 的节点。</p>
-
-<hr/>
-
-<h3 id="toc_24">共享式同步状态获取与释放</h3>
-
+<hr />
+<h3><a id="%E5%85%B1%E4%BA%AB%E5%BC%8F%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81%E8%8E%B7%E5%8F%96%E4%B8%8E%E9%87%8A%E6%94%BE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>共享式同步状态获取与释放</h3>
 <p>共享式获取与独占式获取最主要的区别在于同一时刻能否有多个线程同时获取到同步状态。以读写为例，如果一个程序在进行读操作，那么这一时刻写操作均被阻塞，而读操作能够同时进行。写操作要求对资源的独占式访问，而读操作可以是共享式访问。</p>
-
-<p>因此，在共享式获取的自旋过程中，成功获取到同步状态并退出自旋的条件就是 tryAcquireShared(int arg)方法返回值大于等于 0。可以看到，在 doAcquireShared(int arg)方法的自旋过程中，如果当前节<br/>
-  点的前驱为头节点时，尝试获取同步状态，如果返回值大于等于 0，表示该次获 取同步状态成功并从自旋过程中退出。</p>
-
+<p>因此，在共享式获取的自旋过程中，成功获取到同步状态并退出自旋的条件就是 tryAcquireShared(int arg)方法返回值大于等于 0。可以看到，在 doAcquireShared(int arg)方法的自旋过程中，如果当前节<br />
+点的前驱为头节点时，尝试获取同步状态，如果返回值大于等于 0，表示该次获 取同步状态成功并从自旋过程中退出。</p>
 <pre><code class="language-java">public final void acquireShared(int arg) {
     // tryAcquireShared共享方式尝试获取资源。负数表示失败；0表示成功获得同步状态，但没有剩余可用资源；正数表示成功，且有剩余资源。
     if (tryAcquireShared(arg) &lt; 0)
         doAcquireShared(arg);
 }
 </code></pre>
-
 <p>我们看下doAcquireShared(int arg)方法的实现</p>
-
 <pre><code class="language-java">// 以共享不可中断模式获取。
 private void doAcquireShared(int arg) {
     // 构建当前线程的共享节点
@@ -993,9 +832,7 @@ private void setHeadAndPropagate(Node node, int propagate) {
         }
     }
 </code></pre>
-
 <p>该方法在释放同步状态之后，将会唤醒后续处于等待状态的节点。对于能够支持多个线程同时访问的并发组件(比如 Semaphore)，它和独占式主要区别在于 tryReleaseShared(int arg)方法必须确保同步状态(或者资源数)线程安全释放， 一般是通过循环和 CAS 来保证的，因为释放同步状态的操作会同时来自多个线程。</p>
-
 <pre><code class="language-java">private void doReleaseShared() {
         
         for (; ; ) {
@@ -1017,13 +854,9 @@ private void setHeadAndPropagate(Node node, int propagate) {
         }
     }
 </code></pre>
-
-<hr/>
-
-<h3 id="toc_25">一个共享锁示例</h3>
-
+<hr />
+<h3><a id="%E4%B8%80%E4%B8%AA%E5%85%B1%E4%BA%AB%E9%94%81%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>一个共享锁示例</h3>
 <p>代码如下：</p>
-
 <pre><code class="language-java">/**
  * 共享锁简单实现
  **/

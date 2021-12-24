@@ -114,11 +114,9 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>springMVC 整体结构图<br/>
-<figure><img src="media/16127683459285/16127683589842.jpg" alt="" style="width:1176px;"/></figure></p>
-
+                    <p>springMVC 整体结构图<br />
+<figure><img src="media/16127683459285/16127683589842.jpg" alt="" style="width:1176px;" /></figure></p>
 <p>通过对结构图的分析可以得知 servlet 的继承结构中总共有 5 个类</p>
-
 <ul>
 <li>GenericServlet</li>
 <li>HttpServlet</li>
@@ -126,275 +124,237 @@
 <li>FrameworkServlet</li>
 <li>DispacherServlet</li>
 </ul>
-
-<h2 id="toc_0">HttpServletBean</h2>
-
-<p>HttpServletBean主要参与了创建工作，并没有设计请求的处理。<br/>
+<h2><a id="httpservletbean" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HttpServletBean</h2>
+<p>HttpServletBean主要参与了创建工作，并没有设计请求的处理。<br />
 HttpServletBean 实现了 EnvironmentCapable，获取的 Environment 使用的是 StandardServletEnvironment(封装了 ServletContext、ServletConfig、JndiProperty、系统环境变量和系统属性)，这些都封装到了 propertySources属性下。</p>
-
 <p>我们知道 Servlet 在创建的时候会执行其 init方法，下面我们分析一下其源码</p>
-
 <pre><code class="language-java">public final void init() throws ServletException {
-    // 将 Servlet 中配置的参数封装到 pvs 中，requiredProperties 为必须参数，如果没有配置将抛出异常
-    PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
-    if (!pvs.isEmpty()) {
-        try {
-            BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
-            ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
-            bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
-            // 模板方法，可以在子类调用，做一些初始化工作，bw代表 DispatcherServlet
-            initBeanWrapper(bw);
-            // 将配置的初始化值（如contextConfigLocation)设置到 DispatcherServlet中
-            bw.setPropertyValues(pvs, true);
-        } catch (BeansException ex) {
-            if (logger.isErrorEnabled()) {
-                logger.error(&quot;Failed to set bean properties on servlet &#39;&quot; + getServletName() + &quot;&#39;&quot;, ex);
-            }
-            throw ex;
-        }
-    }
-    
-    // 模板方法，子类初始化的入口方法
-    initServletBean();
+	// 将 Servlet 中配置的参数封装到 pvs 中，requiredProperties 为必须参数，如果没有配置将抛出异常
+	PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
+	if (!pvs.isEmpty()) {
+		try {
+			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
+			ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+			bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
+			// 模板方法，可以在子类调用，做一些初始化工作，bw代表 DispatcherServlet
+			initBeanWrapper(bw);
+			// 将配置的初始化值（如contextConfigLocation)设置到 DispatcherServlet中
+			bw.setPropertyValues(pvs, true);
+		} catch (BeansException ex) {
+			if (logger.isErrorEnabled()) {
+				logger.error(&quot;Failed to set bean properties on servlet '&quot; + getServletName() + &quot;'&quot;, ex);
+			}
+			throw ex;
+		}
+	}
+	
+	// 模板方法，子类初始化的入口方法
+	initServletBean();
 }
 </code></pre>
-
 <p>通过源码可以得知，在init方法中首先将 Servlet 中配置的参数使用 BeanWrapper 设置到 DispatcherServlet 的相关属性，然后调用模板方法 initServletBean，子类就通过这个方法初始化。</p>
-
-<h2 id="toc_1">FrameworkServlet</h2>
-
+<h2><a id="frameworkservlet" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>FrameworkServlet</h2>
 <p>从上面一节中得知，initServletBean是钩子方法，会执行子类中的方法，此时我们需要转到此方法的实现类FrameworkServlet中了</p>
-
 <pre><code class="language-java">protected final void initServletBean() throws ServletException {
-    ...
-    
-    try {
-        this.webApplicationContext = initWebApplicationContext();
-        initFrameworkServlet();
-    }
-    catch (ServletException | RuntimeException ex) {
-        logger.error(&quot;Context initialization failed&quot;, ex);
-        throw ex;
-    }
+	...
+	
+	try {
+		this.webApplicationContext = initWebApplicationContext();
+		initFrameworkServlet();
+	}
+	catch (ServletException | RuntimeException ex) {
+		logger.error(&quot;Context initialization failed&quot;, ex);
+		throw ex;
+	}
 
-    ...
+	...
 }
 </code></pre>
-
 <p>在此方法中最重要的两行代码就是 initWebApplicationContext()、initFrameworkServlet()，其中 initFrameworkServlet方法是模板方法，需要子类去实现。</p>
-
-<h3 id="toc_2">initWebApplicationContext()</h3>
-
+<h3><a id="initwebapplicationcontext" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>initWebApplicationContext()</h3>
 <pre><code class="language-java">protected WebApplicationContext initWebApplicationContext() {
-    // 获取RootContext
-    WebApplicationContext rootContext =
-            WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+	// 获取RootContext
+	WebApplicationContext rootContext =
+			WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 
-    WebApplicationContext wac = null;
-    //如果已经通过构造方法设置了 webApplicationContext 的话
-    if (this.webApplicationContext != null) {
-        // A context instance was injected at construction time -&gt; use it
-        wac = this.webApplicationContext;
-        if (wac instanceof ConfigurableWebApplicationContext) {
-            ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) wac;
-            if (!cwac.isActive()) {
-                // The context has not yet been refreshed -&gt; provide services such as
-                // setting the parent context, setting the application context id, etc
-                if (cwac.getParent() == null) {
-                    // The context instance was injected without an explicit parent -&gt; set
-                    // the root application context (if any; may be null) as the parent
-                    cwac.setParent(rootContext);
-                }
-                configureAndRefreshWebApplicationContext(cwac);
-            }
-        }
-    }
+	WebApplicationContext wac = null;
+	//如果已经通过构造方法设置了 webApplicationContext 的话
+	if (this.webApplicationContext != null) {
+		// A context instance was injected at construction time -&gt; use it
+		wac = this.webApplicationContext;
+		if (wac instanceof ConfigurableWebApplicationContext) {
+			ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) wac;
+			if (!cwac.isActive()) {
+				// The context has not yet been refreshed -&gt; provide services such as
+				// setting the parent context, setting the application context id, etc
+				if (cwac.getParent() == null) {
+					// The context instance was injected without an explicit parent -&gt; set
+					// the root application context (if any; may be null) as the parent
+					cwac.setParent(rootContext);
+				}
+				configureAndRefreshWebApplicationContext(cwac);
+			}
+		}
+	}
 
-    if (wac == null) {
-        // 当webApplicationContext 已经存在ServletContext中时，通过配置在 Servlet 中的contextAttribute 参数获取
-        wac = findWebApplicationContext();
-    }
+	if (wac == null) {
+		// 当webApplicationContext 已经存在ServletContext中时，通过配置在 Servlet 中的contextAttribute 参数获取
+		wac = findWebApplicationContext();
+	}
 
-    if (wac == null) {
-        // 如果 webApplicationContext 还没有创建，则创建一个
-        wac = createWebApplicationContext(rootContext);
-    }
+	if (wac == null) {
+		// 如果 webApplicationContext 还没有创建，则创建一个
+		wac = createWebApplicationContext(rootContext);
+	}
 
-    if (!this.refreshEventReceived) {
-        // 当 ContextRefreshedEvent 时间没有触发时调用此方法，
-        synchronized (this.onRefreshMonitor) {
-            onRefresh(wac);
-        }
-    }
+	if (!this.refreshEventReceived) {
+		// 当 ContextRefreshedEvent 时间没有触发时调用此方法，
+		synchronized (this.onRefreshMonitor) {
+			onRefresh(wac);
+		}
+	}
 
-    if (this.publishContext) {
-        // 将 ApplicationContext 保存到 ServletContext 中
-        String attrName = getServletContextAttributeName();
-        getServletContext().setAttribute(attrName, wac);
-    }
+	if (this.publishContext) {
+		// 将 ApplicationContext 保存到 ServletContext 中
+		String attrName = getServletContextAttributeName();
+		getServletContext().setAttribute(attrName, wac);
+	}
 
-    return wac;
+	return wac;
 }
 </code></pre>
-
 <p>此方法做了3件事：</p>
-
 <ul>
 <li>获取 spring的跟容器 rootContext</li>
 <li>设置 webApplicationContext 并根据情况调用onRefresh 方法</li>
 <li>将 webApplicationContext 设置到 ServletContext 中</li>
 </ul>
-
-<h4 id="toc_3">获取 rootContext 根容器</h4>
-
+<h4><a id="%E8%8E%B7%E5%8F%96rootcontext%E6%A0%B9%E5%AE%B9%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>获取 rootContext 根容器</h4>
 <p>在默认情况下，spring 会将自己的 容器设置成 ServletContext 的属性，默认根容器的 key为 org.springframework.web.context.WebApplicationContext.ROOT, 定义在 org.springframewoork.web.context.WebApplicationContext 中：</p>
-
-<pre><code class="language-text">String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + &quot;.ROOT&quot;;
+<pre><code class="language-plain_text">String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + &quot;.ROOT&quot;;
 </code></pre>
-
 <p>所以获取根容器只需要调用 ServletContext的getAttribute就可以了</p>
-
-<pre><code class="language-text">ServletContext#getAttribute(&quot;org.springframework.web.context.WebApplicationContext.ROOT&quot;)
+<pre><code class="language-plain_text">ServletContext#getAttribute(&quot;org.springframework.web.context.WebApplicationContext.ROOT&quot;)
 </code></pre>
-
-<h5 id="toc_4">设置 webApplicationContext 并根据情况调用 onRefresh 方法</h5>
-
+<h5><a id="%E8%AE%BE%E7%BD%AEwebapplicationcontext%E5%B9%B6%E6%A0%B9%E6%8D%AE%E6%83%85%E5%86%B5%E8%B0%83%E7%94%A8-onrefresh%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>设置 webApplicationContext 并根据情况调用 onRefresh 方法</h5>
 <p>设置webApplicationContext 一共有三种方法</p>
-
 <ul>
 <li>第一种方法是在构造方法中已经传递 webApplicationContext 参数，这是只需要对其进行一些设置即可，这种方法主要用于 Servlet3.0以后的环境中，Servlet3.0 之后可以在程序中使用 ServletContextAddServlet方式注册 Servlet，这是就可以在新建 FrameworkServlet 和其子类的时候通过构造方法传递已经准备好的 webApplicationContext</li>
 <li>第二种方法是 webApplicationContext 已经在 ServletContext 中了，这是只需要在配置 Servlet的时候将 ServletContext 中的 webApplicationContext 的name 配置到 contextAttribute 属性就可以了.</li>
 <li>第三种方法是在前面两种方式都无效的情况下自己创建一个。正常情况下就是使用的这种方式。创建过程在 createWebApplicationContext 方法中，createWebApplicationContext内部又调用了 configureAndRefreshWebApplicationContext方法，代码如下：</li>
 </ul>
-
 <pre><code class="language-java">protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
-    // 获取创建类型，默认是此种类型 org.springframework.web.context.support.XmlWebApplicationContext
-    Class&lt;?&gt; contextClass = getContextClass();
-    // 检查创建类型
-    if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
-        throw new ApplicationContextException(
-                &quot;Fatal initialization error in servlet with name &#39;&quot; + getServletName() +
-                &quot;&#39;: custom WebApplicationContext class [&quot; + contextClass.getName() +
-                &quot;] is not of type ConfigurableWebApplicationContext&quot;);
-    }
-    // 具体创建
-    ConfigurableWebApplicationContext wac =
-            (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
+	// 获取创建类型，默认是此种类型 org.springframework.web.context.support.XmlWebApplicationContext
+	Class&lt;?&gt; contextClass = getContextClass();
+	// 检查创建类型
+	if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
+		throw new ApplicationContextException(
+				&quot;Fatal initialization error in servlet with name '&quot; + getServletName() +
+				&quot;': custom WebApplicationContext class [&quot; + contextClass.getName() +
+				&quot;] is not of type ConfigurableWebApplicationContext&quot;);
+	}
+	// 具体创建
+	ConfigurableWebApplicationContext wac =
+			(ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 
-    wac.setEnvironment(getEnvironment());
-    wac.setParent(parent);
-    // 将创建的 ContextConfigLocation 传递给 wac，默认传入WEB-INF/[ServletName]-Servlet.xml
-    String configLocation = getContextConfigLocation();
-    if (configLocation != null) {
-        wac.setConfigLocation(configLocation);
-    }
-    configureAndRefreshWebApplicationContext(wac);
+	wac.setEnvironment(getEnvironment());
+	wac.setParent(parent);
+	// 将创建的 ContextConfigLocation 传递给 wac，默认传入WEB-INF/[ServletName]-Servlet.xml
+	String configLocation = getContextConfigLocation();
+	if (configLocation != null) {
+		wac.setConfigLocation(configLocation);
+	}
+	configureAndRefreshWebApplicationContext(wac);
 
-    return wac;
+	return wac;
 }
 
 protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
-    if (ObjectUtils.identityToString(wac).equals(wac.getId())) {
-        // The application context id is still set to its original default value
-        // -&gt; assign a more useful id based on available information
-        if (this.contextId != null) {
-            wac.setId(this.contextId);
-        }
-        else {
-            // Generate default id...
-            wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
-                    ObjectUtils.getDisplayString(getServletContext().getContextPath()) + &#39;/&#39; + getServletName());
-        }
-    }
+	if (ObjectUtils.identityToString(wac).equals(wac.getId())) {
+		// The application context id is still set to its original default value
+		// -&gt; assign a more useful id based on available information
+		if (this.contextId != null) {
+			wac.setId(this.contextId);
+		}
+		else {
+			// Generate default id...
+			wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
+					ObjectUtils.getDisplayString(getServletContext().getContextPath()) + '/' + getServletName());
+		}
+	}
 
-    wac.setServletContext(getServletContext());
-    wac.setServletConfig(getServletConfig());
-    wac.setNamespace(getNamespace());
-    // 添加 ContextRefreshedEvent 事件的监听器
-    wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
+	wac.setServletContext(getServletContext());
+	wac.setServletConfig(getServletConfig());
+	wac.setNamespace(getNamespace());
+	// 添加 ContextRefreshedEvent 事件的监听器
+	wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
-    // The wac environment&#39;s #initPropertySources will be called in any case when the context
-    // is refreshed; do it eagerly here to ensure servlet property sources are in place for
-    // use in any post-processing or initialization that occurs below prior to #refresh
-    ConfigurableEnvironment env = wac.getEnvironment();
-    if (env instanceof ConfigurableWebEnvironment) {
-        ((ConfigurableWebEnvironment) env).initPropertySources(getServletContext(), getServletConfig());
-    }
+	// The wac environment's #initPropertySources will be called in any case when the context
+	// is refreshed; do it eagerly here to ensure servlet property sources are in place for
+	// use in any post-processing or initialization that occurs below prior to #refresh
+	ConfigurableEnvironment env = wac.getEnvironment();
+	if (env instanceof ConfigurableWebEnvironment) {
+		((ConfigurableWebEnvironment) env).initPropertySources(getServletContext(), getServletConfig());
+	}
 
-    postProcessWebApplicationContext(wac);
-    applyInitializers(wac);
-    wac.refresh();
+	postProcessWebApplicationContext(wac);
+	applyInitializers(wac);
+	wac.refresh();
 }
 </code></pre>
-
 <p>这里需要说明的是 在configureAndRefreshWebApplicationContext 方法中给wac 添加了监听器。</p>
-
-<pre><code class="language-text">wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
+<pre><code class="language-plain_text">wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 </code></pre>
-
 <p>SourceFilteringListener 可以根据时输入的参数进行选择，所以世纪监听的是 ContextRefreshListener 锁监听的事件。</p>
-
 <p>ContextRefreshListener 是 FrameworkServlet 的内部类，监听 ContextRefreshedEvent 事件，当接受到 消息时调用 FrameworkServlet 的 onApplicationEvent 方法，在 onApplicationEvent 中会调用一次 onRefresh 方法，并将 refreshEventReceived 标志设置为 true，表示已经refresh 过，代码如下：</p>
-
 <pre><code class="language-javas">private class ContextRefreshListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; {
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        FrameworkServlet.this.onApplicationEvent(event);
-    }
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		FrameworkServlet.this.onApplicationEvent(event);
+	}
 }
 
 public void onApplicationEvent(ContextRefreshedEvent event) {
-    this.refreshEventReceived = true;
-    synchronized (this.onRefreshMonitor) {
-        onRefresh(event.getApplicationContext());
-    }
+	this.refreshEventReceived = true;
+	synchronized (this.onRefreshMonitor) {
+		onRefresh(event.getApplicationContext());
+	}
 }
 </code></pre>
-
 <p>然后我们在回到 initWebApplicationContext 方法 可以看到后面会根据 refreshEventReceived标志来判断是否要运行 onRefresh方法</p>
-
 <pre><code class="language-java">org.springframework.web.servlet.FrameworkServlet#initWebApplicationContext
 
 
 if (!this.refreshEventReceived) {
-    synchronized (this.onRefreshMonitor) {
-        onRefresh(wac);
-    }
+	synchronized (this.onRefreshMonitor) {
+		onRefresh(wac);
+	}
 }
 </code></pre>
-
 <p>当使用第三种方法初始化时已经refresh，不需要再调用 onRefresh。同样在 第一种方式中也调用了 configureAndRefreshWebApplicationContext 方法，也refresh 过，所以只有第二种方式初始化 webApplicationContext的时候哦才会在这里调用 onRefresh 方法。</p>
-
 <p>不管是哪种方式，onRefresh 最终肯定会而且只会调用一次，而且DispatcherServlet 正式通过重写这个模板方法来实现初始化。</p>
-
-<h5 id="toc_5">将 webApplicationContext 设置到ServletContext 中</h5>
-
+<h5><a id="%E5%B0%86webapplicationcontext%E8%AE%BE%E7%BD%AE%E5%88%B0-servletcontext%E4%B8%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>将 webApplicationContext 设置到ServletContext 中</h5>
 <p>最后会根据publishContext 标志判断是否将创建出来的 webApplicationContext 设置到 ServletContext 的属性中，publishContext 标志可以在配置 Servlet 时通过 init-param 参数进行设置，，HttpServletBean 初始化时会将其设置到 publishcontext 参数。之所以将创建出来的 webApplicationContext 设置到 ServletContext 的属性中，主要是为了获取方便，在前面获取RootApplicationContext的时候已经介绍过。</p>
-
 <p>前面设置了 Servlet 时可以设置的一些初始化参数，总计如下：</p>
-
 <ul>
 <li>contextAttribute：在ServletContext 的属性中，要用作 webApplicationContext的属性名称</li>
 <li>contextClass：创建 webApplicationContext的类型</li>
 <li>contextConfigLocation：spring mvc 配置文件的位置</li>
 <li>publishContext：是否将 webApplicationContext 设置到 ServletContext 的属性</li>
 </ul>
-
-<h3 id="toc_6">DispatcherServlet</h3>
-
+<h3><a id="dispatcherservlet" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>DispatcherServlet</h3>
 <p>onRefresh 方法是 DispatcherServlet 的入口。onRefresh 中简单的调用了 initStrategies，在initStrategies 中调用了 9 个 初始化方法</p>
-
 <pre><code class="language-java">protected void initStrategies(ApplicationContext context) {
-    initMultipartResolver(context);
-    initLocaleResolver(context);
-    initThemeResolver(context);
-    initHandlerMappings(context);
-    initHandlerAdapters(context);
-    initHandlerExceptionResolvers(context);
-    initRequestToViewNameTranslator(context);
-    initViewResolvers(context);
-    initFlashMapManager(context);
+	initMultipartResolver(context);
+	initLocaleResolver(context);
+	initThemeResolver(context);
+	initHandlerMappings(context);
+	initHandlerAdapters(context);
+	initHandlerExceptionResolvers(context);
+	initRequestToViewNameTranslator(context);
+	initViewResolvers(context);
+	initFlashMapManager(context);
 }
 </code></pre>
 

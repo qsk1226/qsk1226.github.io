@@ -114,78 +114,43 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">海量数据方案</h2>
-
-<h3 id="toc_1">缓存和页面静态化</h3>
-
-<h4 id="toc_2">缓存问题</h4>
-
+                    <h2><a id="%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>海量数据方案</h2>
+<h3><a id="%E7%BC%93%E5%AD%98%E5%92%8C%E9%A1%B5%E9%9D%A2%E9%9D%99%E6%80%81%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存和页面静态化</h3>
+<h4><a id="%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存问题</h4>
 <p>适用于变动并不频繁的数据</p>
-
-<h5 id="toc_3">缓存失效机制</h5>
-
-<h5 id="toc_4">一致性问题</h5>
-
-<h5 id="toc_5">缓存雪崩</h5>
-
-<h5 id="toc_6">缓存击穿</h5>
-
-<h3 id="toc_7">数据库优化</h3>
-
-<h4 id="toc_8">表优化</h4>
-
-<h4 id="toc_9">sql语句优化</h4>
-
-<h4 id="toc_10">索引优化</h4>
-
-<h4 id="toc_11">分库分表</h4>
-
-<h4 id="toc_12">热点数据分离</h4>
-
+<h5><a id="%E7%BC%93%E5%AD%98%E5%A4%B1%E6%95%88%E6%9C%BA%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存失效机制</h5>
+<h5><a id="%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>一致性问题</h5>
+<h5><a id="%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存雪崩</h5>
+<h5><a id="%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存击穿</h5>
+<h3><a id="%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据库优化</h3>
+<h4><a id="%E8%A1%A8%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>表优化</h4>
+<h4><a id="sql%E8%AF%AD%E5%8F%A5%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>sql语句优化</h4>
+<h4><a id="%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>索引优化</h4>
+<h4><a id="%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>分库分表</h4>
+<h4><a id="%E7%83%AD%E7%82%B9%E6%95%B0%E6%8D%AE%E5%88%86%E7%A6%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>热点数据分离</h4>
 <p>有这样一种情况，表中的数据量非常大，但是出于活跃状态的数据很少，此时将活跃的数据单独分离出来将会是一种行之有效的方案。</p>
-
-<h4 id="toc_13">批量读取或者延迟修改</h4>
-
+<h4><a id="%E6%89%B9%E9%87%8F%E8%AF%BB%E5%8F%96%E6%88%96%E8%80%85%E5%BB%B6%E8%BF%9F%E4%BF%AE%E6%94%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>批量读取或者延迟修改</h4>
 <p>批量读取和延迟修改都是通过降低操作的次数来提高效率的手段</p>
-
-<h5 id="toc_14">批量读取</h5>
-
+<h5><a id="%E6%89%B9%E9%87%8F%E8%AF%BB%E5%8F%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>批量读取</h5>
 <p>比如数据库的 batch insert 操作，现在有 1W 条数据要插入数据库，数据在插入之前查询数据库中是否已经存在，如果这 1W 条数据都在插入之前查询数据库，将会产生 1W 此获取连接的操作，这样很明显是糟糕的。</p>
-
 <p>如果首先一次查询完这 1W 的存在情况，然后再依据查询结果进行插入操作将节省大量的数据库连接资源，进而达到提高效率的目的。</p>
-
-<h5 id="toc_15">延迟修改</h5>
-
-<p>延迟修改主要使用与高并发下的频繁修改场景，比如秒杀。<br/>
+<h5><a id="%E5%BB%B6%E8%BF%9F%E4%BF%AE%E6%94%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>延迟修改</h5>
+<p>延迟修改主要使用与高并发下的频繁修改场景，比如秒杀。<br />
 这种情况可以首先将需要修改的数据做缓存，接下来的每次修改的结果存入缓存中，程序定时将缓存的数据同步到数据库。</p>
-
 <p>但是这种方案有一个风险：缓存一旦宕机，数据将会丢失，对于重要数据更是灾难一样的风险。</p>
-
-<h4 id="toc_16">读写分离</h4>
-
-<p><figure><img src="media/16117121084096/16117132567561.jpg" alt="读写分离示意图"/><figcaption>读写分离示意图</figcaption></figure></p>
-
-<h2 id="toc_17">高并发方案</h2>
-
-<h3 id="toc_18">集群和分布式</h3>
-
-<p>集群是每个节点都具有相同的功能，处理请求时调用到哪个集群节点结果都是一样的，主要起到分流的作用。<br/>
+<h4><a id="%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>读写分离</h4>
+<p><figure><img src="media/16117121084096/16117132567561.jpg" alt="读写分离示意图" /><figcaption>读写分离示意图<figcaption></figure></p>
+<h2><a id="%E9%AB%98%E5%B9%B6%E5%8F%91%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>高并发方案</h2>
+<h3><a id="%E9%9B%86%E7%BE%A4%E5%92%8C%E5%88%86%E5%B8%83%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>集群和分布式</h3>
+<p>集群是每个节点都具有相同的功能，处理请求时调用到哪个集群节点结果都是一样的，主要起到分流的作用。<br />
 分布式是不同业务功能的服务放到不同的服务器中，这时完成一个请求肯能需要调用到多台服务器，每台服务器专门处理某个模块的业务代码（而不是各个模块的代码耦合在一个应用服务器中），提高单模块的处理能力。</p>
-
-<p><figure><img src="media/16117133488224/16117138267304.jpg" alt="集群"/><figcaption>集群</figcaption></figure></p>
-
-<h3 id="toc_19">反向代理</h3>
-
+<p><figure><img src="media/16117133488224/16117138267304.jpg" alt="集群" /><figcaption>集群<figcaption></figure></p>
+<h3><a id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>反向代理</h3>
 <p><a href="16117185311755.html">正向代理与反向代理</a></p>
-
-<h3 id="toc_20">CDN</h3>
-
+<h3><a id="cdn" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CDN</h3>
 <p>CDN是一种特殊的页面缓存服务器集群，CDN 服务器是分布在全国各地的，当接受到用户的请求后会将请求分配到最适合的 CDN 服务器节点获取资源。</p>
-
 <p>CDN 的请求方式比较特殊，他并不是使用普通的负载均衡服务器来分配的，而是专门的 CDN 域名解析服务器在解析域名的时候就分配好的，一般的做法是在 ISP(网络服务提供商) 哪里使用 CNAME 将域名解析到一个特定的域名，然后再将解析到的那个域名用专门的 CDN 服务器解析到响应的 CDN 节点。</p>
-
-<p><figure><img src="media/16117133488224/16117191605724.jpg" alt="CDN 结构图"/><figcaption>CDN 结构图</figcaption></figure></p>
-
+<p><figure><img src="media/16117133488224/16117191605724.jpg" alt="CDN 结构图" /><figcaption>CDN 结构图<figcaption></figure></p>
 <p>访问CDN 的 DNS 服务器是因为 CNAME 记录的目标域名使用 NS 记录指向了 CDN 的 DNS 服务器，CDN 的每个节点可能也是一个集群</p>
 
                   </article>

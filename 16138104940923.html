@@ -115,20 +115,17 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>HandlerAdapter 之前说过，可以理解成 拿着 Handler 干活的人，它里面有三个方法</p>
-
 <pre><code class="language-java">public interface HandlerAdapter {
     //判断是否可以使用某个 Handler
-    boolean supports(Object handler);
-    //使用 具体的 Handler 干活
-    ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
-    // 获取资源的 Last-Modified
-    long getLastModified(HttpServletRequest request, Object handler);
+	boolean supports(Object handler);
+	//使用 具体的 Handler 干活
+	ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
+	// 获取资源的 Last-Modified
+	long getLastModified(HttpServletRequest request, Object handler);
 }
 </code></pre>
-
 <p>Last-Modified: 浏览器第一次跟服务器请求资源（get、head）的时候，服务器会在返回的请求头里面包含一个 Last-Modified属性，代表本资源最后是什么时候修改的。在浏览器以后发送请求时会同事发送之前接收到的Last-Modified，服务器接收到带有 Last-Modified 的请求后悔用其值和自己实际资源的最后修改时间作对比，如果资源过期了，则返回新的资源，同事返回新的 Last-Modified，否则直接返回 304 状态表示资源未过期，浏览器直接使用之前缓存的结果。</p>
-
-<h2 id="toc_0">RequestMappingHandlerAdapter</h2>
+<h2><a id="requestmappinghandleradapter" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RequestMappingHandlerAdapter</h2>
 
                   </article>
                   <div class="comments-wrap">

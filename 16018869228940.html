@@ -116,34 +116,25 @@
                   <article class="markdown-body single-content">
                     <ul>
 <li>什么是BlockingDeque?</li>
-<li> BlockingQueue大家族有哪些? ArrayBlockingQueue, DelayQueue, LinkedBlockingQueue, SynchronousQueue... </li>
-<li> BlockingQueue适合用在什么样的场景? </li>
-<li> BlockingQueue常用的方法? </li>
-<li>BlockingDeque 与 BlockingQueue有何关系，请对比下它们的方法? </li>
-<li>BlockingDeque 适合用在什么样的场景? </li>
-<li>BlockingDeque 大家族有哪些? </li>
+<li>BlockingQueue大家族有哪些? ArrayBlockingQueue, DelayQueue, LinkedBlockingQueue, SynchronousQueue...</li>
+<li>BlockingQueue适合用在什么样的场景?</li>
+<li>BlockingQueue常用的方法?</li>
+<li>BlockingDeque 与 BlockingQueue有何关系，请对比下它们的方法?</li>
+<li>BlockingDeque 适合用在什么样的场景?</li>
+<li>BlockingDeque 大家族有哪些?</li>
 <li>BlockingDeque 与 BlockingQueue实现例子</li>
 </ul>
-
-<h2 id="toc_0">什么是阻塞队列</h2>
-
+<h2><a id="%E4%BB%80%E4%B9%88%E6%98%AF%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>什么是阻塞队列</h2>
 <p>队列是一种特殊的线性表，特殊之处在于它只允许在表的前端(front)进行删除操作，而在表的后端(rear)进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。</p>
-
 <p>在队列中插入一个队列元素称为入队，从队列中删除一个队列元素称为出队。 因为队列只允许在一端插入，在另一端删除，所以只有最早进入队列的元素才能 最先从队列中删除，故队列又称为先进先出(FIFO—first in first out)线性表。</p>
-
 <ul>
 <li>1)支持阻塞的插入方法: 意思是当队列满时，队列会阻塞插入元素的线程， 直到队列不满。</li>
 <li>2)支持阻塞的移除方法: 意思是在队列为空时，获取元素的线程会等待队 列变为非空。</li>
 </ul>
-
 <p>BlockingQueue 不接受 null 元素, 其实现被设计为主要用于生产者 - 消费者队列。消费者是从队列里取元素的线程。阻塞队列就是生产者用来存放元素、消费者用 来获取元素的容器。</p>
-
-<hr/>
-
-<h2 id="toc_1">阻塞队列的操作</h2>
-
+<hr />
+<h2><a id="%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E7%9A%84%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>阻塞队列的操作</h2>
 <p>BlockingQueue 方法有四种形式，具有不同的操作方式，不能立即满足，但可能在将来的某个时间点满足的方法:</p>
-
 <table>
 <thead>
 <tr>
@@ -154,7 +145,6 @@
 <th>超时退出</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>插入方法</td>
@@ -179,63 +169,79 @@
 </tr>
 </tbody>
 </table>
-
 <ul>
-<li><p>抛出异常<br/>
-IllegalStateException - 如果由于容量限制，此时无法添加该元素<br/>
-ClassCastException - 由于类型转换异常，无法添加元素<br/>
-NullPointerException - 如果指定的元素为null<br/>
-IllegalArgumentException - 如果指定元素的某些属性阻止将其添加到此队列中</p></li>
-<li><p>返回特殊值:当往队列插入元素时，会返回元素是否插入成功，成功返回 true。如果是移除方法，则是从队列里取出一个元素，如果没有则返回 null。</p></li>
-<li><p>一直阻塞:当阻塞队列满时，如果生产者线程往队列里 put 元素，队列会 一直阻塞生产者线程，直到队列可用或者响应中断退出。当队列空时，如果消费 者线程从队列里 take 元素，队列会阻塞住消费者线程，直到队列不为空。</p></li>
-<li><p>超时退出:当阻塞队列满时，如果生产者线程往队列里插入元素，队列会 阻塞生产者线程一段时间，如果超过了指定的时间，生产者线程就会退出。</p></li>
+<li>
+<p>抛出异常<br />
+IllegalStateException - 如果由于容量限制，此时无法添加该元素<br />
+ClassCastException - 由于类型转换异常，无法添加元素<br />
+NullPointerException - 如果指定的元素为null<br />
+IllegalArgumentException - 如果指定元素的某些属性阻止将其添加到此队列中</p>
+</li>
+<li>
+<p>返回特殊值:当往队列插入元素时，会返回元素是否插入成功，成功返回 true。如果是移除方法，则是从队列里取出一个元素，如果没有则返回 null。</p>
+</li>
+<li>
+<p>一直阻塞:当阻塞队列满时，如果生产者线程往队列里 put 元素，队列会 一直阻塞生产者线程，直到队列可用或者响应中断退出。当队列空时，如果消费 者线程从队列里 take 元素，队列会阻塞住消费者线程，直到队列不为空。</p>
+</li>
+<li>
+<p>超时退出:当阻塞队列满时，如果生产者线程往队列里插入元素，队列会 阻塞生产者线程一段时间，如果超过了指定的时间，生产者线程就会退出。</p>
+</li>
 </ul>
-
 <p>BlockingQueue实现是线程安全的。 所有排队方法使用内部锁或其他形式的并发控制在原子上实现其效果.</p>
-
-<h2 id="toc_2">常用的阻塞队列</h2>
-
+<h2><a id="%E5%B8%B8%E7%94%A8%E7%9A%84%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>常用的阻塞队列</h2>
 <ul>
-<li><p>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列。<br/>
-是一个用数组实现的有界阻塞队列。此队列按照先进先出(FIFO)的原则对 元素进行排序。默认情况下不保证线程公平的访问队列，所谓公平访问队列是指 阻塞的线程，可以按照阻塞的先后顺序访问队列，即先阻塞线程先访问队列。非 公平性是对先等待的线程是非公平的，当队列可用时，阻塞的线程都可以争夺访 问队列的资格，有可能先阻塞的线程最后才访问队列。</p></li>
-<li><p>LinkedBlockingQueue:一个由链表结构组成的有界阻塞队列。 </p></li>
-<li><p>PriorityBlockingQueue:一个支持优先级排序的无界阻塞队列。 <br/>
-无法向这个队列中插入 null 值。所有插入到 PriorityBlockingQueue 的元素必须实现 java.lang.Comparable 接口。因此该队列中元素的排序就取决于你自己的 Comparable 实现。<br/>
-注意 PriorityBlockingQueue 对于具有相等优先级(compare() == 0)的元素并不强制任何特定行为</p></li>
-<li><p>DelayQueue:一个使用优先级队列实现的无界阻塞队列。<br/>
-是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。<br/>
-DelayQueue 非常有用，可以将 DelayQueue 运用在以下应用场景。<br/>
-缓存系统的设计:可以用 DelayQueue 保存缓存元素的有效期，使用一个线 程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期 到了。还有订单到期，限时支付等等</p></li>
-<li><p>SynchronousQueue:一个不存储元素的阻塞队列。 <br/>
-SynchronousQueue 是一个特殊的队列，它的内部同时只能够容纳单个元素。如果该队列已有一元素的话，试图向队列中插入一个新元素的线程将会阻塞，直到另一个线程将该元素从队列中抽走。同样，如果该队列为空，试图向队列中抽取一个元素的线程将会阻塞，直到另一个线程向队列中插入了一条新的元素。非常适合传递性场景。SynchronousQueue 的吞吐量高于 LinkedBlockingQueue 和 ArrayBlockingQueue。</p></li>
-<li><p>LinkedTransferQueue: 一个由链表结构组成的无界阻塞队列。 </p></li>
-<li><p>LinkedBlockingDeque: 一个由链表结构组成的双向阻塞队列。</p></li>
+<li>
+<p>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列。<br />
+是一个用数组实现的有界阻塞队列。此队列按照先进先出(FIFO)的原则对 元素进行排序。默认情况下不保证线程公平的访问队列，所谓公平访问队列是指 阻塞的线程，可以按照阻塞的先后顺序访问队列，即先阻塞线程先访问队列。非 公平性是对先等待的线程是非公平的，当队列可用时，阻塞的线程都可以争夺访 问队列的资格，有可能先阻塞的线程最后才访问队列。</p>
+</li>
+<li>
+<p>LinkedBlockingQueue:一个由链表结构组成的有界阻塞队列。</p>
+</li>
+<li>
+<p>PriorityBlockingQueue:一个支持优先级排序的无界阻塞队列。<br />
+无法向这个队列中插入 null 值。所有插入到 PriorityBlockingQueue 的元素必须实现 java.lang.Comparable 接口。因此该队列中元素的排序就取决于你自己的 Comparable 实现。<br />
+注意 PriorityBlockingQueue 对于具有相等优先级(compare() == 0)的元素并不强制任何特定行为</p>
+</li>
+<li>
+<p>DelayQueue:一个使用优先级队列实现的无界阻塞队列。<br />
+是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。<br />
+DelayQueue 非常有用，可以将 DelayQueue 运用在以下应用场景。<br />
+缓存系统的设计:可以用 DelayQueue 保存缓存元素的有效期，使用一个线 程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期 到了。还有订单到期，限时支付等等</p>
+</li>
+<li>
+<p>SynchronousQueue:一个不存储元素的阻塞队列。<br />
+SynchronousQueue 是一个特殊的队列，它的内部同时只能够容纳单个元素。如果该队列已有一元素的话，试图向队列中插入一个新元素的线程将会阻塞，直到另一个线程将该元素从队列中抽走。同样，如果该队列为空，试图向队列中抽取一个元素的线程将会阻塞，直到另一个线程向队列中插入了一条新的元素。非常适合传递性场景。SynchronousQueue 的吞吐量高于 LinkedBlockingQueue 和 ArrayBlockingQueue。</p>
+</li>
+<li>
+<p>LinkedTransferQueue: 一个由链表结构组成的无界阻塞队列。</p>
+</li>
+<li>
+<p>LinkedBlockingDeque: 一个由链表结构组成的双向阻塞队列。</p>
+</li>
 </ul>
-
-<h3 id="toc_3">阻塞队列使用场景</h3>
-
+<h3><a id="%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>阻塞队列使用场景</h3>
 <p>BlockingQueue 通常用于一个线程生产对象，而另外一个线程消费这些对象的场景。在并发编程中使用生产者和消费者模式能够解决绝大多数并发问题。该模式通过平衡生产线程和消费线程的工作能力来提高程序整体处理数据的速度。</p>
-
-<h3 id="toc_4">Array 实现和 Linked 实现的区别</h3>
-
+<h3><a id="array%E5%AE%9E%E7%8E%B0%E5%92%8C-linked%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%8C%BA%E5%88%AB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Array 实现和 Linked 实现的区别</h3>
 <ul>
-<li><p>队列中锁的实现不同<br/>
-ArrayBlockingQueue 实现的队列中的锁是没有分离的，即生产和消费用的是 同一个锁;<br/>
-LinkedBlockingQueue 实现的队列中的锁是分离的，即生产用的是 putLock， 消费是 takeLock</p></li>
-<li><p>在生产或消费时操作不同<br/>
-ArrayBlockingQueue 实现的队列中在生产和消费的时候，是直接将枚举对象插入或移除的;<br/>
-LinkedBlockingQueue 实现的队列中在生产和消费的时候，需要把枚举对象转换为 Node<E>进行插入或移除，会影响性能 </p></li>
-<li><p>队列大小初始化方式不同<br/>
-ArrayBlockingQueue 实现的队列中必须指定队列的大小; LinkedBlockingQueue 实现的队列中可以不指定队列的大小，但是默认是Integer.MAX_VALUE</p></li>
+<li>
+<p>队列中锁的实现不同<br />
+ArrayBlockingQueue 实现的队列中的锁是没有分离的，即生产和消费用的是 同一个锁;<br />
+LinkedBlockingQueue 实现的队列中的锁是分离的，即生产用的是 putLock， 消费是 takeLock</p>
+</li>
+<li>
+<p>在生产或消费时操作不同<br />
+ArrayBlockingQueue 实现的队列中在生产和消费的时候，是直接将枚举对象插入或移除的;<br />
+LinkedBlockingQueue 实现的队列中在生产和消费的时候，需要把枚举对象转换为 Node<E>进行插入或移除，会影响性能</p>
+</li>
+<li>
+<p>队列大小初始化方式不同<br />
+ArrayBlockingQueue 实现的队列中必须指定队列的大小; LinkedBlockingQueue 实现的队列中可以不指定队列的大小，但是默认是Integer.MAX_VALUE</p>
+</li>
 </ul>
-
-<h3 id="toc_5">DelayQueue</h3>
-
+<h3><a id="delayqueue" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>DelayQueue</h3>
 <p>是一个支持延时获取元素的无界阻塞队列。队列使用 PriorityQueue 来实现。 队列中的元素必须实现 Delayed 接口，在创建元素时可以指定多久才能从队列中 获取当前元素。只有在延迟期满时才能从队列中提取元素。</p>
-
-<p>可以将 DelayQueue 运用在以下应用场景:<br/>
+<p>可以将 DelayQueue 运用在以下应用场景:<br />
 缓存系统的设计: 可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue，一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了。还有订单到期，限时支付等等</p>
-
 <pre><code class="language-java">
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -245,69 +251,65 @@ import java.util.concurrent.TimeUnit;
  * 延迟队列对象
  **/
 public class DelayedItem&lt;T&gt; implements Delayed {
-    //到期时间,但传入的数值代表过期的时长，传入单位毫秒
-    private long activeTime;
-    //业务数据，泛型
-    private T data;
+	//到期时间,但传入的数值代表过期的时长，传入单位毫秒
+	private long activeTime;
+	//业务数据，泛型
+	private T data;
 
-    //传入过期时长,单位秒，内部转换
-    public DelayedItem(long expirationTime, T data) {
-        this.activeTime = expirationTime * 1000 + System.currentTimeMillis();
-        this.data = data;
-    }
+	//传入过期时长,单位秒，内部转换
+	public DelayedItem(long expirationTime, T data) {
+		this.activeTime = expirationTime * 1000 + System.currentTimeMillis();
+		this.data = data;
+	}
 
-    public long getActiveTime() {
-        return activeTime;
-    }
+	public long getActiveTime() {
+		return activeTime;
+	}
 
-    public T getData() {
-        return data;
-    }
+	public T getData() {
+		return data;
+	}
 
-    /*
-     * 这个方法返回到激活日期的剩余时间，时间单位由单位参数指定。
-     */
-    @Override
-    public long getDelay(TimeUnit unit) {
-        return unit.convert(activeTime - System.currentTimeMillis(), unit);
-    }
+	/*
+	 * 这个方法返回到激活日期的剩余时间，时间单位由单位参数指定。
+	 */
+	@Override
+	public long getDelay(TimeUnit unit) {
+		return unit.convert(activeTime - System.currentTimeMillis(), unit);
+	}
 
-    /**
-     * Delayed接口继承了Comparable接口，按剩余时间排序，实际计算考虑精度为纳秒数
-     */
-    @Override
-    public int compareTo(Delayed o) {
-        long d = (getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS));
-        if (d == 0) {
-            return 0;
-        } else {
-            if (d &lt; 0) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
-    }
+	/**
+	 * Delayed接口继承了Comparable接口，按剩余时间排序，实际计算考虑精度为纳秒数
+	 */
+	@Override
+	public int compareTo(Delayed o) {
+		long d = (getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS));
+		if (d == 0) {
+			return 0;
+		} else {
+			if (d &lt; 0) {
+				return -1;
+			} else {
+				return 1;
+			}
+		}
+	}
 
-    public static void main(String[] args) throws InterruptedException {
-        DelayQueue&lt;DelayedItem&gt; queue = new DelayQueue&lt;&gt;();
+	public static void main(String[] args) throws InterruptedException {
+		DelayQueue&lt;DelayedItem&gt; queue = new DelayQueue&lt;&gt;();
 
-        queue.offer(new DelayedItem&lt;&gt;(10, 20));
-        queue.offer(new DelayedItem&lt;&gt;(10, 30));
-        while (!queue.isEmpty()) {
-            System.out.println(&quot;111&quot;);
-            System.out.println(queue.take());
-        }
-    }
+		queue.offer(new DelayedItem&lt;&gt;(10, 20));
+		queue.offer(new DelayedItem&lt;&gt;(10, 30));
+		while (!queue.isEmpty()) {
+			System.out.println(&quot;111&quot;);
+			System.out.println(queue.take());
+		}
+	}
 }
 </code></pre>
-
-<h3 id="toc_6">SynchronousQueue</h3>
-
+<h3><a id="synchronousqueue" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SynchronousQueue</h3>
 <p>本身不存储任何元素，每一个put操作必须等待一个take操作，将消息从生产者直接传递到消费者。</p>
-
-<h3 id="toc_7">阻塞队列与生产消费者实现</h3>
-
+<h3><a id="%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E4%B8%8E%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E8%80%85%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>阻塞队列与生产消费者实现</h3>
 <pre><code class="language-java">class Producer implements Runnable {
     private final CustomBlockingQueue queue;
 
@@ -350,25 +352,15 @@ class Consumer implements Runnable {
     }
 }
 </code></pre>
-
-<h2 id="toc_8">BlockingDeque</h2>
-
-<p>java.util.concurrent 包里的 BlockingDeque 接口表示一个线程安放入和提取实例的双端队列。 </p>
-
+<h2><a id="blockingdeque" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>BlockingDeque</h2>
+<p>java.util.concurrent 包里的 BlockingDeque 接口表示一个线程安放入和提取实例的双端队列。</p>
 <p>BlockingDeque 类是一个双端队列，在不能够插入元素时，它将阻塞住试图插入元素的线程；在不能够抽取元素时，它将阻塞住试图抽取的线程。</p>
-
-<p>deque(双端队列) 是 &quot;Double Ended Queue&quot; 的缩写。因此，双端队列是一个你可以从任意一端插入或者抽取元素的队列。 </p>
-
+<p>deque(双端队列) 是 &quot;Double Ended Queue&quot; 的缩写。因此，双端队列是一个你可以从任意一端插入或者抽取元素的队列。</p>
 <p>在线程既是一个队列的生产者又是这个队列的消费者的时候可以使用到 BlockingDeque。如果生产者线程需要在队列的两端都可以插入数据，消费者线程需要在队列的两端都可以移除数据，这个时候也可以使用 BlockingDeque。</p>
-
-<h3 id="toc_9">BlockingDeque 的操作</h3>
-
+<h3><a id="blockingdeque%E7%9A%84%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>BlockingDeque 的操作</h3>
 <p>一个 BlockingDeque - 线程在双端队列的两端都可以插入和提取元素。</p>
-
-<p>一个线程生产元素，并把它们插入到队列的任意一端。如果双端队列已满，插入线程将被阻塞，直到一个移除线程从该队列中移出了一个元素。如果双端队列为空，移除线程将被阻塞，直到一个插入线程向该队列插入了一个新元素。 </p>
-
+<p>一个线程生产元素，并把它们插入到队列的任意一端。如果双端队列已满，插入线程将被阻塞，直到一个移除线程从该队列中移出了一个元素。如果双端队列为空，移除线程将被阻塞，直到一个插入线程向该队列插入了一个新元素。</p>
 <p>BlockingDeque 具有 4 组不同的方法用于插入、移除以及对双端队列中的元素进行检查。如果请求的操作不能得到立即执行的话，每个方法的表现也不同。这些方法如下:</p>
-
 <table>
 <thead>
 <tr>
@@ -379,7 +371,6 @@ class Consumer implements Runnable {
 <th>超时</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>插入</td>
@@ -404,7 +395,6 @@ class Consumer implements Runnable {
 </tr>
 </tbody>
 </table>
-
 <table>
 <thead>
 <tr>
@@ -415,7 +405,6 @@ class Consumer implements Runnable {
 <th>超时</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>插入</td>
@@ -440,22 +429,16 @@ class Consumer implements Runnable {
 </tr>
 </tbody>
 </table>
-
-<p>四组不同的行为方式解释: </p>
-
+<p>四组不同的行为方式解释:</p>
 <ul>
-<li>抛异常: 如果试图的操作无法立即执行，抛一个异常。 </li>
-<li>特定值: 如果试图的操作无法立即执行，返回一个特定的值(常常是 true / false)。 </li>
-<li>阻塞: 如果试图的操作无法立即执行，该方法调用将会发生阻塞，直到能够执行。 </li>
+<li>抛异常: 如果试图的操作无法立即执行，抛一个异常。</li>
+<li>特定值: 如果试图的操作无法立即执行，返回一个特定的值(常常是 true / false)。</li>
+<li>阻塞: 如果试图的操作无法立即执行，该方法调用将会发生阻塞，直到能够执行。</li>
 <li>超时: 如果试图的操作无法立即执行，该方法调用将会发生阻塞，直到能够执行，但等待时间不会超过给定值。返回一个特定值以告知该操作是否成功(典型的是 true / false)。</li>
 </ul>
-
-<h3 id="toc_10">LinkedBlockingDeque 链阻塞双端队列</h3>
-
+<h3><a id="linkedblockingdeque%E9%93%BE%E9%98%BB%E5%A1%9E%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>LinkedBlockingDeque 链阻塞双端队列</h3>
 <p>LinkedBlockingDeque 是一个由链表结构组成的双向阻塞队列。所谓双向队列 指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入 口，在多线程同时入队时，也就减少了一半的竞争。多了 addFirst、addLast、offerFirst、offerLast、peekFirst 和 peekLast 等方法。</p>
-
-<h2 id="toc_11">BlockingDeque 与BlockingQueue关系</h2>
-
+<h2><a id="blockingdeque%E4%B8%8E-blockingqueue%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>BlockingDeque 与BlockingQueue关系</h2>
 <p>BlockingDeque 接口继承自 BlockingQueue 接口。这就意味着你可以像使用一个 BlockingQueue 那样使用 BlockingDeque。如果你这么干的话，各种插入方法将会把新元素添加到双端队列的尾端，而移除方法将会把双端队列的首端的元素移除。正如 BlockingQueue 接口的插入和移除方法一样。</p>
 
                   </article>

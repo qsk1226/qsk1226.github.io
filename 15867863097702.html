@@ -117,13 +117,9 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>由于ThreadLocal设计之初就是为了绑定当前线程，如果希望当前线程的ThreadLocal能够被子线程使用，实现方式就会相当困难。在此背景下，InheritableThreadLocal应运而生。</p>
-
 <p>调用链追踪：在调用链系统设计中，为了优化系统运行速度，会使用多线程编程，为了保证调用链ID能够自然的在多线程间传递，需要考虑ThreadLocal传递问题（大多数系统会使用线程池技术，这已经不仅仅是InheritableThreadLocal能够解决的了，我会在另外一篇文章中介绍相关技术实现）。</p>
-
-<h2 id="toc_0">InheritableThreadLocal类</h2>
-
+<h2><a id="inheritablethreadlocal%E7%B1%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>InheritableThreadLocal类</h2>
 <p>InheritableThreadLocal类重写了ThreadLocal的3个函数：</p>
-
 <pre><code class="language-java">/**
  * 该函数在父线程创建子线程，向子线程复制InheritableThreadLocal变量时使用
  */
@@ -149,11 +145,8 @@ void createMap(Thread t, T firstValue) {
     t.inheritableThreadLocals = new ThreadLocalMap(this, firstValue);
 }
 </code></pre>
-
-<h2 id="toc_1">线程间传值实现原理</h2>
-
+<p>##线程间传值实现原理</p>
 <p>说到InheritableThreadLocal，还要从Thread类说起：</p>
-
 <pre><code class="language-java">public class Thread implements Runnable {
    ......(其他源码)
     /* 
@@ -170,18 +163,13 @@ void createMap(Thread t, T firstValue) {
     ......(其他源码)
 }
 </code></pre>
-
-<p>Thread类中包含 threadLocals 和 inheritableThreadLocals 两个变量，其中 inheritableThreadLocals 即主要存储可自动向子线程中传递的ThreadLocal.ThreadLocalMap。<br/>
+<p>Thread类中包含 threadLocals 和 inheritableThreadLocals 两个变量，其中 inheritableThreadLocals 即主要存储可自动向子线程中传递的ThreadLocal.ThreadLocalMap。<br />
 接下来看一下父线程创建子线程的流程，我们从最简单的方式说起：</p>
-
-<h3 id="toc_2">用户创建 Thread</h3>
-
-<pre><code class="language-text">// 用户创建 Thread
+<h3><a id="%E7%94%A8%E6%88%B7%E5%88%9B%E5%BB%BAthread" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>用户创建 Thread</h3>
+<pre><code class="language-plain_text">// 用户创建 Thread
 Thread thread = new Thread();
 </code></pre>
-
-<h3 id="toc_3">Thread 创建及初始化</h3>
-
+<h3><a id="thread%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%88%9D%E5%A7%8B%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thread 创建及初始化</h3>
 <pre><code class="language-java">public Thread() {
     init(null, null, &quot;Thread-&quot; + nextThreadNum(), 0);
 }
@@ -211,19 +199,14 @@ private void init(ThreadGroup g, Runnable target, String name,
     ......（其他代码）
 }
 </code></pre>
-
 <p>可以看到，采用默认方式产生子线程时，inheritThreadLocals=true；若此时父线程inheritableThreadLocals不为空，则将父线程inheritableThreadLocals 传递至子线程。</p>
-
-<h3 id="toc_4">ThreadLocal.createInheritedMap</h3>
-
+<h3><a id="threadlocal-createinheritedmap" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ThreadLocal.createInheritedMap</h3>
 <p>让我们继续追踪 ThreadLocal.createInheritedMap</p>
-
-<pre><code class="language-text">static ThreadLocalMap createInheritedMap(ThreadLocalMap parentMap) {
+<pre><code class="language-plain_text">static ThreadLocalMap createInheritedMap(ThreadLocalMap parentMap) {
     return new ThreadLocalMap(parentMap);
 }
 </code></pre>
-
-<pre><code class="language-text">/**
+<pre><code class="language-plain_text">/**
  * 构建一个包含所有parentMap中Inheritable ThreadLocals的ThreadLocalMap
  * 该函数只被 createInheritedMap() 调用.
  */
@@ -256,7 +239,6 @@ private ThreadLocalMap(ThreadLocalMap parentMap) {
     }
 }
 </code></pre>
-
 <p>从ThreadLocalMap可知，子线程将parentMap中的所有记录逐一复制至自身线程。</p>
 
                   </article>

@@ -114,21 +114,16 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>插件是用来改变或者扩展 mybatis 的原有的功能，mybaits 的插件就是通过继承 Interceptor 拦截器实现的；注意：在没有完全理解插件之前禁止使用插件对 mybaits 进行扩 展，又可能会导致严重的问题；MyBatis 中能使用插件进行拦截的接口和方法如下： </p>
-
+                    <p>插件是用来改变或者扩展 mybatis 的原有的功能，mybaits 的插件就是通过继承 Interceptor 拦截器实现的；注意：在没有完全理解插件之前禁止使用插件对 mybaits 进行扩 展，又可能会导致严重的问题；MyBatis 中能使用插件进行拦截的接口和方法如下：</p>
 <ul>
 <li>Executor（update、 query、 flushStatment、 commit、 rollback、 getTransaction、 close、 isClose）</li>
-<li>StatementHandler（prepare、paramterize、batch、update 、query） </li>
-<li>ParameterHandler（getParameterObject 、setParameters） </li>
+<li>StatementHandler（prepare、paramterize、batch、update 、query）</li>
+<li>ParameterHandler（getParameterObject 、setParameters）</li>
 <li>ResultSetHandler（handleResultSets、handleCursorResultSets 、handleOutputParameters）</li>
 </ul>
-
-<h2 id="toc_0">插件开发如何实现</h2>
-
-<h3 id="toc_1">实现Interceptor接口</h3>
-
+<h2><a id="%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>插件开发如何实现</h2>
+<h3><a id="%E5%AE%9E%E7%8E%B0interceptor%E6%8E%A5%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实现Interceptor接口</h3>
 <p>MyBatis插件的实现必须实现Interceptor接口，该接口有3个方法</p>
-
 <pre><code class="language-java">public interface Interceptor {
   // 插件对业务进行增强的核心方法
   Object intercept(Invocation invocation) throws Throwable;
@@ -144,12 +139,9 @@
 }
 
 </code></pre>
-
-<h3 id="toc_2">确定拦截的签名</h3>
-
-<p>注解 @Intercepts 和 @Signature就是用于表示插件拦截的位置，@Intercepts 其值是一个 @Signature 数组。 @Intercepts 用于表明当前的对象是一个Interceptor， 而@Signature 则表明要拦截的接口、方法以及对应的参数类型。<br/>
+<h3><a id="%E7%A1%AE%E5%AE%9A%E6%8B%A6%E6%88%AA%E7%9A%84%E7%AD%BE%E5%90%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>确定拦截的签名</h3>
+<p>注解 @Intercepts 和 @Signature就是用于表示插件拦截的位置，@Intercepts 其值是一个 @Signature 数组。 @Intercepts 用于表明当前的对象是一个Interceptor， 而@Signature 则表明要拦截的接口、方法以及对应的参数类型。<br />
 如下所示：</p>
-
 <pre><code class="language-java">@Intercepts(
         {
                 @Signature(type = Executor.class, method = &quot;query&quot;, args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
@@ -160,15 +152,10 @@ public class PageInterceptor implements Interceptor {
 
 }
 </code></pre>
-
-<h3 id="toc_3">插件模块源码分析</h3>
-
+<h3><a id="%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9D%97%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>插件模块源码分析</h3>
 <p>插件模块的源码分析主要搞清楚初始化、插件加载以及插件如何调用三个问题；</p>
-
-<h4 id="toc_4">插件初始化</h4>
-
+<h4><a id="%E6%8F%92%E4%BB%B6%E5%88%9D%E5%A7%8B%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>插件初始化</h4>
 <p>在MyBatis配置初始化的时候，对标签plugins进行解析的时候，对插件进行了初始化</p>
-
 <pre><code class="language-java">private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
@@ -181,17 +168,12 @@ public class PageInterceptor implements Interceptor {
     }
 }
 </code></pre>
-
 <p>在 configuration 对象中，使用 interceptorChain 类属性保存所有的插件， interceptorChain 类中有个 List 用于顺序保存所有的插件；</p>
-
-<h4 id="toc_5">插件加载</h4>
-
+<h4><a id="%E6%8F%92%E4%BB%B6%E5%8A%A0%E8%BD%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>插件加载</h4>
 <p>为什么插件可以拦截 Executor、StatementHandler、ParameterHandler、ResultSetHandler 四个接口指定的方法呢？那是因为通过 configuration 对象创建这四大对象时，通过责任 链模式按插件的顺序对四大对象进行了增强</p>
-
 <ul>
 <li>Executor的添加拦截功能</li>
 </ul>
-
 <pre><code class="language-java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
@@ -211,33 +193,27 @@ public class PageInterceptor implements Interceptor {
     return executor;
 }
 </code></pre>
-
 <ul>
 <li>为StatementHandler添加拦截功能</li>
 </ul>
-
 <pre><code class="language-java">public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
 }
 </code></pre>
-
 <ul>
 <li>为ParameterHandler添加拦截功能</li>
 </ul>
-
 <pre><code class="language-java">public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
 }
 </code></pre>
-
 <ul>
 <li>为ResultSetHandler添加拦截功能</li>
 </ul>
-
 <pre><code class="language-java">public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
       ResultHandler resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
@@ -245,11 +221,8 @@ public class PageInterceptor implements Interceptor {
     return resultSetHandler;
 }
 </code></pre>
-
-<h4 id="toc_6">插件调用</h4>
-
+<h4><a id="%E6%8F%92%E4%BB%B6%E8%B0%83%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>插件调用</h4>
 <p>插件加载是通过 ExamplePlugin.plugin(Object)来增强的，plugin 方法内部一般使用 Plugin.wrap(target,this)来对四大对象进行增强</p>
-
 <pre><code class="language-java">public static Object wrap(Object target, Interceptor interceptor) {
     Map&lt;Class&lt;?&gt;, Set&lt;Method&gt;&gt; signatureMap = getSignatureMap(interceptor);
     Class&lt;?&gt; type = target.getClass();

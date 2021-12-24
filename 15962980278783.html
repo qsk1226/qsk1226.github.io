@@ -114,68 +114,40 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">1、调优步骤</h2>
-
+                    <h2><a id="1%E3%80%81%E8%B0%83%E4%BC%98%E6%AD%A5%E9%AA%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、调优步骤</h2>
 <p>调优步骤：衡量系统现状、设定调优目标、寻找性能瓶颈、性能调优、衡量是否到达目标(如果未到达目标，需重新寻找性能瓶颈）、性能调优结束。</p>
-
-<h3 id="toc_1">寻找性能瓶颈</h3>
-
-<p>性能瓶颈的表象：资源消耗过多、外部处理系统的性能不足、资源消耗不多但程序的响应速度却仍达不到要求。</p>
-
-<h3 id="toc_2">资源消耗：CPU、文件IO、网络IO、内存。</h3>
-
-<p>外部处理系统的性能不足：所调用的其他系统提供的功能或数据库操作的响应速度不够。<br/>
+<p>###寻找性能瓶颈<br />
+性能瓶颈的表象：资源消耗过多、外部处理系统的性能不足、资源消耗不多但程序的响应速度却仍达不到要求。</p>
+<h3><a id="%E8%B5%84%E6%BA%90%E6%B6%88%E8%80%97%EF%BC%9Acpu%E3%80%81%E6%96%87%E4%BB%B6io%E3%80%81%E7%BD%91%E7%BB%9Cio%E3%80%81%E5%86%85%E5%AD%98%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>资源消耗：CPU、文件IO、网络IO、内存。</h3>
+<p>外部处理系统的性能不足：所调用的其他系统提供的功能或数据库操作的响应速度不够。<br />
 资源消耗不多但程序的响应速度却仍达不到要求：程序代码运行效率不够高、未充分使用资源、程序结构不合理。</p>
-
-<h4 id="toc_3">CPU消耗分析</h4>
-
+<h4><a id="cpu%E6%B6%88%E8%80%97%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CPU消耗分析</h4>
 <p>CPU主要用于中断、内核、用户进程的任务处理，优先级为中断&gt;内核&gt;用户进程。</p>
-
-<h5 id="toc_4">上下文切换：</h5>
-
-<p>每个线程分配一定的执行时间，当到达执行时间、线程中有IO阻塞或高优先级线程要执行时，将切换执行的线程。在切换时要存储目前线程的执行状态，并恢复要执行的线程的状态。<br/>
+<h5><a id="%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>上下文切换：</h5>
+<p>每个线程分配一定的执行时间，当到达执行时间、线程中有IO阻塞或高优先级线程要执行时，将切换执行的线程。在切换时要存储目前线程的执行状态，并恢复要执行的线程的状态。<br />
 对于Java应用，典型的是在进行文件IO操作、网络IO操作、锁等待、线程Sleep时，当前线程会进入阻塞或休眠状态，从而触发上下文切换，上下文切换过多会造成内核占据较多的CPU的使用。</p>
-
-<h5 id="toc_5">运行队列：</h5>
-
-<p>每个CPU核都维护一个可运行的线程队列。系统的load主要由CPU的运行队列来决定。<br/>
+<h5><a id="%E8%BF%90%E8%A1%8C%E9%98%9F%E5%88%97%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>运行队列：</h5>
+<p>每个CPU核都维护一个可运行的线程队列。系统的load主要由CPU的运行队列来决定。<br />
 运行队列值越大，就意味着线程会要消耗越长的时间才能执行完成。</p>
-
-<h5 id="toc_6">利用率：</h5>
-
+<h5><a id="%E5%88%A9%E7%94%A8%E7%8E%87%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>利用率：</h5>
 <p>CPU在用户进程、内核、中断处理、IO等待、空闲，这五个部分使用百分比。</p>
-
-<h4 id="toc_7">文件IO消耗分析</h4>
-
-<p>Linux在操作文件时，将数据放入文件缓存区，直到内存不够或系统要释放内存给用户进程使用。所以通常情况下只有写文件和第一次读取文件时会产生真正的文件IO。<br/>
+<h4><a id="%E6%96%87%E4%BB%B6io%E6%B6%88%E8%80%97%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>文件IO消耗分析</h4>
+<p>Linux在操作文件时，将数据放入文件缓存区，直到内存不够或系统要释放内存给用户进程使用。所以通常情况下只有写文件和第一次读取文件时会产生真正的文件IO。<br />
 对于Java应用，造成文件IO消耗高主要是多个线程需要进行大量内容写入（例如频繁的日志写入）的动作、磁盘设备本身的处理速度慢、文件系统慢、操作的文件本身已经很大。</p>
-
-<h4 id="toc_8">网络IO消耗分析</h4>
-
+<h4><a id="%E7%BD%91%E7%BB%9Cio%E6%B6%88%E8%80%97%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>网络IO消耗分析</h4>
 <p>对于分布式Java应用，网卡中断是不是均衡分配到各CPU(cat/proc/interrupts查看)。</p>
-
-<h4 id="toc_9">内存消耗分析（-Xms和-Xmx设为相同的值，避免运行期JVM堆内存要不断申请内存）</h4>
-
-<p>对于Java应用，内存的消耗主要在Java堆内存上，只有创建线程和使用Direct ByteBuffer才会操作JVM堆外的内存。<br/>
+<h4><a id="%E5%86%85%E5%AD%98%E6%B6%88%E8%80%97%E5%88%86%E6%9E%90%EF%BC%88xms%E5%92%8C-xmx%E8%AE%BE%E4%B8%BA%E7%9B%B8%E5%90%8C%E7%9A%84%E5%80%BC%EF%BC%8C%E9%81%BF%E5%85%8D%E8%BF%90%E8%A1%8C%E6%9C%9Fjvm%E5%A0%86%E5%86%85%E5%AD%98%E8%A6%81%E4%B8%8D%E6%96%AD%E7%94%B3%E8%AF%B7%E5%86%85%E5%AD%98%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内存消耗分析（-Xms和-Xmx设为相同的值，避免运行期JVM堆内存要不断申请内存）</h4>
+<p>对于Java应用，内存的消耗主要在Java堆内存上，只有创建线程和使用Direct ByteBuffer才会操作JVM堆外的内存。<br />
 JVM内存消耗过多会导致GC执行频繁，CPU消耗增加，应用线程的执行速度严重下降，甚至造成OutOfMemoryError，最终导致Java进程退出。</p>
-
-<h4 id="toc_10">JVM堆外的内存</h4>
-
+<h4><a id="jvm%E5%A0%86%E5%A4%96%E7%9A%84%E5%86%85%E5%AD%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>JVM堆外的内存</h4>
 <p>swap的消耗、物理内存的消耗、JVM内存的消耗。</p>
-
-<h3 id="toc_11">程序执行慢原因分析</h3>
-
+<h3><a id="%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E6%85%A2%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>程序执行慢原因分析</h3>
 <p>锁竞争激烈：很多线程竞争互斥资源，但资源有限， 造成其他线程都处于等待状态。</p>
-
 <p>未充分使用硬件资源：线程操作被串行化。</p>
-
 <p>数据量增长：单表数据量太大（如1个亿）造成数据库读写速度大幅下降（操作此表）。</p>
-
-<h2 id="toc_12">2、apache bench 压测工具进行接口优化</h2>
-
-<p>ab -c 10 -n 100 url<br/>
+<h2><a id="2%E3%80%81apache-bench%E5%8E%8B%E6%B5%8B%E5%B7%A5%E5%85%B7%E8%BF%9B%E8%A1%8C%E6%8E%A5%E5%8F%A3%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2、apache bench 压测工具进行接口优化</h2>
+<p>ab -c 10 -n 100 url<br />
 其中－n表示请求数，－c表示并发数</p>
-
 <pre><code class="language-shell">&gt; ab -c 10 -n 100 https://www.baidu.com
 
 ....
@@ -229,130 +201,109 @@ Percentage of the requests served within a certain time (ms)
   99%    773
  100%    773 (longest request)
 </code></pre>
-
 <p>性能指标：</p>
-
 <ul>
-<li><p>吞吐率（Requests per second）<br/>
-概念：服务器并发处理能力的量化描述，单位是reqs/s，指的是某个并发用户数下单位时间内处理的请求数。某个并发用户数下单位时间内能处理的最大请求数，称之为最大吞吐率。<br/>
-计算公式：总请求数 / 处理完成这些请求数所花费的时间，即<br/>
-Request per second = Complete requests / Time taken for tests</p></li>
-<li><p>用户平均请求等待时间（Time per request）<br/>
-计算公式：处理完成所有请求数所花费的时间/ （总请求数 / 并发用户数），即<br/>
-Time per request = Time taken for tests /（ Complete requests / Concurrency Level）</p></li>
-<li><p>服务器平均请求等待时间（Time per request: across all concurrent requests）<br/>
-计算公式：处理完成所有请求数所花费的时间 / 总请求数，即<br/>
-Time taken for / testsComplete requests<br/>
-可以看到，它是吞吐率的倒数。<br/>
-同时，它也=用户平均请求等待时间/并发用户数，即<br/>
-Time per request / Concurrency Level</p></li>
+<li>
+<p>吞吐率（Requests per second）<br />
+概念：服务器并发处理能力的量化描述，单位是reqs/s，指的是某个并发用户数下单位时间内处理的请求数。某个并发用户数下单位时间内能处理的最大请求数，称之为最大吞吐率。<br />
+计算公式：总请求数 / 处理完成这些请求数所花费的时间，即<br />
+Request per second = Complete requests / Time taken for tests</p>
+</li>
+<li>
+<p>用户平均请求等待时间（Time per request）<br />
+计算公式：处理完成所有请求数所花费的时间/ （总请求数 / 并发用户数），即<br />
+Time per request = Time taken for tests /（ Complete requests / Concurrency Level）</p>
+</li>
+<li>
+<p>服务器平均请求等待时间（Time per request: across all concurrent requests）<br />
+计算公式：处理完成所有请求数所花费的时间 / 总请求数，即<br />
+Time taken for / testsComplete requests<br />
+可以看到，它是吞吐率的倒数。<br />
+同时，它也=用户平均请求等待时间/并发用户数，即<br />
+Time per request / Concurrency Level</p>
+</li>
 </ul>
-
-<h2 id="toc_13">3、gc优化</h2>
-
-<h3 id="toc_14">3.1、gc性能指标</h3>
-
-<h4 id="toc_15">3.1.1吞吐量</h4>
-
+<h2><a id="3%E3%80%81gc%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3、gc优化</h2>
+<h3><a id="3-1%E3%80%81gc%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1、gc性能指标</h3>
+<h4><a id="3-1-1%E5%90%9E%E5%90%90%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1.1吞吐量</h4>
 <p>这里衡量的吞吐量是指 应用程序所花费的时间和系统总运行时间的比值。</p>
-
 <p>我们可以按照这个公式来计算 GC 的吞吐量: 系统总运行时间 = 应用程序耗时 +GC 耗时。如果系统运行了 100 分钟，GC 耗时 1 分钟，则系统吞吐量为 99%。GC 的吞吐量一般不能低于 95%。</p>
-
-<h4 id="toc_16">3.1.2延迟，由gc 引起的停顿时间</h4>
-
+<h4><a id="3-1-2%E5%BB%B6%E8%BF%9F%EF%BC%8C%E7%94%B1gc%E5%BC%95%E8%B5%B7%E7%9A%84%E5%81%9C%E9%A1%BF%E6%97%B6%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1.2延迟，由gc 引起的停顿时间</h4>
 <p>停顿时间：指垃圾回收器正在运行时，应用程序的暂停时间。</p>
-
 <p>对于串行回收器而言，停顿时间可能会比较长;而使用并发回收器，由于垃圾收集器和应用程序交替 运行，程序的停顿时间就会变短，但其效率很可能不如独占垃圾收集器，系统的吞吐量也很可能会降低。</p>
-
 <p>垃圾回收频率: 通常垃圾回收的频率越低越好，增大堆内存空间可以有效降低垃圾回收发生的频率，但同时也意味着堆积的回收对象越多，最终也会增加回收时的停顿 时间。所以我们需要适当地增大堆内存空间，保证正常的垃圾回收频率即可。</p>
-
-<h4 id="toc_17">3.1.3 内存占用</h4>
-
+<h4><a id="3-1-3%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1.3 内存占用</h4>
 <p>gc 正常时占用的内存量</p>
-
-<h3 id="toc_18">3.2、GC 调优策略</h3>
-
-<h4 id="toc_19">3.2.1、降低 Minor GC 频率</h4>
-
+<h3><a id="3-2%E3%80%81gc%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.2、GC 调优策略</h3>
+<h4><a id="3-2-1%E3%80%81%E9%99%8D%E4%BD%8E-minor-gc%E9%A2%91%E7%8E%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.2.1、降低 Minor GC 频率</h4>
 <p>由于新生代空间较小，Eden 区很快被填满，就会导致频繁 Minor GC，因此我们可以通过增大新生代空间来降低 Minor GC 的频率。 单次 Minor GC 时间是由两部分组成:T1(扫描新生代)和 T2(复制存活对象)。</p>
-
 <p>情况 1: 假设一个对象在 Eden 区的存活时间为 500ms，Minor GC 的时间间隔是 300ms，因为这个对象存活时间 &gt; 间隔时间，那么正常情况下，Minor GC 的时间为 :T1+T2。</p>
-
-<p>情况 2:当我们增大新生代空间，Minor GC 的时间间隔可能会扩大到 600ms，此时一个存活 500ms 的对象就会在 Eden 区中被回收掉，此时就不存在复制存活对象了，所以再发生 Minor GC 的时间为:即 <code>T1*2(空间大了)+T2*0</code><br/>
+<p>情况 2:当我们增大新生代空间，Minor GC 的时间间隔可能会扩大到 600ms，此时一个存活 500ms 的对象就会在 Eden 区中被回收掉，此时就不存在复制存活对象了，所以再发生 Minor GC 的时间为:即 <code>T1*2(空间大了)+T2*0</code><br />
 可见，扩容后，Minor GC 时增加了 T1，但省去了 T2 的时间。</p>
-
 <p>在 JVM 中，复制对象的成本要远高于扫描成本。如果在堆内存中存在较多的长期存活的对象，此时增加年轻代空间，反而会增加 Minor GC 的时间。如 果堆中的短期对象很多，那么扩容新生代，单次 Minor GC 时间不会显著增加。因此，单次 Minor GC 时间更多取决于 GC 后存活对象的数量，而非 Eden 区的大小。</p>
-
-<h4 id="toc_20">3.2.2、降低 Full GC 的频率</h4>
-
-<p>由于堆内存空间不足或老年代对象太多，会触发 Full GC，频繁的 Full GC 会带来上下文切换，增加系统的性能开销。 </p>
-
+<h4><a id="3-2-2%E3%80%81%E9%99%8D%E4%BD%8E-full-gc%E7%9A%84%E9%A2%91%E7%8E%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.2.2、降低 Full GC 的频率</h4>
+<p>由于堆内存空间不足或老年代对象太多，会触发 Full GC，频繁的 Full GC 会带来上下文切换，增加系统的性能开销。</p>
 <p>减少创建大对象: 在平常的业务场景中，我们一次性从数据库中查询出一个大对象用于 web 端显示。比如，一次性查询出 60 个字段的业务操作，这种大对象如果超过年轻代最大对象阈值，会被直接创建在老年代; 即使被创建在了年轻代，由于年轻代的内存空间有限，通过 Minor GC 之后也会进入到老年代。</p>
-
 <p>这种大对象很容易产生较多的 Full GC。 增大堆内存空间:在堆内存不足的情况下，增大堆内存空间，且设置初始化堆内存为最大堆内存，也可以降低 Full GC 的频率。</p>
-
-<h4 id="toc_21">gc 调优策略总结</h4>
-
+<h4><a id="gc%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>gc 调优策略总结</h4>
 <ul>
-<li><p>新生代大小选择</p>
+<li>
+<p>新生代大小选择</p>
 <ul>
 <li>响应时间优先的应用:尽可能设大,直到接近系统的最低响应时间限制(根据实际情况选择)。在此种情况下,新生代收集发生的频率也是最小的。同时,减少到达老年代的对象。</li>
 <li>吞吐量优先的应用:尽可能的设置大,可能到达 Gbit 的程度.因为对响应时间没有要求,垃圾收集可以并行进行,一般适合 8CPU 以上的应用。</li>
-<li>避免设置过小.当新生代设置过小时会导致:1.MinorGC 次数更加频繁 2.可能导致 MinorGC 对象直接进入老年代,如果此时老年代满了,会触发FullGC. </li>
-</ul></li>
-<li><p>老年代大小选择</p>
+<li>避免设置过小.当新生代设置过小时会导致:1.MinorGC 次数更加频繁 2.可能导致 MinorGC 对象直接进入老年代,如果此时老年代满了,会触发FullGC.</li>
+</ul>
+</li>
+<li>
+<p>老年代大小选择</p>
 <ul>
 <li>响应时间优先的应用:老年代使用并发收集器,所以其大小需要小心设置,一般要考虑并发会话率和会话持续时间等一些参数.如果堆设置小了,可能会造成内存碎片,高回收频率以及应用暂停而使用传统的标记清除方式; 如果堆大了,则需要较长的收集时间。最优化的方案,一般需要参考以下数据获得: 并发垃圾收集信息、持久代并发收集次数、传统 GC 信息、花在新生代和老年代回收上的时间比例。</li>
 <li>吞吐量优先的应用:一般吞吐量优先的应用都有一个很大的新生代和一个较小的老年代.原因是,这样可以尽可能回收掉大部分短期对象,减少中期的对象,而 老年代尽存放长期存活对象。</li>
-</ul></li>
-<li><p>较小堆引起的碎片问题<br/>
-因为年老代的并发收集器使用标记,清除算法,所以不会对堆进行压缩.当收集器回收时,他会把相邻的空间进行合并,这样可以分配给较大的对象.但是,当堆空间较小时,运行一段时间以后,就会出现&quot;碎片&quot;,如果并发收集器找不到足够的空间,那么并发收集器将会停止,然后使用传统的标记,清除方式进行回收.如果出现&quot;碎片&quot;,可能需要进行如下配置:<br/>
--XX:+UseCMSCompactAtFullCollection:使用并发收集器时,开启对年老代的压缩.<br/>
--XX:CMSFullGCsBeforeCompaction=0:上面配置开启的情况下,这里设置多少次Full GC后,对年老代进行压缩</p></li>
-<li><p>用64位操作系统，Linux下64位的jdk比32位jdk要慢一些，但是吃得内存更多，吞吐量更大</p></li>
-<li><p>XMX和XMS设置一样大，MaxPermSize和MinPermSize设置一样大，这样可以减轻伸缩堆大小带来的压力</p></li>
-<li><p>系统停顿的时候可能是GC的问题也可能是程序的问题，多用jmap和jstack查看，或者killall -3 java，然后查看java控制台日志，能看出很多问题。</p></li>
-<li><p>仔细了解自己的应用，如果用了缓存，那么年老代应该大一些，缓存的HashMap不应该无限制长，建议采用LRU算法的Map做缓存，LRUMap的最大长度也要根据实际情况设定。</p></li>
-<li><p>采用并发回收时，年轻代小一点，年老代要大，因为年老大用的是并发回收，即使时间长点也不会影响其他程序继续运行，网站不会停顿</p></li>
 </ul>
-
-<h2 id="toc_22">4、常见问题</h2>
-
-<h3 id="toc_23">4.1、超大对象</h3>
-
+</li>
+<li>
+<p>较小堆引起的碎片问题<br />
+因为年老代的并发收集器使用标记,清除算法,所以不会对堆进行压缩.当收集器回收时,他会把相邻的空间进行合并,这样可以分配给较大的对象.但是,当堆空间较小时,运行一段时间以后,就会出现&quot;碎片&quot;,如果并发收集器找不到足够的空间,那么并发收集器将会停止,然后使用传统的标记,清除方式进行回收.如果出现&quot;碎片&quot;,可能需要进行如下配置:<br />
+-XX:+UseCMSCompactAtFullCollection:使用并发收集器时,开启对年老代的压缩.<br />
+-XX:CMSFullGCsBeforeCompaction=0:上面配置开启的情况下,这里设置多少次Full GC后,对年老代进行压缩</p>
+</li>
+<li>
+<p>用64位操作系统，Linux下64位的jdk比32位jdk要慢一些，但是吃得内存更多，吞吐量更大</p>
+</li>
+<li>
+<p>XMX和XMS设置一样大，MaxPermSize和MinPermSize设置一样大，这样可以减轻伸缩堆大小带来的压力</p>
+</li>
+<li>
+<p>系统停顿的时候可能是GC的问题也可能是程序的问题，多用jmap和jstack查看，或者killall -3 java，然后查看java控制台日志，能看出很多问题。</p>
+</li>
+<li>
+<p>仔细了解自己的应用，如果用了缓存，那么年老代应该大一些，缓存的HashMap不应该无限制长，建议采用LRU算法的Map做缓存，LRUMap的最大长度也要根据实际情况设定。</p>
+</li>
+<li>
+<p>采用并发回收时，年轻代小一点，年老代要大，因为年老大用的是并发回收，即使时间长点也不会影响其他程序继续运行，网站不会停顿</p>
+</li>
+</ul>
+<h2><a id="4%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4、常见问题</h2>
+<h3><a id="4-1%E3%80%81%E8%B6%85%E5%A4%A7%E5%AF%B9%E8%B1%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.1、超大对象</h3>
 <p>代码中创建了很多大对象 , 且一直因为被引用不能被回收，这些大对象会进入老年代，导致内存一直被占用，很容易引发 GC 甚至是 OOM</p>
-
-<h3 id="toc_24">4.2、内存泄漏</h3>
-
+<h3><a id="4-2%E3%80%81%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.2、内存泄漏</h3>
 <p>大量对象引用没有释放，JVM 无法对其自动回收。</p>
-
-<p>内存泄漏和内存溢出辨析：<br/>
-内存溢出:实实在在的内存空间不足导致; 内存泄漏:该释放的对象没有释放，常见于使用容器保存元素的情况下。 </p>
-
-<p>如何避免:<br/>
+<p>内存泄漏和内存溢出辨析：<br />
+内存溢出:实实在在的内存空间不足导致; 内存泄漏:该释放的对象没有释放，常见于使用容器保存元素的情况下。</p>
+<p>如何避免:<br />
 内存溢出:检查代码以及设置足够的空间 内存泄漏:一定是代码有问题 往往很多情况下，内存溢出往往是内存泄漏造成的。</p>
-
-<h3 id="toc_25">4.3、长生命周期的对象持有短生命周期对象的引用</h3>
-
+<h3><a id="4-3%E3%80%81%E9%95%BF%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%8C%81%E6%9C%89%E7%9F%AD%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.3、长生命周期的对象持有短生命周期对象的引用</h3>
 <p>例如将 HashMap 设置为静态变量，则容器中的对象在程序结束之前将不能被释放，从而造成内存泄漏</p>
-
-<h3 id="toc_26">4.4、连接未关闭</h3>
-
+<h3><a id="4-4%E3%80%81%E8%BF%9E%E6%8E%A5%E6%9C%AA%E5%85%B3%E9%97%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.4、连接未关闭</h3>
 <p>如数据库连接、网络连接和 IO 连接等，只有连接被关闭后，垃圾回收器才会回收对应的对象。</p>
-
-<h3 id="toc_27">4.5、变量作用域不合理</h3>
-
+<h3><a id="4-5%E3%80%81%E5%8F%98%E9%87%8F%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8D%E5%90%88%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.5、变量作用域不合理</h3>
 <p>例如，1.一个变量的定义的作用范围大于其使用范围，2.如果没有及时地把对象设置为 null</p>
-
-<h2 id="toc_28">5、MAT Analyzer(TODO)</h2>
-
+<h2><a id="5%E3%80%81mat-analyzer-todo" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>5、MAT Analyzer(TODO)</h2>
 <p>MAT(Memory Analyzer Tool)工具是eclipse的一个插件(MAT也可以单独使用)，使用起来非常方便，尤其是在分析大内存的dump文件时，可以非常直观的看到各个对象在堆空间中所占用的内存大小、类实例数量、对象引用关系、利用OQL对象查询，以及可以很方便的找出对象GC Roots的相关信息，当然最吸引人的还是能够快速为开发人员生成内存泄露报表，方便定位问题和分析问题。</p>
-
-<h3 id="toc_29">OQL</h3>
-
+<h3><a id="oql" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>OQL</h3>
 <p>在MAT 中 select 子句的格式与 SQL 基本一致，用于指定要显示的列，也可以使用 * 号，查看结果对象的引用示例(相当于 outgoing references)</p>
-
-<pre><code class="language-text">select OBJECTS v.elementData from java.util.vector v
+<pre><code class="language-plain_text">select OBJECTS v.elementData from java.util.vector v
 
 select * from OBJECTS &quot;com\.goddess\.java\..*&quot;
 

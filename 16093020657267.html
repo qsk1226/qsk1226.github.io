@@ -116,37 +116,25 @@
                   <article class="markdown-body single-content">
                     <ul>
 <li>要想用线程安全的队列有哪些选择? Vector，Collections.synchronizedList(List<T> list), ConcurrentLinkedQueue 等</li>
-<li>ConcurrentLinkedQueue 实现的数据结构? </li>
-<li>ConcurrentLinkedQueue底层原理?  全程无锁(CAS) </li>
-<li>ConcurrentLinkedQueue的核心方法有哪些? offer()，poll()，peek()，isEmpty()等队列常用方法 </li>
-<li>说说ConcurrentLinkedQueue的HOPS(延迟更新的策略)的设计? </li>
+<li>ConcurrentLinkedQueue 实现的数据结构?</li>
+<li>ConcurrentLinkedQueue底层原理?  全程无锁(CAS)</li>
+<li>ConcurrentLinkedQueue的核心方法有哪些? offer()，poll()，peek()，isEmpty()等队列常用方法</li>
+<li>说说ConcurrentLinkedQueue的HOPS(延迟更新的策略)的设计?</li>
 <li>ConcurrentLinkedQueue适合什么样的使用场景?</li>
 </ul>
-
-<h2 id="toc_0">ConcurrentLinkedQueue 简介</h2>
-
+<h2><a id="concurrentlinkedqueue%E7%AE%80%E4%BB%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConcurrentLinkedQueue 简介</h2>
 <p>无界非阻塞队列，它是一个基于链表的无界线程安全队列。该队列的元素遵循先进先出的原则。头是最先加入的，尾是最近加入的。插入元素是追加到尾部。提取一个元素是从头提取。</p>
-
 <p>可以看成是 LinkedList 的并发版本</p>
-
-<h2 id="toc_1">ConcurrentLinkedQueue 数据结构</h2>
-
+<h2><a id="concurrentlinkedqueue%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConcurrentLinkedQueue 数据结构</h2>
 <p>ConcurrentLinkedQueue 的数据结构与 LinkedBlockingQueue 的数据结构相同，都是使用的链表结构， 并且包含有一个头结点和一个尾结点。</p>
-
-<p><figure><img src="media/16093020657267/16093027024596.jpg" alt=""/></figure></p>
-
-<h2 id="toc_2">ConcurrentLinkedQueue 源码分析</h2>
-
-<h3 id="toc_3">类的继承关系</h3>
-
+<p><figure><img src="media/16093020657267/16093027024596.jpg" alt="" /></figure></p>
+<h2><a id="concurrentlinkedqueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConcurrentLinkedQueue 源码分析</h2>
+<h3><a id="%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>类的继承关系</h3>
 <pre><code class="language-java">public class ConcurrentLinkedQueue&lt;E&gt; extends AbstractQueue&lt;E&gt;
         implements Queue&lt;E&gt;, java.io.Serializable {}
 </code></pre>
-
-<h3 id="toc_4">内部类 Node 节点</h3>
-
+<h3><a id="%E5%86%85%E9%83%A8%E7%B1%BBnode%E8%8A%82%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部类 Node 节点</h3>
 <p>Node类表示链表结点，用于存放元素，包含item域和next域，item域表示元素，next域表示下一个结点，其利用反射机制和CAS机制来更新item域和next域，保证原子性。</p>
-
 <pre><code class="language-java">private static class Node&lt;E&gt; {
     // 元素
     volatile E item;
@@ -194,11 +182,8 @@
     }
 }
 </code></pre>
-
-<h3 id="toc_5">类的属性</h3>
-
+<h3><a id="%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>类的属性</h3>
 <p>属性中包含了head域和tail域，表示链表的头结点和尾结点，同时，ConcurrentLinkedQueue也使用了反射机制和CAS机制来更新头结点和尾结点，保证原子性。</p>
-
 <pre><code class="language-java">public class ConcurrentLinkedQueue&lt;E&gt; extends AbstractQueue&lt;E&gt;
         implements Queue&lt;E&gt;, java.io.Serializable {
     // 版本序列号        
@@ -229,11 +214,8 @@
 }
 
 </code></pre>
-
-<h3 id="toc_6">构造方法</h3>
-
+<h3><a id="%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>构造方法</h3>
 <p>该构造函数用于创建一个最初包含给定 collection 元素的 ConcurrentLinkedQueue，按照此 collection 迭代器的遍历顺序来添加元素。</p>
-
 <pre><code class="language-java">public ConcurrentLinkedQueue(Collection&lt;? extends E&gt; c) {
     Node&lt;E&gt; h = null, t = null;
     for (E e : c) { // 遍历c集合
@@ -261,11 +243,8 @@
 }
 
 </code></pre>
-
-<h3 id="toc_7">核心函数</h3>
-
-<h3 id="toc_8">offer函数， 用于将指定元素插入此队列的尾部。</h3>
-
+<h3><a id="%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>核心函数</h3>
+<h3><a id="offer%E5%87%BD%E6%95%B0%EF%BC%8C%E7%94%A8%E4%BA%8E%E5%B0%86%E6%8C%87%E5%AE%9A%E5%85%83%E7%B4%A0%E6%8F%92%E5%85%A5%E6%AD%A4%E9%98%9F%E5%88%97%E7%9A%84%E5%B0%BE%E9%83%A8%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>offer函数， 用于将指定元素插入此队列的尾部。</h3>
 <pre><code class="language-java">public boolean offer(E e) {
     // 元素不为null
     checkNotNull(e);
@@ -298,9 +277,7 @@
 }
 
 </code></pre>
-
-<h4 id="toc_9">poll 函数, 此函数用于获取并移除此队列的头，如果此队列为空，则返回null。</h4>
-
+<h4><a id="poll%E5%87%BD%E6%95%B0%E6%AD%A4%E5%87%BD%E6%95%B0%E7%94%A8%E4%BA%8E%E8%8E%B7%E5%8F%96%E5%B9%B6%E7%A7%BB%E9%99%A4%E6%AD%A4%E9%98%9F%E5%88%97%E7%9A%84%E5%A4%B4%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%AD%A4%E9%98%9F%E5%88%97%E4%B8%BA%E7%A9%BA%EF%BC%8C%E5%88%99%E8%BF%94%E5%9B%9E-null%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>poll 函数, 此函数用于获取并移除此队列的头，如果此队列为空，则返回null。</h4>
 <pre><code class="language-java">public E poll() {
     restartFromHead:
     for (;;) { // 无限循环
@@ -333,9 +310,7 @@
 }
 
 </code></pre>
-
-<h4 id="toc_10">remove 函数</h4>
-
+<h4><a id="remove%E5%87%BD%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>remove 函数</h4>
 <pre><code class="language-java">public boolean remove(Object o) {
     // 元素为null，返回
     if (o == null) return false;
@@ -360,9 +335,7 @@
 }
 
 </code></pre>
-
 <p>此函数用于从队列中移除指定元素的单个实例(如果存在)。其中，会调用到first 函数和succ函数</p>
-
 <pre><code class="language-java">/**
  * 用于找到列表中第一个存活的节点
  */
@@ -389,7 +362,6 @@ Node&lt;E&gt; first() {
 }
 
 </code></pre>
-
 <pre><code class="language-java">/**
  *succ用于获取结点的下一个结点。如果结点的next域指向自身，则返回head头结点，否则，返回next结点。
  */
@@ -401,9 +373,7 @@ final Node&lt;E&gt; succ(Node&lt;E&gt; p) {
 }
 
 </code></pre>
-
-<h2 id="toc_11">ConcurrentLinkedQueue 示例</h2>
-
+<h2><a id="concurrentlinkedqueue%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConcurrentLinkedQueue 示例</h2>
 <pre><code class="language-java">import java.util.concurrent.ConcurrentLinkedQueue;
 
 class PutThread extends Thread {
@@ -455,16 +425,12 @@ public class ConcurrentLinkedQueueDemo {
 }
 
 </code></pre>
-
-<h2 id="toc_12">HOPS(延迟更新的策略)的设计</h2>
-
-<p>通过上面对offer和poll方法的分析，我们发现tail和head是延迟更新的，两者更新触发时机为： </p>
-
+<h2><a id="hops%E5%BB%B6%E8%BF%9F%E6%9B%B4%E6%96%B0%E7%9A%84%E7%AD%96%E7%95%A5%E7%9A%84%E8%AE%BE%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HOPS(延迟更新的策略)的设计</h2>
+<p>通过上面对offer和poll方法的分析，我们发现tail和head是延迟更新的，两者更新触发时机为：</p>
 <ul>
-<li>tail更新触发时机：当tail指向的节点的下一个节点不为null的时候，会执行定位队列真正的队尾节点的操作，找到队尾节点后完成插入之后才会通过casTail进行tail更新；当tail指向的节点的下一个节点为null的时候，只插入节点不更新tail。 </li>
-<li>head更新触发时机：当head指向的节点的item域为null的时候，会执行定位队列真正的队头节点的操作，找到队头节点后完成删除之后才会通过updateHead进行head更新；当head指向的节点的item域不为null的时候，只删除节点不更新head。 </li>
+<li>tail更新触发时机：当tail指向的节点的下一个节点不为null的时候，会执行定位队列真正的队尾节点的操作，找到队尾节点后完成插入之后才会通过casTail进行tail更新；当tail指向的节点的下一个节点为null的时候，只插入节点不更新tail。</li>
+<li>head更新触发时机：当head指向的节点的item域为null的时候，会执行定位队列真正的队头节点的操作，找到队头节点后完成删除之后才会通过updateHead进行head更新；当head指向的节点的item域不为null的时候，只删除节点不更新head。</li>
 </ul>
-
 <p>所以这种延迟更新的策略就被叫做HOPS的大概原因是这个, head和tail的更新是“跳着的”即中间总是间隔了一个。那么这样设计的意图是什么呢? 如果让tail永远作为队列的队尾节点，实现的代码量会更少，而且逻辑更易懂。但是，这样做有一个缺点，如果大量的入队操作，每次都要执行CAS进行tail的更新，汇总起来对性能也会是大大的损耗。如果能减少CAS更新的操作，无疑可以大大提升入队的操作效率，所以doug lea大师每间隔1次(tail和队尾节点的距离为1)进行才利用CAS更新tail。对head的更新也是同样的道理，虽然，这样设计会多出在循环中定位队尾节点，但总体来说读的操作效率要远远高于写的性能，因此，多出来的在循环中定位尾节点的操作的性能损耗相对而言是很小的。 ¶</p>
 
                   </article>

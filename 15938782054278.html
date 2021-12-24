@@ -115,15 +115,14 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>保证系统能正常稳定的运行</p>
-
 <ul>
-<li>限制总并发数<br/>
+<li>限制总并发数<br />
 数据库连接池、线程池</li>
-<li>限制瞬时并发数<br/>
+<li>限制瞬时并发数<br />
 如nginx的limit_conn 模块，用来限制瞬时并发连接数</li>
-<li>限制时间窗口内的平均速率<br/>
+<li>限制时间窗口内的平均速率<br />
 如guava的 RateLimiter、nginx的limit_req 模块，限制每秒平均速率</li>
-<li>其它限制<br/>
+<li>其它限制<br />
 如限制远程接口调用速率、限制mq的消费速率</li>
 </ul>
 

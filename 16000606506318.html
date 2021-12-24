@@ -115,145 +115,139 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>在分析如何优化 MySQL 查询语句之前，我们需要先了解一下查询语句优化的基本思路和原则。一般来说，查询语句的优化思路和原则主要提现在以下几个方面：</p>
-
 <ul>
-<li><p>优化更需要优化的查询；<br/>
-一般来说，高并发低消耗的语句回避地并发高消耗的语句对系统的影响要大的多，因为优化高并发下的查询语句一旦有问题，可能使整个系统崩溃掉，而低并发的查询有问题的话，一般只会影响当前查询</p></li>
-<li><p>定位优化对象的性能瓶颈；<br/>
+<li>
+<p>优化更需要优化的查询；<br />
+一般来说，高并发低消耗的语句回避地并发高消耗的语句对系统的影响要大的多，因为优化高并发下的查询语句一旦有问题，可能使整个系统崩溃掉，而低并发的查询有问题的话，一般只会影响当前查询</p>
+</li>
+<li>
+<p>定位优化对象的性能瓶颈；<br />
 在拿到一条需要优化的 Query 之后，我们首先要判断出这个 Query 的瓶颈到底是 IO 还是CPU。在MySQL中，我们可以通过系统自带的 PROFILING 功能很清楚的找出一个Query 的瓶颈所在</p>
 <ul>
 <li>通过慢查询日志定位那些执行效率较低的SL语向,用-SSL语句的日志文件--log-slow-queries[=file name] 选项启动时, mysqld写一个包含所有执行时间超过 long query time秒t 具体可以查看本书第26章中日志管理的相关部分。</li>
 <li>慢查询日志在查询结東以后才记录,所以在应用反映执行效率出现问题的时候查询慢查询日志并不能定位问题,可以使用 show processlist f命今查看当前 MYSQL在进行的线程,包括线程的状态、是否锁表等,可以实时地查看SQL的执行情况,同时对一些锁表操作进行优化。</li>
-</ul></li>
-<li><p>明确的优化目标；<br/>
-一般来说，我们首先需要清楚的了解数据库目前的整体状态，同时也要清楚的知道数据库中与该 Query 相关的数据库对象的各种信息，而且还要了解该 Query 在整个应用系统中所实现的功能。了解了数据库整体状态，我们就能知道数据库所能承受的最大压力，也就清楚了我们能够接受的最悲观情况。根据功能的重要性，确定 query 的优化目标。</p></li>
-<li><p>从 Explain 入手；</p></li>
-<li><p>多使用 profile；</p></li>
-<li><p>永远用小结果集驱动大的结果集；</p></li>
-<li><p>尽可能在索引中完成排序；</p></li>
-<li><p>只取出自己需要的 Columns；</p></li>
-<li><p>仅仅使用最有效的过滤条件；</p></li>
-<li><p>尽可能避免复杂的 Join 和子查询；</p></li>
 </ul>
-
-<h2 id="toc_0">show status查看sql执行频率</h2>
-
-<p>主要语句 show status &#39;Com_%&#39;,例如</p>
-
-<pre><code class="language-mysql">&gt;show status like &#39;Com_insert%&#39;
-&gt;show status like &#39;Com_select%&#39;
-&gt;show status like &#39;Com_update%&#39;
-&gt;show status like &#39;Com_delete%&#39;
+</li>
+<li>
+<p>明确的优化目标；<br />
+一般来说，我们首先需要清楚的了解数据库目前的整体状态，同时也要清楚的知道数据库中与该 Query 相关的数据库对象的各种信息，而且还要了解该 Query 在整个应用系统中所实现的功能。了解了数据库整体状态，我们就能知道数据库所能承受的最大压力，也就清楚了我们能够接受的最悲观情况。根据功能的重要性，确定 query 的优化目标。</p>
+</li>
+<li>
+<p>从 Explain 入手；</p>
+</li>
+<li>
+<p>多使用 profile；</p>
+</li>
+<li>
+<p>永远用小结果集驱动大的结果集；</p>
+</li>
+<li>
+<p>尽可能在索引中完成排序；</p>
+</li>
+<li>
+<p>只取出自己需要的 Columns；</p>
+</li>
+<li>
+<p>仅仅使用最有效的过滤条件；</p>
+</li>
+<li>
+<p>尽可能避免复杂的 Join 和子查询；</p>
+</li>
+</ul>
+<h2><a id="show-status%E6%9F%A5%E7%9C%8Bsql%E6%89%A7%E8%A1%8C%E9%A2%91%E7%8E%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>show status查看sql执行频率</h2>
+<p>主要语句 show status 'Com_%',例如</p>
+<pre><code class="language-mysql">&gt;show status like 'Com_insert%'
+&gt;show status like 'Com_select%'
+&gt;show status like 'Com_update%'
+&gt;show status like 'Com_delete%'
 </code></pre>
-
-<h2 id="toc_1">合理设计并利用索引</h2>
-
-<h3 id="toc_2">索引设计原则</h3>
-
+<p>##合理设计并利用索引</p>
+<h3><a id="%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>索引设计原则</h3>
 <ul>
-<li>搜索的索引列,不一定是所要选择的列。换句话说,最适合索引的列是出现在 WHERE 子句中的列,或连接子向中指定的列,而不是出现在 SELECT关键字后的选择列表中的列。</li>
-<li>使用唯一索引。考虑某列中值的分布。索引的列的基数越大,索引的效果越好。例如, 存放出生日期的列具有不同值,很容易区分各行。而用来记录性别的列,只含有“M”和“F”, 则对此列进行索引没有多大用处,因为不管搜索哪个值,都会得出大约一半的行。</li>
-<li>使用短索引。如果对字符串列进行索引,应该指定一个前缀长度,只要有可能就应该这样做。例如,有一个CHAR(200列,如果在前10个或20个字符内,多数值是唯一的,那么就不要对整个列进行索引。对前10个或20个字符进行索引能够节省大量索引空间,也可能会使查询更快。较小的索引涉及的磁盘10较少,较短的值比较起来更快。更为重要的是,对于较短的健值,索引高速缓存中的块能容纳更多的键值,因此, MYSQL也可以在内存中容纳更多的值。这样就増加了找到行而不用读取索引中较多块的可能性</li>
-<li><p>利用最左前级。在创建一个n列的索引时,实际是创建了 MYSQL可利用的n个索引多列索引可起几个索引的作用,因为可利用索引中最左边的列集来匹配行。这样的列集称为最左前缀。</p></li>
-<li><p>不要过度索引。不要以为索引“越多越好”,什么东西都用索引是错误的。每个额外的索引都要占用额外的磁盘空间,并降低写操作的性能。在修改表的内容时,索引必须进行更新,有时可能需要重构,因此,索引越多,所花的时间越长。如果有一个索引很少利用或从不使用,那么会不必要地减缓表的修改速度。此外, MYSQL在生成一个执行计划时,要考虑各个索引,这也要花费时间。创建多余的索引给查询优化带来了更多的工作。索引太多,也可能会使 MYSQL选择不到所要使用的最好索引。只保持所需的索引有利于查询优化</p></li>
-<li><p>对于 INNODB存储引擎的表,记录默认会按照一定的顺序保存,如果有明确定义的主键,则按照主键顺序保存。如果没有主键,但是有唯一索引,那么就是按照唯一索引的顺序保存。如果既没有主键又没有唯一索引,那么表中会自动生成一个内部列,按照这个列的顺序保存。按照主键或者内部列进行的访问是最快的,所以 INNODB表尽量自己指定主键,当表中同时有几个列都是唯一的,都可以作为主键的时候,要选择最常作为访问条件的列作为主键,提高查询的效率。另外,还需要注意, INNODB表的普通索引都会保存主键的键值,所以主键要尽可能选择较短的数据类型,可以有效地减少索引的磁盘占用,提高索引的缓存效果。</p></li>
+<li>
+<p>搜索的索引列,不一定是所要选择的列。换句话说,最适合索引的列是出现在 WHERE 子句中的列,或连接子向中指定的列,而不是出现在 SELECT关键字后的选择列表中的列。</p>
+</li>
+<li>
+<p>使用唯一索引。考虑某列中值的分布。索引的列的基数越大,索引的效果越好。例如, 存放出生日期的列具有不同值,很容易区分各行。而用来记录性别的列,只含有“M”和“F”, 则对此列进行索引没有多大用处,因为不管搜索哪个值,都会得出大约一半的行。</p>
+</li>
+<li>
+<p>使用短索引。如果对字符串列进行索引,应该指定一个前缀长度,只要有可能就应该这样做。例如,有一个CHAR(200列,如果在前10个或20个字符内,多数值是唯一的,那么就不要对整个列进行索引。对前10个或20个字符进行索引能够节省大量索引空间,也可能会使查询更快。较小的索引涉及的磁盘10较少,较短的值比较起来更快。更为重要的是,对于较短的健值,索引高速缓存中的块能容纳更多的键值,因此, MYSQL也可以在内存中容纳更多的值。这样就増加了找到行而不用读取索引中较多块的可能性</p>
+</li>
+<li>
+<p>利用最左前级。在创建一个n列的索引时,实际是创建了 MYSQL可利用的n个索引多列索引可起几个索引的作用,因为可利用索引中最左边的列集来匹配行。这样的列集称为最左前缀。</p>
+</li>
+<li>
+<p>不要过度索引。不要以为索引“越多越好”,什么东西都用索引是错误的。每个额外的索引都要占用额外的磁盘空间,并降低写操作的性能。在修改表的内容时,索引必须进行更新,有时可能需要重构,因此,索引越多,所花的时间越长。如果有一个索引很少利用或从不使用,那么会不必要地减缓表的修改速度。此外, MYSQL在生成一个执行计划时,要考虑各个索引,这也要花费时间。创建多余的索引给查询优化带来了更多的工作。索引太多,也可能会使 MYSQL选择不到所要使用的最好索引。只保持所需的索引有利于查询优化</p>
+</li>
+<li>
+<p>对于 INNODB存储引擎的表,记录默认会按照一定的顺序保存,如果有明确定义的主键,则按照主键顺序保存。如果没有主键,但是有唯一索引,那么就是按照唯一索引的顺序保存。如果既没有主键又没有唯一索引,那么表中会自动生成一个内部列,按照这个列的顺序保存。按照主键或者内部列进行的访问是最快的,所以 INNODB表尽量自己指定主键,当表中同时有几个列都是唯一的,都可以作为主键的时候,要选择最常作为访问条件的列作为主键,提高查询的效率。另外,还需要注意, INNODB表的普通索引都会保存主键的键值,所以主键要尽可能选择较短的数据类型,可以有效地减少索引的磁盘占用,提高索引的缓存效果。</p>
+</li>
 </ul>
-
-<h2 id="toc_3">SQL 优化</h2>
-
-<h3 id="toc_4">尽量全值匹配</h3>
-
+<h2><a id="sql%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SQL 优化</h2>
+<h3><a id="%E5%B0%BD%E9%87%8F%E5%85%A8%E5%80%BC%E5%8C%B9%E9%85%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>尽量全值匹配</h3>
 <pre><code class="language-mysql">CREATE TABLE `staffs`(
 id int primary key auto_increment,
-name varchar(24) not null default &quot;&quot; comment&#39;姓名&#39;,
-age int not null default 0 comment &#39;年龄&#39;,
-pos varchar(20) not null default &quot;&quot; comment&#39;职位&#39;,
-add_time timestamp not null default current_timestamp comment &#39;入职时间&#39; ) charset utf8 comment &#39;员工记录表&#39;;
+name varchar(24) not null default &quot;&quot; comment'姓名',
+age int not null default 0 comment '年龄',
+pos varchar(20) not null default &quot;&quot; comment'职位',
+add_time timestamp not null default current_timestamp comment '入职时间' ) charset utf8 comment '员工记录表';
 
-insert into staffs(name,age,pos,add_time) values(&#39;z3&#39;,22,&#39;manage&#39;,now()); 
+insert into staffs(name,age,pos,add_time) values('z3',22,'manage',now()); 
 
-insert into staffs(name,age,pos,add_time) values(&#39;july&#39;,23,&#39;dev&#39;,now()); 
+insert into staffs(name,age,pos,add_time) values('july',23,'dev',now()); 
 
-insert into staffs(name,age,pos,add_time) values(&#39;2000&#39;,23,&#39;dev&#39;,now());
+insert into staffs(name,age,pos,add_time) values('2000',23,'dev',now());
 
-alter table staffs add index idx_staffs_nameAgePos(name,age,pos); EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39;;
+alter table staffs add index idx_staffs_nameAgePos(name,age,pos); EXPLAIN SELECT * FROM staffs WHERE NAME = 'July';
 
-EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39; AND age = 25;
+EXPLAIN SELECT * FROM staffs WHERE NAME = 'July' AND age = 25;
 
-EXPLAIN SELECT * FROM staffs WHERE NAME = &#39;July&#39; AND age = 25 AND pos = &#39;dev&#39;
+EXPLAIN SELECT * FROM staffs WHERE NAME = 'July' AND age = 25 AND pos = 'dev'
 </code></pre>
-
 <p>当建立了索引列后，能在 wherel 条件中使用索引的尽量所用。</p>
-
-<h3 id="toc_5">最佳左前缀法则</h3>
-
-<h3 id="toc_6">不在索引列上做任何操作</h3>
-
+<h3><a id="%E6%9C%80%E4%BD%B3%E5%B7%A6%E5%89%8D%E7%BC%80%E6%B3%95%E5%88%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>最佳左前缀法则</h3>
+<h3><a id="%E4%B8%8D%E5%9C%A8%E7%B4%A2%E5%BC%95%E5%88%97%E4%B8%8A%E5%81%9A%E4%BB%BB%E4%BD%95%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>不在索引列上做任何操作</h3>
 <p>不在索引列上做任何操作(计算、函数、(自动 or 手动)类型转换)，会导致索引失效而转向 全表扫描</p>
-
-<h3 id="toc_7">范围条件放最后,主要是针对索引的字段位置</h3>
-
-<p>比如 </p>
-
-<pre><code class="language-sql">select * from student where name = &#39;dali&#39; and address=&#39;ay&#39; and age &gt; 20;
+<h3><a id="%E8%8C%83%E5%9B%B4%E6%9D%A1%E4%BB%B6%E6%94%BE%E6%9C%80%E5%90%8E%E4%B8%BB%E8%A6%81%E6%98%AF%E9%92%88%E5%AF%B9%E7%B4%A2%E5%BC%95%E7%9A%84%E5%AD%97%E6%AE%B5%E4%BD%8D%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>范围条件放最后,主要是针对索引的字段位置</h3>
+<p>比如</p>
+<pre><code class="language-sql">select * from student where name = 'dali' and address='ay' and age &gt; 20;
 </code></pre>
-
-<h3 id="toc_8">覆盖索引尽量用</h3>
-
-<h3 id="toc_9">不等于要谨慎用</h3>
-
+<h3><a id="%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%E5%B0%BD%E9%87%8F%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>覆盖索引尽量用</h3>
+<h3><a id="%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%A6%81%E8%B0%A8%E6%85%8E%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>不等于要谨慎用</h3>
 <p>mysql 在使用不等于(!= 或者&lt;&gt;)的时候无法使用索引会导致全表扫描，如果定要需要使用不等于,请用覆盖索引</p>
-
-<h3 id="toc_10">Null/Not 有影响</h3>
-
-<h4 id="toc_11">字段定义为 NOT NULL</h4>
-
+<h3><a id="nullnot%E6%9C%89%E5%BD%B1%E5%93%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Null/Not 有影响</h3>
+<h4><a id="%E5%AD%97%E6%AE%B5%E5%AE%9A%E4%B9%89%E4%B8%BAnot-null" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>字段定义为 NOT NULL</h4>
 <p>在字段为 not null 的情况下，使用 is null 或 is not null 会导致索引失效。</p>
-
-<p>解决方式:覆盖索引<br/>
+<p>解决方式:覆盖索引<br />
 EXPLAIN select name,age,pos from staffs where name is not null</p>
-
-<h4 id="toc_12">字段自定义为 NULL 或者不定义</h4>
-
+<h4><a id="%E5%AD%97%E6%AE%B5%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%BAnull%E6%88%96%E8%80%85%E4%B8%8D%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>字段自定义为 NULL 或者不定义</h4>
 <pre><code class="language-mysql">EXPLAIN select * from staffs where name is not null
 </code></pre>
-
 <p>Is not null 的情况会导致索引失效,解决方式:覆盖索引</p>
-
 <pre><code class="language-mysql">EXPLAIN select name,age,pos from staffs where name is not null
 </code></pre>
-
-<h3 id="toc_13">Like 查询要当心</h3>
-
-<p>like 以通配符开头(&#39;%abc...&#39;)mysql 索引失效会变成全表扫描的操作.<br/>
+<h3><a id="like%E6%9F%A5%E8%AF%A2%E8%A6%81%E5%BD%93%E5%BF%83" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Like 查询要当心</h3>
+<p>like 以通配符开头('%abc...')mysql 索引失效会变成全表扫描的操作.<br />
 解决方式:覆盖索引</p>
-
-<pre><code class="language-mysql">EXPLAIN select name,age,pos from staffs where name like &#39;%july%&#39;
+<pre><code class="language-mysql">EXPLAIN select name,age,pos from staffs where name like '%july%'
 </code></pre>
-
-<h3 id="toc_14">字符类型加引号</h3>
-
+<h3><a id="%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E5%8A%A0%E5%BC%95%E5%8F%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>字符类型加引号</h3>
 <p>字符串不加单引号索引失效, 所以请加上引号吧</p>
-
-<h3 id="toc_15">OR 改 UNION效率高</h3>
-
+<h3><a id="or%E6%94%B9-union%E6%95%88%E7%8E%87%E9%AB%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>OR 改 UNION效率高</h3>
 <pre><code class="language-mysql">EXPLAIN
-select * from staffs where name=&#39;July&#39; or name = &#39;z3&#39;
+select * from staffs where name='July' or name = 'z3'
 EXPLAIN
-select * from staffs where name=&#39;July&#39; UNION
-select * from staffs where name = &#39;z3&#39;
+select * from staffs where name='July' UNION
+select * from staffs where name = 'z3'
 </code></pre>
-
-<p>解决方式:覆盖索引<br/>
-EXPLAIN select name,age from staffs where name=&#39;July&#39; or name = &#39;z3&#39;</p>
-
-<h2 id="toc_16">顺口溜</h2>
-
-<p>全值匹配我最爱，最左前缀要遵守<br/>
-带头大哥不能死，中间小弟不能断<br/>
-索引列上少计算，范围之后全失效<br/>
-like百分写最右，覆盖索引不写*<br/>
-不等空值还有or，索引影响要注意<br/>
+<p>解决方式:覆盖索引<br />
+EXPLAIN select name,age from staffs where name='July' or name = 'z3'</p>
+<h2><a id="%E9%A1%BA%E5%8F%A3%E6%BA%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>顺口溜</h2>
+<p>全值匹配我最爱，最左前缀要遵守<br />
+带头大哥不能死，中间小弟不能断<br />
+索引列上少计算，范围之后全失效<br />
+like百分写最右，覆盖索引不写*<br />
+不等空值还有or，索引影响要注意<br />
 varchar引号不能丢，sql优化有诀窍</p>
 
                   </article>

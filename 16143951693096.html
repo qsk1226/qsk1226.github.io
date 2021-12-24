@@ -114,49 +114,41 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/16143951693096/16145659838173.jpg" alt="" style="width:1732px;"/></figure></p>
-
-<p>(1)基本的数据结构 </p>
-
+                    <p><figure><img src="media/16143951693096/16145659838173.jpg" alt="" style="width:1732px;" /></figure></p>
+<p>(1)基本的数据结构</p>
 <ul>
-<li>动态字符串sds.c </li>
-<li>整数集合intset.c </li>
+<li>动态字符串sds.c</li>
+<li>整数集合intset.c</li>
 <li>压缩列表ziplist.c</li>
 <li>快速链表quicklist.c</li>
-<li>字典dict.c </li>
+<li>字典dict.c</li>
 <li>Streams的底层实现结构listpack.c和rax.c</li>
 </ul>
-
 <p>(2) Redis数据类型的底层实现</p>
-
 <ul>
 <li>Redis对象object.c</li>
 <li>字符串t_string.c</li>
 <li>列表t_list.c</li>
-<li>字典t_hash.c </li>
-<li>集合及有序集合t_set.c和t_zset.c </li>
+<li>字典t_hash.c</li>
+<li>集合及有序集合t_set.c和t_zset.c</li>
 <li>数据流t_stream.c</li>
 </ul>
-
-<p>(3)Redis数据库的实现 </p>
-
+<p>(3)Redis数据库的实现</p>
 <ul>
-<li>数据库的底层实现db.c </li>
-<li>持久化rdb.c和aof.c <br/>
-(4)Redis服务端和客户端实现 </li>
-<li>事件驱动ae.c和ae_epoll.c </li>
-<li>网络连接anet.c和networking.c </li>
-<li>服务端程序server.c </li>
+<li>数据库的底层实现db.c</li>
+<li>持久化rdb.c和aof.c<br />
+(4)Redis服务端和客户端实现</li>
+<li>事件驱动ae.c和ae_epoll.c</li>
+<li>网络连接anet.c和networking.c</li>
+<li>服务端程序server.c</li>
 <li>客户端程序redis-cli.c</li>
 </ul>
-
 <p>5)其他</p>
-
 <ul>
 <li>主从复制replication.c</li>
 <li>哨兵sentinel.c</li>
-<li>集群cluster.c </li>
-<li>其他数据结构，如hyperloglog.c、geo.c等 </li>
+<li>集群cluster.c</li>
+<li>其他数据结构，如hyperloglog.c、geo.c等</li>
 <li>其他功能，如pub/sub、Lua脚本</li>
 </ul>
 

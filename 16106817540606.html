@@ -114,14 +114,10 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">在终端下使用vim进行编辑时，默认情况下，编辑的界面上是没有显示行号、语法高亮度显示、智能缩进等功能的。为了更好的在vim下进行工作，需要手动设置一个配置文件：.vimrc。</h2>
-
+                    <h2><a id="%E5%9C%A8%E7%BB%88%E7%AB%AF%E4%B8%8B%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91%E6%97%B6%EF%BC%8C%E9%BB%98%E8%AE%A4%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E7%BC%96%E8%BE%91%E7%9A%84%E7%95%8C%E9%9D%A2%E4%B8%8A%E6%98%AF%E6%B2%A1%E6%9C%89%E6%98%BE%E7%A4%BA%E8%A1%8C%E5%8F%B7%E3%80%81%E8%AF%AD%E6%B3%95%E9%AB%98%E4%BA%AE%E5%BA%A6%E6%98%BE%E7%A4%BA%E3%80%81%E6%99%BA%E8%83%BD%E7%BC%A9%E8%BF%9B%E7%AD%89%E5%8A%9F%E8%83%BD%E7%9A%84%E3%80%82%E4%B8%BA%E4%BA%86%E6%9B%B4%E5%A5%BD%E7%9A%84%E5%9C%A8vim%E4%B8%8B%E8%BF%9B%E8%A1%8C%E5%B7%A5%E4%BD%9C%EF%BC%8C%E9%9C%80%E8%A6%81%E6%89%8B%E5%8A%A8%E8%AE%BE%E7%BD%AE%E4%B8%80%E4%B8%AA%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%EF%BC%9A-vimrc%E3%80%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>在终端下使用vim进行编辑时，默认情况下，编辑的界面上是没有显示行号、语法高亮度显示、智能缩进等功能的。为了更好的在vim下进行工作，需要手动设置一个配置文件：.vimrc。</h2>
 <p>在启动vim时，当前用户根目录下的.vimrc文件会被自动读取，该文件可以包含一些设置甚至脚本，所以，一般情况下把.vimrc文件创建在当前用户的根目录下比较方便，即创建的命令为：</p>
-
-<h2 id="toc_1">$vi ~/.vimrc</h2>
-
+<h2><a id="vi-vimrc" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>$vi ~/.vimrc</h2>
 <p>然后粘贴下列选项设置：</p>
-
 <pre><code class="language-vim">syntax on &quot;自动语法高亮
 &quot;winpos 5 5          &quot; 设定窗口位置  
 &quot;set lines=40 columns=155    &quot; 设定窗口大小  
@@ -169,7 +165,7 @@ autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java exec &quot;:call SetTitle()&quot;
 &quot;&quot;定义函数SetTitle，自动插入文件头 
 func SetTitle() 
     &quot;如果文件类型为.sh文件 
-    if &amp;filetype == &#39;sh&#39; 
+    if &amp;filetype == 'sh' 
         call setline(1,&quot;\#########################################################################&quot;) 
         call append(line(&quot;.&quot;), &quot;\# File Name: &quot;.expand(&quot;%&quot;)) 
         call append(line(&quot;.&quot;)+1, &quot;\# Author: zll&quot;) 
@@ -187,12 +183,12 @@ func SetTitle()
         call append(line(&quot;.&quot;)+4, &quot; ************************************************************************/&quot;) 
         call append(line(&quot;.&quot;)+5, &quot;&quot;)
     endif
-    if &amp;filetype == &#39;cpp&#39;
+    if &amp;filetype == 'cpp'
         call append(line(&quot;.&quot;)+6, &quot;#include&lt;iostream&gt;&quot;)
         call append(line(&quot;.&quot;)+7, &quot;using namespace std;&quot;)
         call append(line(&quot;.&quot;)+8, &quot;&quot;)
     endif
-    if &amp;filetype == &#39;c&#39;
+    if &amp;filetype == 'c'
         call append(line(&quot;.&quot;)+6, &quot;#include&lt;stdio.h&gt;&quot;)
         call append(line(&quot;.&quot;)+7, &quot;&quot;)
     endif
@@ -228,16 +224,16 @@ map &lt;C-F3&gt; \be
 map &lt;F5&gt; :call CompileRunGcc()&lt;CR&gt;
 func! CompileRunGcc()
     exec &quot;w&quot;
-    if &amp;filetype == &#39;c&#39;
+    if &amp;filetype == 'c'
         exec &quot;!g++ % -o %&lt;&quot;
         exec &quot;! ./%&lt;&quot;
-    elseif &amp;filetype == &#39;cpp&#39;
+    elseif &amp;filetype == 'cpp'
         exec &quot;!g++ % -o %&lt;&quot;
         exec &quot;! ./%&lt;&quot;
-    elseif &amp;filetype == &#39;java&#39; 
+    elseif &amp;filetype == 'java' 
         exec &quot;!javac %&quot; 
         exec &quot;!java %&lt;&quot;
-    elseif &amp;filetype == &#39;sh&#39;
+    elseif &amp;filetype == 'sh'
         :!./%
     endif
 endfunc
@@ -363,15 +359,15 @@ set smartindent
 au BufRead,BufNewFile *  setfiletype txt
 &quot;自动补全
 :inoremap ( ()&lt;ESC&gt;i
-:inoremap ) &lt;c-r&gt;=ClosePair(&#39;)&#39;)&lt;CR&gt;
+:inoremap ) &lt;c-r&gt;=ClosePair(')')&lt;CR&gt;
 :inoremap { {&lt;CR&gt;}&lt;ESC&gt;O
-:inoremap } &lt;c-r&gt;=ClosePair(&#39;}&#39;)&lt;CR&gt;
+:inoremap } &lt;c-r&gt;=ClosePair('}')&lt;CR&gt;
 :inoremap [ []&lt;ESC&gt;i
-:inoremap ] &lt;c-r&gt;=ClosePair(&#39;]&#39;)&lt;CR&gt;
+:inoremap ] &lt;c-r&gt;=ClosePair(']')&lt;CR&gt;
 :inoremap &quot; &quot;&quot;&lt;ESC&gt;i
-:inoremap &#39; &#39;&#39;&lt;ESC&gt;i
+:inoremap ' ''&lt;ESC&gt;i
 function! ClosePair(char)
-    if getline(&#39;.&#39;)[col(&#39;.&#39;) - 1] == a:char
+    if getline('.')[col('.') - 1] == a:char
         return &quot;\&lt;Right&gt;&quot;
     else
         return a:char
@@ -405,7 +401,7 @@ let Tlist_Auto_Open=1
 &quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot; 
 &quot; Tag list (ctags) 
 &quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot; 
-let Tlist_Ctags_Cmd = &#39;/usr/bin/ctags&#39; 
+let Tlist_Ctags_Cmd = '/usr/bin/ctags' 
 let Tlist_Show_One_File = 1 &quot;不同时显示多个文件的tag，只显示当前文件的 
 let Tlist_Exit_OnlyWindow = 1 &quot;如果taglist窗口是最后一个窗口，则退出vim 
 let Tlist_Use_Right_Window = 1 &quot;在右侧窗口中显示taglist窗口
@@ -415,11 +411,8 @@ let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1 
 let g:miniBufExplModSelTarget = 1
 </code></pre>
-
-<h2 id="toc_2">设置完后</h2>
-
+<h2><a id="%E8%AE%BE%E7%BD%AE%E5%AE%8C%E5%90%8E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>设置完后</h2>
 <p>\(:x 或者 \):wq</p>
-
 <p>进行保存退出即可。</p>
 
                   </article>

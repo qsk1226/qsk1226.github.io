@@ -114,52 +114,54 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">正向代理服务器</h2>
-
+                    <h2><a id="%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>正向代理服务器</h2>
 <p>正向代理是一个位于客户端和目标服务器之间的服务器(代理服务器)，为了从目标服务器取得内容，客户端向代理服务器发送一个请求并指定目标，然后代理服务器向目标服务器转交请求并将获得的内容返回给客户端。</p>
-
-<p><figure><img src="media/16117185311755/16117185757355.jpg" alt="正向代理fuwuqi"/><figcaption>正向代理fuwuqi</figcaption></figure></p>
-
-<h2 id="toc_1">反向代理服务器</h2>
-
+<p><figure><img src="media/16117185311755/16117185757355.jpg" alt="正向代理fuwuqi" /><figcaption>正向代理fuwuqi<figcaption></figure></p>
+<h2><a id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>反向代理服务器</h2>
 <p>反向代理是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。</p>
-
-<p><figure><img src="media/16117133488224/16117148072309.jpg" alt="反向代理"/><figcaption>反向代理</figcaption></figure></p>
-
-<h3 id="toc_2">反向代理服务器与正向代理服务器的区别</h3>
-
-<p>正向代理：&quot;代理服务器&quot;代理了&quot;客户端&quot;，去和&quot;目标服务器&quot;进行交互。<br/>
+<p><figure><img src="media/16117133488224/16117148072309.jpg" alt="反向代理" /><figcaption>反向代理<figcaption></figure></p>
+<h3><a id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%8C%BA%E5%88%AB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>反向代理服务器与正向代理服务器的区别</h3>
+<p>正向代理：&quot;代理服务器&quot;代理了&quot;客户端&quot;，去和&quot;目标服务器&quot;进行交互。<br />
 反向代理：&quot;反向代理服务器&quot;代理了&quot;真实的服务提供者&quot;,去和&quot;客户端&quot;进行交互</p>
-
 <ul>
 <li>正向代理其实是客户端的代理，帮助客户端访问其无法访问的服务器资源。反向代理则是服务器的代理，帮助服务器做负载均衡，安全防护等。</li>
 <li>正向代理一般是客户端架设的，比如在自己的机器上安装一个代理软件。而反向代理一般是服务器架设的，比如在自己的机器集群中部署一个反向代理服务器。</li>
 <li>正向代理中，服务器不知道真正的客户端到底是谁，以为访问自己的就是真实的客户端。而在反向代理中，客户端不知道真正的服务器是谁，以为自己访问的就是真实的服务器。</li>
 <li>正向代理和反向代理的作用和目的不同。正向代理主要是用来解决访问限制问题。而反向代理则是提供负载均衡、安全防护等作用。二者均能提高访问速度。</li>
 </ul>
-
-<h4 id="toc_3">正向代理用途</h4>
-
+<h4><a id="%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E7%94%A8%E9%80%94" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>正向代理用途</h4>
 <ul>
-<li><p>突破访问限制<br/>
-例如经常使用的 VPN 科学上网技术</p></li>
-<li><p>提高访问速度<br/>
-可以在代理端做缓存提高响应速度</p></li>
-<li><p>隐藏客户端真实IP<br/>
-网络喷子也可以通过这种方法隐藏自己的IP，免受攻击。</p></li>
+<li>
+<p>突破访问限制<br />
+例如经常使用的 VPN 科学上网技术</p>
+</li>
+<li>
+<p>提高访问速度<br />
+可以在代理端做缓存提高响应速度</p>
+</li>
+<li>
+<p>隐藏客户端真实IP<br />
+网络喷子也可以通过这种方法隐藏自己的IP，免受攻击。</p>
+</li>
 </ul>
-
-<h4 id="toc_4">反向代理用途</h4>
-
+<h4><a id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E7%94%A8%E9%80%94" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>反向代理用途</h4>
 <ul>
-<li><p>隐藏服务器真实IP<br/>
-使用反向代理，可以对客户端隐藏服务器的IP地址。</p></li>
-<li><p>负载均衡<br/>
-反向代理服务器可以做负载均衡，根据所有真实服务器的负载情况，将客户端请求分发到不同的真实服务器上。</p></li>
-<li><p>提高访问速度<br/>
-反向代理服务器可以对于静态内容及短时间内有大量访问请求的动态内容提供缓存服务，提高访问速度。</p></li>
-<li><p>提供安全保障<br/>
-反向代理服务器可以作为应用层防火墙，为网站提供对基于Web的攻击行为（例如DoS/DDoS）的防护，更容易排查恶意软件等。还可以为后端服务器统一提供加密和SSL加速（如SSL终端代理），提供HTTP访问认证等。</p></li>
+<li>
+<p>隐藏服务器真实IP<br />
+使用反向代理，可以对客户端隐藏服务器的IP地址。</p>
+</li>
+<li>
+<p>负载均衡<br />
+反向代理服务器可以做负载均衡，根据所有真实服务器的负载情况，将客户端请求分发到不同的真实服务器上。</p>
+</li>
+<li>
+<p>提高访问速度<br />
+反向代理服务器可以对于静态内容及短时间内有大量访问请求的动态内容提供缓存服务，提高访问速度。</p>
+</li>
+<li>
+<p>提供安全保障<br />
+反向代理服务器可以作为应用层防火墙，为网站提供对基于Web的攻击行为（例如DoS/DDoS）的防护，更容易排查恶意软件等。还可以为后端服务器统一提供加密和SSL加速（如SSL终端代理），提供HTTP访问认证等。</p>
+</li>
 </ul>
 
                   </article>

@@ -115,72 +115,63 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>死锁是必然发生在多操作者(M&gt;=2 个)情况下，争夺多个资源(N&gt;=2 个， 且 N&lt;=M)才会发生这种情况。很明显，单线程自然不会有死锁。同时，死锁还有一个重要的要求，争夺资源的顺序不对，如果争夺资源的顺序是一样的，也不会产生死锁。</p>
-
-<h2 id="toc_0">死锁的发生必须具备以下四个必要条件</h2>
-
+<h2><a id="%E6%AD%BB%E9%94%81%E7%9A%84%E5%8F%91%E7%94%9F%E5%BF%85%E9%A1%BB%E5%85%B7%E5%A4%87%E4%BB%A5%E4%B8%8B%E5%9B%9B%E4%B8%AA%E5%BF%85%E8%A6%81%E6%9D%A1%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>死锁的发生必须具备以下四个必要条件</h2>
 <ul>
 <li>互斥条件:指进程对所分配到的资源进行排它性使用，即在一段时间内 某资源只由一个进程占用。如果此时还有其它进程请求资源，则请求者只能等待， 直至占有资源的进程用毕释放。</li>
 <li>请求和保持条件:指进程已经保持至少一个资源，但又提出了新的资源 请求，而该资源已被其它进程占有，此时请求进程阻塞，但又对自己已获得的其 它资源保持不放。</li>
 <li>不剥夺条件:指进程已获得的资源，在未使用完之前，不能被剥夺，只能在使用完时由自己释放。</li>
 <li>环路等待条件:指在发生死锁时，必然存在一个进程——资源的环形链， 即进程集合{P0，P1，P2，···，Pn}中的 P0 正在等待一个 P1 占用的资源;P1 正在等待 P2 占用的资源，......，Pn 正在等待已被 P0 占用的资源。</li>
 </ul>
-
 <p>死锁示例：</p>
-
 <pre><code class="language-java">public class SynchronizedObjDeadLock {
-    public static void main(String[] args) {
-        new SynchronizedObjDeadLock().deadLock();
-    }
-    
-    private static final Object objectA = new Object();
-    private static final Object objectB = new Object();
+	public static void main(String[] args) {
+		new SynchronizedObjDeadLock().deadLock();
+	}
+	
+	private static final Object objectA = new Object();
+	private static final Object objectB = new Object();
 
-    private void deadLock() {
+	private void deadLock() {
 
-        new Thread(()-&gt;{
-            synchronized (objectA) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(&quot;dA&quot;);
-                synchronized (objectB) {
-                    System.out.println(&quot;dB&quot;);
-                }
-            }
-        }).start();
+		new Thread(()-&gt;{
+			synchronized (objectA) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println(&quot;dA&quot;);
+				synchronized (objectB) {
+					System.out.println(&quot;dB&quot;);
+				}
+			}
+		}).start();
 
-        new Thread(()-&gt;{
-            synchronized (objectB) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(&quot;B&quot;);
-                synchronized (objectA) {
-                    System.out.println(&quot;A&quot;);
-                }
-            }
-        }).start();
+		new Thread(()-&gt;{
+			synchronized (objectB) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println(&quot;B&quot;);
+				synchronized (objectA) {
+					System.out.println(&quot;A&quot;);
+				}
+			}
+		}).start();
 
-    }
+	}
 }
 </code></pre>
-
 <p>java 应用 出现死锁之后怎么解呢？</p>
-
 <p>通过jps 查询java 应用的id，通过jstack id查看应用锁的持有情况，然后针对产生死锁的代码做出调整：</p>
-
 <ul>
 <li>调整申请锁的范围</li>
 <li>调整申请锁的顺序</li>
 </ul>
-
-<h2 id="toc_1">活锁</h2>
-
-<p>两个线程在尝试拿锁的机制中，发生多个线程之间互相谦让，不断发生同一 个线程总是拿到同一把锁，在尝试拿另一把锁时因为拿不到，而将本来已经持有的锁释放的过程。<br/>
+<h2><a id="%E6%B4%BB%E9%94%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>活锁</h2>
+<p>两个线程在尝试拿锁的机制中，发生多个线程之间互相谦让，不断发生同一 个线程总是拿到同一把锁，在尝试拿另一把锁时因为拿不到，而将本来已经持有的锁释放的过程。<br />
 解决办法:每个线程休眠随机数，错开拿锁的时间。</p>
 
                   </article>

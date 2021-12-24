@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    ElasticSearch 检索 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            ElasticSearch 检索   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/12/18</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='ELK.html'>ELK</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <ul>
+<li><a href="#1%E3%80%81%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90">1、数据检索和分析</a>
+<ul>
+<li><a href="#1-1%E3%80%81-search%E6%8E%A5%E5%8F%A3">1.1、_search 接口</a></li>
+</ul>
+</li>
+<li><a href="#2%E3%80%81%E5%9F%BA%E4%BA%8E%E8%AF%8D%E9%A1%B9%E7%9A%84%E6%90%9C%E7%B4%A2">2、基于词项的搜索</a>
+<ul>
+<li><a href="#2-1%E3%80%81term%E6%9F%A5%E8%AF%A2">2.1、term 查询</a></li>
+<li><a href="#2-2%E3%80%81terms%E6%9F%A5%E8%AF%A2">2.2、terms 查询</a></li>
+<li><a href="#2-3%E3%80%81range%E6%9F%A5%E8%AF%A2%E5%92%8C-exists%E6%9F%A5%E8%AF%A2">2.3、range 查询和 exists 查询</a></li>
+<li><a href="#2-4%E3%80%81prefix%E6%9F%A5%E8%AF%A2">2.4、prefix 查询</a></li>
+<li><a href="#2-5%E3%80%81wildcard%E6%9F%A5%E8%AF%A2%E5%92%8C-regexp%E6%9F%A5%E8%AF%A2">2.5、wildcard 查询和 regexp 查询</a></li>
+</ul>
+</li>
+<li><a href="#3%E3%80%81%E5%9F%BA%E4%BA%8E%E5%85%A8%E6%96%87%E7%B4%A2%E5%BC%95%E7%9A%84%E6%A3%80%E7%B4%A2">3、基于全文索引的检索</a>
+<ul>
+<li><a href="#3-1%E3%80%81match%E6%9F%A5%E8%AF%A2">3.1、match 查询</a></li>
+<li><a href="#3-2%E3%80%81match-phrase%E6%9F%A5%E8%AF%A2">3.2、match_phrase 查询</a></li>
+<li><a href="#3-3%E3%80%81multi-match%E6%9F%A5%E8%AF%A2">3.3、multi_match 查询</a></li>
+<li><a href="#3-4%E3%80%81match-phrase-prefix%E6%9F%A5%E8%AF%A2">3.4、match_phrase_prefix 查询</a></li>
+</ul>
+</li>
+<li><a href="#4%E3%80%81%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E3%80%81%E7%BA%A0%E9%94%99%E4%B8%8E%E6%8F%90%E7%A4%BA%E5%99%A8">4、模糊查询、纠错与提示器</a>
+<ul>
+<li><a href="#4-1%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB%E7%AE%97%E6%B3%95">4.1编辑距离算法</a>
+<ul>
+<li><a href="#4-1-1%E3%80%81levenshtein%E7%AE%97%E6%B3%95">4.1.1、Levenshtein算法</a></li>
+<li><a href="#4-1-2%E3%80%81ngram%E7%AE%97%E6%B3%95">4.1.2、NGram 算法</a></li>
+</ul>
+</li>
+<li><a href="#4-1-2%E3%80%81%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2">4.1.2、模糊查询</a></li>
+<li><a href="#%E7%BA%A0%E9%94%99%E4%B8%8E%E6%8F%90%E7%A4%BA%E5%99%A8">纠错与提示器</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2">组合查询</a>
+<ul>
+<li><a href="#bool%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2">bool 组合查询</a></li>
+<li><a href="#dis-max%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2">dis_max 组合查询</a></li>
+<li><a href="#constant-score%E6%9F%A5%E8%AF%A2">constant_score 查询</a></li>
+<li><a href="#boosting%E6%9F%A5%E8%AF%A2">boosting 查询</a></li>
+</ul>
+</li>
+</ul>
+
+<h2><a id="1%E3%80%81%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2%E5%92%8C%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、数据检索和分析</h2>
+<p>为了方便我们学习，我们导入 kibana 为我们提供的范例数据。<br />
+<figure><img src="media/16398107958136/16399184131685.jpg" alt="" /></figure></p>
+<hr />
+<h3><a id="1-1%E3%80%81-search%E6%8E%A5%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.1、_search 接口</h3>
+<p>_search 接口有两种请求方法，一种是基于 URI 的请求方式，另一种是基于请求体的方式，无论哪种，他们执行的语法都是基于 DSL(ES 为我们定义的查询语言，基于 JSON 的查询语言)，只是形式上不同。</p>
+<pre><code class="language-bash">POST /kibana_sample_data_flights/_search
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {
+      
+    }
+  },
+  &quot;from&quot;:0,
+  &quot;size&quot;:10,
+  &quot;sort&quot;: [{&quot;AvgTicketPrice&quot;: {&quot;order&quot;: &quot;desc&quot;}}]
+}
+
+&quot;_source&quot;: [&quot;AvgTicketPrice&quot;,&quot;DistanceMiles&quot;,&quot;Origin*&quot;,&quot;Dest*&quot;]
+&quot;_source&quot;: {
+    &quot;includes&quot;: [&quot;AvgTicketPrice&quot;,&quot;DistanceMiles&quot;,&quot;Dest*&quot;,&quot;origin*&quot;],
+    &quot;excludes&quot;: [&quot;DestRegion&quot;]
+}
+</code></pre>
+<ul>
+<li>
+<p>query-这是搜索请求中最重要的组成部分，它配置了基于评分返回的最佳文档，也包括了你不希望返回哪些文档。</p>
+</li>
+<li>
+<p>size-代表了返回文档的数量</p>
+</li>
+<li>
+<p>from 和 size， 用于指定结果的开始点，以及每“页&quot;结果的数量。<br />
+from 与 size 的和不能超过 index. max_result_window 这个索引配 置项设置的值。默认情况下这个配置项的值为 10000,所以如果要查询 10000 条以 后的文档，就必须要增加这个配置值。</p>
+</li>
+<li>
+<p>_source 指定 _source 字段如何返回。默认是返回完整的 _source 字段。 通过配置 _source, 将过滤返回的字段。如果索引的文档很大，而且无须结果中的 全部内容，就使用这个功能。请注意，如果想使用它，就不能在索引映射中关闭 _ source 字段。</p>
+</li>
+<li>
+<p>sort 默认的排序是基于文档的得分 _score 的。如果并不关心得分，或者期望许多文档的得分相同，添加额外的 sort 将帮助你控制哪些文档被返回</p>
+</li>
+</ul>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 6,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 10000,
+      &quot;relation&quot; : &quot;gte&quot;
+    },
+    &quot;max_score&quot; : 1.0,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;kibana_sample_data_flights&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;kMrI0n0BBQs7jchubFRe&quot;,
+        &quot;_score&quot; : 1.0,
+        &quot;_source&quot; : {
+          &quot;FlightNum&quot; : &quot;9HY9SWR&quot;,
+          &quot;DestCountry&quot; : &quot;AU&quot;,
+          &quot;OriginWeather&quot; : &quot;Sunny&quot;,
+          &quot;OriginCityName&quot; : &quot;Frankfurt am Main&quot;,
+          &quot;AvgTicketPrice&quot; : 841.2656419677076,
+          &quot;DistanceMiles&quot; : 10247.856675613455,
+          &quot;FlightDelay&quot; : false,
+          &quot;DestWeather&quot; : &quot;Rain&quot;,
+          &quot;Dest&quot; : &quot;Sydney Kingsford Smith International Airport&quot;,
+          &quot;FlightDelayType&quot; : &quot;No Delay&quot;,
+          &quot;OriginCountry&quot; : &quot;DE&quot;,
+          &quot;dayOfWeek&quot; : 0,
+          &quot;DistanceKilometers&quot; : 16492.32665375846,
+          &quot;timestamp&quot; : &quot;2021-12-13T00:00:00&quot;,
+          &quot;DestLocation&quot; : {
+            &quot;lat&quot; : &quot;-33.94609833&quot;,
+            &quot;lon&quot; : &quot;151.177002&quot;
+          },
+          &quot;DestAirportID&quot; : &quot;SYD&quot;,
+          &quot;Carrier&quot; : &quot;Kibana Airlines&quot;,
+          &quot;Cancelled&quot; : false,
+          &quot;FlightTimeMin&quot; : 1030.7704158599038,
+          &quot;Origin&quot; : &quot;Frankfurt am Main Airport&quot;,
+          &quot;OriginLocation&quot; : {
+            &quot;lat&quot; : &quot;50.033333&quot;,
+            &quot;lon&quot; : &quot;8.570556&quot;
+          },
+          &quot;DestRegion&quot; : &quot;SE-BD&quot;,
+          &quot;OriginAirportID&quot; : &quot;FRA&quot;,
+          &quot;OriginRegion&quot; : &quot;DE-HE&quot;,
+          &quot;DestCityName&quot; : &quot;Sydney&quot;,
+          &quot;FlightTimeHour&quot; : 17.179506930998397,
+          &quot;FlightDelayMin&quot; : 0
+        }
+      }
+    ]
+  }
+}
+
+</code></pre>
+<ul>
+<li>took - Elasticsearch 执行搜索的时间（毫秒）</li>
+<li>time_out - 告诉我们搜索是否超时</li>
+<li>_shards - 告诉我们多少个分片被搜索了，以及统计了成功/失败的搜索分片</li>
+<li>hits - 搜索结果</li>
+<li>hits.total - 搜索结果</li>
+<li>hits.hits - 实际的搜索结果数组（默认为前 10 的文档）</li>
+<li>sort - 结果的排序 key（键）（没有则按 score 排序）</li>
+<li>score 和max_score -现在暂时忽略这些字段</li>
+</ul>
+<hr />
+<h2><a id="2%E3%80%81%E5%9F%BA%E4%BA%8E%E8%AF%8D%E9%A1%B9%E7%9A%84%E6%90%9C%E7%B4%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2、基于词项的搜索</h2>
+<h3><a id="2-1%E3%80%81term%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.1、term 查询</h3>
+<p>对词项做精确匹配,对于字符串而言，字符串的精确匹配是指字符的大小写，字符的数量和位置都是相同的,词条(term)查询使用字符的完全匹配方式进行文本搜索，词条查询不会分析(analyze)查询字符串，给定的字段必须完全匹配词条查询中指定的 字符串。<br />
+可以及将 term 理解为 关系型数据库 SQL语句中 where 条件的等于号</p>
+<pre><code class="language-bash">GET kibana_sample_data_flights/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;OriginCityName&quot;: &quot;Manchester&quot;
+    }
+  }
+}
+</code></pre>
+<h3><a id="2-2%E3%80%81terms%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.2、terms 查询</h3>
+<p>可以把 terms 查询理解为 关系型数据库 SQL 语句中 where 条件的 in 操作符</p>
+<pre><code class="language-bash">GET kibana_sample_data_flights/_search
+{
+  &quot;query&quot;: {
+    &quot;terms&quot;: {
+      &quot;OriginCityName&quot;: [&quot;Manchester&quot;,&quot;Olenegorsk&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Elasticsearch 在 terms 查询中还支持跨索引查询，这类似于关系型数据库中 的一对多或多对多关系。<a href="https://www.infoq.cn/article/ekygoihkqifj4kdgso6a">跨索引查询</a></p>
+<pre><code class="language-bash">POST /articles/_search
+{
+  &quot;query&quot;: {
+    &quot;terms&quot;: {
+      &quot;_id&quot;: {
+        &quot;index&quot;: &quot;users&quot;,
+        &quot;id&quot;: 1,
+        &quot;path&quot;: &quot;articles&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h3><a id="2-3%E3%80%81range%E6%9F%A5%E8%AF%A2%E5%92%8C-exists%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.3、range 查询和 exists 查询</h3>
+<p>查询介于一定范围之内的值，适用于数字、日期甚至是字符串。</p>
+<p>可以查询出延误时间在 100~200 之间的航班:</p>
+<pre><code class="language-bash">GET kibana_sample_data_flights/_search
+{
+  &quot;query&quot;: {
+    &quot;range&quot;: {
+      &quot;FlightDelayMin&quot;: {
+        &quot;gte&quot;: 100,
+        &quot;lte&quot;: 200
+      }
+    }
+  }
+}
+</code></pre>
+<p>gte:大于等于 (greater than and equal)<br />
+gt:大于 (greater than)<br />
+lte:小于等于 (less than and equal)<br />
+lt:大于 (less than )<br />
+boost:相关性评分(后面的章节会讲到相关性评分)<br />
+exists 查询检索字段值不为空的的文档，无论其值是多少，在查询中通过 field 字段设置检查非空的字段名称，只能有一个。</p>
+<h3><a id="2-4%E3%80%81prefix%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.4、prefix 查询</h3>
+<p>prefix 查询允许你根据给定的前缀来搜索词条，这里前缀在同样搜索之前是<br />
+没有经过分析的。</p>
+<p>找到航班目的国家中所有以 C 开头的文档:</p>
+<pre><code class="language-bash">GET kibana_sample_data_flights/_search
+{
+  &quot;query&quot;: {
+    &quot;prefix&quot;: {
+      &quot;DestCountry&quot;: &quot;C&quot;
+    }
+  }
+}
+</code></pre>
+<h3><a id="2-5%E3%80%81wildcard%E6%9F%A5%E8%AF%A2%E5%92%8C-regexp%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2.5、wildcard 查询和 regexp 查询</h3>
+<p>--</p>
+<h2><a id="3%E3%80%81%E5%9F%BA%E4%BA%8E%E5%85%A8%E6%96%87%E7%B4%A2%E5%BC%95%E7%9A%84%E6%A3%80%E7%B4%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3、基于全文索引的检索</h2>
+<p>开始基于全文索引的检索学习之前先了解一下 ES 的文本分析：<br />
+<a href="16399269127746.html">ElasticSearch 文本分析</a></p>
+<h3><a id="3-1%E3%80%81match%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1、match 查询</h3>
+<pre><code class="language-bash">PUT /crazy
+{
+  &quot;settings&quot;: {
+    &quot;number_of_shards&quot;: 3,
+    &quot;number_of_replicas&quot;: 2,
+    &quot;analysis&quot;: {
+      &quot;analyzer&quot;: {
+        &quot;default&quot;: {
+          &quot;type&quot;: &quot;ik_smart&quot;
+        },
+        &quot;default_seach&quot;: {
+          &quot;type&quot;: &quot;whitespace&quot;
+        }
+      }
+    }
+  },
+  &quot;mappings&quot;: {
+    &quot;properties&quot;: {
+      &quot;id&quot;: {
+        &quot;type&quot;: &quot;integer&quot;
+      },
+      &quot;name&quot;: {
+        &quot;type&quot;: &quot;keyword&quot;
+      },
+      &quot;age&quot;: {
+        &quot;type&quot;: &quot;long&quot;
+      },
+      &quot;birth&quot;: {
+        &quot;type&quot;: &quot;date&quot;
+      },
+      &quot;desc&quot;: {
+        &quot;type&quot;: &quot;text&quot;
+      },
+      &quot;tag&quot;: {
+        &quot;type&quot;: &quot;text&quot;
+      }
+    }
+  }
+}
+
+POST /crazy/_doc
+{
+  &quot;name&quot;: &quot;疯子&quot;,
+  &quot;age&quot;: 23,
+  &quot;birth&quot;: &quot;1997-06-06&quot;,
+  &quot;desc&quot;: &quot;疯子学elk来了&quot;,
+  &quot;tag&quot;: [
+    &quot;JAVA&quot;,
+    &quot;帅哥&quot;,
+    &quot;HTML&quot;,
+    &quot;暖男&quot;,
+    &quot;看书&quot;
+  ]
+}
+POST /crazy/_doc
+{
+  &quot;name&quot;: &quot;小傻子&quot;,
+  &quot;age&quot;: 20,
+  &quot;birth&quot;: &quot;2000-12-20&quot;,
+  &quot;desc&quot;: &quot;傻子不爱吃苹果&quot;,
+  &quot;tag&quot;: [
+    &quot;游戏&quot;,
+    &quot;直播&quot;,
+    &quot;直男&quot;,
+    &quot;渣男&quot;,
+    &quot;旅游&quot;
+  ]
+}
+POST /crazy/_doc
+{
+  &quot;name&quot;: &quot;张张三&quot;,
+  &quot;age&quot;: 5,
+  &quot;birth&quot;: &quot;2015-02-20&quot;,
+  &quot;desc&quot;: &quot;张三5岁了，他也不爱吃苹果&quot;,
+  &quot;tag&quot;: [
+    &quot;萌宝&quot;,
+    &quot;游戏&quot;,
+    &quot;小暖男&quot;,
+    &quot;睡觉&quot;,
+    &quot;玩具&quot;
+  ]
+}
+POST /crazy/_doc
+{
+  &quot;name&quot;: &quot;李四&quot;,
+  &quot;age&quot;: 50,
+  &quot;birth&quot;: &quot;1970-04-25&quot;,
+  &quot;desc&quot;: &quot;李四50岁了，她爱吃香蕉，是个老太太&quot;,
+  &quot;tag&quot;: [
+    &quot;老人&quot;,
+    &quot;听戏&quot;,
+    &quot;散步&quot;,
+    &quot;睡觉&quot;,
+    &quot;老太婆&quot;
+  ]
+}
+POST /crazy/_doc
+{
+  &quot;name&quot;: &quot;王五五&quot;,
+  &quot;age&quot;: 30,
+  &quot;birth&quot;: &quot;1990-09-25&quot;,
+  &quot;desc&quot;: &quot;王五爱吃苹果，还学java，也爱吃香蕉&quot;,
+  &quot;tag&quot;: [
+    &quot;直男&quot;,
+    &quot;技术宅&quot;,
+    &quot;睡觉&quot;,
+    &quot;听音乐&quot;,
+    &quot;大佬&quot;
+  ]
+}
+</code></pre>
+<pre><code class="language-bash">GET /crazy/_search
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;desc&quot;: {
+        &quot;query&quot;: &quot;苹果 香蕉&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 496,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 3,
+    &quot;successful&quot; : 3,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 4,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : 1.6285594,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;k8oS3n0BBQs7jchulL4s&quot;,
+        &quot;_score&quot; : 1.6285594,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;小傻子&quot;,
+          &quot;age&quot; : 20,
+          &quot;birth&quot; : &quot;2000-12-20&quot;,
+          &quot;desc&quot; : &quot;傻子不爱吃苹果&quot;,
+          &quot;tag&quot; : [
+            &quot;游戏&quot;,
+            &quot;直播&quot;,
+            &quot;直男&quot;,
+            &quot;渣男&quot;,
+            &quot;旅游&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;lMoS3n0BBQs7jchunb7W&quot;,
+        &quot;_score&quot; : 1.2199391,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;张张三&quot;,
+          &quot;age&quot; : 5,
+          &quot;birth&quot; : &quot;2015-02-20&quot;,
+          &quot;desc&quot; : &quot;张三5岁了，他也不爱吃苹果&quot;,
+          &quot;tag&quot; : [
+            &quot;萌宝&quot;,
+            &quot;游戏&quot;,
+            &quot;小暖男&quot;,
+            &quot;睡觉&quot;,
+            &quot;玩具&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;lcoS3n0BBQs7jchupb7G&quot;,
+        &quot;_score&quot; : 1.2067741,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;李四&quot;,
+          &quot;age&quot; : 50,
+          &quot;birth&quot; : &quot;1970-04-25&quot;,
+          &quot;desc&quot; : &quot;李四50岁了，她爱吃香蕉，是个老太太&quot;,
+          &quot;tag&quot; : [
+            &quot;老人&quot;,
+            &quot;听戏&quot;,
+            &quot;散步&quot;,
+            &quot;睡觉&quot;,
+            &quot;老太婆&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;lsoS3n0BBQs7jchurb4k&quot;,
+        &quot;_score&quot; : 1.1507283,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;王五五&quot;,
+          &quot;age&quot; : 30,
+          &quot;birth&quot; : &quot;1990-09-25&quot;,
+          &quot;desc&quot; : &quot;王五爱吃苹果，还学java，也爱吃香蕉&quot;,
+          &quot;tag&quot; : [
+            &quot;直男&quot;,
+            &quot;技术宅&quot;,
+            &quot;睡觉&quot;,
+            &quot;听音乐&quot;,
+            &quot;大佬&quot;
+          ]
+        }
+      }
+    ]
+  }
+}
+
+</code></pre>
+<p>看上面的query查询，查询字符串是“苹果 香蕉”，被分析器分词之后，产生过两个词 苹果、香蕉，然后根据分析的结果构造一个布尔查询，只要desc里面包含任意一个关键字 苹果或香蕉，文档就会被返回</p>
+<p>匹配查询的行为受到两个参数的控制:</p>
+<ul>
+<li>operator:表示单个字段如何匹配查询条件的分词,默认值是 or，可设置为 and</li>
+<li>minimum_should_match:表示字段匹配的条件数量,默认是1，等于 2 的时候，需要同时满足苹果、香蕉的文档才会返回。</li>
+</ul>
+<h3><a id="3-2%E3%80%81match-phrase%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.2、match_phrase 查询</h3>
+<p>当希望寻找邻近的单词时，match_phrase 查询可以帮你达到目的。<br />
+例如下面这个，desc中 经过 _analyzer接口分析后王五和香蕉之间相差7各个分词，其中 slop 参数缺省为 0，它告诉 match_phrase 查询词项能够最远相隔多远时仍然将文档视为匹配。</p>
+<pre><code class="language-bash">GET /crazy/_search
+{
+  &quot;query&quot;: {
+    &quot;match_phrase&quot;: {
+      &quot;desc&quot;: {
+        &quot;query&quot;: &quot;王五 香蕉&quot;,
+        &quot;slop&quot;: 7
+      }
+    }
+  }
+}
+</code></pre>
+<p>response :</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 0,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 3,
+    &quot;successful&quot; : 3,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 1,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : 0.33427334,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;oMom3n0BBQs7jchu8b7d&quot;,
+        &quot;_score&quot; : 0.33427334,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;王五五&quot;,
+          &quot;age&quot; : 30,
+          &quot;birth&quot; : &quot;1990-09-25&quot;,
+          &quot;desc&quot; : &quot;王五爱吃苹果，还学java，也爱吃香蕉&quot;,
+          &quot;tag&quot; : [
+            &quot;直男&quot;,
+            &quot;技术宅&quot;,
+            &quot;睡觉&quot;,
+            &quot;听音乐&quot;,
+            &quot;大佬&quot;
+          ]
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+<h3><a id="3-3%E3%80%81multi-match%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.3、multi_match 查询</h3>
+<p>多个字段上执行匹配相同的查询，叫做&quot;multi_match&quot;查询</p>
+<pre><code class="language-bash">POST /crazy/_search
+{
+  &quot;query&quot;: {
+    &quot;multi_match&quot;: {
+      &quot;query&quot;: &quot;疯子&quot;,
+      &quot;fields&quot;: [
+        &quot;desc&quot;,
+        &quot;name&quot;
+      ]
+    }
+  }
+}
+</code></pre>
+<p>response :</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 2,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 3,
+    &quot;successful&quot; : 3,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 2,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : 0.8514803,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;o8q64n0BBQs7jchuxL6Z&quot;,
+        &quot;_score&quot; : 0.8514803,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;疯子&quot;,
+          &quot;age&quot; : 23,
+          &quot;birth&quot; : &quot;1997-06-06&quot;,
+          &quot;desc&quot; : &quot;疯子不疯魔&quot;,
+          &quot;tag&quot; : [
+            &quot;JAVA&quot;,
+            &quot;帅哥&quot;,
+            &quot;HTML&quot;,
+            &quot;暖男&quot;,
+            &quot;看书&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;nMom3n0BBQs7jchu0b6J&quot;,
+        &quot;_score&quot; : 0.8405091,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;疯子&quot;,
+          &quot;age&quot; : 23,
+          &quot;birth&quot; : &quot;1997-06-06&quot;,
+          &quot;desc&quot; : &quot;疯子学elk来了&quot;,
+          &quot;tag&quot; : [
+            &quot;JAVA&quot;,
+            &quot;帅哥&quot;,
+            &quot;HTML&quot;,
+            &quot;暖男&quot;,
+            &quot;看书&quot;
+          ]
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+<p>提升字段权重，在查询字段后使用 ^ 符号可以提高字段的权重，增加字段的分数 _score, 提升权限之后，另一个的 _score 会变成提升过权重的分数值。</p>
+<pre><code class="language-bash">POST /crazy/_search
+{
+  &quot;query&quot;: {
+    &quot;multi_match&quot;: {
+      &quot;query&quot;: &quot;疯子&quot;,
+      &quot;fields&quot;: [
+        &quot;desc&quot;,
+        &quot;name^3&quot;
+      ]
+    }
+  }
+}
+
+</code></pre>
+<p>response：</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 0,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 3,
+    &quot;successful&quot; : 3,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 2,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : 2.0794415,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;nMom3n0BBQs7jchu0b6J&quot;,
+        &quot;_score&quot; : 2.0794415,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;疯子&quot;,
+          &quot;age&quot; : 23,
+          &quot;birth&quot; : &quot;1997-06-06&quot;,
+          &quot;desc&quot; : &quot;疯子学elk来了&quot;,
+          &quot;tag&quot; : [
+            &quot;JAVA&quot;,
+            &quot;帅哥&quot;,
+            &quot;HTML&quot;,
+            &quot;暖男&quot;,
+            &quot;看书&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;crazy&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;o8q64n0BBQs7jchuxL6Z&quot;,
+        &quot;_score&quot; : 2.0794415,
+        &quot;_source&quot; : {
+          &quot;name&quot; : &quot;疯子&quot;,
+          &quot;age&quot; : 23,
+          &quot;birth&quot; : &quot;1997-06-06&quot;,
+          &quot;desc&quot; : &quot;疯子不疯魔&quot;,
+          &quot;tag&quot; : [
+            &quot;JAVA&quot;,
+            &quot;帅哥&quot;,
+            &quot;HTML&quot;,
+            &quot;暖男&quot;,
+            &quot;看书&quot;
+          ]
+        }
+      }
+    ]
+  }
+}
+
+</code></pre>
+<p>如果在 multimatch 查询中不指定 fields 参数，默认会将文档中的所有字段都匹配一遍。但不建议这么做，可能会出现性能问题，也没有什么意义。</p>
+<h3><a id="3-4%E3%80%81match-phrase-prefix%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.4、match_phrase_prefix 查询</h3>
+<p>被称为基于前缀的短语匹配</p>
+<hr />
+<h2><a id="4%E3%80%81%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E3%80%81%E7%BA%A0%E9%94%99%E4%B8%8E%E6%8F%90%E7%A4%BA%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4、模糊查询、纠错与提示器</h2>
+<h3><a id="4-1%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB%E7%AE%97%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.1编辑距离算法</h3>
+<p>在ES基于全文的查询中，除了与短语相关的查询之外，其余查询都包含一个名为fuzziness 的参数用于支持模糊查询。ES 支持的模糊查询与 SQL语言中的模糊查询不一样，SQL 的模糊查询使用 “%keyword%” 的形式，效果是查询字段值中包含 keyword的记录。</p>
+<p>ES支持的模糊查询比这个要强，他可以根据一个拼写错误的词项匹配正确的结果，例如根据 firefix 查询到 firefox。在自然语言处理领域，两个词项之间的差异通常称为距离或编辑距离。距离的大小用于说明两个词项之间差异的大小。</p>
+<p>编辑距离的算法有多种，在 ES中主要使用 Levenshtein 和 NGram 两种。其他的与此相关的算法也都是在这两种算法的基础上进行的改造，基本思想都是一致的。所以掌握这两种算法的核心思想是很有必要的。</p>
+<h4><a id="4-1-1%E3%80%81levenshtein%E7%AE%97%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.1.1、Levenshtein算法</h4>
+<p>Levenshtein 算法是前苏联数学家 Vladimir Levenshein 在 1965 年开发的一套算法，这个算法可以对两个字符间的差异成都做量化。量化结果是一个正整数，反映的是一个字符变成另一个字符最少要多少次处理。由于 Levenshtein 算法是最为普遍接收的编辑距离算法，所以在很多文献中如果没有特殊说明编辑距离算法就是指 Levenshtein 算法。</p>
+<p>在 Levenshtein 算法中定义了三种字符操作（替换、插入、删除），后来又补充了一个换位操作。在转换过程中，每执行一次操作编辑距离就 +1，编辑距离越大说明两个字符串之间的差距越大。</p>
+<p>firefix 到 firefox 需要将 i 替换成 o，所以编辑距离为 1，</p>
+<p>fax 到 fair需要将x替换成i并在结尾处插入r，编辑距离为 2</p>
+<p>编辑距离同样为 2 的情况下，fax 到 fair 与 从 elastesearsh 到 elasticsearch ,后面elastesearsh 是由拼写错误引起的可能性就更大。所以编辑距离相同的情况下，单词越长错误与正确就越接近。</p>
+<h4><a id="4-1-2%E3%80%81ngram%E7%AE%97%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.1.2、NGram 算法</h4>
+<p>NGram 一般是指 N 个连续的字符，具体的字符个数被定义为 NGram 的 size。</p>
+<p>size 为 1 的 NGram 称为 Unigram, size 为 2 时称为 Bigram,而 size 为 3 时则称为 Trigram。如果NGram 处理的单元不是字符而是单词，一般被称为 Shingle。使用NGram计算编辑距离的基本思想是让字符串分解为 NGram,然后比较分解后共有的 NGram 数量。</p>
+<p>有两个字符串 a、b，则 NGram 距离的具体运算公式为：</p>
+<blockquote>
+<p>ngram(a) +ngram(b) - 2* (ngram(a)\(∩\)ngram(b))</p>
+</blockquote>
+<p>公式中 ngram(a)和ngram(b)代表 a、b两个字符串NGram的数量，ngram(a)\(∩\)ngram(b) 则是两者共有的 NGram 的数量。</p>
+<p>例如按Bigram处理 firefix 和firefox两个单词，分别为 “fi,ir,re,ef,fi,ix” 和 “fi,ir,re,ef,fo,ox”。那么两个字符串的 Bigram 个数为 6，共有的Bigram 为4，则最终 Ngram 距离为 6+6-2*4=4</p>
+<p>在应用上，Levenshtein 算法更多的应用于单个词项的模糊查询上，而NGram则应用于多个词项匹配中。ES同时应用了两种算法。</p>
+<h3><a id="4-1-2%E3%80%81%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4.1.2、模糊查询</h3>
+<p>返回包含与搜索字词相似的字词文档;为了找到相似的术语，fuzzy 查询将在指定的编辑距离内创建一组搜索词的所有可能的变体或扩展。查询然后返回每个扩展的完全匹配。</p>
+<pre><code class="language-bash">POST /kibana_sample_data_logs/_search
+{
+  &quot;query&quot;: {
+    &quot;fuzzy&quot;: {
+      &quot;agent&quot;: {
+        &quot;value&quot;: &quot;mozilla&quot;,
+        &quot;fuzziness&quot;: 1
+      }
+    }
+  }
+}
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+    &quot;took&quot;:0,
+    &quot;timed_out&quot;:false,
+    &quot;_shards&quot;:{
+        &quot;total&quot;:1,
+        &quot;successful&quot;:1,
+        &quot;skipped&quot;:0,
+        &quot;failed&quot;:0
+    },
+    &quot;hits&quot;:{
+        &quot;total&quot;:{
+            &quot;value&quot;:10000,
+            &quot;relation&quot;:&quot;gte&quot;
+        },
+        &quot;max_score&quot;:0.000037115216,
+        &quot;hits&quot;:[
+            {
+                &quot;_index&quot;:&quot;kibana_sample_data_logs&quot;,
+                &quot;_type&quot;:&quot;_doc&quot;,
+                &quot;_id&quot;:&quot;k8rI0n0BBQs7jchue4fn&quot;,
+                &quot;_score&quot;:0.000037115216,
+                &quot;_source&quot;:{
+                    &quot;agent&quot;:&quot;Mozilla/5.0 (X11; Linux x86_64; rv:6.0a1) Gecko/20110421 Firefox/6.0a1&quot;,
+                    &quot;bytes&quot;:6219,
+                    &quot;clientip&quot;:&quot;223.87.60.27&quot;,
+                    &quot;extension&quot;:&quot;deb&quot;,
+                    &quot;geo&quot;:{
+                        &quot;srcdest&quot;:&quot;IN:US&quot;,
+                        &quot;src&quot;:&quot;IN&quot;,
+                        &quot;dest&quot;:&quot;US&quot;,
+                        &quot;coordinates&quot;:{
+                            &quot;lat&quot;:39.41042861,
+                            &quot;lon&quot;:-88.8454325
+                        }
+                    },
+                    &quot;host&quot;:&quot;artifacts.elastic.co&quot;,
+                    &quot;index&quot;:&quot;kibana_sample_data_logs&quot;,
+                    &quot;ip&quot;:&quot;223.87.60.27&quot;,
+                    &quot;machine&quot;:{
+                        &quot;ram&quot;:8589934592,
+                        &quot;os&quot;:&quot;win 8&quot;
+                    },
+                    &quot;memory&quot;:null,
+                    &quot;message&quot;:&quot;223.87.60.27 - - [2018-07-22T00:39:02.912Z] \&quot;GET /elasticsearch/elasticsearch-6.3.2.deb_1 HTTP/1.1\&quot; 200 6219 \&quot;-\&quot; \&quot;Mozilla/5.0 (X11; Linux x86_64; rv:6.0a1) Gecko/20110421 Firefox/6.0a1\&quot;&quot;,
+                    &quot;phpmemory&quot;:null,
+                    &quot;referer&quot;:&quot;http://twitter.com/success/wendy-lawrence&quot;,
+                    &quot;request&quot;:&quot;/elasticsearch/elasticsearch-6.3.2.deb&quot;,
+                    &quot;response&quot;:200,
+                    &quot;tags&quot;:[
+                        &quot;success&quot;,
+                        &quot;info&quot;
+                    ],
+                    &quot;timestamp&quot;:&quot;2021-12-12T00:39:02.912Z&quot;,
+                    &quot;url&quot;:&quot;https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.2.deb_1&quot;,
+                    &quot;utc_time&quot;:&quot;2021-12-12T00:39:02.912Z&quot;,
+                    &quot;event&quot;:{
+                        &quot;dataset&quot;:&quot;sample_web_logs&quot;
+                    }
+                }
+            },
+            .......
+        ]
+    }
+}
+</code></pre>
+<ul>
+<li>value，必填项，希望在 field 中找到的术语</li>
+<li>fuzziness，选填项，匹配允许的最大编辑距离;可以被设置为“0”， “1”， “2”或“auto”。“auto”是推荐的选项，它会根据查询词的长度定义距离。</li>
+<li>max_expansions，选填项，创建的最大变体项，默认为 50。应该避免使用较 大的值，尤其是当 prefix_length 参数值为 0 时，如果过多，会影响查找性能。</li>
+<li>prefix_length，选填项，创建扩展时保留不变的开始字符数。默认为 0</li>
+<li>transpositions，选填项，指示编辑是否包括两个相邻字符串的转置(ab→ba)。<br />
+默认为 true。</li>
+</ul>
+<h3><a id="%E7%BA%A0%E9%94%99%E4%B8%8E%E6%8F%90%E7%A4%BA%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>纠错与提示器</h3>
+<hr />
+<h2><a id="%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>组合查询</h2>
+<h3><a id="bool%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>bool 组合查询</h3>
+<p>bool 组合查询将一组布尔类型子句组合起来， 形成个大的布尔条件。在它的子句中，一些子句的确会决定文档是否会作为结果返回，而另一些子句则不决定文档是否可以作为结果，但会影响到结果的相关度。</p>
+<p>bool组合查询可用的布尔类型子句包括 must、filter、should 和 must_not 四 种，它们接收参数值的类型为数组。</p>
+<ul>
+<li>must 查询结果中必须要包含的内容，影响相关度</li>
+<li>filter 查询结果中必须要包含的内容，不会影响相关度</li>
+<li>should 查询结果非必须包含项，包含了会提高分数，影响相关度</li>
+<li>must_not 查询结果中不能包含的内容，不会影响相关度</li>
+</ul>
+<p>filter 和 must _not 单纯只用于过滤文档，它们对文档相关度没有任何影响，也就是这两种子句对查询结果的 _score 没有影响。</p>
+<p>should 对执行结果影响相关度，但在是否过滤结果上则取决于上下文。当 should 子句与 must 子句或 filter 子句同时出现在子句中时，should 子句将不会过滤结果。也就是说，在这种情况下，即使 should 子句不满足，结果也会返回。</p>
+<pre><code class="language-bash">POST /kibana_sample_data_logs/_search
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        {
+          &quot;match&quot;: {
+            &quot;message&quot;: {
+              &quot;query&quot;: &quot;firefox&quot;
+            }
+          }
+        }
+      ],
+      &quot;should&quot;: [
+        {
+          &quot;term&quot;: {
+            &quot;geo.src&quot;: {
+              &quot;value&quot;: &quot;CN&quot;
+            }
+          }
+        },
+        {
+          &quot;term&quot;: {
+            &quot;geo.dest&quot;: {
+              &quot;value&quot;: &quot;CN&quot;
+            }
+          }
+        }
+      ]
+    }
+  },
+  &quot;sort&quot;: [
+    {
+      &quot;_score&quot;: {
+        &quot;order&quot;: &quot;asc&quot;
+      }
+    }
+  ]
+}
+
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 13,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 5362,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : null,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;kibana_sample_data_logs&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;EMrI0n0BBQs7jchue4jn&quot;,
+        &quot;_score&quot; : 0.923208,
+        &quot;_source&quot; : {
+          &quot;agent&quot; : &quot;Mozilla/5.0 (X11; Linux x86_64; rv:6.0a1) Gecko/20110421 Firefox/6.0a1&quot;,
+          &quot;bytes&quot; : 7309,
+          &quot;clientip&quot; : &quot;116.183.201.95&quot;,
+          &quot;extension&quot; : &quot;zip&quot;,
+          &quot;geo&quot; : {
+            &quot;srcdest&quot; : &quot;ID:ID&quot;,
+            &quot;src&quot; : &quot;ID&quot;,
+            &quot;dest&quot; : &quot;ID&quot;,
+            &quot;coordinates&quot; : {
+              &quot;lat&quot; : 34.91572222,
+              &quot;lon&quot; : -81.9565
+            }
+          },
+          &quot;host&quot; : &quot;artifacts.elastic.co&quot;,
+          &quot;index&quot; : &quot;kibana_sample_data_logs&quot;,
+          &quot;ip&quot; : &quot;116.183.201.95&quot;,
+          &quot;machine&quot; : {
+            &quot;ram&quot; : 13958643712,
+            &quot;os&quot; : &quot;win xp&quot;
+          },
+          &quot;memory&quot; : null,
+          &quot;message&quot; : &quot;116.183.201.95 - - [2018-07-22T12:21:13.414Z] \&quot;GET /apm-server/apm-server-6.3.2-windows-x86.zip HTTP/1.1\&quot; 200 7309 \&quot;-\&quot; \&quot;Mozilla/5.0 (X11; Linux x86_64; rv:6.0a1) Gecko/20110421 Firefox/6.0a1\&quot;&quot;,
+          &quot;phpmemory&quot; : null,
+          &quot;referer&quot; : &quot;http://www.elastic-elastic-elastic.com/success/edward-white&quot;,
+          &quot;request&quot; : &quot;/apm-server/apm-server-6.3.2-windows-x86.zip&quot;,
+          &quot;response&quot; : 200,
+          &quot;tags&quot; : [
+            &quot;success&quot;,
+            &quot;security&quot;
+          ],
+          &quot;timestamp&quot; : &quot;2021-12-12T12:21:13.414Z&quot;,
+          &quot;url&quot; : &quot;https://artifacts.elastic.co/downloads/apm-server/apm-server-6.3.2-windows-x86.zip&quot;,
+          &quot;utc_time&quot; : &quot;2021-12-12T12:21:13.414Z&quot;,
+          &quot;event&quot; : {
+            &quot;dataset&quot; : &quot;sample_web_logs&quot;
+          }
+        },
+        &quot;sort&quot; : [
+          0.923208
+        ]
+      }
+    ]
+  }
+}
+
+</code></pre>
+<p>通过按照_score 升序排序可以看到 不符合 should 条件的文档也被搜索出来了。</p>
+<p>但是如果在查询条件中将 must 子句删除，那么 should 子句就至少要满足有一条。should 子句需要满足的个数由 query 的 minimum_should_match 参数决定， 默认情况下它的值为 1。</p>
+<p>布尔查询在计算相关性得分时，采取了匹配越多分值越高的策略。由于 filter 和 must_not 不参与分值运算，所以文档的最后得分是 must 和 should 子句的相 关性分值相加后返回给用户。</p>
+<h3><a id="dis-max%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>dis_max 组合查询</h3>
+<p>dis_max 查询也是种组合查询， 只是它在计算相关性度时与 bool 查询不同。 dis_max 查询在计算相关性分值时，会在子查询中取最大相关性分值为最终相关性分值结果，而忽略其他子查询的相关性得分。dis_max 查询通过 queries 参数 接收对象的数组。</p>
+<pre><code class="language-bash">POST /kibana_sample_data_logs/_search
+{
+  &quot;query&quot;: {
+    &quot;dis_max&quot;: {
+      &quot;queries&quot;: [
+        
+        {
+          &quot;term&quot;: {
+            &quot;geo.src&quot;: &quot;CN&quot;
+          }
+        },
+        {
+          &quot;term&quot;: {
+            &quot;geo.dest&quot;: &quot;CN&quot;
+          }
+        },
+        {
+          &quot;match&quot;: {
+            &quot;message&quot;: &quot;firefox&quot;
+          }
+        }
+      ]
+    }
+  },
+  &quot;_source&quot;: [&quot;geo&quot;, &quot;agent&quot;,&quot;request&quot;]
+}
+
+&quot;tie_breaker&quot;: 0.7
+</code></pre>
+<p>response:</p>
+<pre><code class="language-json">{
+  &quot;took&quot; : 2,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 1,
+    &quot;successful&quot; : 1,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : {
+      &quot;value&quot; : 8325,
+      &quot;relation&quot; : &quot;eq&quot;
+    },
+    &quot;max_score&quot; : 1.6806533,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;kibana_sample_data_logs&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;mMrI0n0BBQs7jchue4fn&quot;,
+        &quot;_score&quot; : 1.6806533,
+        &quot;_source&quot; : {
+          &quot;geo&quot; : {
+            &quot;srcdest&quot; : &quot;EG:CN&quot;,
+            &quot;src&quot; : &quot;EG&quot;,
+            &quot;coordinates&quot; : {
+              &quot;lon&quot; : -85.80931806,
+              &quot;lat&quot; : 35.98531194
+            },
+            &quot;dest&quot; : &quot;CN&quot;
+          },
+          &quot;request&quot; : &quot;/apm&quot;,
+          &quot;agent&quot; : &quot;Mozilla/5.0 (X11; Linux x86_64; rv:6.0a1) Gecko/20110421 Firefox/6.0a1&quot;
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;kibana_sample_data_logs&quot;,
+        &quot;_type&quot; : &quot;_doc&quot;,
+        &quot;_id&quot; : &quot;o8rI0n0BBQs7jchue4fn&quot;,
+        &quot;_score&quot; : 1.6806533,
+        &quot;_source&quot; : {
+          &quot;geo&quot; : {
+            &quot;srcdest&quot; : &quot;VN:CN&quot;,
+            &quot;src&quot; : &quot;VN&quot;,
+            &quot;coordinates&quot; : {
+              &quot;lon&quot; : -86.52211111,
+              &quot;lat&quot; : 30.77883333
+            },
+            &quot;dest&quot; : &quot;CN&quot;
+          },
+          &quot;request&quot; : &quot;/beats/metricbeat/metricbeat-6.3.2-amd64.deb&quot;,
+          &quot;agent&quot; : &quot;Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.50 Safari/534.24&quot;
+        }
+      }
+    ]
+  }
+}
+
+</code></pre>
+<p>在示例的返回结果中，即使 文档 message 和 geo 字段都满足查询条件它也不定会排在最前面。可添加 tie_breaker 参数并设置为 0.7。</p>
+<p>在添加了 tie _breaker 参数后，相关度非最高值字段在参与最終相关度结果时的权重就降低为 0.7。但它们对结果排序会产生影响，完全满足条件的文档将 排在结果最前面。</p>
+<p>tie_breaker 参数设置其他字段参与相关度运算的系数。这个系数会在运算最终相关度时乘以其他字段的相关度，再加上最大得分就得到最终的相关度。所以一般来说，tie_breaker 应该小于 1, 默认值为 0。</p>
+<h3><a id="constant-score%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>constant_score 查询</h3>
+<p>constant_score 查询返回结果中文档的相关度为固定值，这个固定值由 boost 参数设置，默认值为 1.0 。constant_score 查询只有两个参数 filter 和 boost，filter 与bool 组合查询中的 filter 完全相同，仅用于过滤结果，不影响分值。</p>
+<pre><code class="language-bash">POST /kibana_sample_data_logs/_search
+{
+  &quot;query&quot;: {
+    &quot;constant_score&quot;: {
+      &quot;filter&quot;: {
+        &quot;match&quot;:{
+          &quot;geo.src&quot;: &quot;CN&quot;
+        }
+      },
+      &quot;boost&quot;: 1.2
+    }
+  }
+}
+</code></pre>
+<p>通过 boost 参数设置了相关度，所以满足查询条件文档的 score 值将都是1.2，match_all查询也可以当成是一种特殊类型的constant_score 查询， 它会返回索引中所有文档，面每个文档的相关度都是 1.0。它的作用和 boost 参 数类似，组合查询时调整子查询在相关度计算中的权重。</p>
+<h3><a id="boosting%E6%9F%A5%E8%AF%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>boosting 查询</h3>
+<p>boosting 查询通过 positive 子句设置满足条件的文档，这类似于 bool 查询中 的 must 子句，只有满足 positive 条件的文档才会被返回。boosting 查询通过 negative 子句设置需要排除文档的条件， 这类似于 bool 查询中的 must _not 子 旬。但与 bool 查询不同的是，boosting 查询不会将满足 negative 条件的文档从 返回结果中排除，而只是会拉低它们的相关性.</p>
+<pre><code class="language-bash">POST /kibana_sample_data_logs/_search
+{
+  &quot;query&quot;: {
+    &quot;boosting&quot;: {
+      &quot;positive&quot;: {
+        &quot;match&quot;: {
+          &quot;geo.src&quot;: &quot;CN&quot;
+        }
+      },
+      &quot;negative&quot;: {
+        &quot;match&quot;: {
+          &quot;geo.dest&quot;: &quot;CN&quot;
+        }
+      },
+      &quot;negative_boost&quot;: 0.2
+    }
+  },
+  &quot;sort&quot;: [{&quot;_score&quot;: &quot;asc&quot;}]
+}
+</code></pre>
+<p>参数 negative_ boost 设置了一个系数，当满足 negative 条件时 相关度会乘以这个系数作为最终分值，所以这个值应该小于 1 而大于等于 0。， 如果 geo_src 为 CN 的文档相关度为 1.6，那么 geo.dest 字段也是 CN 的文档相关 度就需要再乘以 0.2, 所以最终相关度为 0.32。</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

@@ -114,18 +114,12 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/16014331445574/16082238778057.jpg" alt="Lock 与 AQS 工具类关系"/><figcaption>Lock 与 AQS 工具类关系</figcaption></figure></p>
-
+                    <p><figure><img src="media/16014331445574/16082238778057.jpg" alt="Lock 与 AQS 工具类关系" /><figcaption>Lock 与 AQS 工具类关系<figcaption></figure></p>
 <p>锁是用于通过多个线程控制对共享资源的访问工具。通常锁提供对共享资源的独占访问，但是一些锁可能允许并发的访问共享资源，例如ReadWriteLock的读锁。</p>
-
 <p>问:java中有了synchronized，为什么又会出现java显式锁呢？</p>
-
 <p>Lock实现提供比使用synchronized方法可以获得更灵活、更广泛的锁定操作。</p>
-
 <p>使用 synchronized 方法或语句提供对每个对象相关联的隐式监视器锁访问，但是强制所有锁获取和释放以块的结构方式发生，当获取多个锁的时候，他们必须以相反的顺序被释放，并且所有的锁都必须被释放在与他们相同的词汇范围内。</p>
-
 <p>lock的使用应使用如下的惯用写法:</p>
-
 <pre><code class="language-java">Lock l = ...;
 l.lock();
 try{
@@ -134,9 +128,7 @@ try{
     l.unlock();
 }
 </code></pre>
-
 <p>Lock 接口理解：</p>
-
 <pre><code class="language-java">public interface Lock {
     // 枷锁获得锁资源
     void lock();

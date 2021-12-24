@@ -116,39 +116,33 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>Docker官方网址: <a href="https://docs.docker.com/">英文地址</a> <br/>
+                    <p>Docker官方网址: <a href="https://docs.docker.com/">英文地址</a><br />
 Docker中文网址: <a href="http://www.docker.org.cn/">中文地址</a></p>
-
-<h2 id="toc_0">docker 架构</h2>
-
-<p>Images </p>
-
+<h2><a id="docker%E6%9E%B6%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>docker 架构</h2>
+<p>Images</p>
 <p>Container</p>
-
 <p>Client</p>
-
 <p>Host</p>
-
 <p>Registry</p>
-
 <p>Machine</p>
-
-<h2 id="toc_1">docker 组件</h2>
-
+<h2><a id="docker%E7%BB%84%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>docker 组件</h2>
 <ol>
-<li><p>镜像 image<br/>
-Docker运行容器之前需要本地存在对应的镜像。镜像是用来创建Docker容器的。一个镜像可以包含一个完整的操作系统环境和用户需要的其他应用程序，在Docker Hub里面有大量现成的镜像提供下载，Docker的镜像是只读的，一个镜像可以创建多个容器。</p></li>
-<li><p>容器 Container<br/>
-Docker利用容器来进行开发，运行应用。容器是镜像创建的实列，它可以启动，开始，停止，删除，每个容器都是相互隔离的，保证安全的平台。</p></li>
-<li><p>仓库 Repository<br/>
-仓库是集中存放镜像文件的地方。每个仓库中又包含了多个镜像，每个镜像有不同的标签(TAG)</p></li>
+<li>
+<p>镜像 image<br />
+Docker运行容器之前需要本地存在对应的镜像。镜像是用来创建Docker容器的。一个镜像可以包含一个完整的操作系统环境和用户需要的其他应用程序，在Docker Hub里面有大量现成的镜像提供下载，Docker的镜像是只读的，一个镜像可以创建多个容器。</p>
+</li>
+<li>
+<p>容器 Container<br />
+Docker利用容器来进行开发，运行应用。容器是镜像创建的实列，它可以启动，开始，停止，删除，每个容器都是相互隔离的，保证安全的平台。</p>
+</li>
+<li>
+<p>仓库 Repository<br />
+仓库是集中存放镜像文件的地方。每个仓库中又包含了多个镜像，每个镜像有不同的标签(TAG)</p>
+</li>
 </ol>
-
-<h2 id="toc_2">docker 安装</h2>
-
+<h2><a id="docker%E5%AE%89%E8%A3%85" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>docker 安装</h2>
 <p>1、删除 Linux 机器上已存在的 docker 程序</p>
-
-<pre><code class="language-text">&gt; sudo yum list installed | grep docker
+<pre><code class="language-plain_text">&gt; sudo yum list installed | grep docker
 &gt; sudo yum  -y remove docker \
                   docker-client \
                   docker-client-latest \
@@ -160,50 +154,63 @@ Docker利用容器来进行开发，运行应用。容器是镜像创建的实�
                   docker-engine-selinux \
                   docker-engine
 </code></pre>
-
 <p>删除 docker 老的镜像</p>
-
-<pre><code class="language-text">&gt; rm -rf /var/lib/docker
+<pre><code class="language-plain_text">&gt; rm -rf /var/lib/docker
 </code></pre>
-
 <p>2、安装 docker 程序</p>
-
 <ul>
-<li>安装基本的系统工具<br/>
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2</li>
-<li><p>配置 yum 源<br/>
-yum-config-manager --add-repo <a href="http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</a></p></li>
-<li><p>查看可安装的 docker 版本<br/>
-yum list docker-ce --showduplicates | sort -r</p></li>
-<li><p>安装 docker</p></li>
+<li>
+<p>安装基本的系统工具<br />
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2</p>
+</li>
+<li>
+<p>配置 yum 源<br />
+yum-config-manager --add-repo <a href="http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</a></p>
+</li>
+<li>
+<p>查看可安装的 docker 版本<br />
+yum list docker-ce --showduplicates | sort -r</p>
+</li>
+<li>
+<p>安装 docker</p>
+</li>
 </ul>
-
-<pre><code class="language-text">sudo yum install docker-ce(最新版)
+<pre><code class="language-plain_text">sudo yum install docker-ce(最新版)
 
 sudo yum install -y containerd.io-1.2.13-3.1.el7 docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7(指定版本)
 </code></pre>
-
 <ul>
-<li><p>配置 docker 开机启动<br/>
-sudo systemctl start docker<br/>
-sudo systemctl enable docker</p></li>
-<li><p>验证安装是否成功(有client和service两部分表示docker安装启动都成功了)<br/>
-docker version</p></li>
-<li><p>更换 docker 镜像仓库为国内仓库<br/>
-修改或创建daemon.json文件：<br/>
-vim /etc/docker/daemon.json<br/>
-内容如下：<br/>
-{<br/>
-&quot;registry-mirrors&quot;:[&quot;<a href="https://registry.docker-cn.com%22">https://registry.docker-cn.com&quot;</a>]<br/>
-}</p></li>
-<li><p>加载 daemon.json 文件<br/>
-sudo systemctl daemon-reload</p></li>
-<li><p>重启 docker<br/>
-systemctl restart docker</p></li>
-<li><p>验证 docker 是否完成安装<br/>
-执行 sudo docker verxion,完成安装如下图所示</p></li>
+<li>
+<p>配置 docker 开机启动<br />
+sudo systemctl start docker<br />
+sudo systemctl enable docker</p>
+</li>
+<li>
+<p>验证安装是否成功(有client和service两部分表示docker安装启动都成功了)<br />
+docker version</p>
+</li>
+<li>
+<p>更换 docker 镜像仓库为国内仓库<br />
+修改或创建daemon.json文件：<br />
+vim /etc/docker/daemon.json<br />
+内容如下：<br />
+{<br />
+&quot;registry-mirrors&quot;:[&quot;https://registry.docker-cn.com&quot;]<br />
+}</p>
+</li>
+<li>
+<p>加载 daemon.json 文件<br />
+sudo systemctl daemon-reload</p>
+</li>
+<li>
+<p>重启 docker<br />
+systemctl restart docker</p>
+</li>
+<li>
+<p>验证 docker 是否完成安装<br />
+执行 sudo docker verxion,完成安装如下图所示</p>
+</li>
 </ul>
-
 <pre><code class="language-shell">[godson@godson1 ~]$ sudo docker version
 Client:
  Version:           18.09.9
@@ -224,17 +231,12 @@ Server: Docker Engine - Community
   OS/Arch:          linux/amd64
   Experimental:     false
 </code></pre>
-
 <p>用非 root 账户安装完 docker 之后会,执行 docker 命令会遇到这样一个问题：</p>
-
-<pre><code class="language-text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+<pre><code class="language-plain_text">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
 </code></pre>
-
 <p>原因： docker进程使用Unix Socket而不是TCP端口。而默认情况下，Unix socket属于root用户，需要root权限才能访问。</p>
-
 <p>解决方法：</p>
-
-<pre><code class="language-text">&gt; sudo groupadd docker     #添加docker用户组
+<pre><code class="language-plain_text">&gt; sudo groupadd docker     #添加docker用户组
 &gt; sudo gpasswd -a $USER docker     #将登陆用户加入到docker用户组中
 &gt; newgrp docker     #更新用户组
 &gt; docker ps    #测试docker命令是否可以使用sudo正常使用

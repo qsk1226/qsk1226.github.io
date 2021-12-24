@@ -97,7 +97,7 @@
                                  <span class="date">2020/10/09</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6.html'>消息中间件</a></span>
+                                      <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
                                          
                                   
 
@@ -114,25 +114,18 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p><figure><img src="media/16022411349774/16022427035514.jpg" alt="" style="width:851px;"/></figure></p>
-
+                    <p><figure><img src="media/16022411349774/16022427035514.jpg" alt="" style="width:851px;" /></figure></p>
 <p>如果使用消息拒绝机制，同时 requeue 参数设置为 false 时，消息丢失了，这点作为程序员我们不能忍。</p>
-
 <p>所以 RabbitMQ 作为一个高级消息中间件，提出了死信交换器的概念，死信，意思就是死了的信息。这种交换器专门处理死了的信息(被拒绝可以重新投递的信息不能算死的)。</p>
-
 <p>死信交换器是 RabbitMQ 对 AMQP 规范的一个扩展，往往用在对问题消息的诊断上(主要针对消费者)，还有延时队列的功能。</p>
-
 <p>消息变成死信一般是以下三种情况:</p>
-
 <ul>
 <li>消息被拒绝，并且设置 requeue 参数为 false</li>
-<li>消息过期(默认情况下 Rabbit 中的消息不过期，但是可以设置队列的过期时间和消息的过期时间以达到消息过期的效果) </li>
+<li>消息过期(默认情况下 Rabbit 中的消息不过期，但是可以设置队列的过期时间和消息的过期时间以达到消息过期的效果)</li>
 <li>队列达到最大长度(一般当设置了最大队列长度或大小并达到最大值时)</li>
 </ul>
-
 <p>死信交换器仍然只是一个普通的交换器，创建时并没有特别要求和操作。在创建队列的时候，声明该交换器将用作保存被拒绝的消息即可，即设置参数 x-dead-letter-exchange 指定哪个交换机为死信交换机。参数 x-dead-letter-routing-key 指定 死信routing-key。</p>
-
-<p><figure><img src="media/16022411349774/16022418380839.jpg" alt=""/></figure></p>
+<p><figure><img src="media/16022411349774/16022418380839.jpg" alt="" /></figure></p>
 
                   </article>
                   <div class="comments-wrap">

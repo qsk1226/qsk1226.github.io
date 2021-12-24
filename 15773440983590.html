@@ -117,14 +117,20 @@
                 </div>
                   <article class="markdown-body single-content">
                     <ul>
-<li><p>GC 频率： 高频的 FullGC 会给系统带来非常大的性能消耗，虽然 MinorGC 相对 FullGC 来说好了许多，但过多的 MinorGC 仍会给系统带来压力</p></li>
-<li><p>内存： 这里的内存指的是堆内存大小，堆内存又分为年轻代内存和老年代内存。堆内存不足，会增加 MinorGC ，影响系统性能。</p></li>
-<li><p>吞吐量： 频繁的 GC 将会引起线程的上下文切换，增加系统的性能开销，从而影响每次处理的线程请求，最终导致系统的吞吐量下降。</p></li>
-<li><p>延迟： JVM 的 GC 持续时间也会影响到每次请求的响应时间</p></li>
+<li>
+<p>GC 频率： 高频的 FullGC 会给系统带来非常大的性能消耗，虽然 MinorGC 相对 FullGC 来说好了许多，但过多的 MinorGC 仍会给系统带来压力</p>
+</li>
+<li>
+<p>内存： 这里的内存指的是堆内存大小，堆内存又分为年轻代内存和老年代内存。堆内存不足，会增加 MinorGC ，影响系统性能。</p>
+</li>
+<li>
+<p>吞吐量： 频繁的 GC 将会引起线程的上下文切换，增加系统的性能开销，从而影响每次处理的线程请求，最终导致系统的吞吐量下降。</p>
+</li>
+<li>
+<p>延迟： JVM 的 GC 持续时间也会影响到每次请求的响应时间</p>
+</li>
 </ul>
-
-<h2 id="toc_0">jvm参数一览</h2>
-
+<h2><a id="jvm%E5%8F%82%E6%95%B0%E4%B8%80%E8%A7%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm参数一览</h2>
 <table>
 <thead>
 <tr>
@@ -132,7 +138,6 @@
 <th>含义</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-XX:+PrintVMOptions</td>
@@ -148,14 +153,10 @@
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_1">生产服务器推荐开启</h3>
-
-<p>-XX:-HeapDumpOnOutOfMemoryError 默认关闭，建议开启，在 java.lang.OutOfMemoryError 异常出现时，输出一个 dump 文件，记录当时的堆内存快照。<br/>
+<h3><a id="%E7%94%9F%E4%BA%A7%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A8%E8%8D%90%E5%BC%80%E5%90%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>生产服务器推荐开启</h3>
+<p>-XX:-HeapDumpOnOutOfMemoryError 默认关闭，建议开启，在 java.lang.OutOfMemoryError 异常出现时，输出一个 dump 文件，记录当时的堆内存快照。<br />
 -XX:HeapDumpPath=./java_pid<pid>.hprof 用来设置堆内存快照的存储文件路径，默认是 java 进程启动位置。</p>
-
-<h3 id="toc_2">jvm堆配置参数</h3>
-
+<h3><a id="jvm%E5%A0%86%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm堆配置参数</h3>
 <table>
 <thead>
 <tr>
@@ -163,7 +164,6 @@
 <th>含义</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-Xms</td>
@@ -215,16 +215,11 @@
 </tr>
 </tbody>
 </table>
-
-<p>说明: <br/>
+<p>说明:<br />
 整个堆大小的计算公式: JVM 堆大小 ＝ 年轻代大小＋年老代大小＋持久代大小。</p>
-
 <p>增大新生代大小就会减少对应的年老代大小，设置-Xmn值对系统性能影响较大，所以如果设置新生代大小的调整，则需要严格的测试调整。而新生代是用来存放新创建的对象，大小是随着堆大小增大和减少而有相应的变化，默认值是保持堆大小的十五分之一，-Xmn参数就是设置新生代的大小，也可以通过-XX:NewRatio来设置新生代与年老代的比例，java 官方推荐配置为3:8。</p>
-
 <p>新生代的特点就是内存中的对象更新速度快，在短时间内容易产生大量的无用对象，如果在这个参数时就需要考虑垃圾回收器设置参数也需要调整。推荐使用: 复制清除算法和并行收集器进行垃圾回收，而新生代的垃圾回收叫做初级回收。</p>
-
-<h3 id="toc_3">jvm 追踪类信息</h3>
-
+<h3><a id="jvm%E8%BF%BD%E8%B8%AA%E7%B1%BB%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm 追踪类信息</h3>
 <table>
 <thead>
 <tr>
@@ -232,7 +227,6 @@
 <th>含义</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-verbose:class</td>
@@ -252,9 +246,7 @@
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_4">jvm 垃圾回收器参数</h3>
-
+<h3><a id="jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E5%8F%82%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm 垃圾回收器参数</h3>
 <table>
 <thead>
 <tr>
@@ -262,7 +254,6 @@
 <th>含义</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-XX:+UseSerialGC</td>
@@ -322,9 +313,7 @@
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_5">jvm gc日志配置参数</h3>
-
+<h3><a id="jvm-gc%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jvm gc日志配置参数</h3>
 <table>
 <thead>
 <tr>
@@ -332,7 +321,6 @@
 <th>含义</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>-XX:PrintGC</td>
@@ -384,36 +372,26 @@
 </tr>
 </tbody>
 </table>
-
-<h2 id="toc_6">jps （虚拟机进程状况工具）</h2>
-
+<h2><a id="jps%EF%BC%88%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%BF%9B%E7%A8%8B%E7%8A%B6%E5%86%B5%E5%B7%A5%E5%85%B7%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jps （虚拟机进程状况工具）</h2>
 <p>列出当前机器上正在运行的虚拟机进程，并显示虚拟机执行主类名称与虚拟机的唯一进程ID，jps 从操作系统的临时目录上去找(所以有一些信息可能显示不全)。</p>
-
-<p>参数说明 <br/>
--q :仅仅显示进程，<br/>
--m:输出主函数传入的参数. 下的 hello 就是在执行程序时从命令行输入的参数 -l: 输出应用程序主类完整 package 名称或 jar 完整名称.<br/>
+<p>参数说明<br />
+-q :仅仅显示进程，<br />
+-m:输出主函数传入的参数. 下的 hello 就是在执行程序时从命令行输入的参数 -l: 输出应用程序主类完整 package 名称或 jar 完整名称.<br />
 -v: 列出 jvm 参数, -Xms20m -Xmx50m 是启动程序指定的 jvm 参数</p>
-
-<pre><code class="language-text">➜ jps
+<pre><code class="language-plain_text">➜ jps
 1249 org.jetbrains.idea.maven.server.RemoteMavenServer36
 4468 org.jetbrains.jps.cmdline.Launcher
 1208
 4490 sun.tools.jps.Jps
 </code></pre>
-
-<h2 id="toc_7">jstat（虚拟机统计信息监视工具）</h2>
-
+<h2><a id="jstat%EF%BC%88%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF%E7%9B%91%E8%A7%86%E5%B7%A5%E5%85%B7%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jstat（虚拟机统计信息监视工具）</h2>
 <p>jstat（JVM Statistics Monitoring Tool）是用于监视虚拟机各种运行状态信息的命令行工具。它可以显示本地或者远程虚拟机进程中的类加载、内存、垃圾收集、即时编译等运行时数据。</p>
-
 <p>jstat -<option> [-t] [-h<lines>] vmid [interval[s|ms] [count]]</p>
-
-<p>option主要分为三类：类加载、垃圾收集、运行期编译状况。<br/>
--t 参数可以在输出信息前加上一个 timestamp 列，显示程序的运行时间<br/>
--h 参数可以在周期性数据输出时，输出多少行数据后，跟着输出一个表头信息<br/>
+<p>option主要分为三类：类加载、垃圾收集、运行期编译状况。<br />
+-t 参数可以在输出信息前加上一个 timestamp 列，显示程序的运行时间<br />
+-h 参数可以在周期性数据输出时，输出多少行数据后，跟着输出一个表头信息<br />
 interval和count代表查询间隔和次数,例如间隔250毫秒查看运行状态10次，</p>
-
-<p><figure><img src="media/15773440983590/15975893994393.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/15773440983590/15975893994393.jpg" alt="" /></figure></p>
 <pre><code class="language-shell">&gt; jstat -gc 4468 250 10
 S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT
 10752.0 10752.0  0.0   4205.5 65536.0  27588.7   175104.0    144.0    16256.0 15720.1 1920.0 1802.4      1    0.004   0      0.000    0.004
@@ -427,28 +405,26 @@ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU  
 10752.0 10752.0  0.0   4205.5 65536.0  27588.7   175104.0    144.0    16256.0 15720.1 1920.0 1802.4      1    0.004   0      0.000    0.004
 10752.0 10752.0  0.0   4205.5 65536.0  27588.7   175104.0    144.0    16256.0 15720.1 1920.0 1802.4      1    0.004   0      0.000    0.004
 </code></pre>
-
 <ul>
-<li>S0C:第一个幸存区(From 区)的大小 </li>
-<li>S1C:第二个幸存区(To 区)的大小 </li>
-<li>S0U:第一个幸存区的使用大小 </li>
-<li>S1U:第二个幸存区的使用大小 </li>
-<li>EC:伊甸园(Eden)区的大小 </li>
-<li>EU:伊甸园(Eden)区的使用大小 </li>
-<li>OC:老年代大小 </li>
-<li>OU:老年代使用大小 </li>
-<li>MC:方法区大小 </li>
-<li>MU:方法区使用大小 </li>
-<li>CCSC:压缩类空间大小 </li>
-<li>CCSU:压缩类空间使用大小 </li>
-<li>YGC:年轻代垃圾回收次数 </li>
-<li>YGCT:年轻代垃圾回收消耗时间 </li>
-<li>FGC:老年代垃圾回收次数 </li>
-<li>FGCT:老年代垃圾回收消耗时间 </li>
+<li>S0C:第一个幸存区(From 区)的大小</li>
+<li>S1C:第二个幸存区(To 区)的大小</li>
+<li>S0U:第一个幸存区的使用大小</li>
+<li>S1U:第二个幸存区的使用大小</li>
+<li>EC:伊甸园(Eden)区的大小</li>
+<li>EU:伊甸园(Eden)区的使用大小</li>
+<li>OC:老年代大小</li>
+<li>OU:老年代使用大小</li>
+<li>MC:方法区大小</li>
+<li>MU:方法区使用大小</li>
+<li>CCSC:压缩类空间大小</li>
+<li>CCSU:压缩类空间使用大小</li>
+<li>YGC:年轻代垃圾回收次数</li>
+<li>YGCT:年轻代垃圾回收消耗时间</li>
+<li>FGC:老年代垃圾回收次数</li>
+<li>FGCT:老年代垃圾回收消耗时间</li>
 <li>GCT:垃圾回收消耗总时间</li>
 </ul>
-
-<pre><code class="language-text">➜  ~ jstat -gc 51926 5000 5 |awk &#39;{print $13,$14,$15,$16,$17}&#39;
+<pre><code class="language-plain_text">➜  ~ jstat -gc 51926 5000 5 |awk '{print $13,$14,$15,$16,$17}'
 YGC YGCT FGC FGCT GCT
 2 0.037 102 4.110 4.147
 2 0.037 102 4.110 4.147
@@ -456,84 +432,51 @@ YGC YGCT FGC FGCT GCT
 2 0.037 102 4.110 4.147
 2 0.037 102 4.110 4.147
 </code></pre>
-
-<h2 id="toc_8">jinfo：Java配置信息工具</h2>
-
+<p>##jinfo：Java配置信息工具</p>
 <p>jinfo（Configuration Info for Java）的作用是实时查看和调整虚拟机各项参数。jinfo 还可以使用-sysprops选项把虚拟机进程的System.getProperties()的内容打印出来</p>
-
-<p>jinfo -sysprops VID 把虚拟机进程的System.getProperties()的内容打印出来<br/>
+<p>jinfo -sysprops VID 把虚拟机进程的System.getProperties()的内容打印出来<br />
 java -XX:+PrintFlagsFinal -version  查看所有高级参数的当前情况</p>
-
 <p>在运行期修改部分参数值（可以使用-flag[+|-]name或者-flag name=value在运行期修改一部分运行期可写的虚拟机参数值）。</p>
-
-<p>jinfo -flag PrintGC 7825 查看PrintGC 是否开启<br/>
-jinfo -flag +PrintGC 7825 开启PrintGC<br/>
+<p>jinfo -flag PrintGC 7825 查看PrintGC 是否开启<br />
+jinfo -flag +PrintGC 7825 开启PrintGC<br />
 jinfo -flag -PrintGC 7825 关闭PrintGC</p>
-
-<h3 id="toc_9">VM 参数分类</h3>
-
+<h3><a id="vm%E5%8F%82%E6%95%B0%E5%88%86%E7%B1%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>VM 参数分类</h3>
 <p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">JVM 的命令行参数参考</a></p>
-
 <p><a href="https://www.oracle.com/java/technologies/javase/vmoptions-jsp.html">HotSpot VM Options参数选项</a></p>
-
-<h4 id="toc_10">堆配置</h4>
-
+<h4><a id="%E5%A0%86%E9%85%8D%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>堆配置</h4>
 <p>我们使用 -Xms 设置堆的初始空间大小，使用 -Xmx 设置堆的最大空间大小</p>
-
 <pre><code class="language-shell"># 在上面的命令中，我们设置 JVM 的初始堆大小为 20M，最大堆空间为 30M。
 &gt; java -Xms20m -Xmx30m Demo
 </code></pre>
-
 <p>在 JDK1.8 中，堆分为年轻代和老年代。</p>
-
 <p>JVM 提供了参数 -Xmn 来设置年轻代内存的大小，但没有提供参数设置老年代的大小。但其实老年代的大小就等于堆大小减去年轻代大小。</p>
-
 <pre><code class="language-shell">#设置 JVM 堆初始大小为20M。其中年轻代的大小为 10M，那么剩下的就是老年代的大小，有 10M了。
 &gt; java -Xms20m -Xmn10M Demo
 </code></pre>
-
-<h5 id="toc_11">Eden区</h5>
-
+<h5><a id="eden%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Eden区</h5>
 <p>在年轻代中，分为三个区域，分别是：eden 空间、from 空间、to 空间。如果要设置这部分的大小，那么就使用 -XX:SurvivorRatio 这个参数，该参数设置 eden / from 空间的比例关系，该参数的公式如下：</p>
-
-<pre><code class="language-text">-XX:SurvivorRatio = eden/from = eden/to
+<pre><code class="language-plain_text">-XX:SurvivorRatio = eden/from = eden/to
 </code></pre>
-
 <p>例如我们的年轻代有 10 M，而我们设置 -XX:SurvivorRatio 参数为 2。也就是说 eden/from = eden/to = 2。</p>
-
 <p>这里教一个快速计算的方法，我们假设 eden = 2，那么 from = 1，to = 1，那么 eden + from + to = 10M。这样就可以算出每一份大小是 10/4 = 2.5M。所以 Eden 区 = 2.5 * 2 = 5M，from 区是 2.5M，to 区是 2.5M。</p>
-
-<h5 id="toc_12">永久代/元空间</h5>
-
+<h5><a id="%E6%B0%B8%E4%B9%85%E4%BB%A3%E5%85%83%E7%A9%BA%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>永久代/元空间</h5>
 <p>在 JDK 1.8 之前，所加载的类信息都放在永久代中。我们用 -XX:PermSize 设置永久代初始大小，用 -XX:MaxPermSize 设置永久代最大大小。</p>
-
-<pre><code class="language-text">&gt; java -XX:PermSize10m -XX:MaxPermSize50m -XX:+PrintGCDetails Demo
+<pre><code class="language-plain_text">&gt; java -XX:PermSize10m -XX:MaxPermSize50m -XX:+PrintGCDetails Demo
 </code></pre>
-
 <p>但在 JDK1.8 之时，永久代被移除，取而代之的是元空间（Metaspace）。在元空间这块内存中，有两个参数很相似，它们是： -XX:MetaspaceSize 和 -XX:MaxMetaspaceSize。</p>
-
 <pre><code class="language-shell">&gt; java -XX:MetaspaceSize=10m -XX:MaxMetaspaceSize=50m -XX:+PrintGCDetails Demo
 </code></pre>
-
-<h5 id="toc_13">栈空间</h5>
-
+<h5><a id="%E6%A0%88%E7%A9%BA%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>栈空间</h5>
 <p>栈空间是每个线程各自有的一块区域，如果栈空间太小，也会导致 StackOverFlow 异常。而要设置栈空间大小，只需要使用 -Xss 参数就可以。</p>
-
 <pre><code class="language-shell"># 设置最大栈空间为 2M
 &gt; java -Xss2m Demo
 </code></pre>
-
-<h5 id="toc_14">直接内存</h5>
-
+<h5><a id="%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>直接内存</h5>
 <p>在 JVM 中还有一块内存，它独立于 JVM 的堆内存，它就是：直接内存。我们可以使用 -XX:MaxDirectMemorySize 设置最大直接内存。如果不设置，默认为最大堆空间，即 -Xmx。</p>
-
 <pre><code class="language-shell">&gt; java -XX:MaxDirectMemorySize=50m Demo
 </code></pre>
-
-<h2 id="toc_15">jmap：Java内存映像工具</h2>
-
-<p><figure><img src="media/15773440983590/15976757860737.jpg" alt=""/></figure></p>
-
+<h2><a id="jmap%EF%BC%9Ajava%E5%86%85%E5%AD%98%E6%98%A0%E5%83%8F%E5%B7%A5%E5%85%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jmap：Java内存映像工具</h2>
+<p><figure><img src="media/15773440983590/15976757860737.jpg" alt="" /></figure></p>
 <pre><code class="language-shell">➜  ~ jmap -heap 20488
 Attaching to process ID 20488, please wait...
 Debugger attached successfully.
@@ -603,15 +546,12 @@ PS Old Generation
 
 2295 interned Strings occupying 161832 bytes.
 </code></pre>
-
-<p>jmap –histo <pid> 显示对象统计信息<br/>
+<p>jmap –histo <pid> 显示对象统计信息<br />
 jmap –histo:live <pid> 如果 live 子参数加上后,只统计活的对象数量</p>
-
-<p>jmap -histo 20488  按照数量排名对象<br/>
-jmap -histo:live 20488  按照数量排名存活的对象<br/>
+<p>jmap -histo 20488  按照数量排名对象<br />
+jmap -histo:live 20488  按照数量排名存活的对象<br />
 jmap -histo:live  20488 | head -10 前十行</p>
-
-<pre><code class="language-text">➜  ~ jmap -histo 20488
+<pre><code class="language-plain_text">➜  ~ jmap -histo 20488
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -636,76 +576,61 @@ jmap -histo:live  20488 | head -10 前十行</p>
   19:            31           4224  [Ljava.util.Hashtable$Entry;
   20:           258           4128  java.lang.Integer
 </code></pre>
-
 <p>jmap -dump:format=b,file=/heap.hprof pid 导出堆快照文件</p>
-
-<h2 id="toc_16">jhat: 虚拟机对转储快照分析工具</h2>
-
+<h2><a id="jhat%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AF%B9%E8%BD%AC%E5%82%A8%E5%BF%AB%E7%85%A7%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jhat: 虚拟机对转储快照分析工具</h2>
 <p>JDK提供jhat（JVM Heap Analysis Tool）命令与jmap搭配使用，来分析jmap生成的堆转储快照。jhat内置了一个微型的HTTP/Web服务器，生成堆转储快照的分析结果后，可以在浏览器中查看。但是尽量不要在实际工作中使用这个命令工具，因为这个命令比较简陋，也因为分析工作一般都不会再服务器上进行，把jmap dump下来的文件转储到其它机器上可以使用更加友好的工具进行分析。</p>
-
-<p>jhat /heap.hprof 分析快照文件<br/>
-<figure><img src="media/15773440983590/16149130702351.jpg" alt="" style="width:757px;"/></figure></p>
-
+<p>jhat /heap.hprof 分析快照文件<br />
+<figure><img src="media/15773440983590/16149130702351.jpg" alt="" style="width:757px;" /></figure></p>
 <p>在浏览器中访问 <a href="http://127.0.0.1:7000">http://127.0.0.1:7000</a> 查看分析结果</p>
-
 <p>OQL查询对象路径</p>
-
-<pre><code class="language-text">select file.path.value.toString() from java.io.File file
+<pre><code class="language-plain_text">select file.path.value.toString() from java.io.File file
 </code></pre>
-
-<h2 id="toc_17">jstack：Java堆栈跟踪工具</h2>
-
+<h2><a id="jstack%EF%BC%9Ajava%E5%A0%86%E6%A0%88%E8%B7%9F%E8%B8%AA%E5%B7%A5%E5%85%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jstack：Java堆栈跟踪工具</h2>
 <p>jstack（Stack Trace for Java）命令用于生成虚拟机当前时刻的线程快照（一般称为threaddump或者javacore文件）。</p>
-
 <p>线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。</p>
-
 <p>一般来说 jstack 主要是用来排查是否有死锁的情况，</p>
-
 <p>线程出现停顿时通过jstack来查看各个线程的调用堆栈，就可以获知没有响应的线程到底在后台做些什么事情，或者等待着什么资源。</p>
-
-<p><figure><img src="media/15773440983590/15976799292165.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/15773440983590/15976799292165.jpg" alt="" /></figure></p>
 <pre><code class="language-java">public class SynchronizedObjDeadLock {
-    public static void main(String[] args) {
-        new SynchronizedObjDeadLock().deadLock();
-    }
-    private static final Object objectA = new Object();
-    private static final Object objectB = new Object();
+	public static void main(String[] args) {
+		new SynchronizedObjDeadLock().deadLock();
+	}
+	private static final Object objectA = new Object();
+	private static final Object objectB = new Object();
 
-    private void deadLock() {
+	private void deadLock() {
 
-        new Thread(()-&gt;{
-            synchronized (objectA) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(&quot;dA&quot;);
-                synchronized (objectB) {
-                    System.out.println(&quot;dB&quot;);
-                }
-            }
-        }).start();
+		new Thread(()-&gt;{
+			synchronized (objectA) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println(&quot;dA&quot;);
+				synchronized (objectB) {
+					System.out.println(&quot;dB&quot;);
+				}
+			}
+		}).start();
 
-        new Thread(()-&gt;{
-            synchronized (objectB) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(&quot;B&quot;);
-                synchronized (objectA) {
-                    System.out.println(&quot;A&quot;);
-                }
-            }
-        }).start();
+		new Thread(()-&gt;{
+			synchronized (objectB) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println(&quot;B&quot;);
+				synchronized (objectA) {
+					System.out.println(&quot;A&quot;);
+				}
+			}
+		}).start();
 
-    }
+	}
 }
 </code></pre>
-
 <pre><code class="language-shell">&gt; jstack -l 29087
 Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.121-b13 mixed mode):
 省略好多东西.....
@@ -722,65 +647,47 @@ Found one Java-level deadlock:
 Java stack information for the threads listed above:
 ===================================================
 &quot;Thread-1&quot;:
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$1(SynchronizedObjDeadLock.java:41)
-    - waiting to lock &lt;0x000000076ac8e828&gt; (a java.lang.Object)
-    - locked &lt;0x000000076ac8e838&gt; (a java.lang.Object)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$2/1349393271.run(Unknown Source)
-    at java.lang.Thread.run(Thread.java:745)
+	at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$1(SynchronizedObjDeadLock.java:41)
+	- waiting to lock &lt;0x000000076ac8e828&gt; (a java.lang.Object)
+	- locked &lt;0x000000076ac8e838&gt; (a java.lang.Object)
+	at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$2/1349393271.run(Unknown Source)
+	at java.lang.Thread.run(Thread.java:745)
 &quot;Thread-0&quot;:
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
-    - waiting to lock &lt;0x000000076ac8e838&gt; (a java.lang.Object)
-    - locked &lt;0x000000076ac8e828&gt; (a java.lang.Object)
-    at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
-    at java.lang.Thread.run(Thread.java:745)
+	at com.goddess.base.concurrent.SynchronizedObjDeadLock.lambda$deadLock$0(SynchronizedObjDeadLock.java:27)
+	- waiting to lock &lt;0x000000076ac8e838&gt; (a java.lang.Object)
+	- locked &lt;0x000000076ac8e828&gt; (a java.lang.Object)
+	at com.goddess.base.concurrent.SynchronizedObjDeadLock$$Lambda$1/122883338.run(Unknown Source)
+	at java.lang.Thread.run(Thread.java:745)
 
 Found 1 deadlock.
 </code></pre>
-
-<h3 id="toc_18">性能统计工具-----hprof</h3>
-
-<p>java -agentlib:hprof=help 查看hprof的帮助文档<br/>
-<figure><img src="media/15773440983590/16149136296528.jpg" alt="" style="width:2134px;"/></figure></p>
-
-<h3 id="toc_19">jhsdb 基于服务性代理的调试工具</h3>
-
+<h3><a id="%E6%80%A7%E8%83%BD%E7%BB%9F%E8%AE%A1%E5%B7%A5%E5%85%B7hprof" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>性能统计工具-----hprof</h3>
+<p>java -agentlib:hprof=help 查看hprof的帮助文档<br />
+<figure><img src="media/15773440983590/16149136296528.jpg" alt="" style="width:2134px;" /></figure></p>
+<h3><a id="jhsdb%E5%9F%BA%E4%BA%8E%E6%9C%8D%E5%8A%A1%E6%80%A7%E4%BB%A3%E7%90%86%E7%9A%84%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>jhsdb 基于服务性代理的调试工具</h3>
 <p>JDK9及以上版本中提供了JCMD和JHSDB两个集成式的多功能工具箱，它们不仅整合了上一节介绍到的所有基础工具所能提供的专项功能，而且由于有着“后发优势”，能够做得往往比之前的老工具们更好、更强大</p>
-
-<p><figure><img src="media/15773440983590/15976856213870.jpg" alt="JCMD、JHSDB和基础工具的对比"/><figcaption>JCMD、JHSDB和基础工具的对比</figcaption></figure></p>
-
-<p>使用以下命令进入JHSDB的图形化模式:<br/>
+<p><figure><img src="media/15773440983590/15976856213870.jpg" alt="JCMD、JHSDB和基础工具的对比" /><figcaption>JCMD、JHSDB和基础工具的对比<figcaption></figure></p>
+<p>使用以下命令进入JHSDB的图形化模式:<br />
 jhsdb hsdb --pid 29087</p>
-
-<h2 id="toc_20">可视化工具</h2>
-
-<h3 id="toc_21">JMX(Java Management Extensions，即 Java 管理扩展)</h3>
-
+<p>##可视化工具</p>
+<h3><a id="jmx-java-management-extensions%EF%BC%8C%E5%8D%B3-java%E7%AE%A1%E7%90%86%E6%89%A9%E5%B1%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>JMX(Java Management Extensions，即 Java 管理扩展)</h3>
 <p>JMX 是一个为应用程序、设备、系统等植入管理功能的框架。</p>
-
-<p>JMX 可以跨越一系列异构操作系统平台、 系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用。<br/>
+<p>JMX 可以跨越一系列异构操作系统平台、 系统体系结构和网络传输协议，灵活的开发无缝集成的系统、网络和服务管理应用。<br />
 管理远程进程需要在远程程序的启动参数中增加:</p>
-
-<pre><code class="language-text">-Djava.rmi.server.hostname=.....
+<pre><code class="language-plain_text">-Djava.rmi.server.hostname=.....
 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
 </code></pre>
-
-<h3 id="toc_22">Jconsole</h3>
-
-<p><figure><img src="media/15773440983590/15976826355683.jpg" alt=""/></figure><br/>
-<figure><img src="media/15773440983590/15976826842222.jpg" alt=""/></figure><br/>
-<figure><img src="media/15773440983590/15976827010008.jpg" alt=""/></figure><br/>
-<figure><img src="media/15773440983590/15976827131457.jpg" alt=""/></figure><br/>
-<figure><img src="media/15773440983590/15976827354222.jpg" alt=""/></figure></p>
-
-<h3 id="toc_23">visualvm</h3>
-
-<p><figure><img src="media/15773440983590/15976829051342.jpg" alt=""/></figure></p>
-
-<p><figure><img src="media/15773440983590/15976828332220.jpg" alt=""/></figure></p>
-
-<p><figure><img src="media/15773440983590/15976828463285.jpg" alt=""/></figure></p>
-
-<p><figure><img src="media/15773440983590/15976828688260.jpg" alt=""/></figure></p>
+<h3><a id="jconsole" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Jconsole</h3>
+<p><figure><img src="media/15773440983590/15976826355683.jpg" alt="" /></figure><br />
+<figure><img src="media/15773440983590/15976826842222.jpg" alt="" /></figure><br />
+<figure><img src="media/15773440983590/15976827010008.jpg" alt="" /></figure><br />
+<figure><img src="media/15773440983590/15976827131457.jpg" alt="" /></figure><br />
+<figure><img src="media/15773440983590/15976827354222.jpg" alt="" /></figure></p>
+<h3><a id="visualvm" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>visualvm</h3>
+<p><figure><img src="media/15773440983590/15976829051342.jpg" alt="" /></figure></p>
+<p><figure><img src="media/15773440983590/15976828332220.jpg" alt="" /></figure></p>
+<p><figure><img src="media/15773440983590/15976828463285.jpg" alt="" /></figure></p>
+<p><figure><img src="media/15773440983590/15976828688260.jpg" alt="" /></figure></p>
 
                   </article>
                   <div class="comments-wrap">

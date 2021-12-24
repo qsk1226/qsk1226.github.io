@@ -115,15 +115,11 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>闭锁，CountDownLatch 这个类能够使一个线程等待其他线程完成各自的工 作后再执行。比如我要请10个哥们儿去搓一顿，需要等我那10个哥们儿都到之后，才能开始搓一样。</p>
-
 <p>CountDownLatch 是通过一个计数器来实现的，计数器的初始值为初始任务 的数量。每当完成了一个任务后，计数器的值就会减 1 (CountDownLatch.countDown()方法)。当计数器值到达 0 时，它表示所有的已 经完成了任务，然后在闭锁上等待 CountDownLatch.await()方法的线程就可以恢 复执行任务。</p>
-
-<p>应用场景:<br/>
+<p>应用场景:<br />
 实现最大的并行性: 有时我们想同时启动多个线程，实现最大程度的并行性。</p>
-
 <p>实例代码如下：</p>
-
-<pre><code class="language-text">/**
+<pre><code class="language-plain_text">/**
  * 等弟兄线程都到指定点之后，再开始下一步行动
  *
  * @author qinshengke
@@ -131,58 +127,57 @@
  **/
 public class UseCountDownLatch {
 
-    static CountDownLatch latch = new CountDownLatch(6);
+	static CountDownLatch latch = new CountDownLatch(6);
 
-    /*初始化线程*/
-    private static class InitThread implements Runnable {
+	/*初始化线程*/
+	private static class InitThread implements Runnable {
 
-        public void run() {
-            System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work......&quot;);
-            latch.countDown();
-            for (int i = 0; i &lt; 2; i++) {
-                System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ........continue do its work&quot;);
-            }
-        }
-    }
+		public void run() {
+			System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work......&quot;);
+			latch.countDown();
+			for (int i = 0; i &lt; 2; i++) {
+				System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ........continue do its work&quot;);
+			}
+		}
+	}
 
-    /*业务线程等待latch的计数器为0完成*/
-    private static class BusiThread implements Runnable {
+	/*业务线程等待latch的计数器为0完成*/
+	private static class BusiThread implements Runnable {
 
-        public void run() {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i &lt; 3; i++) {
-                System.out.println(&quot;BusiThread_&quot; + Thread.currentThread().getId() + &quot; do business-----&quot;);
-            }
-        }
-    }
+		public void run() {
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for (int i = 0; i &lt; 3; i++) {
+				System.out.println(&quot;BusiThread_&quot; + Thread.currentThread().getId() + &quot; do business-----&quot;);
+			}
+		}
+	}
 
-    public static void main(String[] args) throws InterruptedException {
-        new Thread(() -&gt; {
-            SleepTools.ms(1);
-            System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work step 1st......&quot;);
-            latch.countDown();
-            System.out.println(&quot;begin step 2nd.......&quot;);
-            SleepTools.ms(1);
-            System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work step 2nd......&quot;);
-            latch.countDown();
-        }).start();
+	public static void main(String[] args) throws InterruptedException {
+		new Thread(() -&gt; {
+			SleepTools.ms(1);
+			System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work step 1st......&quot;);
+			latch.countDown();
+			System.out.println(&quot;begin step 2nd.......&quot;);
+			SleepTools.ms(1);
+			System.out.println(&quot;Thread_&quot; + Thread.currentThread().getId() + &quot; ready init work step 2nd......&quot;);
+			latch.countDown();
+		}).start();
 
-        new Thread(new BusiThread()).start();
+		new Thread(new BusiThread()).start();
 
-        for (int i = 0; i &lt;= 3; i++) {
-            Thread thread = new Thread(new InitThread());
-            thread.start();
-        }
+		for (int i = 0; i &lt;= 3; i++) {
+			Thread thread = new Thread(new InitThread());
+			thread.start();
+		}
 
-        latch.await();
-    }
+		latch.await();
+	}
 }
 </code></pre>
-
 <pre><code class="language-java">public class MichaelShow {
     private static final AtomicInteger COUNT = new AtomicInteger(0);
     static class Customer extends Thread {

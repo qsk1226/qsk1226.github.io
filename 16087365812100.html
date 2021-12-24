@@ -114,103 +114,55 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <h2 id="toc_0">软件包管理</h2>
-
-<h3 id="toc_1">rpm -qa # 查看所有安装的软件包</h3>
-
-<h3 id="toc_2">rpm -ivh  mysql-connector-odbc-5.1.5.rpm</h3>
-
-<h3 id="toc_3">yum list  列出来所有可以安装的包</h3>
-
-<h3 id="toc_4">yum search</h3>
-
-<h3 id="toc_5">yum -y install     -y:yes</h3>
-
-<h3 id="toc_6">yum -y install gcc</h3>
-
-<h3 id="toc_7">rpm -p gcc</h3>
-
-<h3 id="toc_8">yum -y update （包名）  远程千万不要要加包名</h3>
-
-<h3 id="toc_9">yum -y remove （包名）卸载要添加包名</h3>
-
-<h3 id="toc_10">yum grouplist</h3>
-
-<h2 id="toc_11">操作系统</h2>
-
-<h3 id="toc_12">uname -a # 查看内核/操作系统/CPU信息</h3>
-
-<h3 id="toc_13">head -n 1 /etc/issue # 查看操作系统版本</h3>
-
-<h3 id="toc_14">cat /proc/cpuinfo # 查看CPU信息</h3>
-
-<h3 id="toc_15">hostname # 查看计算机名</h3>
-
-<h3 id="toc_16">lspci -tv # 列出所有PCI设备</h3>
-
-<h3 id="toc_17">lsusb -tv # 列出所有USB设备</h3>
-
-<h3 id="toc_18">lsmod # 列出加载的内核模块</h3>
-
-<h3 id="toc_19">env # 查看环境变量资源</h3>
-
-<h3 id="toc_20">free -m # 查看内存使用量和交换区使用量</h3>
-
-<h3 id="toc_21">df -h # 查看各分区使用情况</h3>
-
-<h3 id="toc_22">du -sh &lt;目录名&gt; # 查看指定目录的大小</h3>
-
-<h3 id="toc_23">grep MemTotal /proc/meminfo # 查看内存总量</h3>
-
-<h3 id="toc_24">grep MemFree /proc/meminfo # 查看空闲内存量</h3>
-
-<h3 id="toc_25">uptime # 查看系统运行时间、用户数、负载</h3>
-
-<h3 id="toc_26">cat /proc/loadavg # 查看系统负载磁盘和分区</h3>
-
-<h3 id="toc_27">mount | column -t # 查看挂接的分区状态</h3>
-
-<h3 id="toc_28">fdisk -l # 查看所有分区</h3>
-
-<h3 id="toc_29">swapon -s # 查看所有交换分区</h3>
-
-<h3 id="toc_30">hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h3>
-
-<h2 id="toc_31">网络</h2>
-
-<h3 id="toc_32">dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h3>
-
-<h3 id="toc_33">ifconfig # 查看所有网络接口的属性</h3>
-
-<h3 id="toc_34">iptables -L # 查看防火墙设置</h3>
-
-<h3 id="toc_35">route -n # 查看路由表</h3>
-
-<h3 id="toc_36">netstat -lntp # 查看所有监听端口</h3>
-
-<h3 id="toc_37">netstat -antp | grep port # 查看所有已经建立的连接</h3>
-
-<h3 id="toc_38">netstat -s # 查看网络统计信息进程</h3>
-
-<h2 id="toc_39">ps -ef # 查看所有进程</h2>
-
-<h2 id="toc_40">top # 实时显示进程状态用户</h2>
-
-<h2 id="toc_41">w # 查看活动用户</h2>
-
-<h2 id="toc_42">id &lt;用户名&gt; # 查看指定用户信息</h2>
-
-<h2 id="toc_43">last # 查看用户登录日志</h2>
-
-<h2 id="toc_44">cut -d: -f1 /etc/passwd # 查看系统所有用户</h2>
-
-<h2 id="toc_45">cut -d: -f1 /etc/group # 查看系统所有组</h2>
-
-<h2 id="toc_46">crontab -l # 查看当前用户的计划任务服务</h2>
-
-<h2 id="toc_47">chkconfig –list # 列出所有系统服务</h2>
-
-<h2 id="toc_48">chkconfig –list | grep on # 列出所有启动的系统服务程序</h2>
+                    <h2><a id="%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>软件包管理</h2>
+<h3><a id="rpm-qa%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E5%AE%89%E8%A3%85%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>rpm -qa # 查看所有安装的软件包</h3>
+<p>###rpm -ivh  mysql-connector-odbc-5.1.5.rpm<br />
+###yum list  列出来所有可以安装的包<br />
+###yum search<br />
+###yum -y install     -y:yes<br />
+###yum -y install gcc<br />
+###rpm -p gcc<br />
+###yum -y update （包名）  远程千万不要要加包名<br />
+###yum -y remove （包名）卸载要添加包名<br />
+###yum grouplist</p>
+<h2><a id="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>操作系统</h2>
+<h3><a id="uname-a%E6%9F%A5%E7%9C%8B%E5%86%85%E6%A0%B8%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-cpu%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>uname -a # 查看内核/操作系统/CPU信息</h3>
+<h3><a id="head-n-1-etcissue%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%89%88%E6%9C%AC" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>head -n 1 /etc/issue # 查看操作系统版本</h3>
+<h3><a id="cat-proccpuinfo%E6%9F%A5%E7%9C%8B-cpu%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cat /proc/cpuinfo # 查看CPU信息</h3>
+<h3><a id="hostname%E6%9F%A5%E7%9C%8B%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%90%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>hostname # 查看计算机名</h3>
+<h3><a id="lspci-tv%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89-pci%E8%AE%BE%E5%A4%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>lspci -tv # 列出所有PCI设备</h3>
+<h3><a id="lsusb-tv%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89-usb%E8%AE%BE%E5%A4%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>lsusb -tv # 列出所有USB设备</h3>
+<h3><a id="lsmod%E5%88%97%E5%87%BA%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>lsmod # 列出加载的内核模块</h3>
+<h3><a id="env%E6%9F%A5%E7%9C%8B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E8%B5%84%E6%BA%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>env # 查看环境变量资源</h3>
+<h3><a id="free-m%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E9%87%8F%E5%92%8C%E4%BA%A4%E6%8D%A2%E5%8C%BA%E4%BD%BF%E7%94%A8%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>free -m # 查看内存使用量和交换区使用量</h3>
+<h3><a id="df-h%E6%9F%A5%E7%9C%8B%E5%90%84%E5%88%86%E5%8C%BA%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>df -h # 查看各分区使用情况</h3>
+<h3><a id="du-sh%E7%9B%AE%E5%BD%95%E5%90%8D%E6%9F%A5%E7%9C%8B%E6%8C%87%E5%AE%9A%E7%9B%AE%E5%BD%95%E7%9A%84%E5%A4%A7%E5%B0%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>du -sh &lt;目录名&gt; # 查看指定目录的大小</h3>
+<h3><a id="grep-memtotal-procmeminfo%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E6%80%BB%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>grep MemTotal /proc/meminfo # 查看内存总量</h3>
+<h3><a id="grep-memfree-procmeminfo%E6%9F%A5%E7%9C%8B%E7%A9%BA%E9%97%B2%E5%86%85%E5%AD%98%E9%87%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>grep MemFree /proc/meminfo # 查看空闲内存量</h3>
+<h3><a id="uptime%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E3%80%81%E7%94%A8%E6%88%B7%E6%95%B0%E3%80%81%E8%B4%9F%E8%BD%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>uptime # 查看系统运行时间、用户数、负载</h3>
+<h3><a id="cat-procloadavg%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%B4%9F%E8%BD%BD%E7%A3%81%E7%9B%98%E5%92%8C%E5%88%86%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cat /proc/loadavg # 查看系统负载磁盘和分区</h3>
+<h3><a id="mount-column-t%E6%9F%A5%E7%9C%8B%E6%8C%82%E6%8E%A5%E7%9A%84%E5%88%86%E5%8C%BA%E7%8A%B6%E6%80%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>mount | column -t # 查看挂接的分区状态</h3>
+<h3><a id="fdisk-l%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E5%88%86%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>fdisk -l # 查看所有分区</h3>
+<h3><a id="swapon-s%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E4%BA%A4%E6%8D%A2%E5%88%86%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>swapon -s # 查看所有交换分区</h3>
+<h3><a id="hdparm-i-devhda%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E5%8F%82%E6%95%B0%E4%BB%85%E9%80%82%E7%94%A8%E4%BA%8E-ide%E8%AE%BE%E5%A4%87" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>hdparm -i /dev/hda # 查看磁盘参数(仅适用于IDE设备)</h3>
+<h2><a id="%E7%BD%91%E7%BB%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>网络</h2>
+<h3><a id="dmesg-grep-ide%E6%9F%A5%E7%9C%8B%E5%90%AF%E5%8A%A8%E6%97%B6-ide%E8%AE%BE%E5%A4%87%E6%A3%80%E6%B5%8B%E7%8A%B6%E5%86%B5%E7%BD%91%E7%BB%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>dmesg | grep IDE # 查看启动时IDE设备检测状况网络</h3>
+<h3><a id="ifconfig%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E7%BD%91%E7%BB%9C%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%B1%9E%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ifconfig # 查看所有网络接口的属性</h3>
+<h3><a id="iptables-l%E6%9F%A5%E7%9C%8B%E9%98%B2%E7%81%AB%E5%A2%99%E8%AE%BE%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>iptables -L # 查看防火墙设置</h3>
+<h3><a id="route-n%E6%9F%A5%E7%9C%8B%E8%B7%AF%E7%94%B1%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>route -n # 查看路由表</h3>
+<h3><a id="netstat-lntp%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>netstat -lntp # 查看所有监听端口</h3>
+<h3><a id="netstat-antp-grep-port%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E5%B7%B2%E7%BB%8F%E5%BB%BA%E7%AB%8B%E7%9A%84%E8%BF%9E%E6%8E%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>netstat -antp | grep port # 查看所有已经建立的连接</h3>
+<h3><a id="netstat-s%E6%9F%A5%E7%9C%8B%E7%BD%91%E7%BB%9C%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF%E8%BF%9B%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>netstat -s # 查看网络统计信息进程</h3>
+<h2><a id="ps-ef%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E8%BF%9B%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ps -ef # 查看所有进程</h2>
+<h2><a id="top%E5%AE%9E%E6%97%B6%E6%98%BE%E7%A4%BA%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E7%94%A8%E6%88%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>top # 实时显示进程状态用户</h2>
+<h2><a id="w%E6%9F%A5%E7%9C%8B%E6%B4%BB%E5%8A%A8%E7%94%A8%E6%88%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>w # 查看活动用户</h2>
+<h2><a id="id%E7%94%A8%E6%88%B7%E5%90%8D%E6%9F%A5%E7%9C%8B%E6%8C%87%E5%AE%9A%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>id &lt;用户名&gt; # 查看指定用户信息</h2>
+<h2><a id="last%E6%9F%A5%E7%9C%8B%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%97%A5%E5%BF%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>last # 查看用户登录日志</h2>
+<h2><a id="cut-d-f1-etcpasswd%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E6%89%80%E6%9C%89%E7%94%A8%E6%88%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cut -d: -f1 /etc/passwd # 查看系统所有用户</h2>
+<h2><a id="cut-d-f1-etcgroup%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E6%89%80%E6%9C%89%E7%BB%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>cut -d: -f1 /etc/group # 查看系统所有组</h2>
+<h2><a id="crontab-l%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E7%94%A8%E6%88%B7%E7%9A%84%E8%AE%A1%E5%88%92%E4%BB%BB%E5%8A%A1%E6%9C%8D%E5%8A%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>crontab -l # 查看当前用户的计划任务服务</h2>
+<h2><a id="chkconfig%E2%80%93-list%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>chkconfig –list # 列出所有系统服务</h2>
+<h2><a id="chkconfig%E2%80%93-list-grep-on%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E5%90%AF%E5%8A%A8%E7%9A%84%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1%E7%A8%8B%E5%BA%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>chkconfig –list | grep on # 列出所有启动的系统服务程序</h2>
 
                   </article>
                   <div class="comments-wrap">

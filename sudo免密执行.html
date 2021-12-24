@@ -116,24 +116,15 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>在使用普通用户登录的时候，会经常使用sudo指令执行一些操作，有时候感觉输入密码比较繁琐，特别是需要设置一些开机启动的时候操作，而这些操作往往就需要sudo指令，如果没有免密的话，在使用普通用户登录的时候就无法执行，这个时候给普通用户添加免密码sudo功能就非常的必要了  </p>
-
+                    <p>在使用普通用户登录的时候，会经常使用sudo指令执行一些操作，有时候感觉输入密码比较繁琐，特别是需要设置一些开机启动的时候操作，而这些操作往往就需要sudo指令，如果没有免密的话，在使用普通用户登录的时候就无法执行，这个时候给普通用户添加免密码sudo功能就非常的必要了</p>
 <p>注意：sudo面密码只是在执行sudo指令的时候不需要输入密码，并不是普通用户拥有超级用户的权限，需要root才有的权限不加sudo 一样执行不了 ，所以这一点也保证了使用免密码的安全性 ，只是在使用sudo的时候不需要输入密码</p>
-
 <p>很简单，在命令行输入：</p>
-
-<p>sudo vim /etc/sudoers  </p>
-
+<p>sudo vim /etc/sudoers</p>
 <p>在代码的最后加上：</p>
-
-<p>yourusername   ALL=(ALL)NOPASSWD:ALL      </p>
-
+<p>yourusername   ALL=(ALL)NOPASSWD:ALL</p>
 <p>username是指定的普通用户名称，这样就是保证在指定用户使用sudo的时候不需要输入密码，如果想给执行命令添加免密而已，只需要把最后的ALL替换为命令的绝对路径即可，</p>
-
 <p>如下：</p>
-
 <p>username   ALL=(ALL)NOPASSWD:/bin/hello</p>
-
 <p>这样就为指定用户在执行/bin目录下的hello目录的时候 不需输入密码</p>
 
                   </article>

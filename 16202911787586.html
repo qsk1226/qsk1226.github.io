@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    openfeign 原理解析 - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            openfeign 原理解析   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/05/06</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='springcloud.html'>springcloud</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <p>我们在使用 springCloud 进行微服务开发的时候，当需要进行远程调用的时候，我们会经常使用到 feign 这样一个组件。下面就来看下它是如何工作的吧。</p>
+<p>首先我们需要通过一个注解 @EnableFeignClients 开启feign功能</p>
+<pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+@Import(FeignClientsRegistrar.class)
+public @interface EnableFeignClients {
+    // 同 basePackages
+    String[] value() default {};
+    // 需要扫描的包路径
+    String[] basePackages() default {};
+    // 
+    Class&lt;?&gt;[] basePackageClasses() default {};
+    /**
+     *使用的配置类 可查看 FeignClientsConfiguration，
+     *可自定义 {@link feign.codec.Decoder}, {@link feign.codec.Encoder}, {@link feign.Contract}.
+    */
+    Class&lt;?&gt;[] defaultConfiguration() default {};
+    // 非 basePackages 路径下的 feignClient
+    Class&lt;?&gt;[] clients() default {};
+}
+</code></pre>
+<p>从源码中我们可以看到 EnableFeignClients 通过 Import 注解引入了 FeignClientsRegistrar 类，此类实现了 ImportBeanDefinitionRegistrar 接口，下面主要看实现类的方法 registerBeanDefinitions</p>
+<pre><code class="language-java">@Override
+public void registerBeanDefinitions(AnnotationMetadata metadata,
+		BeanDefinitionRegistry registry) {
+		// 注册默认的配置信息
+    registerDefaultConfiguration(metadata, registry);
+    // 这里注册 feign 客户端
+    registerFeignClients(metadata, registry);
+}
+</code></pre>
+<p>方法 registerDefaultConfiguration 获取注解 @EnableFeignClients 中的配置信息。</p>
+<p>registerFeignClients 通过对EnableFeignClients 中定义的包路径basePackages 和 clients 属性进行解析，扫描出来所有被 @FeignClient 注解修饰的类，并调用 registerFeignClient 进行feign 客户端的注册。</p>
+<pre><code class="language-java">private void registerFeignClient(BeanDefinitionRegistry registry,
+		AnnotationMetadata annotationMetadata, Map&lt;String, Object&gt; attributes) {
+	String className = annotationMetadata.getClassName();
+	BeanDefinitionBuilder definition = BeanDefinitionBuilder
+			.genericBeanDefinition(FeignClientFactoryBean.class);
+	validate(attributes);
+	definition.addPropertyValue(&quot;url&quot;, getUrl(attributes));
+	definition.addPropertyValue(&quot;path&quot;, getPath(attributes));
+	String name = getName(attributes);
+	definition.addPropertyValue(&quot;name&quot;, name);
+	String contextId = getContextId(attributes);
+	definition.addPropertyValue(&quot;contextId&quot;, contextId);
+	definition.addPropertyValue(&quot;type&quot;, className);
+	definition.addPropertyValue(&quot;decode404&quot;, attributes.get(&quot;decode404&quot;));
+	definition.addPropertyValue(&quot;fallback&quot;, attributes.get(&quot;fallback&quot;));
+	definition.addPropertyValue(&quot;fallbackFactory&quot;, attributes.get(&quot;fallbackFactory&quot;));
+	definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+
+	String alias = contextId + &quot;FeignClient&quot;;
+	AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+
+	boolean primary = (Boolean) attributes.get(&quot;primary&quot;); 
+	beanDefinition.setPrimary(primary);
+
+	String qualifier = getQualifier(attributes);
+	if (StringUtils.hasText(qualifier)) {
+		alias = qualifier;
+	}
+
+	BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className,
+			new String[] { alias });
+	BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+}
+</code></pre>
+<p>在上面的代码中，对feignClient注解进行解析，获取相关配置参数并进行 BeanDefinition 的注册。</p>
+<p>这里有一个非常重要的类： FeignClientFactoryBean，这个是 spring 框架中非常重要的接口 FactoryBean 的实现类，用于自定义实例化对象，</p>
+<p>对于FactoryBean，我们以 getObject 方法为切入口，看下feignClient 是如何实例化的。</p>
+<pre><code class="language-java">public Object getObject() throws Exception {
+	return getTarget();
+}
+
+&lt;T&gt; T getTarget() {
+	FeignContext context = this.applicationContext.getBean(FeignContext.class);
+	Feign.Builder builder = feign(context);
+
+	if (!StringUtils.hasText(this.url)) {
+		if (!this.name.startsWith(&quot;http&quot;)) {
+			this.url = &quot;http://&quot; + this.name;
+		}
+		else {
+			this.url = this.name;
+		}
+		this.url += cleanPath();
+		return (T) loadBalance(builder, context,
+				new HardCodedTarget&lt;&gt;(this.type, this.name, this.url));
+	}
+	if (StringUtils.hasText(this.url) &amp;&amp; !this.url.startsWith(&quot;http&quot;)) {
+		this.url = &quot;http://&quot; + this.url;
+	}
+	String url = this.url + cleanPath();
+	Client client = getOptional(context, Client.class);
+	if (client != null) {
+		if (client instanceof LoadBalancerFeignClient) {
+			// not load balancing because we have a url,
+			// but ribbon is on the classpath, so unwrap
+			client = ((LoadBalancerFeignClient) client).getDelegate();
+		}
+		builder.client(client);
+	}
+	Targeter targeter = get(context, Targeter.class);
+	return (T) targeter.target(this, builder, context,
+			new HardCodedTarget&lt;&gt;(this.type, this.name, url));
+}
+</code></pre>
+<p>代码中 feign(context) 对feign 进行配置，可以配置的属性有 FeignLoggerFactory，feign.Logger.Level、feign.codec.Encoder、feign.codec.Decoder、feign.Contract、feign.Request.Options、feign.Retryer、feign.RequestInterceptor.</p>
+<p>以上代码中的 targeter 是在</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

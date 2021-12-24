@@ -97,7 +97,7 @@
                                  <span class="date">2020/10/09</span>
                                   <span class="tran-posted-in">posted in</span>&nbsp; 
                                   
-                                      <span class="posted-in"><a href='%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6.html'>消息中间件</a></span>
+                                      <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
                                          
                                   
 
@@ -115,76 +115,45 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>AMQP 是应用层协议的一个开放标准, 为面向消息的中间件设计。基于此协议的客户端与消息中间件可传递消息，并不受客户端/中间件不同产品，不同的开发语言等条件的限制。目标是实现一种在全行业广泛使用的标准消息中间件技术，以便降低企业和系统集成的开销，并且向大众提供工业级的集成服务。 主要实现有 RabbitMQ。</p>
-
-<h2 id="toc_0">客户端与 RabbitMQ 的通讯</h2>
-
-<h3 id="toc_1">连接</h3>
-
+<h2><a id="%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8Erabbitmq%E7%9A%84%E9%80%9A%E8%AE%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>客户端与 RabbitMQ 的通讯</h2>
+<h3><a id="%E8%BF%9E%E6%8E%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>连接</h3>
 <p>首先作为客户端(无论是生产者还是消费者)，如果要与 RabbitMQ 通讯的话，客户端与服务端之间必须创建一条 TCP 连接，当然同时建立连接后，客户端还必须发送一条“问候语”让彼此知道我们都是符合 AMQP 的语言的，比如你跟别人打招呼一般会说“你好!”，你跟国外的美女一般会说“hello!”一样。 你们确认好“语言”之后，就相当于客户端和 RabbitMQ 通过“认证”了。你们之间可以创建一条 AMQP 的信道。</p>
-
 <p>连接在 RabbitMQ 原生客户端(5.0.0)版本中默认使用 java 的原生 socket，但是也支持 NIO，需要手动设置修改。</p>
-
-<h3 id="toc_2">信道</h3>
-
+<h3><a id="%E4%BF%A1%E9%81%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>信道</h3>
 <p>信道是生产者/消费者与 RabbitMQ 通信的渠道。信道是建立在 TCP 连接上的虚拟连接，什么意思呢? 就是说 rabbitmq 在一条 TCP 上建立成百上千个信道来达到多个线程处理，这个 TCP 被多个线程共享，每个线程对应一个信道，信道在RabbitMQ 都有唯一的 ID ,保证了信道私有性，对应上唯一的线程使用。</p>
-
-<p>疑问: 为什么不建立多个 TCP 连接呢? </p>
-
+<p>疑问: 为什么不建立多个 TCP 连接呢?</p>
 <p>原因是 rabbit 保证性能，系统为每个线程开辟一个 TCP 是非常消耗性能，每秒成百上千的建立销毁 TCP 会严重消耗系统。</p>
-
-<p>所以 rabbitmq 选择建立多个信道(建立在 tcp 的虚拟连接)连接到 rabbit 上。<br/>
+<p>所以 rabbitmq 选择建立多个信道(建立在 tcp 的虚拟连接)连接到 rabbit 上。<br />
 从技术上讲，这被称之为“多路复用”，对于执行多个任务的多线程或者异步应用程序来说，好使的很。</p>
-
-<h2 id="toc_3">RabbitMQ 中使用 AMQP</h2>
-
-<h3 id="toc_4">包括的要素</h3>
-
+<h2><a id="rabbitmq%E4%B8%AD%E4%BD%BF%E7%94%A8-amqp" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RabbitMQ 中使用 AMQP</h2>
+<h3><a id="%E5%8C%85%E6%8B%AC%E7%9A%84%E8%A6%81%E7%B4%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>包括的要素</h3>
 <ul>
-<li>生产者<br/>
+<li>生产者<br />
 消息的创建者，发送到RabbitMQ</li>
-<li>消费者<br/>
+<li>消费者<br />
 连接到 RabbitMQ 订阅到队列上，消费消息，持续订阅(basicConsumer)和单条订阅(basicGet)</li>
 <li>包含有效载荷和标签，有效载荷指要传输的数据，标签描述了有效载荷，并且 RabbitMQ用它来决定谁获得消息，消费者只能拿到有效载荷，病不知道生产者是谁。</li>
 </ul>
-
-<h3 id="toc_5">交换器、队列、绑定、路由键</h3>
-
-<p>队列通过路由键(routing key，某种确定的规则)绑定到交换器，生产者将消息发布到交换器，交换器根据绑定的路由键将消息路由到特定队列， 然后由订阅这个队列的消费者进行接收。（routing_key和 丙丁见 binding_key 的最大长度是 255 个字节）</p>
-
-<p><figure><img src="media/16022252063226/16022280502106.jpg" alt="" style="width:882px;"/></figure></p>
-
-<h3 id="toc_6">消息的确认</h3>
-
+<p>###交换器、队列、绑定、路由键<br />
+队列通过路由键(routing key，某种确定的规则)绑定到交换器，生产者将消息发布到交换器，交换器根据绑定的路由键将消息路由到特定队列， 然后由订阅这个队列的消费者进行接收。（routing_key和 丙丁见 binding_key 的最大长度是 255 个字节）</p>
+<p><figure><img src="media/16022252063226/16022280502106.jpg" alt="" style="width:882px;" /></figure></p>
+<h3><a id="%E6%B6%88%E6%81%AF%E7%9A%84%E7%A1%AE%E8%AE%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息的确认</h3>
 <p>消费者收到的每一条消息都必须进行确认(自动确认和自行确认)。</p>
-
-<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=false 时，RabbitMQ 会等待消费者显式发回 ack 信号后才从内存(和磁盘，如果是持久化消<br/>
+<p>消费者在声明队列时，可以指定 autoAck 参数，当 autoAck=false 时，RabbitMQ 会等待消费者显式发回 ack 信号后才从内存(和磁盘，如果是持久化消<br />
 息的话)中移去消息。否则，RabbitMQ 会在队列中消息被消费后立即删除它。</p>
-
 <p>采用消息确认机制后，只要令 autoAck=false，消费者就有足够的时间处理消息(任务)，不用担心处理消息过程中消费者进程挂掉后消息丢失的问题， 因为 RabbitMQ 会一直持有消息直到消费者显式调用 basicAck 为止。</p>
-
 <p>当 autoAck=false 时，对于 RabbitMQ 服务器端而言，队列中的消息分成了两部分:一部分是等待投递给消费者的消息;一部分是已经投递给消费者， 但是还没有收到消费者 ack 信号的消息。如果服务器端一直没有收到消费者的 ack 信号，并且消费此消息的消费者已经断开连接，则服务器端会安排该消 息重新进入队列，等待投递给下一个消费者(也可能还是原来的那个消费者)。</p>
-
 <p>RabbitMQ 不会为未 ack 的消息设置超时时间，它判断此消息是否需要重新投递给消费者的唯一依据是消费该消息的消费者连接是否已经断开。这么 设计的原因是 RabbitMQ 允许消费者消费一条消息的时间可以很久很久</p>
-
-<h2 id="toc_7">虚拟主机</h2>
-
+<h2><a id="%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>虚拟主机</h2>
 <p>虚拟消息服务器，vhost，本质上就是一个 mini 版的 mq 服务器，有自己的队列、交换器和绑定，最重要的，自己的权限机制。Vhost 提供了逻辑上的 分离，可以将众多客户端进行区分，又可以避免队列和交换器的命名冲突。Vhost 必须在连接时指定，rabbitmq 包含缺省 vhost:“/”，通过缺省用户和 口令 guest 进行访问。</p>
-
 <p>rabbitmq 里创建用户，必须要被指派给至少一个 vhost，并且只能访问被指派内的队列、交换器和绑定。Vhost 必须通过 rabbitmq 的管理控制工具创建。</p>
-
-<h2 id="toc_8">交换器类型</h2>
-
+<h2><a id="%E4%BA%A4%E6%8D%A2%E5%99%A8%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>交换器类型</h2>
 <p>共有四种 direct、fanout、topic、headers，其中headers和 direct 可以忽略。</p>
-
-<h3 id="toc_9">fanout</h3>
-
+<h3><a id="fanout" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>fanout</h3>
 <p>消息广播到绑定的队列，不管队列绑定了什么路由键，消息经过交换器，每个队列都有一份</p>
-
-<h3 id="toc_10">Topic</h3>
-
+<h3><a id="topic" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Topic</h3>
 <p><code>通过使用 “*”和“#”通配符进行处理，使来自不同源头的消息到达同一个队列，”.”将路由键分为了几个标识符，“*” 匹配 1 个，“#”匹配一个或多个。</code></p>
-
-<p><figure><img src="media/16022252063226/16022297347390.jpg" alt="" style="width:799px;"/></figure></p>
+<p><figure><img src="media/16022252063226/16022297347390.jpg" alt="" style="width:799px;" /></figure></p>
 
                   </article>
                   <div class="comments-wrap">

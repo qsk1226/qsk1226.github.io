@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      
+    Git常用操作命令收集： - 大爷来玩儿啊~
+    
+    </title>
+    <link rel="shortcut icon" href="media/15865826719099/icon.png" type="image/png" />
+
+    
+    
+    <link href="atom.xml" rel="alternate" title="大爷来玩儿啊~" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/style.min.css">
+    <link rel="stylesheet" href="asset/css/doc.css">
+    <script src="asset/app.js"></script>
+</head>
+  <body>
+    <section class="hero">
+      <div class="hero-head">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+              <div class="navbar-brand">
+                
+                <a target="_self" class="navbar-item " href="index.html">博客</a>
+                
+                <a target="_self" class="navbar-item " href="archives.html">归档</a>
+                
+
+                <a role="button" id="navbarSNSRssSwitchBtn" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarSNSRssButtons">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+            
+              <div id="navbarSNSRssButtons" class="navbar-menu">
+                <div class="navbar-start">
+                  
+                </div>
+            
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <!--buttons start-->
+                    <div class="buttons">
+                      
+                        
+                        
+                        
+                        
+                      
+                      <a href="atom.xml" target="_blank" title="RSS">
+                          <span class="icon is-large has-text-black-bis">
+                              <svg class="svg-inline--fa fa-rss fa-w-14 fa-lg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="rss" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"></path></svg><!-- <i class="fas fa-rss fa-lg"></i> -->
+                          </span>
+                      </a>
+                    </div>
+                    <!--buttons end-->
+
+                  </div>
+                </div>
+                </div>
+              </div>
+            </nav>
+      </div>
+
+ <div class="hero-body ct-body"></div>
+      
+    </section>
+    <section class="ct-body">
+      <div class="container">
+          <div class="columns is-variable bd-klmn-columns is-4 is-centered">
+              <div class="column is-four-fifths">
+                  <div class="post-body single-content">
+                    
+                    <h1 class="title">
+                            Git常用操作命令收集：   
+                      </h1>
+                     
+                    
+                      <div class="media">
+                            
+                            <figure class="media-left">
+                              <p class="image is-48x48">
+                                
+                                  <img class="is-rounded" src="media/15865826719099/avatar.png">
+                                
+                              </p>
+                            </figure>
+                            
+                            <div class="media-content">
+                              <div class="content">
+                                <p>
+                                 <span class="date">2021/10/26</span>
+                                  <span class="tran-posted-in">posted in</span>&nbsp; 
+                                  
+                                      <span class="posted-in"><a href='%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7.html'>构建工具</a></span>
+                                         
+                                  
+
+                                   
+                                      
+                                  <br />
+                                  <span class="tran-tags">Tags:</span>&nbsp;
+                                     
+
+                                </p>
+                              </div>
+                            </div>
+                         
+                    </div>
+                </div>
+                  <article class="markdown-body single-content">
+                    <h2><a id="git%E9%85%8D%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>git 配置</h2>
+<p>ssh -T <a href="mailto:git@github.com">git@github.com</a>  <br />
+配置你的用户名和密码<br />
+git config --global  --list<br />
+git config --global user.name &quot;qinshengke&quot;  <br />
+git config --global user.email <a href="mailto:qinshengke@meituan.com">qinshengke@meituan.com</a>  </p>
+<h2><a id="%E7%BB%91%E5%AE%9A%E6%9C%AC%E5%9C%B0%E5%88%86%E6%94%AF%E5%88%B0github" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>绑定本地分支到github</h2>
+<p>git init<br />
+git add .<br />
+git commit -m “提交说明”<br />
+git remote add origin {远程仓库地址}<br />
+git remote -v<br />
+git push -u origin master</p>
+<h2><a id="%E6%9B%BF%E6%8D%A2%E5%88%86%E6%94%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>替换分支</h2>
+<p>git push origin transfer:master -f<br />
+把本地的 transfer 分支强制(-f)推送到远程 master</p>
+<p>把github上没有拉下来的代码或文件拉下来<br />
+git pull --rebase origin master</p>
+<h3><a id="%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>远程仓库相关命令</h3>
+<ul>
+<li>检出仓库：</li>
+</ul>
+<blockquote>
+<p>$ git clone git://github.com/jquery/jquery.git</p>
+</blockquote>
+<ul>
+<li>查看远程仓库：
+<blockquote>
+<p>$ git remote -v</p>
+</blockquote>
+</li>
+<li>添加远程仓库：</li>
+</ul>
+<blockquote>
+<p>$ git remote add [name] [url]</p>
+</blockquote>
+<ul>
+<li>删除远程仓库：</li>
+</ul>
+<blockquote>
+<p>$ git remote rm [name]</p>
+</blockquote>
+<ul>
+<li>修改远程仓库</li>
+</ul>
+<blockquote>
+<p>$ git remote set-url --push[name][newUrl]</p>
+</blockquote>
+<ul>
+<li>拉取指定分支代码</li>
+</ul>
+<blockquote>
+<p>$ git clone -b fixbug_20170821 <a href="https://github.com/kkche/service-billing.git">https://github.com/kkche/service-billing.git</a></p>
+</blockquote>
+<p>拉取远程仓库：$ git pull [remoteName] [localBranchName]</p>
+<p>推送远程仓库：$ git push [remoteName] [localBranchName]<br />
+git push -u origin master</p>
+<h3><a id="%E5%88%86%E6%94%AFbranch%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>分支(branch)操作相关命令</h3>
+<ul>
+<li>查看本地分支：$ git branch</li>
+<li>修改branch名字</li>
+</ul>
+<blockquote>
+<p>$git branch -m sourceName  targetName</p>
+</blockquote>
+<ul>
+<li>
+<p>查看远程分支：$ git branch -r</p>
+</li>
+<li>
+<p>创建本地分支：$ git branch [name] ----注意新分支创建后不会自动切换为当前分支</p>
+</li>
+<li>
+<p>切换分支：$ git checkout [name]</p>
+</li>
+<li>
+<p>创建新分支并立即切换到新分支：$ git checkout -b [name]</p>
+</li>
+<li>
+<p>删除分支：$ git branch -d [name]<br />
+【-d】选项只能删除已经参与了合并的分支，对于未有合并的分支是无法删除的。如果想强制删除一个分支，可以使用-D选项</p>
+</li>
+<li>
+<p>合并分支：$ git merge [name]<br />
+将名称为[name]的分支与当前分支合并(首先进入到想要合并到的分支)</p>
+</li>
+<li>
+<p>创建远程分支(本地分支push到远程)：$ git push origin [name]</p>
+</li>
+<li>
+<p>删除远程分支：$git  push origin --delete [分支名称]</p>
+</li>
+<li>
+<p>推送到远程分支</p>
+</li>
+</ul>
+<blockquote>
+<p>$git push origin :branch  (origin 后面有空格)</p>
+</blockquote>
+<blockquote>
+<p>$ git pull &lt;远程主机名&gt; &lt;远程分支名&gt;:&lt;本地分支名&gt; 拉取指定远程分支到本地指定分支中，省略本地分支 则标示本地当前分支</p>
+</blockquote>
+<blockquote>
+<p>$ git branch --set-upstream master origin/next   命令指定master分支追踪origin/next分支。<br />
+git push -u origin develop，这个操作在push的同时会指定当前分支的upstream。</p>
+</blockquote>
+<h3><a id="3%EF%BC%89%E7%89%88%E6%9C%AC-tag%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3）版本(tag)操作相关命令</h3>
+<ul>
+<li>查看并筛选本地tag</li>
+</ul>
+<blockquote>
+<p>git tag -l | grep &quot;tag_name&quot;</p>
+</blockquote>
+<ul>
+<li>创建本地tag</li>
+</ul>
+<blockquote>
+<p>git tag -a tag_name -m &quot;tag信息&quot;</p>
+</blockquote>
+<ul>
+<li>推送tag到远程</li>
+</ul>
+<blockquote>
+<p>git push origin :tag_name</p>
+</blockquote>
+<ul>
+<li>删除本地tag分支</li>
+</ul>
+<blockquote>
+<p>git tag -d tag_name</p>
+</blockquote>
+<ul>
+<li>删除远程tag分支 : git push origin :refs/tags/[name]</li>
+</ul>
+<blockquote>
+<p>git push origin :refs/tags/tag_name</p>
+</blockquote>
+<ul>
+<li>删除远程分支</li>
+</ul>
+<blockquote>
+<p>git branch -r -d origin/branch-name</p>
+</blockquote>
+<h3><a id="%E5%AD%90%E6%A8%A1%E5%9D%97submodule%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>子模块(submodule)相关操作命令</h3>
+<p>添加子模块：$ git submodule add [url] [path]<br />
+如：$ git submodule add git://github.com/soberh/ui-libs.git src/main/webapp/ui-libs<br />
+初始化子模块：$ git submodule init ----只在首次检出仓库时运行一次就行<br />
+更新子模块：$ git submodule update ----每次更新或切换分支后都需要运行一下<br />
+删除子模块：（分4步走哦）</p>
+<ul>
+<li>1)$ git rm --cached [path]</li>
+<li>
+<ol start="2">
+<li>编辑“.gitmodules”文件，将子模块的相关配置节点删除掉</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>编辑“.git/config”文件，将子模块的相关配置节点删除掉</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>手动删除子模块残留的目录<br />
+ </li>
+</ol>
+</li>
+</ul>
+<h3><a id="%E5%BF%BD%E7%95%A5%E4%B8%80%E4%BA%9B%E6%96%87%E4%BB%B6%E3%80%81%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8D%E6%8F%90%E4%BA%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>忽略一些文件、文件夹不提交</h3>
+<p>在仓库根目录下创建名称为“.gitignore”的文件，写入不需要的文件夹名或文件，每个元素占一行即可，如<br />
+target<br />
+bin<br />
+*.db<br />
+ <br />
+ </p>
+<h3><a id="git%E6%93%8D%E4%BD%9C%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>git操作-删除文件</h3>
+<p>git rm add2.txt<br />
+git commit -m &quot;rm test&quot;<br />
+git push web<br />
+ <br />
+git remote set-url origin <a href="mailto:git@gitlab.kanche.com">git@gitlab.kanche.com</a>:kkche/code-check.git</p>
+
+                  </article>
+                  <div class="comments-wrap">
+                    <div class="share-comments">
+                      
+
+                      
+
+                      
+                    </div>
+                  </div><!-- end comments wrap -->
+              </div>
+            </div><!-- end columns -->
+      </div><!-- end container -->
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+              Copyright &copy; 2019
+              Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+              Theme used <a target="_blank" href="https://bulma.io/">Bulma CSS</a>.
+          </p>
+        </div>
+      </footer>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+
+
+
+
+  </body>
+</html>

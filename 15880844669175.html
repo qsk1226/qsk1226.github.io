@@ -119,33 +119,23 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>代理模式(Proxy Pattern) ：给某一个对象提供一个代理，并由代理对象控制对原对象的引用。代理模式的英文叫做Proxy或Surrogate，它是一种对象结构型模式。</p>
-
-<p>在某些情况下，<strong><em>一个客户不想或者不能直接引用一个对象，又或者客户想要增强目标类的功能，但是又不能调整目标类的时候</em></strong>，可以通过一个称之为“代理”的第三者来实现间接引用。代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。</p>
-
+<p>在某些情况下，<em><strong>一个客户不想或者不能直接引用一个对象，又或者客户想要增强目标类的功能，但是又不能调整目标类的时候</strong></em>，可以通过一个称之为“代理”的第三者来实现间接引用。代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。</p>
 <p>通过引入一个新的对象（如小图片和远程代理 对象）来实现对真实对象的操作或者将新的对 象作为真实对象的一个替身，这种实现机制即为代理模式，通过引入代理对象来间接访问一 个对象，这就是代理模式的模式动机。</p>
-
 <p>代理模式可分为静态代理和动态代理，他们都提供了对目标对象额外的访问方式，即通过代理对象访问目标对象，这样可以在不修改原目标对象的前提下，提供额外的功能操作，扩展目标对象的功能。</p>
-
 <p>那么静态代理与动态代理的区别又是什么呢？</p>
-
 <ul>
 <li>静态代理在编译时就已经实现，编译完成后代理类是一个实际的class文件</li>
 <li>动态代理是在运行时动态生成的，即编译完成后没有实际的class文件，而是使用反射和字节码的技术，在运行期创建指定接口或类的子类以及其实力对象，并加载到JVM中</li>
 </ul>
-
-<h2 id="toc_0">静态代理</h2>
-
-<h3 id="toc_1">静态态代理结构</h3>
-
+<h2><a id="%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>静态代理</h2>
+<h3><a id="%E9%9D%99%E6%80%81%E6%80%81%E4%BB%A3%E7%90%86%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>静态态代理结构</h3>
 <ul>
 <li>Subject: 抽象主题角色</li>
 <li>Proxy: 代理主题角色</li>
-<li>RealSubject: 真实主题角色
-<figure><img src="media/15880844669175/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.jpg" alt="代理模式"/><figcaption>代理模式</figcaption></figure></li>
+<li>RealSubject: 真实主题角色<br />
+<figure><img src="media/15880844669175/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.jpg" alt="代理模式" /><figcaption>代理模式<figcaption></figure></li>
 </ul>
-
-<h3 id="toc_2">静态代理示例</h3>
-
+<h3><a id="%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>静态代理示例</h3>
 <pre><code class="language-java">/**
  * 接口
  */
@@ -194,34 +184,24 @@ public class App {
     }
 }
 </code></pre>
-
-<h3 id="toc_3">静态代理总结:</h3>
-
+<h3><a id="%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>静态代理总结:</h3>
 <ul>
 <li>可以做到在不修改目标对象的功能前提下,对目标功能扩展.</li>
 <li>缺点:因为代理对象需要与目标对象实现一样的接口,所以会有很多代理类,类太多.同时,一旦接口增加方法,目标对象与代理对象都要维护.</li>
 </ul>
-
 <p>如何解决静态代理中的缺点呢?答案是可以使用动态代理方式</p>
-
-<h2 id="toc_4">动态代理技术实现主要方式</h2>
-
-<h3 id="toc_5">JDK原生动态代理</h3>
-
+<h2><a id="%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E4%B8%BB%E8%A6%81%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动态代理技术实现主要方式</h2>
+<h3><a id="jdk%E5%8E%9F%E7%94%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>JDK原生动态代理</h3>
 <p>只能基于有接口代理对象进行代理</p>
-
 <ul>
-<li>Proxy: Proxy是所有动态代理的父类，它提供了一个静态方法来创建动态代理的class对象和实例。
-<code>java
-static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,InvocationHandler h )
-</code>
-<ul>
-<li>ClassLoader loader,:指定当前目标对象使用类加载器,获取加载器的方法是固定的</li>
-<li>Class&lt;?&gt;[] interfaces,:目标对象实现的接口的类型,使用泛型方式确认类型</li>
-<li>InvocationHandler h:事件处理,执行目标对象的方法时,会触发事件处理器的方法,会把当前执行目标对象的方法作为参数传入,每个动态代理实例都有一个关联的InvocationHandler。在代理实例上调用方法时，方法调用被转发到InvocationHandler的invoke方法。</li>
-</ul></li>
+<li>Proxy: Proxy是所有动态代理的父类，它提供了一个静态方法来创建动态代理的class对象和实例。</li>
 </ul>
-
+<pre><code class="language-java">static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,InvocationHandler h )
+</code></pre>
+<pre><code class="language-plain_text">- ClassLoader loader,:指定当前目标对象使用类加载器,获取加载器的方法是固定的
+- Class&lt;?&gt;[] interfaces,:目标对象实现的接口的类型,使用泛型方式确认类型
+- InvocationHandler h:事件处理,执行目标对象的方法时,会触发事件处理器的方法,会把当前执行目标对象的方法作为参数传入,每个动态代理实例都有一个关联的InvocationHandler。在代理实例上调用方法时，方法调用被转发到InvocationHandler的invoke方法。
+</code></pre>
 <pre><code class="language-java">public class DynamicProxyTest {
 
     interface IHello{
@@ -256,20 +236,14 @@ static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces,I
     }
 }
 </code></pre>
-
-<h3 id="toc_6">CGLIB动态代理</h3>
-
+<h3><a id="cglib%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CGLIB动态代理</h3>
 <p>CGLIB代理,也叫作子类代理,它是在内存中构建一个子类对象从而实现对目标对象功能的扩展.</p>
-
 <p>JDK的动态代理有一个限制,就是使用动态代理的对象必须实现一个或多个接口,如果想代理没有实现接口的类,就可以使用CGLIB实现.</p>
-
 <p>CGLIB是一个强大的高性能的代码生成包,它可以在运行期扩展java类与实现java接口.它广泛的被许多AOP的框架使用,例如Spring AOP和synaop,为他们提供方法的interception(拦截)</p>
-
 <p>CGLIB包的底层是通过使用一个小而块的字节码处理框架ASM来转换字节码并生成新的类.不鼓励直接使用ASM,因为它要求你必须对JVM内部结构包括class文件的格式和指令集都很熟悉.</p>
-
 <ul>
 <li>Enhancer: 来指定要代理的目标对象、实际处理代理逻辑的对象，最终通过调用create()方法得到代理对象，对这个对象所有非final方法的调用都会转发给MethodInterceptor;</li>
-<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。<br/>
+<li>MethodInterceptor: 动态代理对象的方法调用都会转发到intercept方法进行增强。<br />
 MethodInterceptor实现了Callback接口，在 CGLIB 框架中 Callback 接口的实现可以理解为字节码的实现手段，共定义了 6 种实现方式，以适应不同场景的代理需求
 <ul>
 <li>MethodInterceptor</li>
@@ -278,30 +252,29 @@ MethodInterceptor实现了Callback接口，在 CGLIB 框架中 Callback 接口�
 <li>Dispatcher</li>
 <li>InvocationHandler</li>
 <li>FixedValue</li>
-</ul></li>
 </ul>
-
-<h3 id="toc_7">CGLIB 代理示例</h3>
-
+</li>
+</ul>
+<h3><a id="cglib%E4%BB%A3%E7%90%86%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CGLIB 代理示例</h3>
 <pre><code class="language-java">public class ProxyFactory {
-    /**
-     * 产生代理对象
-     *
-     * @param targetClass       目标类
-     * @param callbackFilter    回调增强方法的过滤器
-     * @param methodInterceptor 回调增强方法
-     * @return 代理对象
-     */
-    public static Object createProxy(Class&lt;?&gt; targetClass, CallbackFilter callbackFilter, MethodInterceptor... methodInterceptor) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(targetClass);
-        enhancer.setUseCache(false);
-        // 拦截器
-        //enhancer.setCallbackFilter(callbackFilter);
-        enhancer.setCallbacks(methodInterceptor);
-        return enhancer.create();
+	/**
+	 * 产生代理对象
+	 *
+	 * @param targetClass       目标类
+	 * @param callbackFilter    回调增强方法的过滤器
+	 * @param methodInterceptor 回调增强方法
+	 * @return 代理对象
+	 */
+	public static Object createProxy(Class&lt;?&gt; targetClass, CallbackFilter callbackFilter, MethodInterceptor... methodInterceptor) {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(targetClass);
+		enhancer.setUseCache(false);
+		// 拦截器
+		//enhancer.setCallbackFilter(callbackFilter);
+		enhancer.setCallbacks(methodInterceptor);
+		return enhancer.create();
 
-    }
+	}
 }
 
 /**
@@ -309,43 +282,43 @@ MethodInterceptor实现了Callback接口，在 CGLIB 框架中 Callback 接口�
  */
 public class HelloService {
 
-    public void sayHello() {
-        System.out.println(&quot;hello, Lily&quot;);
-    }
+	public void sayHello() {
+		System.out.println(&quot;hello, Lily&quot;);
+	}
 
-    public void saySb(){
-        System.out.println(&quot;Sb&quot;);
-    }
-    public void sayNinHao(){
-        System.out.println(&quot;您好&quot;);
-    }
+	public void saySb(){
+		System.out.println(&quot;Sb&quot;);
+	}
+	public void sayNinHao(){
+		System.out.println(&quot;您好&quot;);
+	}
 }
 
 /**
  * 抽象的增强的回调方法
  **/
 public abstract class AbstractAdviceInterceptor implements MethodInterceptor {
-    abstract void preExecute(MethodProxy proxy, Object object, Method method, Object[] args);
+	abstract void preExecute(MethodProxy proxy, Object object, Method method, Object[] args);
 
-    abstract void afterExecute(MethodProxy proxy, Object object, Method method, Object[] args);
+	abstract void afterExecute(MethodProxy proxy, Object object, Method method, Object[] args);
 
-    public Object execute(MethodProxy proxy, Object object, Method method, Object[] args) {
+	public Object execute(MethodProxy proxy, Object object, Method method, Object[] args) {
 
-        preExecute(proxy, object, method, args);
-        Object result = null;
-        try {
-            result = proxy.invokeSuper(object, args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        afterExecute(proxy, object, method, args);
-        return result;
-    }
+		preExecute(proxy, object, method, args);
+		Object result = null;
+		try {
+			result = proxy.invokeSuper(object, args);
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		}
+		afterExecute(proxy, object, method, args);
+		return result;
+	}
 
-    @Override
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return execute(proxy, obj, method, args);
-    }
+	@Override
+	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		return execute(proxy, obj, method, args);
+	}
 }
 
 /**
@@ -354,34 +327,31 @@ public abstract class AbstractAdviceInterceptor implements MethodInterceptor {
  */
 public class HelloInterceptor extends AbstractAdviceInterceptor {
 
-    @Override
-    void preExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
-        System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; pre operation:&quot;);
-    }
+	@Override
+	void preExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
+		System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; pre operation:&quot;);
+	}
 
-    @Override
-    void afterExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
-        System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; after operation:&quot;);
-        System.out.println(&quot;&quot;);
-    }
+	@Override
+	void afterExecute(MethodProxy proxy,Object object, Method method, Object[] args) {
+		System.out.println(&quot;----------&gt; class: &quot;+proxy.getSuperName()+&quot;  methodName &quot; + method.getName() + &quot; after operation:&quot;);
+		System.out.println(&quot;&quot;);
+	}
 
 }
 
 public static void main(String[] args) {
-    /*代理整个类*/
-    HelloService proxy2 = (HelloService) ProxyFactory.createProxy(HelloService.class, null, new HelloInterceptor());
-    proxy2.sayHello();
-    proxy2.saySb();
-    proxy2.sayNinHao();
+	/*代理整个类*/
+	HelloService proxy2 = (HelloService) ProxyFactory.createProxy(HelloService.class, null, new HelloInterceptor());
+	proxy2.sayHello();
+	proxy2.saySb();
+	proxy2.sayNinHao();
 
 }
 
 </code></pre>
-
-<h2 id="toc_8">使用场景</h2>
-
+<h2><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h2>
 <p>根据代理模式的使用目的，常见的代理模式有以下几种类型：</p>
-
 <ul>
 <li>远程(Remote)代理：为一个位于不同的地址空间的对象提供一个本地 的代理对象，这个不同的地址空间可以是在同一台主机中，也可是在 另一台主机中，远程代理又叫做大使(Ambassador)。</li>
 <li>虚拟(Virtual)代理：如果需要创建一个资源消耗较大的对象，先创建一个消耗相对较小的对象来表示，真实对象只在需要时才会被真正创建。</li>

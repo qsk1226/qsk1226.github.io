@@ -121,21 +121,13 @@
 <li>问题4：操作系统如何知道网络数据对应于哪个 socket？</li>
 <li>问题5：操作系统是如何同时监视多个 socket 的数据的？</li>
 </ul>
-
 <p>从事服务端开发，少不了要接触网络编程。epoll 作为 Linux 下高性能网络服务器的必备技术至关重要，nginx、Redis、Skynet 和大部分游戏服务器都使用到这一多路复用技术。</p>
-
 <p>为了能探究epoll的原理，需要从网卡接收数据的流程开始，串联起 CPU 中断、操作系统进程调度等知识；再一步分析阻塞接收数据、select 到 epoll 的进化过程，最后探究 epoll 的实现细节。</p>
-
-<h2 id="toc_0">网卡接收数据</h2>
-
+<h2><a id="%E7%BD%91%E5%8D%A1%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>网卡接收数据</h2>
 <p><a href="16073516476681.html">Linux 网络包接收过程</a></p>
-
-<h3 id="toc_1">进程阻塞原理</h3>
-
+<h3><a id="%E8%BF%9B%E7%A8%8B%E9%98%BB%E5%A1%9E%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>进程阻塞原理</h3>
 <p>了解 epoll 本质，要从操作系统进程调度的角度来看数据接收。阻塞是进程调度的关键一环，指的是进程在等待某事件(如接收到网络数据)发生之前的等待状态，recv、select 和 epoll 都是阻塞方法。</p>
-
 <p>我们看下如下伪代码</p>
-
 <pre><code class="language-java">//创建 socket
 int s = socket(AF_INET, SOCK_STREAM, 0);
 //绑定
@@ -149,34 +141,20 @@ recv(c, ...);
 //将数据打印出来 
 printf(...)
 </code></pre>
-
 <p>这是一段最基础的网络编程代码，先新建 socket 对象，依次调用 bind、listen、accept， 最后调用 recv 接收数据。recv 是个阻塞方法，当程序运行到 recv 时，它会一直等待，直到接收到数据才往下执行。</p>
-
-<h4 id="toc_2">工作队列</h4>
-
+<h4><a id="%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>工作队列</h4>
 <p>现代操作系统为了支持多任务，实现了进程调度的功能，会把进程分为“运行”和“等待” 等几种状态。运行状态是进程获得 cpu 使用权，正在执行代码的状态;等待状态是阻塞状态， 比如上述程序运行到 recv 时，程序会从运行状态变为等待状态，接收到数据后又变回运行 状态。操作系统会分时执行各个运行状态的进程，由于速度很快，看上去就像是同时执行多个任务。</p>
-
-<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br/>
-<figure><img src="media/16073533164404/16096513399575.jpg" alt="" style="width:770px;"/></figure></p>
-
-<h4 id="toc_3">等待队列</h4>
-
+<p>现在我们假设的计算机中运行着 A、B、C 三个进程，其中进程 A 执行着上述基础网络程序， 一开始，这 3 个进程都被操作系统的工作队列所引用，处于运行状态，分时执行。<br />
+<figure><img src="media/16073533164404/16096513399575.jpg" alt="" style="width:770px;" /></figure></p>
+<h4><a id="%E7%AD%89%E5%BE%85%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>等待队列</h4>
 <p>当进程 A 执行到创建 socket 的语句时，操作系统会创建一个由文件系统管理的 socket 对象。这个 socket 对象包含了发送缓冲区、接收缓冲区、等待队列等成员。</p>
-
 <p>等待队列是个非常重要的结构，它指向所有需要等待该 socket 事件的进程</p>
-
 <p>当程序执行到 recv 时，操作系统会将进程 A 从工作队列移动到该 socket 的等待队列中。 由于工作队列只剩下了进程 B 和 C，依据进程调度，cpu 会轮流执行这两个进程的程序，不会执行进程 A 的程序。所以进程 A 被阻塞，不会往下执行代码，也不会占用 cpu 资源。</p>
-
-<p><figure><img src="media/16073533164404/16096513608533.jpg" alt="" style="width:780px;"/></figure></p>
-
+<p><figure><img src="media/16073533164404/16096513608533.jpg" alt="" style="width:780px;" /></figure></p>
 <p>操作系统添加等待队列只是添加了对这个“等待中”进程的引用，以便在接收到数据时 获取进程对象、将其唤醒，而非直接将进程管理纳入自己之下。</p>
-
-<h4 id="toc_4">唤醒进程</h4>
-
+<h4><a id="%E5%94%A4%E9%86%92%E8%BF%9B%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>唤醒进程</h4>
 <p>当 socket 接收到数据后，操作系统将该 socket 等待队列上的进程重新放回到工作队列，该进程变成运行状态，继续执行代码。也由于 socket 的接收缓冲区已经有了数据，recv 可以返回接收到的数据。</p>
-
-<h3 id="toc_5">内核接收网络数据全过程</h3>
-
+<h3><a id="%E5%86%85%E6%A0%B8%E6%8E%A5%E6%94%B6%E7%BD%91%E7%BB%9C%E6%95%B0%E6%8D%AE%E5%85%A8%E8%BF%87%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内核接收网络数据全过程</h3>
 <ul>
 <li>1、进程在 recv 阻塞期间，计算机收到了对端传送的数据。</li>
 <li>2、网卡将数据帧 DMA 到内存的 RingBuffer 中</li>
@@ -184,21 +162,13 @@ printf(...)
 <li>4、内核线程 ksoftirqd 线程发现有软中断请求到来，先关闭硬中断，ksoftirqd线程开始调用驱动的poll函数收包，将网络数据包写入到对应 socket 的接收缓冲区里面， poll函数将收到的包送到协议栈注册的ip_rcv函数中，ip_rcv函数再讲包送到udp_rcv函数中（对于tcp包就送到tcp_rcv）</li>
 <li>5、唤醒进程 A，重新将进程 A 放入工作队列中</li>
 </ul>
-
-<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程"/><figcaption>Linux内核接收数据的过程</figcaption></figure></p>
-
-<h4 id="toc_6">操作系统是怎么直到网络数据对应于哪个 socket 的呢？</h4>
-
+<p><figure><img src="media/16073533164404/16073547682930.jpg" alt="Linux内核接收数据的过程" /><figcaption>Linux内核接收数据的过程<figcaption></figure></p>
+<h4><a id="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%98%AF%E6%80%8E%E4%B9%88%E7%9B%B4%E5%88%B0%E7%BD%91%E7%BB%9C%E6%95%B0%E6%8D%AE%E5%AF%B9%E5%BA%94%E4%BA%8E%E5%93%AA%E4%B8%AAsocket%E7%9A%84%E5%91%A2%EF%BC%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>操作系统是怎么直到网络数据对应于哪个 socket 的呢？</h4>
 <p>一个 socket 对应着一个端口号，而网络数据包中包含了 ip 和端口的信息，内核可 以通过端口号找到对应的 socket。当然，为了提高处理速度，操作系统会维护端口号到 socket 的索引结构，以快速读取。</p>
-
-<h4 id="toc_7">操作系统是如何同时监视多个 socket 的数据的呢？</h4>
-
+<h4><a id="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%8C%E6%97%B6%E7%9B%91%E8%A7%86%E5%A4%9A%E4%B8%AAsocket%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9A%84%E5%91%A2%EF%BC%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>操作系统是如何同时监视多个 socket 的数据的呢？</h4>
 <p>服务端需要管理多个客户端连接，而 recv 只能监视单个 socket，因此码操作系统的大神们开始寻找监视多个 socket 的方法。epoll 的目的就是高效的监视多个socket，但是万事都有一个循序渐进的过程，我们就从最简陋的监视多个 socket 的方法开始了解</p>
-
 <p>假如能够预先传入一个 socket 列表，如果列表中的 socket 都没有数据，挂起进程，直到有一个 socket 收到数据，将进程唤醒。这种方法很直接，也是 select 的设计思想。</p>
-
 <p>为方便理解，我们先复习 select 的用法。</p>
-
 <pre><code class="language-java">int s = socket(AF_INET, SOCK_STREAM, 0);  
 bind(s, ...);
 listen(s, ...);
@@ -213,57 +183,39 @@ while(1){
     }
 }
 </code></pre>
-
 <p>在上面的伪代码中，先准备一个数组(伪代码中的 fds)，让 fds 存放着所有需要监视的 socket。然后调用 select，如果 fds 中的所有 socket 都没有数据，select 会阻塞，直到有一个 socket 接收到数据，select 返回，唤醒进程。用户 可以遍历 fds，通过 FD_ISSET 判断具体哪个 socket 收到数据，然后做出处理。</p>
-
-<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br/>
-<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后"/><figcaption>调用select之后</figcaption></figure></p>
-
+<p>select 的实现思路很直接。假如程序同时监视 sock1、sock2 和 sock3 三个 socket，那么在调用 select 之后，操作系统把进程 A 分别加入这三个 socket 的等待队列中。<br />
+<figure><img src="media/16073533164404/16073578349616.jpg" alt="调用select之后" /><figcaption>调用select之后<figcaption></figure></p>
 <p>当任何一个socket 接收到数据之后，中断程序将唤起进程。所唤起进程就是将进程从所有的等待队列中移除，加入到工作队列里面</p>
-
 <p>经由这些步骤，当进程 A 被唤醒之后，它知道至少有一个 socket 接收了数据，程序只需要遍历一遍 socket 列表，就可以得到就绪的 socket。</p>
-
 <p>这种 Select 方式比较简单且行之有效，几乎所有的操作系统都有对应的实现。</p>
-
 <p>但是简单的方法通常是有不足之处的，主要不足如下：</p>
-
 <ul>
-<li><p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。每次都要将整个 fds 列表传递给内核，开销比较大。正是因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p></li>
-<li><p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p></li>
+<li>
+<p>每次调用 select 都需要将进程加入到的所有被监视 socket 的等待队列，每次唤醒都需要从每个队列中移除，都必须进行遍历。每次都要将整个 fds 列表传递给内核，开销比较大。正是因为遍历操作开销比较大，才会规定 select 的最大监视数量，默认32位机器只能监视 1024 个 socket</p>
+</li>
+<li>
+<p>进程被唤醒之后，程序并不知道哪些socket收到数据，还需要再次遍历一遍 fds</p>
+</li>
 </ul>
-
 <p>那么，有没有减少遍历的方法?有没有保存就绪 socket 的方法?这两个问题便是 epoll 技术要解决的。</p>
-
-<h2 id="toc_8">epoll 简介</h2>
-
+<h2><a id="epoll%E7%AE%80%E4%BB%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epoll 简介</h2>
 <p>epoll 是实现I/O多路复用的一种方法，在 select 出现 N 多年后才被发明的，是 select 和 poll 的增强版本。</p>
-
 <p>epoll分为水平触发（level trigger，LT，LT为epoll的默认工作模式）与边缘触发（edge trigger，ET）两种工作模式。</p>
-
 <ul>
 <li>LT 当被监控的文件描述符上有可读写事件发生时，epoll_wait() 会通知处理程序去读写。如果这次没有把数据一次性全部读写完(如读写缓冲区太小)，那么 下次调用 epoll_wait()时，它还会通知你在上没读写完的文件描述符上继续读写，当然如果 你一直不去读写，它会一直通知你!!!如果系统中有大量你不需要读写的就绪文件描述符， 而它们每次都会返回，这样会大大降低处理程序检索自己关心的就绪文件描述符的效率!!!</li>
 <li>ET 当被监控的文件描述符上有可读写事件发生时，epoll_wait() 会通知处理程序去读写。如果这次没有把数据全部读写完(如读写缓冲区太小)，那么下次调用 epoll_wait()时，它不会通知你，也就是它只会通知你一次，直到该文件描述符上出现第二次可读写事件才会通知你!!!这种模式比水平触发效率高，系统不会充斥大量你不关心的就绪文件描述符!!</li>
 </ul>
-
-<p>ET是高速模式只能以非阻塞方式进行，LT相当于快速的select，可以才有阻塞和非阻塞两种方式。 </p>
-
+<p>ET是高速模式只能以非阻塞方式进行，LT相当于快速的select，可以才有阻塞和非阻塞两种方式。</p>
 <p>边缘触发比水平触发更高效的原因：不会让同一个文件描述符多次被处理,比如有些文件描述符已经不需要再读写了,但是在水平触发下每次都会返回,而边缘触发只会返回一次。</p>
-
 <p>如果将epoll 文件描述符设置边缘触发,则必须将对应的文件描述符设置为非阻塞模式并且循环读取数据。否则会导致程序的效率大大下降。</p>
-
 <p>poll 和 epoll 默认采用的都是水平触发,只是epoll可以修改成边缘触发</p>
-
 <p>这两种工作模式的差异留待之后再分析。</p>
-
-<h2 id="toc_9">epoll 的设计思路</h2>
-
-<h3 id="toc_10">措施一：功能分离</h3>
-
+<h2><a id="epoll%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epoll 的设计思路</h2>
+<h3><a id="%E6%8E%AA%E6%96%BD%E4%B8%80%EF%BC%9A%E5%8A%9F%E8%83%BD%E5%88%86%E7%A6%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>措施一：功能分离</h3>
 <p>select 低效的原因之一是将维护等待队列 和 阻塞队列 两步合二为一了，每次调用 select 都需要这两步操作，然而大多数应用场景中，需要监视的 socket 相对固定，并不需要每次都修改。epoll 将这两个操作分开，先用 epoll_ctl 维护等待队列，再调用 epoll_wait 阻塞进程。相比 select，epoll 拆分了功能。</p>
-
 <p>为方便理解后续的内容，我们先复习下 epoll 的用法。</p>
-
-<pre><code class="language-c">int epfd = epoll_create(...);
+<pre><code class="language-C">int epfd = epoll_create(...);
 //将所有需要监听的 socket 添加到 epfd 中 
 epoll_ctl(epfd, ...); 
 while(1){
@@ -273,44 +225,25 @@ while(1){
     }
 }
 </code></pre>
-
 <p>在上面的代码中，先用 epoll_create 创建一个 epoll 对象 epfd，再通过 epoll_ctl 将需要监视的 socket 添加到 epfd 中，最后调用 epoll_wait 等待数据。epoll 的功能分离，使得 epoll 有了优化的可能。</p>
-
-<h3 id="toc_11">就绪列表</h3>
-
+<h3><a id="%E5%B0%B1%E7%BB%AA%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>就绪列表</h3>
 <p>select 低效的另一个原因在于 程序不知道哪些 socket 收到了数据，只能一个个遍历。如果内核维护一个 就绪列表，引用收到数据的 socket， 就能避免遍历整个等待队列操作了</p>
-
-<h2 id="toc_12">epoll 的原理和流程</h2>
-
+<h2><a id="epoll%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epoll 的原理和流程</h2>
 <p>当某一进程调用 epoll_create 方法时，Linux 内核会创建一个 eventpoll 结构体(也就是程序中 epfd 所代表的对象)，eventpoll 对象也是文件系统中的一员</p>
-
 <p>在内核 cache 里会建一个红黑树结构，用于存储以后 epoll_ctl 传来的 socket 外，还会再建立一个 rdllist 双向链表，用于存储准备就绪的事件，当 epoll_wait 调用时，仅仅观察这个 rdllist 双向链表里有没有数据即可。有数据就返回，没有数据就 sleep，等到 timeout 时间到后即使链表没数据也返回。</p>
-
 <p>同时，所有添加到 epoll 中的事件都会与设备(如网卡)驱动程序建立回调关系，也就是说相应事件的发生时会调用这里的回调方法。这个回调方法在内核中叫做 ep_poll_callback，它会把这样的事件放到上面的 rdllist 双向链表中。</p>
-
 <p>当调用 epoll_wait 检查是否有发生事件的连接时，只是检查 eventpoll 对象中的 rdllist 双向链表是否有 epitem 元素而已，如果 rdllist 链表不为空，则这里的事件复制到用户态内存(使用共享内存提高效率)中，同时将事件数量返回给用户。因此 epoll_wait 效率会非常高，可以轻易地处理百万级别的并发连接。</p>
-
 <p>创建 epoll 对象后，用 epoll_ctl 添加或删除所要监听的 socket。以添加 socket 为例， 如果通过 epoll_ctl 添加 sock1、sock2 和 sock3 的监视，内核将会把 eventpoll 添加到 socket 的等待队列中</p>
-
-<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll"/><figcaption>epoll</figcaption></figure></p>
-
+<p><figure><img src="media/16073533164404/16073579818343.jpg" alt="epoll" /><figcaption>epoll<figcaption></figure></p>
 <p>当 socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。中断程序会给 eventpoll 的“就绪列表”添加 socket 引用。如下图展示的是 sock2 和 sock3 收到数据后，中断程序让 rdlist 引用这两个 socket。</p>
-
-<p><figure><img src="media/16073533164404/16073581194057.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/16073533164404/16073581194057.jpg" alt="" /></figure></p>
 <p>eventpoll 对象相当于是 socket 和进程之间的中介，socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
-
 <p>当程序执行到 epoll_wait 时，如果 rdlist 已经引用了 socket，那么 epoll_wait 直接返回， 如果 rdlist 为空，阻塞进程。</p>
-
 <p>现在我们假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。如 下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
-
-<p><figure><img src="media/16073533164404/16073582227125.jpg" alt=""/></figure></p>
-
+<p><figure><img src="media/16073533164404/16073582227125.jpg" alt="" /></figure></p>
 <p>当 socket 接收到数据，中断程序一方面修改 rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态。也因为 rdlist 的存在，进程 A 可以知道哪些 socket 发生了变化。</p>
-
-<h2 id="toc_13">epoll 服务端代码示例</h2>
-
-<pre><code class="language-c">#include &lt;sys/socket.h&gt;
+<h2><a id="epoll%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epoll 服务端代码示例</h2>
+<pre><code class="language-C">#include &lt;sys/socket.h&gt;
 #include &lt;netinet/in.h&gt;
 #include &lt;arpa/inet.h&gt;
 #include &lt;unistd.h&gt;
@@ -420,19 +353,15 @@ int main(int argc, char* argv[])
     return 0;
 }
 </code></pre>
-
-<h2 id="toc_14">epoll 实现细节</h2>
-
+<h2><a id="epoll%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epoll 实现细节</h2>
 <p>epoll 函数</p>
-
-<pre><code class="language-c">int epoll_create(int size)；
+<pre><code class="language-C">int epoll_create(int size)；
 
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
 int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
 
 </code></pre>
-
-<pre><code class="language-c">struct epoll_event {
+<pre><code class="language-C">struct epoll_event {
     __uint32_t events; /* Epoll events */
     epoll_data_t data; /* User data variable */
 };
@@ -444,11 +373,8 @@ typedef union epoll_data {
     __uint64_t u64;
 } epoll_data_t;
 </code></pre>
-
 <p>epoll_create : 创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。需要注意的是，当创建好epoll句柄后，它就是会占用一个fd值(在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的)，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</p>
-
 <p>epoll_ctl:</p>
-
 <ul>
 <li>第一个参数是epoll_create()的返回值，</li>
 <li>第二个参数表示动作，用三个宏来表示：
@@ -456,32 +382,28 @@ typedef union epoll_data {
 <li>EPOLL_CTL_ADD：注册新的fd到epfd中；</li>
 <li>EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</li>
 <li>EPOLL_CTL_DEL：从epfd中删除一个fd；</li>
-</ul></li>
+</ul>
+</li>
 <li>第三个参数是需要监听的fd，就是我们的socket</li>
 <li>第四个参数是告诉内核需要监听什么事,见 epoll_event 结构，events可以是以下几个宏的集合：(最常见的三种)
 <ul>
 <li>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；</li>
 <li>EPOLLOUT：表示对应的文件描述符可以写；</li>
 <li>EPOLLERR：表示对应的文件描述符发生错误；</li>
-</ul></li>
 </ul>
-
-<p>epoll_wait：<br/>
+</li>
+</ul>
+<p>epoll_wait：<br />
 等待事件的产生。参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。</p>
-
-<h3 id="toc_15">eventpoll</h3>
-
-<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br/>
+<h3><a id="eventpoll" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>eventpoll</h3>
+<p>上面我们看到 eventpoll 对象对于 epoll 来说是非常重要的<br />
 首先思考两个问题</p>
-
 <ul>
 <li>就绪队列应该应使用什么数据结构?</li>
 <li>eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 socket?</li>
 </ul>
-
 <p>下面我们来看下 eventpoll 的数据结构</p>
-
-<pre><code class="language-c">struct eventpoll {
+<pre><code class="language-C">struct eventpoll {
     // 用于锁定这个eventpoll数据结构，
     // 在用户空间多线程操作这个epoll结构，比如调用epoll_ctl作add, mod, del时，用户空间不需要加锁保护
     // 内核用这个mutex帮你搞定
@@ -528,22 +450,14 @@ typedef union epoll_data {
 #endif
 };
 </code></pre>
-
 <p>rdllist就绪列表引用着就绪的 socket，所以它应能够快速的插入数据。</p>
-
 <p>程序可能随时调用 epoll_ctl 添加监视 socket，也可能随时删除。当删除时，若该 socket已经存放在就绪列表中，它也应该被移除。</p>
-
 <p>所以就绪列表应是一种能够快速插入和删除的数据结构。双向链表就是这样一种数据结 构，epoll 使用双向链表来实现就绪队列，也就是 Linux 源码中的 rdllist</p>
-
 <p>既然 epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保 存监视的 socket。至少要方便的添加和移除，还要便于搜索，以避免重复添加。红黑树是一 种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好。epoll 使用 了红黑树作为索引结构，也就是 Linux 源码中的 rbr。</p>
-
 <p>因为操作系统要兼顾多种功能，以及由更多需要保存的数据，rdlist 并非直接引用 socket， 而是通过 epitem 间接引用，红黑树的节点也是 epitem 对象。</p>
-
-<h3 id="toc_16">epitem 结构</h3>
-
+<h3><a id="epitem%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>epitem 结构</h3>
 <p>每一个被 epoll监控的句柄都会保存在eventpoll内部的红黑树上（eventpoll-&gt;rbr），ready状态的句柄也会保存在eventpoll内部的一个链表上（eventpoll-&gt;rdllist）, 实现时会将每个句柄封装在一个结构中，这就是 epitem</p>
-
-<pre><code class="language-c">struct epitem {
+<pre><code class="language-C">struct epitem {
     // 用于构建红黑树
     union {
         //RB树节点将此结构链接到eventpoll RB树
@@ -580,9 +494,7 @@ typedef union epoll_data {
     struct epoll_event event;
 };
 </code></pre>
-
 <p>参考:</p>
-
 <ul>
 <li><a href="http://gityuan.com/2019/01/06/linux-epoll/">源码解读epoll内核机制</a></li>
 <li><a href="http://www.embeddedlinux.org.cn/linux_net/0596002556/understandlni-CHP-9-SECT-4.html">linux在线图书</a></li>

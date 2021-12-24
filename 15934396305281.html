@@ -117,17 +117,12 @@
                 </div>
                   <article class="markdown-body single-content">
                     <p>服务器处理客户端命令请求的整个流程，包括服务器启动监听，接收命令请求并解析，执行命令请求，返回命令回复等。</p>
-
 <p>Redis服务器是典型的事件驱动程序，因此事件处理显得尤为重要，而Redis将事件分为两大类：文件事件与时间事件。文件事件即socket的读写事件，时间事件用于处理一些需要周期性执行的定时任务。</p>
-
-<h2 id="toc_0">1、基本知识</h2>
-
-<h3 id="toc_1">1.1、Redis 对象</h3>
-
-<p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br/>
+<h2><a id="1%E3%80%81%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1、基本知识</h2>
+<h3><a id="1-1%E3%80%81redis%E5%AF%B9%E8%B1%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.1、Redis 对象</h3>
+<p>Redis 是一个 key-value 型数据库， key只能是字符串， vlaue可以是 字符串、列表、集合、有序集合、散列表， 这5中数据类型用结构体 robj表示，robj被称为 Redis 对象。<br />
 robj结构体如下所示：</p>
-
-<pre><code class="language-c">typedef struct redisObject {     
+<pre><code class="language-C">typedef struct redisObject {     
     unsigned type:4;    // 对象类型
     unsigned encoding:4;    // 对象编码
     unsigned lru:LRU_BITS;  //缓存淘汰使用, 占24比特
@@ -135,27 +130,35 @@ robj结构体如下所示：</p>
     void *ptr;  //指向实际存储的某一种数据结构
 } robj;
 </code></pre>
-
 <ul>
-<li><p>结构体robj的type字段表示对象类型，由 encoding 字段决定。</p>
-<pre><code class="language-c">#define OBJ_STRING 0
-#define OBJ_LIST 1<br/>
-#define OBJ_SET 2<br/>
-#define OBJ_ZSET 3<br/>
+<li>
+<p>结构体robj的type字段表示对象类型，由 encoding 字段决定。</p>
+<pre><code class="language-C">#define OBJ_STRING 0
+#define OBJ_LIST 1
+#define OBJ_SET 2
+#define OBJ_ZSET 3
 #define OBJ_HASH 4
-</code></pre></li>
-<li><p>结构体 robj 的ptr<br/>
-ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p></li>
-<li><p>结构体 robj 的 refcount <br/>
-refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br/>
-只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p></li>
-<li><p>结构体 robj 的 lru<br/>
+</code></pre>
+</li>
+<li>
+<p>结构体 robj 的ptr<br />
+ptr是void* 类型的指针，指向实际存储的某一种数据结构的地址。</p>
+</li>
+<li>
+<p>结构体 robj 的 refcount<br />
+refcount 存储当前对象的引用次数，用于实现对象的共享。共享时 refcount加1；删除对象时，refcount减1；当refcount值为0时，释放对象空间。<br />
+只有当对象robj存储的是0～10000的整数时，对象robj才会被共享，且这些共享整数对象的引用计数初始化为INT_MAX，保证不会被释放。</p>
+</li>
+<li>
+<p>结构体 robj 的 lru<br />
 用于实现缓存淘汰策略，可以在配置文件中使用maxmemory-policy配置已用内存达到最大内存限制时的缓存淘汰策略。lru根据用户配置的缓存淘汰策略存储不同数据，常用的策略就是LRU与LFU。</p>
 <ul>
 <li>LRU的核心思想是，如果数据最近被访问过，那么将来被访问的几率也更高，此时lru字段存储的是对象访问时间；</li>
 <li>LFU的核心思想是，如果数据过去被访问多次，那么将来被访问的频率也更高，此时lru字段存储的是上次访问时间与访问次数，lru的低8比特存储的是对象的访问次数，高16比特存储的是对象的上次访问时间。</li>
-</ul></li>
-<li><p>结构体 robj 的 encoding <br/>
+</ul>
+</li>
+<li>
+<p>结构体 robj 的 encoding<br />
 结构体 robj 的 encoding 表示当前对象的底层存储采用的数据结构，即对象的编码。</p>
 <table>
 <thead>
@@ -222,42 +225,29 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
 <td>未使用</td>
 </tr>
 </tbody>
-</table></li>
+</table>
+</li>
 </ul>
-
-<h4 id="toc_2">对象内存回收</h4>
-
+<h4><a id="%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>对象内存回收</h4>
 <p>由于C语言不具备自动回收内存的功能，所以Redis在自己的对象系统中构建了一个引用计数技术实现的内存回收机制。程序可以通过跟踪对象的引用计数信息，在适当的时候自动释放对象并进行内存回收。</p>
-
 <p>redisObject 结构中的引用计数器refcount会随着对象的使用状态而不断变化：</p>
-
 <ul>
 <li>在创建一个新对象是，引用计数的值会被初始化为 1</li>
 <li>当对象被一个新程序使用的时候，它的引用计数值会被增加 1</li>
 <li>当对象不再被一个新程序使用的时候，它的引用计数值会被减少 1</li>
 <li>当对象的引用计数值变为0的时候，对象所占用的内存会被释放</li>
 </ul>
-
 <p>对象的整个生命周期可以划分为创建对象、操作对象、释放对象三个阶段。</p>
-
 <p>为了节约内存空间，Redis 会共享 值为 0 ~ 9999 的字符串对象，但是为啥只是共享 0 ~ 9999的整数字符串呢？</p>
-
 <p>当服务器考虑讲一个共享对象设置为键的值对象时，程序需要先检查给定的共享对象和键想创建的目标对象是否完全相同，只有在共享对象和目标对象完全相同的情况下，程序才会将共享对象用作键的值对象，而共享一个对象保存的值越复杂，验证共享对象和目标对象是否相同所需的复杂度就会越高，消耗cpu时间也会越多。</p>
-
-<h4 id="toc_3">对象的空闲时长</h4>
-
-<p>redisObject 对象结构的最后一个属性 lru记录了对象最后一次被命令程序访问的时间。<br/>
+<h4><a id="%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%A9%BA%E9%97%B2%E6%97%B6%E9%95%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>对象的空闲时长</h4>
+<p>redisObject 对象结构的最后一个属性 lru记录了对象最后一次被命令程序访问的时间。<br />
 命令 object idletime 可以打印出给定键的空闲时间，这一空闲时长是通过将当前时间减去键的值对象 lru 时间计算得出的。</p>
-
 <p>键的空闲时间有一项作用：如果服务器打开了maxmemory选项，并且服务器用于回收内存的算法为 volatile-lru或者 allkeys-lru，那么当服务器占用的内存数超过了maxmemory现象所设置的上限值，空闲时长较高的那部分键优先被服务器释放，从而回收内存。</p>
-
-<h3 id="toc_4">1.2、服务端结构体redisServer</h3>
-
-<p>结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
-
+<p>###1.2、服务端结构体redisServer<br />
+结构体redisServer存储Redis服务器的所有信息，包括但不限于数据库、配置参数、命令表、监听端口与地址、客户端列表、若干统计信息、RDB与AOF持久化相关信息、主从复制相关信息、集群相关信息等。</p>
 <p>一个redisDb就代表了一个数据库，而redisServer 中则保存了它所设计到的所有数据库的数组。</p>
-
-<pre><code class="language-c">struct redisServer {     
+<pre><code class="language-C">struct redisServer {     
     // 配置文件绝对路径
     char *configfile;     
     // 数据库的数目,默认16，可通过参数databases配置
@@ -284,14 +274,10 @@ refcount 存储当前对象的引用次数，用于实现对象的共享。共�
     int maxidletime; 
 }
 </code></pre>
-
 <p>默认情况下，redis客户端的目标数据库为0号数据库，但客户端可以通过执行 select 命令来切换目标数据库。而客户端 client 结构中db属性则记录了它当前的目标数据库</p>
-
-<h3 id="toc_5">1.3、客户端结构体 client</h3>
-
+<h3><a id="1-3%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BB%93%E6%9E%84%E4%BD%93-client" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.3、客户端结构体 client</h3>
 <p>Redis是典型的客户端服务器结构，客户端通过socket与服务端建立网络连接并发送命令请求，服务端处理命令请求并回复。Redis使用结构体client存储客户端连接的所有信息，包括但不限于客户端的名称、客户端连接的套接字描述符、客户端当前选择的数据库ID、客户端的输入缓冲区与输出缓冲区等。</p>
-
-<pre><code class="language-c">typedef struct client {     
+<pre><code class="language-C">typedef struct client {     
     uint64_t id;     
     int fd;     
     redisDb *db;     
@@ -320,9 +306,7 @@ typedef struct redisDb {
     dict *watched_keys;     //watch的键和对应的client，主要用于事务
 } redisDb;
 </code></pre>
-
 <p>各字段含义如下:</p>
-
 <ul>
 <li>id为客户端唯一ID，通过全局变量server.next_client_id实现</li>
 <li>fd为客户端socket的文件描述符</li>
@@ -334,24 +318,19 @@ typedef struct redisDb {
 <li>cmd：待执行的客户端命令</li>
 <li>reply：输出链表，存储待返回给客户端的命令回复数据。链表节点存储的值类型为 clientReplyBlock，定义为如下：</li>
 </ul>
-
-<pre><code class="language-c">typedef struct clientReplyBlock {     
+<pre><code class="language-C">typedef struct clientReplyBlock {     
     size_t size, used;     
     char buf[]; 
 } clientReplyBlock;
 </code></pre>
-
 <ul>
 <li>reply_bytes：表示输出链表中所有节点的存储空间的总和</li>
 <li>sentlen：表示已返回给客户端的字节数</li>
 <li>buf：输出缓冲区，存储待返回给客户端的命令回复数据，bufpos表示输出缓冲区中数据的最大字节位置，sentlen~bufpos区间的数据都是需要返回给客户端的。</li>
 </ul>
-
-<h3 id="toc_6">1.4、命令结构体 redisCommond</h3>
-
+<h3><a id="1-4%E3%80%81%E5%91%BD%E4%BB%A4%E7%BB%93%E6%9E%84%E4%BD%93-rediscommond" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.4、命令结构体 redisCommond</h3>
 <p>Redis支持的所有命令初始都存储在全局变量redisCommandTable，类型为redisCommand，结构体redisCommand相对简单，主要定义了命令的名称、命令处理函数以及命令标志等</p>
-
-<pre><code class="language-c">struct redisCommand {     
+<pre><code class="language-C">struct redisCommand {     
     //命令名称
     char *name;     
     //命令处理函数
@@ -367,12 +346,9 @@ typedef struct redisDb {
     long long microseconds, calls; 
 };
 </code></pre>
-
-<h3 id="toc_7">1.5、事件处理</h3>
-
-<p>Redis服务器是典型的事件驱动程序，而事件又分为 <strong><em>文件事件（socket的可读可写事件）</em></strong> 与 <strong><em>时间事件（定时任务）</em></strong> 两大类。无论是文件事件还是时间事件都封装在结构体aeEventLoop中：</p>
-
-<pre><code class="language-c">typedef struct aeEventLoop {     
+<h3><a id="1-5%E3%80%81%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.5、事件处理</h3>
+<p>Redis服务器是典型的事件驱动程序，而事件又分为 <em><strong>文件事件（socket的可读可写事件）</strong></em> 与 <em><strong>时间事件（定时任务）</strong></em> 两大类。无论是文件事件还是时间事件都封装在结构体aeEventLoop中：</p>
+<pre><code class="language-C">typedef struct aeEventLoop {     
     //事件循环是否结束
     int stop;         
     //为文件事件数组，存储已经注册的文件事件
@@ -389,34 +365,20 @@ typedef struct redisDb {
     aeBeforeSleepProc *aftersleep; 
 } aeEventLoop;
 </code></pre>
-
 <p>Redis有多个定时任务，因此理论上应该有多个时间事件，多个时间事件形成链表，timeEventHead即为时间事件链表头节点；</p>
-
 <p>Redis服务器需要阻塞等待文件事件的发生，进程阻塞之前会调用beforesleep函数，进程因为某种原因被唤醒之后会调用aftersleep函数。</p>
-
 <p>函数beforesleep会执行一些不是很费时的操作，如：集群相关操作、过期键删除操作（这里可称为快速过期键删除）、向客户端返回命令回复等。</p>
-
 <p>事件驱动程序通常在server 启动过程的最后一步开启事件循环，之后只需等待事件发生处理文件事件和时间事件即可。</p>
-
-<h4 id="toc_8">1.5.1、文件事件</h4>
-
+<h4><a id="1-5-1%E3%80%81%E6%96%87%E4%BB%B6%E4%BA%8B%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.5.1、文件事件</h4>
 <p>Redis客户端通过TCP socket与服务端交互，文件事件指的就是socket的可读可写事件。socket读写操作有阻塞与非阻塞之分。</p>
-
 <p>采用阻塞模式时，一个进程只能处理一条网络连接的读写事件，为了同时处理多条网络连接，通常会采用多线程或者多进程，效率低下；非阻塞模式下，可以使用目前比较成熟的I/O多路复用模型，如select/epoll/kqueue等，视不同操作系统而定。</p>
-
 <p>epoll是Linux内核为处理大量并发网络连接而提出的解决方案，能显著提升系统CPU利用率。</p>
-
 <p>Redis并没有直接使用epoll提供的API，而是同时支持4种I/O多路复用模型，并将这些模型的API进一步统一封装。</p>
-
 <p>Redis在编译阶段，会检查操作系统支持的I/O多路复用模型，并按照一定规则决定使用哪种模型。</p>
-
-<h4 id="toc_9">1.5.2、时间事件</h4>
-
+<h4><a id="1-5-2%E3%80%81%E6%97%B6%E9%97%B4%E4%BA%8B%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.5.2、时间事件</h4>
 <p>通过文件事件一节可以知道，事件循环执行函数aeProcessEvents的主要逻辑：①查找最早会发生的时间事件，计算超时时间；②阻塞等待文件事件的产生；③处理文件事件；④处理时间事件。时间事件的执行函数为processTimeEvents。</p>
-
 <p>Redis服务器内部有很多定时任务需要执行，定时任务被封装为时间事件aeTimeEvent对象，多个时间事件形成链表，存储在aeEventLoop结构体的timeEventHead字段，它指向链表首节点。</p>
-
-<pre><code class="language-c">typedef struct aeTimeEvent {     
+<pre><code class="language-C">typedef struct aeTimeEvent {     
     //时间事件唯一ID，通过字段eventLoop-&gt;timeEventNextId实现
     long long id;     
     //时间事件触发的秒数与毫秒数
@@ -432,23 +394,18 @@ typedef struct redisDb {
     struct aeTimeEvent *next; 
 } aeTimeEvent;
 </code></pre>
-
 <p>函数serverCron实现了Redis服务器所有定时任务的周期执行。serverCron函数的执行时间不能过长，否则会导致服务器不能及时响应客户端的命令请求。</p>
-
-<h2 id="toc_10">2、server启动过程</h2>
-
+<h2><a id="2%E3%80%81server%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2、server启动过程</h2>
 <p>Redis服务器的启动过程，主要分为server初始化，监听端口以及等待命令3节。</p>
-
-<p>服务器初始化主流程可以简要分为7个步骤：<br/>
-①初始化配置，给配置参数赋初始值，包括用户可配置的参数，以及命令表的初始化；<br/>
-②加载并解析配置文件；<br/>
-③初始化服务端内部变量，比如客户端链表、数据库、全局变量和共享对象等；<br/>
-④创建事件循环eventLoop，即分配结构体所需内存，并初始化结构体各字段；epoll就是在此时创建的；<br/>
-⑤创建socket并启动监听，所有创建的socket都会设置为非阻塞模式，原因在于Redis 使用了IO多路复用模式，其要求socket读写必须是非阻塞的，用户可通过指令port配置socket绑定端口号，指令bind配置socket 绑定IP地址；；<br/>
-⑥创建文件事件与时间事件；<br/>
+<p>服务器初始化主流程可以简要分为7个步骤：<br />
+①初始化配置，给配置参数赋初始值，包括用户可配置的参数，以及命令表的初始化；<br />
+②加载并解析配置文件；<br />
+③初始化服务端内部变量，比如客户端链表、数据库、全局变量和共享对象等；<br />
+④创建事件循环eventLoop，即分配结构体所需内存，并初始化结构体各字段；epoll就是在此时创建的；<br />
+⑤创建socket并启动监听，所有创建的socket都会设置为非阻塞模式，原因在于Redis 使用了IO多路复用模式，其要求socket读写必须是非阻塞的，用户可通过指令port配置socket绑定端口号，指令bind配置socket 绑定IP地址；；<br />
+⑥创建文件事件与时间事件；<br />
 ⑦开启事件循环，等待文件时间和时间事件发生即可。</p>
-
-<pre><code class="language-c">void aeMain(aeEventLoop *eventLoop) {     
+<pre><code class="language-C">void aeMain(aeEventLoop *eventLoop) {     
     eventLoop-&gt;stop = 0;     //开始事件循环    
     while (!eventLoop-&gt;stop) {         
         if (eventLoop-&gt;beforesleep != NULL)             
@@ -457,8 +414,7 @@ typedef struct redisDb {
     }
 }
 </code></pre>
-
-<pre><code class="language-c">int aeProcessEvents(aeEventLoop *eventLoop, int flags) {
+<pre><code class="language-C">int aeProcessEvents(aeEventLoop *eventLoop, int flags) {
     shortest = aeSearchNearestTimer(eventLoop);     
     long long ms = shortest-&gt;when_sec - now_sec)*1000 + shortest-&gt;when_ms - now_ms;     
     …………    
@@ -472,42 +428,26 @@ typedef struct redisDb {
     processed += processTimeEvents(eventLoop); 
 }
 </code></pre>
-
 <p>TCP是基于字节流的可靠传输层协议，为了提升网络利用率，一般默认都会开启Nagle。当应用层调用write函数发送数据时，TCP并不一定会立刻将数据发送出去，根据Nagle算法，还必须满足一定条件才行。</p>
-
 <p>Nagle是这样规定的：如果数据包长度大于一定门限时，则立即发送；如果数据包中含有FIN（表示断开TCP链接）字段，则立即发送；如果当前设置了TCP_NODELAY选项，则立即发送；如果以上所有条件都不满足，则默认需要等待200毫秒超时后才会发送。</p>
-
 <p>TCP是可靠的传输层协议，但每次都需要经历“三次握手”与“四次挥手”，为了提升效率，可以设置SO_KEEPALIVE，即TCP长连接，这样TCP传输层会定时发送心跳包确认该连接的可靠性。</p>
-
-<h2 id="toc_11">3、命令处理过程</h2>
-
+<h2><a id="3%E3%80%81%E5%91%BD%E4%BB%A4%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3、命令处理过程</h2>
 <p>命令的处理过程，此过程分为3个阶段：解析命令请求、调用命令和返回结果给客户端。</p>
-
-<h3 id="toc_12">3.1、命令解析</h3>
-
+<h3><a id="3-1%E3%80%81%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.1、命令解析</h3>
 <p>TCP是一种基于字节流的传输层通信协议，因此接收到的TCP数据不一定是一个完整的数据包，其有可能是多个数据包的组合，也有可能是某一个数据包的部分，这种现象被称为半包与粘包。</p>
-
 <p>为了区分一个完整的数据包，通常有如下3种方法：①数据包长度固定；②通过特定的分隔符区分，比如HTTP协议就是通过换行符区分的；③通过在数据包头部设置长度字段区分数据包长度，比如FastCGI协议。</p>
-
-<pre><code class="language-text">SET redis-key value1
+<pre><code class="language-plain_text">SET redis-key value1
 被翻译为如下结构
 *3\r\n$3\r\nSET\r\n$9\r\nredis-key\r\n$6\r\nvalue1\r\n
 </code></pre>
-
-<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9”</code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
-
+<p><strong>Redis 使用自定义格式区分不同的命令，客户端会对命令请求转换为如下的协议格式，其中换行符 <code>\r\n</code> 用于区分命令请求的若干参数，<code>“*3”</code>表示该命令请求有3个参数，<code>“$3”</code>表示第一个参数长度为3，顺序读取三个字符SET ， <code>“$9” </code>表示第二个参数的长度，读取为redis-key ， <code>“$6”</code> 表示第三个参数长度为，读取为value1</strong></p>
 <p>Redis服务器接收到的命令请求首先存储在客户端对象的querybuf 输入缓冲区，然后解析命令请求各个参数，并存储在客户端对象的argv（参数对象数组）和argc（参数数目）字段。</p>
-
-<p>客户端命令请求的入口函数为readQueryFromClient，会读取socket数据存储到客户端对象的输入缓冲区，并调用函数processInputBuffer解析命令请求。<br/>
-<figure><img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程"/><figcaption>processInputBuffer解析流程</figcaption></figure></p>
-
-<h3 id="toc_13">3.2、命令调用</h3>
-
-<p>解析完命令请求之后，会调用函数 processCommand 处理该命令请求，而处理命令请求之前还有很多校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
-
+<p>客户端命令请求的入口函数为readQueryFromClient，会读取socket数据存储到客户端对象的输入缓冲区，并调用函数processInputBuffer解析命令请求。<br />
+<figure><img src="media/15934396305281/15936857634402.jpg" alt="processInputBuffer解析流程" /><figcaption>processInputBuffer解析流程<figcaption></figure></p>
+<p>###3.2、命令调用<br />
+解析完命令请求之后，会调用函数 processCommand 处理该命令请求，而处理命令请求之前还有很多校验逻辑，比如1、客户端是否已经完成认证，2、命令请求参数是否合法，3、如果是quit命令直接返回并关闭客户端，4、执行函数 lookupCommand 查找命令后，如果命令不存在返回错误等，所有的校验规则通过后，才会调用命令处理函数执行命令。</p>
 <p>命令执行完之后，如果有必要，还需要更新统计信息，记录慢查询日志，AOF 持久化该命令请求，传播命令请求给所有的从服务器等。</p>
-
-<pre><code class="language-text">int processCommand(client *c) {
+<pre><code class="language-plain_text">int processCommand(client *c) {
     ...
         if (c-&gt;flags &amp; CLIENT_MULTI 
             &amp;&amp; c-&gt;cmd-&gt;proc != execCommand 
@@ -525,33 +465,22 @@ typedef struct redisDb {
  ...
 }
 </code></pre>
-
-<h3 id="toc_14">3.3、返回结果</h3>
-
+<h3><a id="3-3%E3%80%81%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3.3、返回结果</h3>
 <p>Redis服务器返回结果类型不同，协议格式不同，而客户端可以根据返回结果的第一个字符判断返回类型。</p>
-
 <p>Redis的返回结果可以分为5类：</p>
-
 <ul>
 <li>状态回复，第一个字符是<code>“+”</code>；例如，SET命令执行完毕会向客户端返回<code>“+OK\r\n”</code>。</li>
-<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command&#39;testcmd&#39;”</code>。</li>
+<li>错误回复，第一个字符是“-”。例如，当客户端请求命令不存在时，会向客户端返回<code>“-ERR unknown command'testcmd'”</code>。</li>
 <li>整数回复，第一个字符是 “:”。例如，INCR命令执行完毕向客户端返回 <code>“:100\r\n”</code>。</li>
-<li>批量回复，第一个字符是<code>&quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
+<li>批量回复，第一个字符是<code> &quot;$&quot;</code>。例如，GET命令查找键向客户端返回结果<code>&quot;$5\r\nhello\r\n&quot;</code>，其中<code>$5</code>表示返回字符串长度</li>
 <li>多条批量回复，第一个字符是<code>“*”</code>。例如，LRANGE命令可能会返回多个值，格式为<code>“*3\r\n$6\r\nvalue1\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n”</code>，与命令请求协议格式相同，<code>“*3”</code>表示返回值数目，<code>“$6”</code>表示当前返回值字符串长度。</li>
 </ul>
-
-<h2 id="toc_15">总结</h2>
-
+<h2><a id="%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>总结</h2>
 <p>Redis服务器的所有数据库都保存在 redis Server.dib数组中,而数据库的数量则由 redisserver. danum属性保存。</p>
-
 <p>客户端通过修改目标数据库指针,让它指向 redi sserver.db数组中的不同元素来切换不同的数据库。</p>
-
 <p>数据库主要由dict和 expires两个字典构成,其中dict字典负责保存键值对, 而 expires字典则负责保存键的过期时间。</p>
-
 <p>因为数据库由字典构成,所以对数据库的操作都是建立在字典操作之上的。</p>
-
 <p>数据库的健总是一个字符串对象,而值则可以是任意一种 Redis对象类型,包括字符串对象、哈希表对象、集合对象、列表对象和有序集合对象,分别对应字符串键、哈希表键、集合键、列表键和有序集合键。</p>
-
 <p>expires字典的键指向数据库中的某个键,而值则记录了数据库键的过期时间,过期时间是一个以毫秒为单位的UNIX时间戳。</p>
 
                   </article>

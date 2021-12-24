@@ -114,133 +114,119 @@
                     </div>
                 </div>
                   <article class="markdown-body single-content">
-                    <p>缓存逻辑流程图如下：<br/>
-<figure><img src="media/15902913212619/15985462479510.jpg" alt=""/></figure></p>
-
+                    <p>缓存逻辑流程图如下：<br />
+<figure><img src="media/15902913212619/15985462479510.jpg" alt="" /></figure></p>
 <p>读取缓存步骤一般没有什么问题，但是一旦涉及到数据更新:数据库和缓存更新，就容 易出现缓存(Redis)和数据库(MySQL)间的数据一致性问题</p>
-
 <p>讨论一致性问题之前，先来看一个更新的操作顺序问题：</p>
-
-<pre><code class="language-text">问题:同时有一个请求 A 进行更新操作，一个请求 B 进行查询操作。可能出现:
+<pre><code class="language-plain_text">问题:同时有一个请求 A 进行更新操作，一个请求 B 进行查询操作。可能出现:
 (1)请求 A 进行写操作(key = 1 value = 2)，先删除缓存 key = 1 value = 1 
 (2)请求 B 查询发现缓存不存在
 (3)请求 B 去数据库查询得到旧值 key = 1 value = 1
 (4)请求 B 将旧值写入缓存 key = 1 value = 1
 (5)请求 A 将新值写入数据库 key = 1 value = 2
 </code></pre>
-
 <p>缓存中数据永远都是脏数据</p>
-
 <p>比较推荐操作顺序: 先删除缓存，再更新数据库，再删缓存(双删，第二次删可异步延时)</p>
-
-<h2 id="toc_0">缓存同步方案</h2>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E5%90%8C%E6%AD%A5%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存同步方案</h2>
 <ul>
-<li><p>数据实时同步更新<br/>
+<li>
+<p>数据实时同步更新<br />
 使用缓存工具或AOP，在更新数据库的同时更新缓存，这种方式数据一致性强，</p>
 <ul>
 <li>不会出现缓存雪崩的问题，</li>
 <li>但是代码耦合、运行期耦合、影响正常业务、增加一次网络开销，</li>
 <li>适用于写操作频繁的细粒度缓存数据，数据一致实时性要求比较高的场景，如银行业务、证券业务，对于写操作较少的粗粒度操作则不适合。</li>
-</ul></li>
-<li><p>数据准时更新</p>
+</ul>
+</li>
+<li>
+<p>数据准时更新</p>
 <ul>
 <li>准一致性，更新数据库后，异步更新缓存，使用AOP进行封装给予多线程或者mq实现</li>
 <li>数据同步有短暂延迟，与业务解耦，不影响正常业务运行，不会出现缓存雪崩问题</li>
 <li>有较短延迟，需要补偿机制</li>
 <li>不适合写操作频繁并且数据一致实时性要求严格的场景</li>
-</ul></li>
-<li><p>缓存失效机制</p>
+</ul>
+</li>
+<li>
+<p>缓存失效机制</p>
 <ul>
 <li>弱一致性，给予缓存本身的失效机制</li>
 <li>实现简单，与业务完美解耦，不影响正常业务</li>
 <li>有一定延迟，不保证强一致性，但保证最终一致性，存在缓存雪崩的问题</li>
 <li>适合于读多写少的互联网场景，能接受一定的数据延时，比如电商业务、社交业务等</li>
-</ul></li>
-<li><p>定时任务更新</p>
+</ul>
+</li>
+<li>
+<p>定时任务更新</p>
 <ul>
 <li>最终一致性，采用任务调度框架，按照一定频率更新</li>
 <li>不影响业务</li>
 <li>不保证一致性，依赖定时任务</li>
-</ul></li>
 </ul>
-
-<h2 id="toc_1">缓存雪崩、缓存击穿</h2>
-
+</li>
+</ul>
+<h2><a id="%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存雪崩、缓存击穿</h2>
 <p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至 down 机。和缓存击穿不同的是，缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。</p>
-
 <p>缓存击穿是指缓存中没有但数据库中有的数据(一般是缓存时间到期)，这时由于并发用户特别多，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力。</p>
-
 <p>方案一：加锁</p>
-
-<p>保证只有一个线程到数据库 去查找指定的 key 对应的数据</p>
-
+<p>保证只有一个线程到数据库去查找指定的 key 对应的数据</p>
 <p>加锁方式的流程流程：</p>
-
-<p><figure><img src="media/15902913212619/16144033869125.jpg" alt="" style="width:705px;"/></figure></p>
-
+<p><figure><img src="media/15902913212619/16144033869125.jpg" alt="" style="width:705px;" /></figure></p>
 <pre><code class="language-java">public Object get(String key) {
-    // 1.从缓存中取数据
-    Object value = getFromCache(key);
-    if (null != value)
-        return value;
-    //2.加锁排队，阻塞式锁---100个线程走到这里---同一个sql的取同一把锁
-    doLock(key);
-    try {
-        //双重校验，不加也没关系，无非是多刷几次库
-        value = getFromCache(key); //第二个线程，能从缓存里拿到值？
-        if (null != value) {
-            return value;
-        }
+	// 1.从缓存中取数据
+	Object value = getFromCache(key);
+	if (null != value)
+		return value;
+	//2.加锁排队，阻塞式锁---100个线程走到这里---同一个sql的取同一把锁
+	doLock(key);
+	try {
+		//双重校验，不加也没关系，无非是多刷几次库
+		value = getFromCache(key); //第二个线程，能从缓存里拿到值？
+		if (null != value) {
+			return value;
+		}
 
-        Object dbValue getFromDataBase(key);
-        // 3.从数据库查询的结果不为空，则把数据放入缓存中，方便下次查询
-        if (null != dbValue) {
-            putInCache(key, dbValue);
-        }
-        return dbValue;
-    } catch (Exception e) {
-        return null;
-    } finally {
-        //4.解锁
-        releaseLock(key);
-    }
+		Object dbValue getFromDataBase(key);
+		// 3.从数据库查询的结果不为空，则把数据放入缓存中，方便下次查询
+		if (null != dbValue) {
+			putInCache(key, dbValue);
+		}
+		return dbValue;
+	} catch (Exception e) {
+		return null;
+	} finally {
+		//4.解锁
+		releaseLock(key);
+	}
 }
 </code></pre>
-
 <p>方案二：做二级缓存，一级缓存失效后去二级缓存获取</p>
-
 <p>方案三：不同的 key 设置不同的过期时间，让缓存失效时间点尽量均匀</p>
-
-<h3 id="toc_2">缓存穿透</h3>
-
+<h3><a id="%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存穿透</h3>
 <p>缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞</p>
-
-<p>方案一：布隆过滤器<br/>
+<p>方案一：布隆过滤器<br />
 布隆过滤器的使用方法，类似java的SET集合，只不过它能以更小的内存，存储更大的数据</p>
-
 <pre><code class="language-java">public void init() {
     //在bean初始化完成后，实例化bloomFilter,并加载数据
-      List&lt;CacheValue&gt; cacheValues =searchAll();
+	  List&lt;CacheValue&gt; cacheValues =searchAll();
 
-      //当成一个SET----- 占内存，比hashset占得小很多
-      bf = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), cacheValues.size());
-      for (CacheValue p : cacheValues) {
-        bf.put(p.getKey());
-    }
+	  //当成一个SET----- 占内存，比hashset占得小很多
+	  bf = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), cacheValues.size());
+	  for (CacheValue p : cacheValues) {
+		bf.put(p.getKey());
+	}
 }
 
 public CacheValue get(String key) {
     //先判断布隆过滤器中是否存在该值，值存在才允许访问缓存和数据库
-        if (!bf.mightContain(key)) {
-            System.out.println(&quot;非法访问--------&quot; + System.currentTimeMillis());
-            return null;
-        }
-        // 可以使用上面的get方法，防止缓存雪崩或击穿
-        return getCachedValue(key);
+		if (!bf.mightContain(key)) {
+			System.out.println(&quot;非法访问--------&quot; + System.currentTimeMillis());
+			return null;
+		}
+		// 可以使用上面的get方法，防止缓存雪崩或击穿
+		return getCachedValue(key);
 }
 </code></pre>
-
 <p>方案二： 对查询结果为空的情况也进行缓存，缓存时间设置短一点，或者该 key 对应的数据 insert 了之后清理 缓存。</p>
 
                   </article>
